@@ -3,215 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Jason227 · 登录注册</title>
+    <title>Jason227 · 个人空间</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing: border-box; }
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
         }
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
             border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            width: 100%;
-            max-width: 480px;
-            padding: 40px 32px;
+            padding: 32px 28px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        .logo h1 {
-            font-size: 28px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .logo p {
-            color: #6b7280;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-        .tabs {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 28px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px 0;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #6b7280;
-            transition: all 0.2s;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-        }
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-        .form-panel {
-            display: none;
-        }
-        .form-panel.active {
-            display: block;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 16px;
-            font-size: 15px;
-            transition: all 0.2s;
-            background: #f9fafb;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            background: white;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 40px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .message {
-            margin-top: 16px;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            text-align: center;
-        }
-        .error {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-        .success {
-            background: #dcfce7;
-            color: #166534;
-        }
-        footer {
-            text-align: center;
-            margin-top: 32px;
-            font-size: 12px;
-            color: #9ca3af;
-        }
-        footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
+        .logo { text-align: center; margin-bottom: 28px; }
+        .logo h1 { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .tabs { display: flex; gap: 16px; border-bottom: 2px solid #e5e7eb; margin-bottom: 24px; }
+        .tab { flex:1; text-align: center; padding: 10px; cursor: pointer; color: #6b7280; border-bottom: 2px solid transparent; }
+        .tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; margin-bottom: 6px; color: #374151; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 16px; background: #f9fafb; }
+        .input-group input:focus { outline: none; border-color: #667eea; }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; }
+        button:disabled { opacity: 0.6; }
+        .message { margin-top: 16px; padding: 8px; border-radius: 12px; font-size: 13px; text-align: center; }
+        .error { background: #fee2e2; color: #b91c1c; }
+        .success { background: #dcfce7; color: #166534; }
+        .user-panel { text-align: center; }
+        .user-panel .avatar { width: 80px; height: 80px; background: #667eea; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; }
+        .logout-btn { margin-top: 20px; background: #7f8c8d; }
+        footer { text-align: center; margin-top: 32px; font-size: 12px; color: #9ca3af; }
     </style>
 </head>
 <body>
-<div class="card">
-    <div class="logo">
-        <h1>✨ Jason227</h1>
-        <p>算法竞赛 · 技术笔记 · 个人空间</p>
-    </div>
-    <div class="tabs">
-        <div class="tab active" data-tab="login">登录</div>
-        <div class="tab" data-tab="register">注册</div>
-    </div>
-    <div id="loginPanel" class="form-panel active">
-        <div class="input-group">
-            <label>邮箱</label>
-            <input type="email" id="loginEmail" placeholder="your@email.com">
+<div class="card" id="app">
+    <!-- 未登录时显示的内容 -->
+    <div id="unloggedView">
+        <div class="logo"><h1>✨ Jason227</h1><p>登录以访问更多内容</p></div>
+        <div class="tabs">
+            <div class="tab active" data-tab="login">登录</div>
+            <div class="tab" data-tab="register">注册</div>
         </div>
-        <div class="input-group">
-            <label>密码</label>
-            <input type="password" id="loginPassword" placeholder="请输入密码">
+        <div id="loginPanel" class="form-panel active">
+            <div class="input-group"><label>邮箱</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
+            <div class="input-group"><label>密码</label><input type="password" id="loginPassword" placeholder="请输入密码"></div>
+            <button id="doLogin">立即登录</button>
+            <div id="loginMsg" class="message"></div>
         </div>
-        <button id="doLogin">立即登录</button>
-        <div id="loginMsg" class="message"></div>
+        <div id="registerPanel" class="form-panel">
+            <div class="input-group"><label>邮箱</label><input type="email" id="regEmail" placeholder="your@email.com"></div>
+            <div class="input-group"><label>密码</label><input type="password" id="regPassword" placeholder="至少6位"></div>
+            <button id="doRegister">注册新账号</button>
+            <div id="regMsg" class="message"></div>
+        </div>
     </div>
-    <div id="registerPanel" class="form-panel">
-        <div class="input-group">
-            <label>邮箱</label>
-            <input type="email" id="regEmail" placeholder="your@email.com">
+
+    <!-- 登录后显示的内容 -->
+    <div id="loggedView" style="display: none;">
+        <div class="user-panel">
+            <div class="avatar">🐱</div>
+            <h2 id="userEmailDisplay"></h2>
+            <p>欢迎回来！你已经成功登录。</p>
+            <button id="logoutBtn" class="logout-btn">登出账号</button>
         </div>
-        <div class="input-group">
-            <label>密码</label>
-            <input type="password" id="regPassword" placeholder="至少6位">
+        <div style="margin-top: 24px;">
+            <h3>📝 近期文章</h3>
+            <ul style="margin-left: 20px;">
+                <li>《从零搭建 GitHub Pages》</li>
+                <li>《动态规划入门指南》</li>
+                <li>《Supabase 认证接入教程》</li>
+            </ul>
         </div>
-        <button id="doRegister">注册新账号</button>
-        <div id="regMsg" class="message"></div>
     </div>
-    <footer>
-        © 2026 Jason227 · 由 <a href="#" target="_blank">Supabase</a> 提供认证
-    </footer>
+    <footer>© 2026 Jason227 · Powered by Supabase</footer>
 </div>
 
 <script>
-    // 配置信息（请修改为你自己的）
-    const _SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-    const _SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-
-    // 初始化客户端 - 使用唯一变量名
-    const _supabase = window.supabase.createClient(_SUPABASE_URL, _SUPABASE_ANON_KEY);
+    // Supabase 配置（请确认已填写正确）
+    const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+    const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // DOM 元素
+    const unloggedView = document.getElementById('unloggedView');
+    const loggedView = document.getElementById('loggedView');
+    const userEmailSpan = document.getElementById('userEmailDisplay');
+    const loginBtn = document.getElementById('doLogin');
+    const registerBtn = document.getElementById('doRegister');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginMsgDiv = document.getElementById('loginMsg');
+    const regMsgDiv = document.getElementById('regMsg');
     const loginPanel = document.getElementById('loginPanel');
     const registerPanel = document.getElementById('registerPanel');
     const tabs = document.querySelectorAll('.tab');
-    const loginBtn = document.getElementById('doLogin');
-    const registerBtn = document.getElementById('doRegister');
-    const loginMsgDiv = document.getElementById('loginMsg');
-    const regMsgDiv = document.getElementById('regMsg');
 
     function showMessage(container, message, type = 'error') {
         if (!container) return;
         container.innerHTML = `<div class="message ${type}">${message}</div>`;
-        setTimeout(() => {
-            if (container) container.innerHTML = '';
-        }, 4000);
+        setTimeout(() => { if (container) container.innerHTML = ''; }, 4000);
     }
 
-    // 切换标签
+    // 切换 UI：根据登录状态显示不同内容
+    async function updateUI() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            unloggedView.style.display = 'none';
+            loggedView.style.display = 'block';
+            userEmailSpan.innerText = session.user.email;
+        } else {
+            unloggedView.style.display = 'block';
+            loggedView.style.display = 'none';
+        }
+    }
+
+    // 注册
+    async function handleRegister() {
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        if (!email || !password) return showMessage(regMsgDiv, '请填写邮箱和密码', 'error');
+        if (password.length < 6) return showMessage(regMsgDiv, '密码长度至少6位', 'error');
+        registerBtn.disabled = true;
+        registerBtn.textContent = '注册中...';
+        const { error } = await _supabase.auth.signUp({ email, password });
+        registerBtn.disabled = false;
+        registerBtn.textContent = '注册新账号';
+        if (error) {
+            showMessage(regMsgDiv, error.message, 'error');
+        } else {
+            showMessage(regMsgDiv, '注册成功！现在可以登录了', 'success');
+            document.getElementById('regEmail').value = '';
+            document.getElementById('regPassword').value = '';
+            // 切换到登录标签
+            document.querySelector('.tab[data-tab="login"]').click();
+        }
+    }
+
+    // 登录
+    async function handleLogin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) return showMessage(loginMsgDiv, '请填写邮箱和密码', 'error');
+        loginBtn.disabled = true;
+        loginBtn.textContent = '登录中...';
+        const { error } = await _supabase.auth.signInWithPassword({ email, password });
+        loginBtn.disabled = false;
+        loginBtn.textContent = '立即登录';
+        if (error) {
+            showMessage(loginMsgDiv, error.message, 'error');
+        } else {
+            showMessage(loginMsgDiv, '登录成功！', 'success');
+            // 刷新界面
+            updateUI();
+            // 清空密码框
+            document.getElementById('loginPassword').value = '';
+        }
+    }
+
+    // 登出
+    async function handleLogout() {
+        await _supabase.auth.signOut();
+        updateUI();
+    }
+
+    // 切换登录/注册标签
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            const target = tab.getAttribute('data-tab');
+            const target = tab.dataset.tab;
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             if (target === 'login') {
@@ -226,75 +191,13 @@
         });
     });
 
-    async function handleRegister() {
-        const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
-        if (!email || !password) {
-            showMessage(regMsgDiv, '请填写邮箱和密码', 'error');
-            return;
-        }
-        if (password.length < 6) {
-            showMessage(regMsgDiv, '密码长度至少6位', 'error');
-            return;
-        }
-        registerBtn.disabled = true;
-        registerBtn.textContent = '注册中...';
-        const { error } = await _supabase.auth.signUp({ email, password });
-        registerBtn.disabled = false;
-        registerBtn.textContent = '注册新账号';
-        if (error) {
-            showMessage(regMsgDiv, error.message, 'error');
-        } else {
-            showMessage(regMsgDiv, '注册成功！请查收确认邮件（可能被误判为垃圾邮件）', 'success');
-            document.getElementById('regEmail').value = '';
-            document.getElementById('regPassword').value = '';
-            const loginTab = document.querySelector('.tab[data-tab="login"]');
-            if (loginTab) loginTab.click();
-        }
-    }
+    // 绑定事件
+    loginBtn.addEventListener('click', handleLogin);
+    registerBtn.addEventListener('click', handleRegister);
+    logoutBtn.addEventListener('click', handleLogout);
 
-    async function handleLogin() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        if (!email || !password) {
-            showMessage(loginMsgDiv, '请填写邮箱和密码', 'error');
-            return;
-        }
-        loginBtn.disabled = true;
-        loginBtn.textContent = '登录中...';
-        const { error } = await _supabase.auth.signInWithPassword({ email, password });
-        loginBtn.disabled = false;
-        loginBtn.textContent = '立即登录';
-        if (error) {
-            showMessage(loginMsgDiv, error.message, 'error');
-        } else {
-            showMessage(loginMsgDiv, '登录成功！正在跳转...', 'success');
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1500);
-        }
-    }
-
-    async function checkSession() {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) {
-            window.location.href = '/';
-        }
-    }
-
-    if (loginBtn) loginBtn.addEventListener('click', handleLogin);
-    if (registerBtn) registerBtn.addEventListener('click', handleRegister);
-
-    const loginPasswordInput = document.getElementById('loginPassword');
-    const regPasswordInput = document.getElementById('regPassword');
-    if (loginPasswordInput) {
-        loginPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-    }
-    if (regPasswordInput) {
-        regPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleRegister(); });
-    }
-
-    checkSession();
+    // 初始检查
+    updateUI();
 </script>
 </body>
 </html>
