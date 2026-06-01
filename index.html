@@ -1,242 +1,279 @@
 <!DOCTYPE html>
-<html class="no-js" lang="zh">
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>我的个人主页 · Jason227</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="renderer" content="webkit">
-    <!-- 洛谷样式 -->
-    <link rel="stylesheet" href="https://cdn.luogu.com.cn/css/amazeui.min.css"/>
-    <link rel="stylesheet" href="https://cdn.luogu.com.cn/css/katex.min.css"/>
-    <link rel="stylesheet" href="https://cdn.luogu.com.cn/css/luogu3.css?ver=20190102">
-    <link rel="stylesheet" href="https://cdn.luogu.com.cn/css/highlight_tomorrow.css">
-    <link rel="stylesheet" href="https://cdn.luogu.com.cn/markdown-palettes/markdown-palettes.css?ver=20190219">
-    <script src="https://cdn.luogu.com.cn/js/jquery-2.1.1.min.js"></script>
-    <script src="https://cdn.luogu.com.cn/js/luogu3_pre.js?ver=20190101"></script>
-    <!-- Supabase SDK -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jason227 · 算法竞赛社区</title>
     <style>
-        /* 模态框样式 */
-        .modal-mask {
+        /* ========== 基础样式（模仿洛谷风格） ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* 卡片通用样式 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+        /* 顶部栏 */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+        /* 模态框 */
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            display: none;
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
-        .modal-container {
+        .modal-content {
             background: white;
             width: 400px;
             max-width: 90%;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
         }
-        .modal-container .tabs {
+        .tabs {
             display: flex;
-            gap: 16px;
-            border-bottom: 2px solid #e5e7eb;
+            gap: 20px;
+            border-bottom: 2px solid #e2e8f0;
             margin-bottom: 24px;
         }
-        .modal-container .tab {
-            flex:1;
+        .tab {
+            flex: 1;
             text-align: center;
-            padding: 10px;
+            padding: 8px 0;
+            font-weight: 600;
             cursor: pointer;
             color: #6b7280;
             border-bottom: 2px solid transparent;
         }
-        .modal-container .tab.active {
+        .tab.active {
             color: #e74c3c;
             border-bottom-color: #e74c3c;
         }
-        .modal-container .form-panel { display: none; }
-        .modal-container .form-panel.active { display: block; }
-        .modal-container input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 16px;
-            margin-bottom: 16px;
+        .form-panel {
+            display: none;
         }
-        .modal-container button {
+        .form-panel.active {
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
             width: 100%;
             padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 15px;
+        }
+        .modal-btn {
+            width: 100%;
             background: #e74c3c;
-            border: none;
-            border-radius: 40px;
             color: white;
-            font-weight: bold;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 600;
             cursor: pointer;
         }
-        .modal-container .message {
+        .message {
             margin-top: 16px;
             padding: 8px;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 13px;
             text-align: center;
         }
         .error { background: #fee2e2; color: #b91c1c; }
         .success { background: #dcfce7; color: #166534; }
-        /* 登录按钮 */
-        .login-btn {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 6px 16px;
-            cursor: pointer;
-            z-index: 100;
+        /* 洛谷风格卡片内容 */
+        .grid-2 {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        .logout-btn {
-            background: #7f8c8d;
+        .sidebar {
+            flex: 1;
+        }
+        .main-content {
+            flex: 2;
+        }
+        .contest-item, .discuss-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .badge {
+            background: #f0f2f5;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #2c3e50;
+        }
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+        a {
+            text-decoration: none;
+            color: #e74c3c;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- 悬浮登录/登出按钮 -->
-<div style="position: absolute; right: 20px; top: 20px; z-index: 100;">
-    <button id="authBtn" class="login-btn">登录</button>
+<div class="topbar">
+    <div class="logo">✨ Jason227</div>
+    <button id="authBtn" class="auth-btn">登录</button>
+</div>
+
+<div class="container">
+    <!-- 欢迎卡片 -->
+    <div class="card" id="welcomeCard">
+        <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
+        <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
+    </div>
+
+    <div class="grid-2">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">📢 本站公告</div>
+                <ul style="list-style: none;">
+                    <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
+                    <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
+                    <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-header">🔗 友情链接</div>
+                <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a href="javascript:void(0)">HydroOJ</a></p>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">🏆 近期比赛</div>
+                <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
+                <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header">💬 最近讨论</div>
+                <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span class="badge">10回复</span></div>
+                <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 运势卡片（动态内容） -->
+    <div class="card" id="fortuneCard">
+        <!-- 内容由 js 动态渲染 -->
+    </div>
+    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
 </div>
 
 <!-- 模态框（登录/注册） -->
-<div id="authModal" class="modal-mask">
-    <div class="modal-container">
+<div id="authModal" class="modal">
+    <div class="modal-content">
         <div class="tabs">
             <div class="tab active" data-tab="login">登录</div>
             <div class="tab" data-tab="register">注册</div>
         </div>
         <div id="loginPanel" class="form-panel active">
-            <input type="email" id="loginEmail" placeholder="邮箱" autocomplete="email">
-            <input type="password" id="loginPassword" placeholder="密码" autocomplete="current-password">
-            <button id="doLoginBtn">立即登录</button>
+            <div class="input-group"><input type="email" id="loginEmail" placeholder="邮箱"></div>
+            <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"></div>
+            <button id="doLogin" class="modal-btn">登录</button>
             <div id="loginMsg" class="message"></div>
         </div>
         <div id="registerPanel" class="form-panel">
-            <input type="email" id="regEmail" placeholder="邮箱" autocomplete="email">
-            <input type="password" id="regPassword" placeholder="密码（至少6位）" autocomplete="new-password">
-            <button id="doRegisterBtn">注册新账号</button>
+            <div class="input-group"><input type="email" id="regEmail" placeholder="邮箱"></div>
+            <div class="input-group"><input type="password" id="regPassword" placeholder="密码（至少6位）"></div>
+            <button id="doRegister" class="modal-btn">注册</button>
             <div id="regMsg" class="message"></div>
-        </div>
-        <p style="text-align:center; margin-top:24px; color:#7f8c8d; font-size:12px;">&copy; 2026 Jason227</p>
-    </div>
-</div>
-
-<!-- 洛谷风格主页（始终显示） -->
-<div id="app-old">
-    <div class="lg-index-content am-center ">
-        <!-- 顶部欢迎区（根据登录状态显示不同内容） -->
-        <div class="am-g">
-            <div class="am-u-md-12">
-                <div class="lg-article" id="welcomeBanner" style="background:#fef3e8; border-left: 5px solid #e74c3c;">
-                    <!-- 动态内容：未登录显示默认提示，登录后显示用户邮箱 -->
-                </div>
-            </div>
-        </div>
-
-        <div class="am-g">
-            <div class="am-u-md-12 ">
-                <div class="lg-article">
-                    <div class="am-g">
-                        <div class="am-u-md-8">
-                            <div class="am-slider am-slider-default" data-am-flexslider id="lg-slider">
-                                <ul class="am-slides">
-                                    <li><a href="#"><img src='https://ipic.luogu.com.cn/yugu26n/pic/yugu26nbanner.png'/></a></li>
-                                    <li><a href="#"><img src='https://ipic.luogu.com.cn/yugu24n/ap/cs-banner.png'/></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="am-u-md-4 lg-punch am-text-center" id="fortuneCard">
-                            <!-- 运势卡片（根据登录状态调整内容） -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="am-g">
-            <div class="am-u-md-3">
-                <div class="lg-article lg-index-stat">
-                    <h2>问题跳转</h2>
-                    <div class="am-input-group am-input-group-primary am-input-group-sm">
-                        <input type="text" class="am-form-field" placeholder="例：P1001" name="toproblem">
-                    </div>
-                    <p>
-                        <button class="am-btn am-btn-danger am-btn-sm" name="goto">跳转</button>
-                        <button class="am-btn am-btn-primary am-btn-sm" name="gotorandom">随机跳题</button>
-                    </p>
-                </div>
-            </div>
-            <div class="am-u-md-9">
-                <div class="lg-article lg-index-stat" style="padding: 0">
-                    <div class="am-g" style="padding: 15px">
-                        <div class="am-u-md-4 am-text-center"><img src="/images/index/step1.png" width="250" alt="step1"></div>
-                        <div class="am-u-md-4 am-text-center"><img src="/images/index/step2.png" width="250" alt="step2"></div>
-                        <div class="am-u-md-4 am-text-center"><img src="/images/index/step3.png" width="250" alt="step3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="am-g">
-            <div class="am-u-lg-3 am-u-md-4 lg-right">
-                <div class="lg-article"><h2>本站公告</h2>
-                    <p><a href="#">📢 个人网站全新改版</a></p>
-                    <p><a href="#">🔧 做题计划使用指南</a></p>
-                    <p><a href="#">🤝 友链交换须知</a></p>
-                </div>
-                <div class="lg-article am-hide-sm"><h2>友情链接</h2>
-                    <p><strong>推荐题库</strong><br><a href="#">LibreOJ</a> | <a href="#">Vijos</a> | <a href="#">HydroOJ</a></p>
-                </div>
-            </div>
-            <div class="am-u-lg-9 am-u-md-8 lg-index-benben lg-right">
-                <div class="lg-article"><h2>近期比赛</h2>
-                    <section class="am-panel lg-index-contest am-panel-success">
-                        <header class="am-panel-hd"><h3 class="am-panel-title">[团队公开赛] 暑假算法挑战赛</h3></header>
-                        <div class="am-panel-bd"><span class="lg-small"><strong class="lg-fg-green">未开始</strong> 3天后开始</span></div>
-                    </section>
-                    <section class="am-panel lg-index-contest am-panel-danger">
-                        <header class="am-panel-hd"><h3 class="am-panel-title">[官方比赛] 蓝桥杯校内模拟赛</h3></header>
-                        <div class="am-panel-bd"><span class="lg-small"><strong class="lg-fg-red">已结束</strong></span></div>
-                    </section>
-                </div>
-                <div class="lg-article"><h2>最近讨论</h2>
-                    <section class="am-panel lg-index-contest am-panel-primary">
-                        <div class="am-panel-bd"><a href="#">如何快速入门动态规划？</a><br><span class="lg-small">@某用户 回复 10小时前</span></div>
-                    </section>
-                    <section class="am-panel lg-index-contest am-panel-primary">
-                        <div class="am-panel-bd"><a href="#">洛谷主题库题目推荐</a><br><span class="lg-small">@某用户 回复 昨天</span></div>
-                    </section>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== Supabase 配置 ==========
+    // ==================== Supabase 配置（请替换成您自己的） ====================
     const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+    // =========================================================================
+
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // DOM 元素
-    const authModal = document.getElementById('authModal');
     const authBtn = document.getElementById('authBtn');
-    const welcomeBanner = document.getElementById('welcomeBanner');
+    const authModal = document.getElementById('authModal');
+    const welcomeTitle = document.getElementById('welcomeTitle');
+    const welcomeDesc = document.getElementById('welcomeDesc');
     const fortuneCard = document.getElementById('fortuneCard');
 
-    // 辅助：显示模态框消息
-    function showModalMessage(container, msg, isError = true) {
+    // 辅助函数：显示模态框消息
+    function showModalMsg(containerId, msg, isError = true) {
+        const container = document.getElementById(containerId);
         if (!container) return;
         container.innerHTML = `<div class="message ${isError ? 'error' : 'success'}">${msg}</div>`;
         setTimeout(() => { container.innerHTML = ''; }, 4000);
@@ -246,55 +283,39 @@
     async function updateUI() {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-            // 已登录：显示用户邮箱，运势卡片显示用户信息
+            // 登录状态
             authBtn.textContent = '登出';
-            authBtn.classList.add('logout-btn');
-            welcomeBanner.innerHTML = `<h3>👋 欢迎回来，${session.user.email}！</h3><p>你已经成功登录，可以开始探索以下内容了。</p>`;
+            authBtn.classList.add('logout');
+            welcomeTitle.innerHTML = `👋 欢迎回来，${session.user.email}`;
+            welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
             fortuneCard.innerHTML = `
-                <h2><span class="lg-fg-red">${session.user.email.split('@')[0]}</span> 的运势</h2>
-                <span class="lg-punch-result lg-fg-red">§ 中吉 §</span>
-                <div class="am-g">
-                    <div class="am-u-sm-6 lg-fg-red">
-                        <span class="lg-bold">宜：</span>点外卖<br>
-                        <span class="lg-small">及时送到</span><br>
-                        <span class="lg-bold">宜：</span>纳财<br>
-                        <span class="lg-small">要到好多 Money</span>
-                    </div>
-                    <div class="am-u-sm-6">
-                        <span class="lg-bold">忌：</span>摸鱼<br>
-                        <span class="lg-small">被教练制裁</span><br>
-                        <span class="lg-bold">忌：</span>放假<br>
-                        <span class="lg-small">就放一天，全是作业</span>
-                    </div>
-                    <div class="am-u-sm-12 lg-small"><br>连续打卡 <strong>228</strong> 天</div>
+                <div class="card-header">🧧 你的运势</div>
+                <div style="text-align:center">
+                    <span style="font-size:2rem;">中吉</span>
+                    <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
+                    <p>连续打卡 <strong>228</strong> 天</p>
                 </div>
             `;
         } else {
-            // 未登录：显示默认文案，运势卡片显示提示登录
+            // 未登录状态
             authBtn.textContent = '登录';
-            authBtn.classList.remove('logout-btn');
-            welcomeBanner.innerHTML = `<h3>✨ 欢迎来到 Jason227 的个人空间</h3><p>请点击右上角“登录”按钮，解锁更多个性化功能～</p>`;
+            authBtn.classList.remove('logout');
+            welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
+            welcomeDesc.innerHTML = '请点击右上角“登录”按钮，解锁更多个性化功能～';
             fortuneCard.innerHTML = `
-                <h2>🚪 游客模式</h2>
-                <div class="lg-punch-padding am-show-lg"></div>
-                <div class="lg-index-calendar lg-fg-greendark">
-                    <span class="lg-punch-small ">五月大</span>
-                    <span class="lg-punch-big">31</span>
-                    <span class="lg-punch-small ">星期日</span>
-                </div>
-                <div class="am-g">
-                    <div class="am-u-sm-12 lg-small">
-                        距 <strong>CSP-J/S 2026 第一轮</strong> 还剩 <strong>110 天</strong><br>
-                        距 <strong>CSP-J/S 2026 第二轮</strong> 还剩 <strong>152 天</strong>
-                    </div>
-                </div>
-                <div class="am-g" style="margin-top:12px;">
-                    <div class="am-u-sm-12"><small>👉 <a href="#" id="openLoginFromCard" style="color:#e74c3c;">登录</a> 后查看专属运势</small></div>
+                <div class="card-header">📅 今日日历</div>
+                <div style="text-align:center">
+                    <span style="font-size:1.8rem;">5月31日</span>
+                    <p>星期日</p>
+                    <p>距 CSP-J/S 2026 第一轮还剩 110 天</p>
+                    <p><a href="javascript:void(0)" id="openLoginTip">👉 登录后查看专属运势</a></p>
                 </div>
             `;
-            // 绑定卡片内登录按钮
-            const openLoginLink = document.getElementById('openLoginFromCard');
-            if (openLoginLink) openLoginLink.addEventListener('click', (e) => { e.preventDefault(); authModal.style.display = 'flex'; });
+            const openLoginTip = document.getElementById('openLoginTip');
+            if (openLoginTip) openLoginTip.addEventListener('click', (e) => {
+                e.preventDefault();
+                authModal.style.display = 'flex';
+            });
         }
     }
 
@@ -302,19 +323,21 @@
     async function handleRegister() {
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value;
-        const msgDiv = document.getElementById('regMsg');
-        if (!email || !password) return showModalMessage(msgDiv, '请填写邮箱和密码');
-        if (password.length < 6) return showModalMessage(msgDiv, '密码至少6位');
-        const btn = document.getElementById('doRegisterBtn');
-        btn.disabled = true; btn.textContent = '注册中...';
+        if (!email || !password) return showModalMsg('regMsg', '请填写邮箱和密码');
+        if (password.length < 6) return showModalMsg('regMsg', '密码长度至少6位');
+        const btn = document.getElementById('doRegister');
+        btn.disabled = true;
+        btn.textContent = '注册中...';
         const { error } = await supabase.auth.signUp({ email, password });
-        btn.disabled = false; btn.textContent = '注册新账号';
-        if (error) showModalMessage(msgDiv, error.message);
-        else {
-            showModalMessage(msgDiv, '注册成功！请登录', false);
+        btn.disabled = false;
+        btn.textContent = '注册';
+        if (error) {
+            showModalMsg('regMsg', error.message);
+        } else {
+            showModalMsg('regMsg', '注册成功！请登录', false);
             document.getElementById('regEmail').value = '';
             document.getElementById('regPassword').value = '';
-            // 切换到登录标签
+            // 自动切换到登录标签
             document.querySelector('.tab[data-tab="login"]').click();
         }
     }
@@ -323,19 +346,20 @@
     async function handleLogin() {
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
-        const msgDiv = document.getElementById('loginMsg');
-        if (!email || !password) return showModalMessage(msgDiv, '请填写邮箱和密码');
-        const btn = document.getElementById('doLoginBtn');
-        btn.disabled = true; btn.textContent = '登录中...';
+        if (!email || !password) return showModalMsg('loginMsg', '请填写邮箱和密码');
+        const btn = document.getElementById('doLogin');
+        btn.disabled = true;
+        btn.textContent = '登录中...';
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        btn.disabled = false; btn.textContent = '立即登录';
-        if (error) showModalMessage(msgDiv, error.message);
-        else {
-            showModalMessage(msgDiv, '登录成功！', false);
+        btn.disabled = false;
+        btn.textContent = '登录';
+        if (error) {
+            showModalMsg('loginMsg', error.message);
+        } else {
+            showModalMsg('loginMsg', '登录成功！', false);
             setTimeout(() => {
                 authModal.style.display = 'none';
                 updateUI();
-                // 清空密码框
                 document.getElementById('loginPassword').value = '';
             }, 1000);
         }
@@ -355,7 +379,7 @@
     // 模态框标签切换
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            const target = tab.dataset.tab;
+            const target = tab.getAttribute('data-tab');
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             if (target === 'login') {
@@ -370,24 +394,15 @@
         });
     });
 
-    // 关闭模态框（点击背景关闭）
+    // 点击模态框背景关闭
     authModal.addEventListener('click', (e) => {
         if (e.target === authModal) authModal.style.display = 'none';
     });
 
     // 绑定事件
     authBtn.addEventListener('click', handleAuthClick);
-    document.getElementById('doLoginBtn').addEventListener('click', handleLogin);
-    document.getElementById('doRegisterBtn').addEventListener('click', handleRegister);
-
-    // 问题跳转演示（保留）
-    $("[name=goto]").click(function() {
-        let pid = $("[name=toproblem]").val();
-        if(!pid) return alert("请输入题号");
-        if(!isNaN(pid)) pid = 'P'+pid;
-        alert("跳转至题目 "+pid+" (演示)");
-    });
-    $("[name=gotorandom]").click(() => alert("随机跳题（演示）"));
+    document.getElementById('doLogin').addEventListener('click', handleLogin);
+    document.getElementById('doRegister').addEventListener('click', handleRegister);
 
     // 初始化
     updateUI();
