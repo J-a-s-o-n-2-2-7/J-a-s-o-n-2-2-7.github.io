@@ -329,6 +329,7 @@
 
     <div class="main-layout">
         <div class="nav-sidebar">
+            <!-- 导航栏内容（与之前相同，省略以节省长度，实际使用时保留） -->
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
             <div class="nav-item"><span class="nav-icon">🎓</span><span class="nav-text">网校</span></div>
@@ -337,7 +338,6 @@
             <div class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">评测记录</span></div>
             <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-text">讨论区</span></div>
             <div class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">文章广场</span></div>
-
             <div class="group-title"><span class="nav-icon">➕</span><span class="nav-text">更多功能</span></div>
             <div class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-text">图片上传</span></div>
             <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">云剪贴板</span></div>
@@ -346,9 +346,7 @@
             <div class="nav-item"><span class="nav-icon">📈</span><span class="nav-text">等级分排名</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">洛谷有题</span></div>
             <div class="nav-item"><span class="nav-icon">📩</span><span class="nav-text">工单/反馈</span></div>
-
             <div class="divider"></div>
-
             <div class="group-title"><span class="nav-icon">🔗</span><span class="nav-text">相关链接</span></div>
             <div class="nav-item"><span class="nav-icon">❓</span><span class="nav-text">帮助中心</span></div>
             <div class="nav-item"><span class="nav-icon">📧</span><span class="nav-text">联系我们</span></div>
@@ -408,16 +406,16 @@
             <div id="loginPanel" class="form-panel active">
                 <div class="input-group"><input type="email" id="loginEmail" placeholder="邮箱"></div>
                 <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"></div>
-                <!-- Turnstile 验证码组件 -->
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
+                <div id="loginTurnstile" class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx"
+                    data-theme="light"></div>
                 <button id="doLogin" class="modal-btn">登录</button>
                 <div id="loginMsg" class="message"></div>
             </div>
             <div id="registerPanel" class="form-panel">
                 <div class="input-group"><input type="email" id="regEmail" placeholder="邮箱"></div>
                 <div class="input-group"><input type="password" id="regPassword" placeholder="密码（至少6位）"></div>
-                <!-- 注册也可以加验证码，这里同样添加 -->
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
+                <div id="registerTurnstile" class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx"
+                    data-theme="light"></div>
                 <button id="doRegister" class="modal-btn">注册</button>
                 <div id="regMsg" class="message"></div>
             </div>
@@ -439,6 +437,16 @@
         const welcomeTitle = document.getElementById('welcomeTitle');
         const welcomeDesc = document.getElementById('welcomeDesc');
         const fortuneCard = document.getElementById('fortuneCard');
+
+        // 重置两个验证码
+        function resetTurnstiles() {
+            if (window.turnstile) {
+                const loginContainer = document.getElementById('loginTurnstile');
+                const registerContainer = document.getElementById('registerTurnstile');
+                if (loginContainer) turnstile.reset(loginContainer);
+                if (registerContainer) turnstile.reset(registerContainer);
+            }
+        }
 
         function showModalMsg(containerId, msg, isError = true) {
             const container = document.getElementById(containerId);
@@ -480,6 +488,7 @@
                 if (openLoginTip) openLoginTip.addEventListener('click', (e) => {
                     e.preventDefault();
                     authModal.style.display = 'flex';
+                    resetTurnstiles(); // 打开模态框时重置验证码
                 });
             }
         }
@@ -490,6 +499,7 @@
             if (!email || !password) return showModalMsg('regMsg', '请填写邮箱和密码');
             if (password.length < 6) return showModalMsg('regMsg', '密码至少6位');
 
+            // 获取注册面板的验证码 token
             const captchaToken = document.querySelector('#registerPanel .cf-turnstile [name="cf-turnstile-response"]')?.value;
             if (!captchaToken) {
                 showModalMsg('regMsg', '请完成验证码验证');
@@ -507,7 +517,9 @@
                 showModalMsg('regMsg', '注册成功！请登录', false);
                 document.getElementById('regEmail').value = '';
                 document.getElementById('regPassword').value = '';
+                // 切换到登录标签，并且重置验证码
                 document.querySelector('.tab[data-tab="login"]').click();
+                resetTurnstiles();
             }
         }
 
@@ -546,13 +558,16 @@
                 updateUI();
             } else {
                 authModal.style.display = 'flex';
+                resetTurnstiles(); // 打开模态框时重置验证码
             }
         }
 
-        document.querySelectorAll('.tab').forEach(tab => {
+        // 选项卡切换时重置验证码
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const target = tab.getAttribute('data-tab');
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 if (target === 'login') {
                     document.getElementById('loginPanel').classList.add('active');
@@ -561,8 +576,11 @@
                     document.getElementById('registerPanel').classList.add('active');
                     document.getElementById('loginPanel').classList.remove('active');
                 }
+                // 清空提示信息
                 document.getElementById('loginMsg').innerHTML = '';
                 document.getElementById('regMsg').innerHTML = '';
+                // 重置两个验证码（或至少重置当前显示的）
+                resetTurnstiles();
             });
         });
 
