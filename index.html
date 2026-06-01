@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jason227 · 算法竞赛社区</title>
     <style>
-        /* ========== 基础样式（模仿洛谷风格） ========== */
+        /* ========== 洛谷风格样式 ========== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
         }
+
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 20px;
         }
-        /* 卡片通用样式 */
+
         .card {
             background: white;
             border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             padding: 20px 24px;
             margin-bottom: 24px;
         }
+
         .card-header {
             font-size: 1.25rem;
             font-weight: 600;
@@ -36,23 +40,25 @@
             padding-left: 12px;
             margin-bottom: 20px;
         }
-        /* 顶部栏 */
+
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: white;
             padding: 12px 24px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
             z-index: 100;
         }
+
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
             color: #e74c3c;
         }
+
         .auth-btn {
             background: #e74c3c;
             color: white;
@@ -63,10 +69,11 @@
             cursor: pointer;
             transition: 0.2s;
         }
+
         .auth-btn.logout {
             background: #7f8c8d;
         }
-        /* 模态框 */
+
         .modal {
             display: none;
             position: fixed;
@@ -74,25 +81,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
+
         .modal-content {
             background: white;
             width: 400px;
             max-width: 90%;
             border-radius: 24px;
             padding: 28px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
         }
+
         .tabs {
             display: flex;
             gap: 20px;
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 24px;
         }
+
         .tab {
             flex: 1;
             text-align: center;
@@ -102,19 +112,24 @@
             color: #6b7280;
             border-bottom: 2px solid transparent;
         }
+
         .tab.active {
             color: #e74c3c;
             border-bottom-color: #e74c3c;
         }
+
         .form-panel {
             display: none;
         }
+
         .form-panel.active {
             display: block;
         }
+
         .input-group {
             margin-bottom: 20px;
         }
+
         .input-group input {
             width: 100%;
             padding: 12px;
@@ -122,6 +137,7 @@
             border-radius: 12px;
             font-size: 15px;
         }
+
         .modal-btn {
             width: 100%;
             background: #e74c3c;
@@ -132,6 +148,7 @@
             font-weight: 600;
             cursor: pointer;
         }
+
         .message {
             margin-top: 16px;
             padding: 8px;
@@ -139,24 +156,37 @@
             font-size: 13px;
             text-align: center;
         }
-        .error { background: #fee2e2; color: #b91c1c; }
-        .success { background: #dcfce7; color: #166534; }
-        /* 洛谷风格卡片内容 */
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
         .grid-2 {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
         }
+
         .sidebar {
             flex: 1;
         }
+
         .main-content {
             flex: 2;
         }
-        .contest-item, .discuss-item {
+
+        .contest-item,
+        .discuss-item {
             padding: 12px 0;
             border-bottom: 1px solid #edf2f7;
         }
+
         .badge {
             background: #f0f2f5;
             padding: 2px 10px;
@@ -164,131 +194,133 @@
             font-size: 12px;
             color: #2c3e50;
         }
+
         footer {
             text-align: center;
             padding: 24px;
             color: #7f8c8d;
             font-size: 13px;
         }
+
         a {
             text-decoration: none;
             color: #e74c3c;
         }
+
         a:hover {
             text-decoration: underline;
         }
     </style>
-    <!-- Supabase SDK -->
+    <!-- Supabase SDK（只加载一次） -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
-<div class="topbar">
-    <div class="logo">✨ Jason227</div>
-    <button id="authBtn" class="auth-btn">登录</button>
-</div>
-
-<div class="container">
-    <!-- 欢迎卡片 -->
-    <div class="card" id="welcomeCard">
-        <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
-        <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
+    <div class="topbar">
+        <div class="logo">✨ Jason227</div>
+        <button id="authBtn" class="auth-btn">登录</button>
     </div>
 
-    <div class="grid-2">
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-            <div class="card">
-                <div class="card-header">📢 本站公告</div>
-                <ul style="list-style: none;">
-                    <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
-                    <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
-                    <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
-                </ul>
+    <div class="container">
+        <div class="card" id="welcomeCard">
+            <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
+            <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
+        </div>
+
+        <div class="grid-2">
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">📢 本站公告</div>
+                    <ul style="list-style: none;">
+                        <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
+                        <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
+                        <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header">🔗 友情链接</div>
+                    <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a
+                            href="javascript:void(0)">HydroOJ</a></p>
+                </div>
             </div>
-            <div class="card">
-                <div class="card-header">🔗 友情链接</div>
-                <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a href="javascript:void(0)">HydroOJ</a></p>
+            <div class="main-content">
+                <div class="card">
+                    <div class="card-header">🏆 近期比赛</div>
+                    <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
+                    <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">💬 最近讨论</div>
+                    <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span
+                            class="badge">10回复</span></div>
+                    <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 主内容区 -->
-        <div class="main-content">
-            <div class="card">
-                <div class="card-header">🏆 近期比赛</div>
-                <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
-                <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
+        <div class="card" id="fortuneCard">
+            <!-- 动态内容由js填充 -->
+        </div>
+        <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="tabs">
+                <div class="tab active" data-tab="login">登录</div>
+                <div class="tab" data-tab="register">注册</div>
             </div>
-            <div class="card">
-                <div class="card-header">💬 最近讨论</div>
-                <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span class="badge">10回复</span></div>
-                <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span></div>
+            <div id="loginPanel" class="form-panel active">
+                <div class="input-group"><input type="email" id="loginEmail" placeholder="邮箱"></div>
+                <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"></div>
+                <button id="doLogin" class="modal-btn">登录</button>
+                <div id="loginMsg" class="message"></div>
+            </div>
+            <div id="registerPanel" class="form-panel">
+                <div class="input-group"><input type="email" id="regEmail" placeholder="邮箱"></div>
+                <div class="input-group"><input type="password" id="regPassword" placeholder="密码（至少6位）"></div>
+                <button id="doRegister" class="modal-btn">注册</button>
+                <div id="regMsg" class="message"></div>
             </div>
         </div>
     </div>
 
-    <!-- 运势卡片（动态内容） -->
-    <div class="card" id="fortuneCard">
-        <!-- 内容由 js 动态渲染 -->
-    </div>
-    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
-</div>
+    <script>
+        // 确保 Supabase 只初始化一次
+        if (!window._supabaseInitialized) {
+            window._supabaseInitialized = true;
+            window.supabaseClient = window.supabase.createClient(
+                'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+            );
+        }
+        const supabase = window.supabaseClient;
 
-<!-- 模态框（登录/注册） -->
-<div id="authModal" class="modal">
-    <div class="modal-content">
-        <div class="tabs">
-            <div class="tab active" data-tab="login">登录</div>
-            <div class="tab" data-tab="register">注册</div>
-        </div>
-        <div id="loginPanel" class="form-panel active">
-            <div class="input-group"><input type="email" id="loginEmail" placeholder="邮箱"></div>
-            <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"></div>
-            <button id="doLogin" class="modal-btn">登录</button>
-            <div id="loginMsg" class="message"></div>
-        </div>
-        <div id="registerPanel" class="form-panel">
-            <div class="input-group"><input type="email" id="regEmail" placeholder="邮箱"></div>
-            <div class="input-group"><input type="password" id="regPassword" placeholder="密码（至少6位）"></div>
-            <button id="doRegister" class="modal-btn">注册</button>
-            <div id="regMsg" class="message"></div>
-        </div>
-    </div>
-</div>
+        // DOM 元素
+        const authBtn = document.getElementById('authBtn');
+        const authModal = document.getElementById('authModal');
+        const welcomeTitle = document.getElementById('welcomeTitle');
+        const welcomeDesc = document.getElementById('welcomeDesc');
+        const fortuneCard = document.getElementById('fortuneCard');
 
-<script>
-    // ==================== Supabase 配置（请替换成您自己的） ====================
-    const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-    // =========================================================================
+        function showModalMsg(containerId, msg, isError = true) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `<div class="message ${isError ? 'error' : 'success'}">${msg}</div>`;
+            setTimeout(() => { if (container) container.innerHTML = ''; }, 4000);
+        }
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // DOM 元素
-    const authBtn = document.getElementById('authBtn');
-    const authModal = document.getElementById('authModal');
-    const welcomeTitle = document.getElementById('welcomeTitle');
-    const welcomeDesc = document.getElementById('welcomeDesc');
-    const fortuneCard = document.getElementById('fortuneCard');
-
-    // 辅助函数：显示模态框消息
-    function showModalMsg(containerId, msg, isError = true) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = `<div class="message ${isError ? 'error' : 'success'}">${msg}</div>`;
-        setTimeout(() => { container.innerHTML = ''; }, 4000);
-    }
-
-    // 更新页面 UI（根据登录状态）
-    async function updateUI() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            // 登录状态
-            authBtn.textContent = '登出';
-            authBtn.classList.add('logout');
-            welcomeTitle.innerHTML = `👋 欢迎回来，${session.user.email}`;
-            welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
-            fortuneCard.innerHTML = `
+        async function updateUI() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                authBtn.textContent = '登出';
+                authBtn.classList.add('logout');
+                welcomeTitle.innerHTML = `👋 欢迎回来，${session.user.email}`;
+                welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
+                fortuneCard.innerHTML = `
                 <div class="card-header">🧧 你的运势</div>
                 <div style="text-align:center">
                     <span style="font-size:2rem;">中吉</span>
@@ -296,13 +328,12 @@
                     <p>连续打卡 <strong>228</strong> 天</p>
                 </div>
             `;
-        } else {
-            // 未登录状态
-            authBtn.textContent = '登录';
-            authBtn.classList.remove('logout');
-            welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
-            welcomeDesc.innerHTML = '请点击右上角“登录”按钮，解锁更多个性化功能～';
-            fortuneCard.innerHTML = `
+            } else {
+                authBtn.textContent = '登录';
+                authBtn.classList.remove('logout');
+                welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
+                welcomeDesc.innerHTML = '请点击右上角“登录”按钮，解锁更多个性化功能～';
+                fortuneCard.innerHTML = `
                 <div class="card-header">📅 今日日历</div>
                 <div style="text-align:center">
                     <span style="font-size:1.8rem;">5月31日</span>
@@ -311,101 +342,93 @@
                     <p><a href="javascript:void(0)" id="openLoginTip">👉 登录后查看专属运势</a></p>
                 </div>
             `;
-            const openLoginTip = document.getElementById('openLoginTip');
-            if (openLoginTip) openLoginTip.addEventListener('click', (e) => {
-                e.preventDefault();
-                authModal.style.display = 'flex';
-            });
-        }
-    }
-
-    // 注册
-    async function handleRegister() {
-        const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
-        if (!email || !password) return showModalMsg('regMsg', '请填写邮箱和密码');
-        if (password.length < 6) return showModalMsg('regMsg', '密码长度至少6位');
-        const btn = document.getElementById('doRegister');
-        btn.disabled = true;
-        btn.textContent = '注册中...';
-        const { error } = await supabase.auth.signUp({ email, password });
-        btn.disabled = false;
-        btn.textContent = '注册';
-        if (error) {
-            showModalMsg('regMsg', error.message);
-        } else {
-            showModalMsg('regMsg', '注册成功！请登录', false);
-            document.getElementById('regEmail').value = '';
-            document.getElementById('regPassword').value = '';
-            // 自动切换到登录标签
-            document.querySelector('.tab[data-tab="login"]').click();
-        }
-    }
-
-    // 登录
-    async function handleLogin() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        if (!email || !password) return showModalMsg('loginMsg', '请填写邮箱和密码');
-        const btn = document.getElementById('doLogin');
-        btn.disabled = true;
-        btn.textContent = '登录中...';
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        btn.disabled = false;
-        btn.textContent = '登录';
-        if (error) {
-            showModalMsg('loginMsg', error.message);
-        } else {
-            showModalMsg('loginMsg', '登录成功！', false);
-            setTimeout(() => {
-                authModal.style.display = 'none';
-                updateUI();
-                document.getElementById('loginPassword').value = '';
-            }, 1000);
-        }
-    }
-
-    // 登出
-    async function handleAuthClick() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            await supabase.auth.signOut();
-            updateUI();
-        } else {
-            authModal.style.display = 'flex';
-        }
-    }
-
-    // 模态框标签切换
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const target = tab.getAttribute('data-tab');
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            if (target === 'login') {
-                document.getElementById('loginPanel').classList.add('active');
-                document.getElementById('registerPanel').classList.remove('active');
-            } else {
-                document.getElementById('registerPanel').classList.add('active');
-                document.getElementById('loginPanel').classList.remove('active');
+                const openLoginTip = document.getElementById('openLoginTip');
+                if (openLoginTip) openLoginTip.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    authModal.style.display = 'flex';
+                });
             }
-            document.getElementById('loginMsg').innerHTML = '';
-            document.getElementById('regMsg').innerHTML = '';
+        }
+
+        async function handleRegister() {
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            if (!email || !password) return showModalMsg('regMsg', '请填写邮箱和密码');
+            if (password.length < 6) return showModalMsg('regMsg', '密码长度至少6位');
+            const btn = document.getElementById('doRegister');
+            btn.disabled = true;
+            btn.textContent = '注册中...';
+            const { error } = await supabase.auth.signUp({ email, password });
+            btn.disabled = false;
+            btn.textContent = '注册';
+            if (error) showModalMsg('regMsg', error.message);
+            else {
+                showModalMsg('regMsg', '注册成功！请登录', false);
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPassword').value = '';
+                document.querySelector('.tab[data-tab="login"]').click();
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!email || !password) return showModalMsg('loginMsg', '请填写邮箱和密码');
+            const btn = document.getElementById('doLogin');
+            btn.disabled = true;
+            btn.textContent = '登录中...';
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            btn.disabled = false;
+            btn.textContent = '登录';
+            if (error) showModalMsg('loginMsg', error.message);
+            else {
+                showModalMsg('loginMsg', '登录成功！', false);
+                setTimeout(() => {
+                    authModal.style.display = 'none';
+                    updateUI();
+                    document.getElementById('loginPassword').value = '';
+                }, 1000);
+            }
+        }
+
+        async function handleAuthClick() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                await supabase.auth.signOut();
+                updateUI();
+            } else {
+                authModal.style.display = 'flex';
+            }
+        }
+
+        // 绑定标签切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (target === 'login') {
+                    document.getElementById('loginPanel').classList.add('active');
+                    document.getElementById('registerPanel').classList.remove('active');
+                } else {
+                    document.getElementById('registerPanel').classList.add('active');
+                    document.getElementById('loginPanel').classList.remove('active');
+                }
+                document.getElementById('loginMsg').innerHTML = '';
+                document.getElementById('regMsg').innerHTML = '';
+            });
         });
-    });
 
-    // 点击模态框背景关闭
-    authModal.addEventListener('click', (e) => {
-        if (e.target === authModal) authModal.style.display = 'none';
-    });
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) authModal.style.display = 'none';
+        });
 
-    // 绑定事件
-    authBtn.addEventListener('click', handleAuthClick);
-    document.getElementById('doLogin').addEventListener('click', handleLogin);
-    document.getElementById('doRegister').addEventListener('click', handleRegister);
+        authBtn.addEventListener('click', handleAuthClick);
+        document.getElementById('doLogin').addEventListener('click', handleLogin);
+        document.getElementById('doRegister').addEventListener('click', handleRegister);
 
-    // 初始化
-    updateUI();
-</script>
+        updateUI();
+    </script>
 </body>
+
 </html>
