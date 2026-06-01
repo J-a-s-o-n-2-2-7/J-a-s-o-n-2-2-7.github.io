@@ -50,7 +50,6 @@
             padding: 6px 20px;
             font-size: 14px;
             cursor: pointer;
-            transition: 0.2s;
             text-decoration: none;
             display: inline-block;
         }
@@ -60,12 +59,12 @@
         }
 
         .user-email {
-            margin-right: 12px;
+            margin-right: 8px;
             font-size: 14px;
             color: #2c3e50;
         }
 
-        /* 左侧导航栏样式（绝对定位覆盖） */
+        /* 三列布局 */
         .main-layout {
             max-width: 1400px;
             margin: 20px auto;
@@ -242,11 +241,12 @@
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
         <div class="auth-buttons" id="authButtons">
-            <!-- 未登录时显示登录和注册按钮，登录后会被替换 -->
+            <!-- 动态内容由 js 填充 -->
         </div>
     </div>
 
     <div class="main-layout">
+        <!-- 左侧导航栏 -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -256,7 +256,6 @@
             <div class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">评测记录</span></div>
             <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-text">讨论区</span></div>
             <div class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">文章广场</span></div>
-
             <div class="group-title"><span class="nav-icon">➕</span><span class="nav-text">更多功能</span></div>
             <div class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-text">图片上传</span></div>
             <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">云剪贴板</span></div>
@@ -265,9 +264,7 @@
             <div class="nav-item"><span class="nav-icon">📈</span><span class="nav-text">等级分排名</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">洛谷有题</span></div>
             <div class="nav-item"><span class="nav-icon">📩</span><span class="nav-text">工单/反馈</span></div>
-
             <div class="divider"></div>
-
             <div class="group-title"><span class="nav-icon">🔗</span><span class="nav-text">相关链接</span></div>
             <div class="nav-item"><span class="nav-icon">❓</span><span class="nav-text">帮助中心</span></div>
             <div class="nav-item"><span class="nav-icon">📧</span><span class="nav-text">联系我们</span></div>
@@ -296,6 +293,7 @@
                 </div>
                 <div class="card" id="fortuneCard"></div>
             </div>
+
             <div class="right-sidebar">
                 <div class="card">
                     <div class="card-header">📢 本站公告</div>
@@ -323,7 +321,7 @@
                 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
             );
         })();
-        const sb = window.__MY_SUPABASE_CLIENT;
+        const supabase = window.__MY_SUPABASE_CLIENT;
 
         const authButtons = document.getElementById('authButtons');
         const welcomeTitle = document.getElementById('welcomeTitle');
@@ -331,17 +329,34 @@
         const fortuneCard = document.getElementById('fortuneCard');
 
         async function updateUI() {
-            const { data: { session } } = await sb.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                // 已登录：显示用户邮箱 + 登出按钮
-                authButtons.innerHTML = `
-                <span class="user-email">${session.user.email}</span>
-                <button id="logoutBtn" class="auth-btn logout">登出</button>
-            `;
+                // 查询是否是管理员
+                let isAdmin = false;
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('is_admin')
+                    .eq('id', session.user.id)
+                    .single();
+                if (!error && profile) {
+                    isAdmin = profile.is_admin === true;
+                }
+
+                // 构建右上角区域
+                let html = `<span class="user-email">${session.user.email}</span>`;
+                if (isAdmin) {
+                    html += `<a href="/manage-users.html" class="auth-btn" style="background:#2c3e50; margin-left:8px;">管理</a>`;
+                }
+                html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                authButtons.innerHTML = html;
+
+                // 绑定登出事件
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    await sb.auth.signOut();
+                    await supabase.auth.signOut();
                     location.reload();
                 });
+
+                // 更新欢迎语和运势（示例）
                 welcomeTitle.innerHTML = `👋 欢迎回来，${session.user.email}`;
                 welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
                 fortuneCard.innerHTML = `
@@ -353,7 +368,7 @@
                 </div>
             `;
             } else {
-                // 未登录：显示登录和注册按钮
+                // 未登录
                 authButtons.innerHTML = `
                 <a href="/login" class="auth-btn">登录</a>
                 <a href="/register" class="auth-btn">注册</a>
@@ -363,7 +378,7 @@
                 fortuneCard.innerHTML = `
                 <div class="card-header">📅 今日日历</div>
                 <div style="text-align:center">
-                    <span style="font-size:1.8rem;">5月31日</span>
+                    <span style="font-size:1.8rem;">6月1日</span>
                     <p>星期日</p>
                     <p>距 CSP-J/S 2026 第一轮还剩 110 天</p>
                     <p><a href="/login">👉 登录后查看专属运势</a></p>
