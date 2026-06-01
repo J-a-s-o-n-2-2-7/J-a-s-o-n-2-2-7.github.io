@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jason227 · 算法竞赛社区</title>
     <style>
-        /* 所有样式与之前完全相同，此处省略以节省篇幅 */
-        /* 你可以直接复制之前的完整样式，下面只保留关键改动 */
         * {
             margin: 0;
             padding: 0;
@@ -16,7 +14,7 @@
 
         body {
             background: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
         }
 
@@ -38,6 +36,12 @@
             color: #e74c3c;
         }
 
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
         .auth-btn {
             background: #e74c3c;
             color: white;
@@ -55,8 +59,181 @@
             background: #7f8c8d;
         }
 
-        /* 其余样式（导航栏、卡片等）与之前完全相同，请自行复制，此处从略 */
-        /* 为了代码完整，建议你从之前的 index.html 中复制样式部分过来 */
+        .user-email {
+            margin-right: 12px;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        /* 左侧导航栏样式（绝对定位覆盖） */
+        .main-layout {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .nav-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 64px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 16px 0;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 150;
+        }
+
+        .nav-sidebar:hover {
+            width: 260px;
+        }
+
+        .nav-item,
+        .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover,
+        .group-title:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .group-title {
+            font-weight: 600;
+            color: #5b6e8c;
+            background: #f8f9fc;
+            border-top: 1px solid #e9ecef;
+            margin-top: 8px;
+        }
+
+        .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 8px 0;
+        }
+
+        .content-wrapper {
+            margin-left: 64px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .main-content {
+            flex: 2;
+            min-width: 260px;
+        }
+
+        .right-sidebar {
+            width: 280px;
+            align-self: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        .contest-item,
+        .discuss-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .badge {
+            background: #f0f2f5;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #2c3e50;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #e74c3c;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                position: static;
+            }
+
+            .nav-sidebar {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .nav-sidebar:hover {
+                width: 100%;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+            }
+
+            .nav-text {
+                opacity: 1;
+            }
+
+            .right-sidebar {
+                width: 100%;
+            }
+        }
     </style>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
@@ -64,37 +241,137 @@
 <body>
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
-        <div>
-            <span id="userStatus" style="margin-right: 12px;"></span>
-            <a href="/login" id="authBtn" class="auth-btn">登录</a>
+        <div class="auth-buttons" id="authButtons">
+            <!-- 未登录时显示登录和注册按钮，登录后会被替换 -->
         </div>
     </div>
-    <!-- 其余页面内容（左侧导航、主内容、右侧栏）与之前相同，此处省略 -->
-    <script>
-        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const userStatusSpan = document.getElementById('userStatus');
-        const authBtn = document.getElementById('authBtn');
+    <div class="main-layout">
+        <div class="nav-sidebar">
+            <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
+            <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
+            <div class="nav-item"><span class="nav-icon">🎓</span><span class="nav-text">网校</span></div>
+            <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">训练题单</span></div>
+            <div class="nav-item"><span class="nav-icon">🏆</span><span class="nav-text">比赛</span></div>
+            <div class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">评测记录</span></div>
+            <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-text">讨论区</span></div>
+            <div class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">文章广场</span></div>
+
+            <div class="group-title"><span class="nav-icon">➕</span><span class="nav-text">更多功能</span></div>
+            <div class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-text">图片上传</span></div>
+            <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">云剪贴板</span></div>
+            <div class="nav-item"><span class="nav-icon">🎨</span><span class="nav-text">主题商店</span></div>
+            <div class="nav-item"><span class="nav-icon">🏅</span><span class="nav-text">咕值排名</span></div>
+            <div class="nav-item"><span class="nav-icon">📈</span><span class="nav-text">等级分排名</span></div>
+            <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">洛谷有题</span></div>
+            <div class="nav-item"><span class="nav-icon">📩</span><span class="nav-text">工单/反馈</span></div>
+
+            <div class="divider"></div>
+
+            <div class="group-title"><span class="nav-icon">🔗</span><span class="nav-text">相关链接</span></div>
+            <div class="nav-item"><span class="nav-icon">❓</span><span class="nav-text">帮助中心</span></div>
+            <div class="nav-item"><span class="nav-icon">📧</span><span class="nav-text">联系我们</span></div>
+            <div class="nav-item"><span class="nav-icon">📜</span><span class="nav-text">社区规则</span></div>
+            <div class="nav-item"><span class="nav-icon">🗳️</span><span class="nav-text">陶片放逐</span></div>
+            <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="card" id="welcomeCard">
+                    <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
+                    <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">🏆 近期比赛</div>
+                    <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
+                    <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">💬 最近讨论</div>
+                    <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span
+                            class="badge">10回复</span></div>
+                    <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span>
+                    </div>
+                </div>
+                <div class="card" id="fortuneCard"></div>
+            </div>
+            <div class="right-sidebar">
+                <div class="card">
+                    <div class="card-header">📢 本站公告</div>
+                    <ul style="list-style: none;">
+                        <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
+                        <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
+                        <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header">🔗 友情链接</div>
+                    <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a
+                            href="javascript:void(0)">HydroOJ</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
+
+    <script>
+        (function () {
+            if (window.__MY_SUPABASE_CLIENT) return;
+            window.__MY_SUPABASE_CLIENT = window.supabase.createClient(
+                'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+            );
+        })();
+        const sb = window.__MY_SUPABASE_CLIENT;
+
+        const authButtons = document.getElementById('authButtons');
+        const welcomeTitle = document.getElementById('welcomeTitle');
+        const welcomeDesc = document.getElementById('welcomeDesc');
+        const fortuneCard = document.getElementById('fortuneCard');
 
         async function updateUI() {
             const { data: { session } } = await sb.auth.getSession();
             if (session) {
-                userStatusSpan.innerHTML = `欢迎，${session.user.email} | `;
-                authBtn.textContent = '登出';
-                authBtn.href = 'javascript:void(0)';
-                authBtn.onclick = async () => {
+                // 已登录：显示用户邮箱 + 登出按钮
+                authButtons.innerHTML = `
+                <span class="user-email">${session.user.email}</span>
+                <button id="logoutBtn" class="auth-btn logout">登出</button>
+            `;
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
                     await sb.auth.signOut();
                     location.reload();
-                };
+                });
+                welcomeTitle.innerHTML = `👋 欢迎回来，${session.user.email}`;
+                welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
+                fortuneCard.innerHTML = `
+                <div class="card-header">🧧 你的运势</div>
+                <div style="text-align:center">
+                    <span style="font-size:2rem;">中吉</span>
+                    <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
+                    <p>连续打卡 <strong>228</strong> 天</p>
+                </div>
+            `;
             } else {
-                userStatusSpan.innerHTML = '';
-                authBtn.textContent = '登录';
-                authBtn.href = '/login';
-                authBtn.onclick = null;
+                // 未登录：显示登录和注册按钮
+                authButtons.innerHTML = `
+                <a href="/login" class="auth-btn">登录</a>
+                <a href="/register" class="auth-btn">注册</a>
+            `;
+                welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
+                welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
+                fortuneCard.innerHTML = `
+                <div class="card-header">📅 今日日历</div>
+                <div style="text-align:center">
+                    <span style="font-size:1.8rem;">5月31日</span>
+                    <p>星期日</p>
+                    <p>距 CSP-J/S 2026 第一轮还剩 110 天</p>
+                    <p><a href="/login">👉 登录后查看专属运势</a></p>
+                </div>
+            `;
             }
         }
+
         updateUI();
     </script>
 </body>
