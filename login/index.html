@@ -15,36 +15,36 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .login-card {
             background: white;
             width: 400px;
             max-width: 90%;
-            border-radius: 32px;
-            padding: 40px 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         h1 {
+            font-size: 28px;
             text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: #e74c3c;
             margin-bottom: 8px;
         }
 
         .sub {
             text-align: center;
-            color: #6b7280;
-            margin-bottom: 32px;
+            color: #5b6e8c;
+            margin-bottom: 28px;
+            font-size: 14px;
         }
 
         .input-group {
@@ -55,19 +55,22 @@
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #d1d5db;
-            border-radius: 16px;
+            border-radius: 12px;
             font-size: 15px;
+            background: #f9fafb;
         }
 
         .input-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: white;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #e74c3c;
             border: none;
             border-radius: 40px;
             color: white;
@@ -76,8 +79,13 @@
             cursor: pointer;
         }
 
+        button:hover {
+            background: #c0392b;
+        }
+
         button:disabled {
             opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .message {
@@ -105,8 +113,34 @@
         }
 
         .footer-links a {
-            color: #667eea;
+            color: #e74c3c;
             text-decoration: none;
+        }
+
+        .captcha-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .captcha-row input {
+            flex: 1;
+        }
+
+        .captcha-row canvas {
+            cursor: pointer;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            width: 120px;
+            height: 44px;
+        }
+
+        .captcha-hint {
+            font-size: 12px;
+            color: #6c7a8e;
+            margin-top: 4px;
+            text-align: right;
         }
 
         .turnstile-wrapper {
@@ -120,45 +154,149 @@
 <body>
     <div class="login-card">
         <h1>欢迎回来</h1>
-        <div class="sub">登录以访问更多内容</div>
-        <div class="input-group"><input type="email" id="loginEmail" placeholder="邮箱" autocomplete="email"></div>
-        <div class="input-group"><input type="password" id="loginPassword" placeholder="密码"
-                autocomplete="current-password"></div>
+        <div class="sub">使用用户名或邮箱登录</div>
+        <div class="input-group">
+            <input type="text" id="loginIdentifier" placeholder="用户名 / 邮箱" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <input type="password" id="loginPassword" placeholder="密码" autocomplete="current-password">
+        </div>
+        <div class="input-group">
+            <div class="captcha-row">
+                <input type="text" id="captchaInput" placeholder="验证码" autocomplete="off" maxlength="6">
+                <canvas id="captchaCanvas" width="120" height="44"></canvas>
+            </div>
+            <div class="captcha-hint">点击图片刷新验证码</div>
+        </div>
         <div class="turnstile-wrapper">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
         </div>
         <button id="loginBtn">登录</button>
         <div id="loginMsg" class="message"></div>
-        <div class="footer-links">还没有账号？ <a href="/register">立即注册</a></div>
+        <div class="footer-links">
+            还没有账号？ <a href="/register">立即注册</a>
+        </div>
     </div>
     <script>
         const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ========== 图形验证码（与能工作的版本完全一致） ==========
+        let currentCaptcha = '';
+        const canvas = document.getElementById('captchaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function generateCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+            let captcha = '';
+            for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
+            currentCaptcha = captcha;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f9fafb';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 干扰线
+            for (let i = 0; i < 6; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
+                ctx.stroke();
+            }
+            // 噪点
+            for (let i = 0; i < 60; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+            }
+            // 文字
+            for (let i = 0; i < captcha.length; i++) {
+                ctx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
+                ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
+                const x = 12 + i * 20 + Math.random() * 6;
+                const y = 30 + Math.random() * 8;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(captcha[i], 0, 0);
+                ctx.restore();
+            }
+        }
+
+        canvas.addEventListener('click', generateCaptcha);
+        generateCaptcha();  // 立即生成验证码
+
+        // ========== 辅助函数：根据用户名获取邮箱 ==========
+        async function getEmailByIdentifier(identifier) {
+            if (identifier.includes('@')) return identifier;
+            const { data, error } = await sb
+                .from('profiles')
+                .select('email')
+                .eq('username', identifier)
+                .maybeSingle();
+            if (error || !data) return null;
+            return data.email;
+        }
+
+        // ========== 登录逻辑 ==========
         const loginBtn = document.getElementById('loginBtn');
         const loginMsg = document.getElementById('loginMsg');
 
-        (async () => {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) window.location.href = '/';
-        })();
-
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
+            const identifier = document.getElementById('loginIdentifier').value.trim();
             const password = document.getElementById('loginPassword').value;
-            if (!email || !password) { loginMsg.innerHTML = '<div class="message error">请填写邮箱和密码</div>'; return; }
+            const userCaptcha = document.getElementById('captchaInput').value.trim();
+
+            if (!identifier || !password) {
+                loginMsg.innerHTML = '<div class="message error">请填写账号和密码</div>';
+                return;
+            }
+            if (!userCaptcha) {
+                loginMsg.innerHTML = '<div class="message error">请输入验证码</div>';
+                return;
+            }
+            if (userCaptcha !== currentCaptcha) {
+                loginMsg.innerHTML = '<div class="message error">验证码错误</div>';
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
+                return;
+            }
+
             const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-            if (!captchaToken) { loginMsg.innerHTML = '<div class="message error">请完成验证码验证</div>'; return; }
-            loginBtn.disabled = true; loginBtn.textContent = '登录中...';
-            const { error } = await sb.auth.signInWithPassword({ email, password, options: { captchaToken } });
-            loginBtn.disabled = false; loginBtn.textContent = '登录';
-            if (error) loginMsg.innerHTML = `<div class="message error">${error.message}</div>`;
-            else {
+            if (!captchaToken) {
+                loginMsg.innerHTML = '<div class="message error">请完成安全验证</div>';
+                return;
+            }
+
+            const email = await getEmailByIdentifier(identifier);
+            if (!email) {
+                loginMsg.innerHTML = '<div class="message error">用户不存在</div>';
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = '登录中...';
+            const { error } = await sb.auth.signInWithPassword({
+                email,
+                password,
+                options: { captchaToken }
+            });
+            loginBtn.disabled = false;
+            loginBtn.textContent = '登录';
+
+            if (error) {
+                loginMsg.innerHTML = `<div class="message error">${error.message}</div>`;
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
+            } else {
                 loginMsg.innerHTML = '<div class="message success">登录成功！正在跳转...</div>';
-                setTimeout(() => { window.location.href = '/'; }, 1500);
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
             }
         }
+
         loginBtn.addEventListener('click', handleLogin);
     </script>
 </body>

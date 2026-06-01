@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
-        /* 样式与 login.html 相同，可复用，此处略写 */
         * {
             margin: 0;
             padding: 0;
@@ -16,36 +15,36 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .register-card {
             background: white;
-            width: 400px;
+            width: 420px;
             max-width: 90%;
-            border-radius: 32px;
-            padding: 40px 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         h1 {
             font-size: 28px;
             text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: #e74c3c;
+            margin-bottom: 8px;
         }
 
         .sub {
             text-align: center;
-            color: #6b7280;
-            margin-bottom: 32px;
+            color: #5b6e8c;
+            margin-bottom: 28px;
+            font-size: 14px;
         }
 
         .input-group {
@@ -56,19 +55,22 @@
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #d1d5db;
-            border-radius: 16px;
+            border-radius: 12px;
             font-size: 15px;
+            background: #f9fafb;
         }
 
         .input-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: white;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #e74c3c;
             border: none;
             border-radius: 40px;
             color: white;
@@ -77,8 +79,13 @@
             cursor: pointer;
         }
 
+        button:hover {
+            background: #c0392b;
+        }
+
         button:disabled {
             opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .message {
@@ -106,14 +113,44 @@
         }
 
         .footer-links a {
-            color: #667eea;
+            color: #e74c3c;
             text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
         }
 
         .turnstile-wrapper {
             margin: 20px 0;
             display: flex;
             justify-content: center;
+        }
+
+        .captcha-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .captcha-row input {
+            flex: 1;
+        }
+
+        .captcha-row canvas {
+            cursor: pointer;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            width: 120px;
+            height: 44px;
+        }
+
+        .captcha-hint {
+            font-size: 12px;
+            color: #6c7a8e;
+            margin-top: 4px;
+            text-align: right;
         }
     </style>
 </head>
@@ -122,11 +159,22 @@
     <div class="register-card">
         <h1>创建新账号</h1>
         <div class="sub">加入 Jason227 社区</div>
+        <!-- 新增用户名输入框 -->
+        <div class="input-group">
+            <input type="text" id="regUsername" placeholder="用户名 (6-16位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
+        </div>
         <div class="input-group">
             <input type="email" id="regEmail" placeholder="邮箱" autocomplete="email">
         </div>
         <div class="input-group">
             <input type="password" id="regPassword" placeholder="密码（至少6位）" autocomplete="new-password">
+        </div>
+        <div class="input-group">
+            <div class="captcha-row">
+                <input type="text" id="captchaInput" placeholder="验证码" autocomplete="off" maxlength="6">
+                <canvas id="captchaCanvas" width="120" height="44"></canvas>
+            </div>
+            <div class="captcha-hint">点击图片刷新验证码</div>
         </div>
         <div class="turnstile-wrapper">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
@@ -134,48 +182,167 @@
         <button id="registerBtn">注册</button>
         <div id="regMsg" class="message"></div>
         <div class="footer-links">
-            已有账号？ <a href="login">立即登录</a>
+            已有账号？ <a href="/login">立即登录</a>
         </div>
     </div>
-
     <script>
         const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ========== 图形验证码（与能工作的版本完全一致） ==========
+        let currentCaptcha = '';
+        const canvas = document.getElementById('captchaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function generateCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+            let captcha = '';
+            for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
+            currentCaptcha = captcha;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f9fafb';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 干扰线
+            for (let i = 0; i < 6; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
+                ctx.stroke();
+            }
+            // 噪点
+            for (let i = 0; i < 60; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+            }
+            // 文字
+            for (let i = 0; i < captcha.length; i++) {
+                ctx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
+                ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
+                const x = 12 + i * 20 + Math.random() * 6;
+                const y = 30 + Math.random() * 8;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(captcha[i], 0, 0);
+                ctx.restore();
+            }
+        }
+
+        canvas.addEventListener('click', generateCaptcha);
+        generateCaptcha();  // 立即生成验证码
+
+        // ========== 用户名辅助函数 ==========
+        function isValidUsername(username) {
+            const re = /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/;
+            return re.test(username);
+        }
+
+        async function isUsernameUnique(username) {
+            const { data, error } = await sb
+                .from('profiles')
+                .select('username')
+                .eq('username', username)
+                .maybeSingle();
+            if (error && error.code !== 'PGRST116') {
+                console.error(error);
+                return false;
+            }
+            return !data;
+        }
+
+        // ========== 注册逻辑 ==========
         const registerBtn = document.getElementById('registerBtn');
         const regMsg = document.getElementById('regMsg');
 
         async function handleRegister() {
+            const username = document.getElementById('regUsername').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
-            if (!email || !password) {
-                regMsg.innerHTML = '<div class="message error">请填写邮箱和密码</div>';
+            const userCaptcha = document.getElementById('captchaInput').value.trim();
+
+            if (!username || !email || !password) {
+                regMsg.innerHTML = '<div class="message error">请填写所有字段</div>';
+                return;
+            }
+            if (!isValidUsername(username)) {
+                regMsg.innerHTML = '<div class="message error">用户名格式：6-16位字母/数字/下划线，不能以数字开头</div>';
                 return;
             }
             if (password.length < 6) {
                 regMsg.innerHTML = '<div class="message error">密码长度至少6位</div>';
                 return;
             }
-            const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-            if (!captchaToken) {
-                regMsg.innerHTML = '<div class="message error">请完成验证码验证</div>';
+            if (!userCaptcha) {
+                regMsg.innerHTML = '<div class="message error">请输入图形验证码</div>';
                 return;
             }
+            if (userCaptcha !== currentCaptcha) {
+                regMsg.innerHTML = '<div class="message error">图形验证码错误</div>';
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
+                return;
+            }
+
+            const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+            if (!captchaToken) {
+                regMsg.innerHTML = '<div class="message error">请完成安全验证</div>';
+                return;
+            }
+
+            // 检查用户名唯一性
+            const unique = await isUsernameUnique(username);
+            if (!unique) {
+                regMsg.innerHTML = '<div class="message error">用户名已被占用，请换一个</div>';
+                return;
+            }
+
             registerBtn.disabled = true;
             registerBtn.textContent = '注册中...';
-            const { error } = await sb.auth.signUp({ email, password, options: { captchaToken } });
-            registerBtn.disabled = false;
-            registerBtn.textContent = '注册';
-            if (error) {
-                regMsg.innerHTML = `<div class="message error">${error.message}</div>`;
-            } else {
-                regMsg.innerHTML = '<div class="message success">注册成功！请前往登录</div>';
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
+
+            const { data: authData, error: signUpError } = await sb.auth.signUp({
+                email,
+                password,
+                options: { captchaToken }
+            });
+
+            if (signUpError) {
+                regMsg.innerHTML = `<div class="message error">${signUpError.message}</div>`;
+                registerBtn.disabled = false;
+                registerBtn.textContent = '注册';
+                return;
             }
+
+            const userId = authData.user?.id;
+            if (!userId) {
+                regMsg.innerHTML = '<div class="message error">注册失败，请稍后重试</div>';
+                registerBtn.disabled = false;
+                registerBtn.textContent = '注册';
+                return;
+            }
+
+            // 插入 profiles 记录
+            const { error: profileError } = await sb
+                .from('profiles')
+                .insert([{ id: userId, username, email }]);
+
+            if (profileError) {
+                console.error(profileError);
+                regMsg.innerHTML = '<div class="message error">注册失败，用户名可能冲突，请重试</div>';
+                registerBtn.disabled = false;
+                registerBtn.textContent = '注册';
+                return;
+            }
+
+            regMsg.innerHTML = '<div class="message success">注册成功！请前往登录</div>';
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
         }
+
         registerBtn.addEventListener('click', handleRegister);
     </script>
 </body>
