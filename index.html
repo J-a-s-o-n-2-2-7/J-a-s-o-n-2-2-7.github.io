@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jason227 · 算法竞赛社区</title>
     <style>
-        /* ========== 洛谷风格样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -211,7 +210,6 @@
             text-decoration: underline;
         }
     </style>
-    <!-- Supabase SDK（只加载一次） -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 
@@ -227,7 +225,6 @@
             <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
             <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
         </div>
-
         <div class="grid-2">
             <div class="sidebar">
                 <div class="card">
@@ -259,14 +256,10 @@
                 </div>
             </div>
         </div>
-
-        <div class="card" id="fortuneCard">
-            <!-- 动态内容由js填充 -->
-        </div>
+        <div class="card" id="fortuneCard"></div>
         <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
     </div>
 
-    <!-- 模态框 -->
     <div id="authModal" class="modal">
         <div class="modal-content">
             <div class="tabs">
@@ -289,15 +282,16 @@
     </div>
 
     <script>
-        // 确保 Supabase 只初始化一次
-        if (!window._supabaseInitialized) {
-            window._supabaseInitialized = true;
-            window.supabaseClient = window.supabase.createClient(
+        // 全局唯一客户端，避免重复声明
+        (function () {
+            if (window.__MY_SUPABASE_CLIENT) return;
+            window.__MY_SUPABASE_CLIENT = window.supabase.createClient(
                 'https://nosikdfacxkuaxfrmoqn.supabase.co',
                 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
             );
-        }
-        const supabase = window.supabaseClient;
+        })();
+
+        const sb = window.__MY_SUPABASE_CLIENT;  // 使用短别名，但不会造成全局重复
 
         // DOM 元素
         const authBtn = document.getElementById('authBtn');
@@ -314,7 +308,7 @@
         }
 
         async function updateUI() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await sb.auth.getSession();
             if (session) {
                 authBtn.textContent = '登出';
                 authBtn.classList.add('logout');
@@ -358,7 +352,7 @@
             const btn = document.getElementById('doRegister');
             btn.disabled = true;
             btn.textContent = '注册中...';
-            const { error } = await supabase.auth.signUp({ email, password });
+            const { error } = await sb.auth.signUp({ email, password });
             btn.disabled = false;
             btn.textContent = '注册';
             if (error) showModalMsg('regMsg', error.message);
@@ -377,7 +371,7 @@
             const btn = document.getElementById('doLogin');
             btn.disabled = true;
             btn.textContent = '登录中...';
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await sb.auth.signInWithPassword({ email, password });
             btn.disabled = false;
             btn.textContent = '登录';
             if (error) showModalMsg('loginMsg', error.message);
@@ -392,16 +386,16 @@
         }
 
         async function handleAuthClick() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await sb.auth.getSession();
             if (session) {
-                await supabase.auth.signOut();
+                await sb.auth.signOut();
                 updateUI();
             } else {
                 authModal.style.display = 'flex';
             }
         }
 
-        // 绑定标签切换
+        // 标签切换
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const target = tab.getAttribute('data-tab');
@@ -419,6 +413,7 @@
             });
         });
 
+        // 点击模态框背景关闭
         authModal.addEventListener('click', (e) => {
             if (e.target === authModal) authModal.style.display = 'none';
         });
