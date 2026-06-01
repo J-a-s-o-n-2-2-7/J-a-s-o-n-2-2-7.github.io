@@ -159,7 +159,6 @@
     <div class="register-card">
         <h1>创建新账号</h1>
         <div class="sub">加入 Jason227 社区</div>
-        <!-- 新增用户名输入框 -->
         <div class="input-group">
             <input type="text" id="regUsername" placeholder="用户名 (6-16位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
         </div>
@@ -190,7 +189,7 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== 图形验证码（与能工作的版本完全一致） ==========
+        // ========== 图形验证码（大小写不敏感，统一为大写） ==========
         let currentCaptcha = '';
         const canvas = document.getElementById('captchaCanvas');
         const ctx = canvas.getContext('2d');
@@ -199,7 +198,8 @@
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
             let captcha = '';
             for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
-            currentCaptcha = captcha;
+            // 转为大写，实现大小写不敏感
+            currentCaptcha = captcha.toUpperCase();
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#f9fafb';
@@ -218,8 +218,8 @@
                 ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
                 ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
             }
-            // 文字
-            for (let i = 0; i < captcha.length; i++) {
+            // 绘制文字（显示大写字母）
+            for (let i = 0; i < currentCaptcha.length; i++) {
                 ctx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
                 ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
                 const x = 12 + i * 20 + Math.random() * 6;
@@ -227,15 +227,15 @@
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate((Math.random() - 0.5) * 0.4);
-                ctx.fillText(captcha[i], 0, 0);
+                ctx.fillText(currentCaptcha[i], 0, 0);
                 ctx.restore();
             }
         }
 
         canvas.addEventListener('click', generateCaptcha);
-        generateCaptcha();  // 立即生成验证码
+        generateCaptcha();
 
-        // ========== 用户名辅助函数 ==========
+        // 用户名辅助函数
         function isValidUsername(username) {
             const re = /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/;
             return re.test(username);
@@ -254,7 +254,6 @@
             return !data;
         }
 
-        // ========== 注册逻辑 ==========
         const registerBtn = document.getElementById('registerBtn');
         const regMsg = document.getElementById('regMsg');
 
@@ -280,7 +279,8 @@
                 regMsg.innerHTML = '<div class="message error">请输入图形验证码</div>';
                 return;
             }
-            if (userCaptcha !== currentCaptcha) {
+            // 大小写不敏感比较：将用户输入转为大写
+            if (userCaptcha.toUpperCase() !== currentCaptcha) {
                 regMsg.innerHTML = '<div class="message error">图形验证码错误</div>';
                 generateCaptcha();
                 document.getElementById('captchaInput').value = '';
@@ -293,7 +293,6 @@
                 return;
             }
 
-            // 检查用户名唯一性
             const unique = await isUsernameUnique(username);
             if (!unique) {
                 regMsg.innerHTML = '<div class="message error">用户名已被占用，请换一个</div>';
@@ -324,7 +323,6 @@
                 return;
             }
 
-            // 插入 profiles 记录
             const { error: profileError } = await sb
                 .from('profiles')
                 .insert([{ id: userId, username, email }]);

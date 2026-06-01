@@ -182,7 +182,7 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== 图形验证码（与能工作的版本完全一致） ==========
+        // ========== 图形验证码（大小写不敏感，统一为大写） ==========
         let currentCaptcha = '';
         const canvas = document.getElementById('captchaCanvas');
         const ctx = canvas.getContext('2d');
@@ -191,13 +191,12 @@
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
             let captcha = '';
             for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
-            currentCaptcha = captcha;
+            currentCaptcha = captcha.toUpperCase();
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#f9fafb';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 干扰线
             for (let i = 0; i < 6; i++) {
                 ctx.beginPath();
                 ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
@@ -205,13 +204,11 @@
                 ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
                 ctx.stroke();
             }
-            // 噪点
             for (let i = 0; i < 60; i++) {
                 ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
                 ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
             }
-            // 文字
-            for (let i = 0; i < captcha.length; i++) {
+            for (let i = 0; i < currentCaptcha.length; i++) {
                 ctx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
                 ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
                 const x = 12 + i * 20 + Math.random() * 6;
@@ -219,15 +216,15 @@
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate((Math.random() - 0.5) * 0.4);
-                ctx.fillText(captcha[i], 0, 0);
+                ctx.fillText(currentCaptcha[i], 0, 0);
                 ctx.restore();
             }
         }
 
         canvas.addEventListener('click', generateCaptcha);
-        generateCaptcha();  // 立即生成验证码
+        generateCaptcha();
 
-        // ========== 辅助函数：根据用户名获取邮箱 ==========
+        // 辅助函数：根据用户名获取邮箱
         async function getEmailByIdentifier(identifier) {
             if (identifier.includes('@')) return identifier;
             const { data, error } = await sb
@@ -239,7 +236,6 @@
             return data.email;
         }
 
-        // ========== 登录逻辑 ==========
         const loginBtn = document.getElementById('loginBtn');
         const loginMsg = document.getElementById('loginMsg');
 
@@ -256,7 +252,7 @@
                 loginMsg.innerHTML = '<div class="message error">请输入验证码</div>';
                 return;
             }
-            if (userCaptcha !== currentCaptcha) {
+            if (userCaptcha.toUpperCase() !== currentCaptcha) {
                 loginMsg.innerHTML = '<div class="message error">验证码错误</div>';
                 generateCaptcha();
                 document.getElementById('captchaInput').value = '';
