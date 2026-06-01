@@ -18,28 +18,7 @@
             line-height: 1.5;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 20px 24px;
-            margin-bottom: 24px;
-        }
-
-        .card-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            border-left: 4px solid #e74c3c;
-            padding-left: 12px;
-            margin-bottom: 20px;
-        }
-
+        /* 顶部栏 */
         .topbar {
             display: flex;
             justify-content: space-between;
@@ -73,6 +52,149 @@
             background: #7f8c8d;
         }
 
+        /* 三列布局 */
+        .main-layout {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* 左侧导航栏 */
+        .nav-sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 16px 0;
+            align-self: start;
+        }
+
+        .nav-section {
+            margin-bottom: 12px;
+        }
+
+        .nav-section-title {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #5b6e8c;
+            background: #f8f9fc;
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .nav-item {
+            padding: 8px 20px 8px 32px;
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-item:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        .nav-item .arrow {
+            color: #9aa9b9;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .sub-nav {
+            list-style: none;
+            padding-left: 48px;
+            display: none;
+        }
+
+        .sub-nav.show {
+            display: block;
+        }
+
+        .sub-nav li {
+            padding: 6px 0;
+            font-size: 13px;
+            color: #4a5b7a;
+            cursor: pointer;
+        }
+
+        .sub-nav li:hover {
+            color: #e74c3c;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 12px 20px;
+        }
+
+        /* 中间主内容 */
+        .main-content {
+            flex: 2;
+            min-width: 260px;
+        }
+
+        /* 右侧边栏 */
+        .right-sidebar {
+            width: 280px;
+            align-self: start;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        .contest-item,
+        .discuss-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .badge {
+            background: #f0f2f5;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #2c3e50;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #e74c3c;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* 模态框 */
         .modal {
             display: none;
             position: fixed;
@@ -166,48 +288,12 @@
             color: #166534;
         }
 
-        .grid-2 {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+        @media (max-width: 900px) {
 
-        .sidebar {
-            flex: 1;
-        }
-
-        .main-content {
-            flex: 2;
-        }
-
-        .contest-item,
-        .discuss-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #edf2f7;
-        }
-
-        .badge {
-            background: #f0f2f5;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #2c3e50;
-        }
-
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: #7f8c8d;
-            font-size: 13px;
-        }
-
-        a {
-            text-decoration: none;
-            color: #e74c3c;
-        }
-
-        a:hover {
-            text-decoration: underline;
+            .nav-sidebar,
+            .right-sidebar {
+                width: 100%;
+            }
         }
     </style>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -220,46 +306,94 @@
         <button id="authBtn" class="auth-btn">登录</button>
     </div>
 
-    <div class="container">
-        <div class="card" id="welcomeCard">
-            <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
-            <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
-        </div>
-        <div class="grid-2">
-            <div class="sidebar">
-                <div class="card">
-                    <div class="card-header">📢 本站公告</div>
-                    <ul style="list-style: none;">
-                        <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
-                        <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
-                        <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
-                    </ul>
+    <div class="main-layout">
+        <!-- 左侧导航栏（洛谷风格分组+折叠） -->
+        <div class="nav-sidebar">
+            <!-- 主功能区（无折叠） -->
+            <div class="nav-item">主页</div>
+            <div class="nav-item">题库</div>
+            <div class="nav-item">网校</div>
+            <div class="nav-item">训练题单</div>
+            <div class="nav-item">比赛</div>
+            <div class="nav-item">评测记录</div>
+            <div class="nav-item">讨论区</div>
+            <div class="nav-item">文章广场</div>
+
+            <!-- 更多功能（可折叠） -->
+            <div class="nav-section">
+                <div class="nav-item" id="moreFuncBtn">
+                    更多功能 <span class="arrow" id="moreArrow">▶</span>
                 </div>
-                <div class="card">
-                    <div class="card-header">🔗 友情链接</div>
-                    <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a
-                            href="javascript:void(0)">HydroOJ</a></p>
+                <ul class="sub-nav" id="moreSub">
+                    <li>图片上传</li>
+                    <li>云剪贴板</li>
+                    <li>主题商店</li>
+                    <li>咕值排名</li>
+                    <li>等级分排名</li>
+                    <li>洛谷有题</li>
+                    <li>工单/反馈</li>
+                </ul>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 相关链接（可折叠） -->
+            <div class="nav-section">
+                <div class="nav-item" id="linksBtn">
+                    相关链接 <span class="arrow" id="linksArrow">▼</span>
+                </div>
+                <ul class="sub-nav show" id="linksSub">
+                    <li>帮助中心</li>
+                    <li>联系我们</li>
+                    <li>社区规则</li>
+                    <li>陶片放逐</li>
+                    <li>管理名单</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 中间主要内容区（不变） -->
+        <div class="main-content">
+            <div class="card" id="welcomeCard">
+                <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
+                <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
+            </div>
+            <div class="card">
+                <div class="card-header">🏆 近期比赛</div>
+                <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
+                <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
+            </div>
+            <div class="card">
+                <div class="card-header">💬 最近讨论</div>
+                <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span class="badge">10回复</span>
+                </div>
+                <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span>
                 </div>
             </div>
-            <div class="main-content">
-                <div class="card">
-                    <div class="card-header">🏆 近期比赛</div>
-                    <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
-                    <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">💬 最近讨论</div>
-                    <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span
-                            class="badge">10回复</span></div>
-                    <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span>
-                    </div>
-                </div>
+            <div class="card" id="fortuneCard"></div>
+        </div>
+
+        <!-- 右侧边栏（不变） -->
+        <div class="right-sidebar">
+            <div class="card">
+                <div class="card-header">📢 本站公告</div>
+                <ul style="list-style: none;">
+                    <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
+                    <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
+                    <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-header">🔗 友情链接</div>
+                <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a
+                        href="javascript:void(0)">HydroOJ</a></p>
             </div>
         </div>
-        <div class="card" id="fortuneCard"></div>
-        <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
     </div>
 
+    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
+
+    <!-- 模态框（登录/注册，内容不变） -->
     <div id="authModal" class="modal">
         <div class="modal-content">
             <div class="tabs">
@@ -282,7 +416,7 @@
     </div>
 
     <script>
-        // 全局唯一客户端，避免重复声明
+        // Supabase 客户端初始化（避免重复声明）
         (function () {
             if (window.__MY_SUPABASE_CLIENT) return;
             window.__MY_SUPABASE_CLIENT = window.supabase.createClient(
@@ -290,10 +424,30 @@
                 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
             );
         })();
+        const sb = window.__MY_SUPABASE_CLIENT;
 
-        const sb = window.__MY_SUPABASE_CLIENT;  // 使用短别名，但不会造成全局重复
+        // 左侧导航折叠功能
+        const moreBtn = document.getElementById('moreFuncBtn');
+        const moreSub = document.getElementById('moreSub');
+        const moreArrow = document.getElementById('moreArrow');
+        const linksBtn = document.getElementById('linksBtn');
+        const linksSub = document.getElementById('linksSub');
+        const linksArrow = document.getElementById('linksArrow');
 
-        // DOM 元素
+        if (moreBtn && moreSub) {
+            moreBtn.addEventListener('click', () => {
+                const isShow = moreSub.classList.toggle('show');
+                moreArrow.textContent = isShow ? '▼' : '▶';
+            });
+        }
+        if (linksBtn && linksSub) {
+            linksBtn.addEventListener('click', () => {
+                const isShow = linksSub.classList.toggle('show');
+                linksArrow.textContent = isShow ? '▼' : '▶';
+            });
+        }
+
+        // DOM 元素（登录相关）
         const authBtn = document.getElementById('authBtn');
         const authModal = document.getElementById('authModal');
         const welcomeTitle = document.getElementById('welcomeTitle');
@@ -413,7 +567,6 @@
             });
         });
 
-        // 点击模态框背景关闭
         authModal.addEventListener('click', (e) => {
             if (e.target === authModal) authModal.style.display = 'none';
         });
