@@ -66,7 +66,7 @@
         <div class="logo">✨ Jason227</div>
         <div>
             <span id="userStatus" style="margin-right: 12px;"></span>
-            <a href="login" id="authBtn" class="auth-btn">登录</a>
+            <a href="/login" id="authBtn" class="auth-btn">登录</a>
         </div>
     </div>
     <!-- 其余页面内容（左侧导航、主内容、右侧栏）与之前相同，此处省略 -->
@@ -91,7 +91,7 @@
             } else {
                 userStatusSpan.innerHTML = '';
                 authBtn.textContent = '登录';
-                authBtn.href = 'login.html';
+                authBtn.href = '/login';
                 authBtn.onclick = null;
             }
         }
