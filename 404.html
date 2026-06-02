@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>页面跳转中...</title>
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: system-ui;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e74c3c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        (function () {
+            // 获取当前访问的路径（例如 /user/1）
+            var path = window.location.pathname;
+            // 正则匹配：以 /user/ 开头，后面跟着数字（1个或多个）
+            var match = path.match(/^\/user\/(\d+)/);
+            if (match) {
+                var userId = match[1];
+                // 使用 fetch 获取实际的用户主页模板（user/index.html）
+                fetch('/user/index.html')
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('无法加载用户主页模板');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        // 将当前页面的内容完全替换为 user/index.html 的内容
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        // 关键：替换浏览器的历史记录，使地址栏保持为 /user/1（而不是 /404.html）
+                        history.replaceState({}, '', '/user/' + userId);
+                        // 注意：替换后页面已经是 user/index.html，但该页面中的 JavaScript 需要从路径中提取 userId。
+                        // 由于我们通过 fetch 直接写入 HTML，user/index.html 中的脚本会在当前作用域执行，
+                        // 因此 user/index.html 必须设计为能够从 window.location.pathname 中提取编号。
+                        // 请确保你的 user/index.html 使用了 path 解析而非 URL 参数。
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法获取用户主页，请稍后再试。</p>';
+                    });
+            } else {
+                // 如果不是 /user/数字 路径，显示默认的 404 页面内容
+                document.body.innerHTML = `
+                    <h1>404 - 页面未找到</h1>
+                    <p>您访问的页面不存在，请检查网址。</p>
+                    <p><a href="/">返回首页</a></p>
+                `;
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="loader"></div>
+    <p>正在加载用户主页...</p>
+</body>
+
+</html>

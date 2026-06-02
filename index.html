@@ -355,7 +355,7 @@
 
                         let html = '';
                         if (userNumber) {
-                            html += `<a href="/user/index.html?uid=${userNumber}" class="user-email">${escapeHtml(displayName)}</a>`;
+                            html += `<a href="/user/${userNumber}" class="user-email">${escapeHtml(displayName)}</a>`;
                         } else {
                             html += `<span class="user-email">${escapeHtml(displayName)}</span>`;
                         }
