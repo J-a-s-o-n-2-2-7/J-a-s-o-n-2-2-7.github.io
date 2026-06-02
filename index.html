@@ -320,7 +320,6 @@
 
     <script>
         (function () {
-            // 确保 Supabase 客户端只初始化一次
             if (!window._supabaseClient) {
                 window._supabaseClient = window.supabase.createClient(
                     'https://nosikdfacxkuaxfrmoqn.supabase.co',
@@ -340,34 +339,24 @@
                     if (error) throw error;
 
                     if (session) {
-                        // 查询用户名和编号
                         let displayName = session.user.email;
                         let userNumber = null;
-                        try {
-                            const { data: profile, error: profileError } = await supabase
-                                .from('profiles')
-                                .select('username, user_number')
-                                .eq('id', session.user.id)
-                                .single();
-                            if (profileError) {
-                                console.error('查询 profiles 失败:', profileError);
-                            } else if (profile) {
-                                if (profile.username) displayName = profile.username;
-                                if (profile.user_number) userNumber = profile.user_number;
-                            } else {
-                                console.warn('未找到该用户的 profile 记录');
-                            }
-                        } catch (err) {
-                            console.error('查询 profiles 异常:', err);
+
+                        // 通过 RPC 获取用户名和编号（绕过 RLS）
+                        const { data, error: rpcError } = await supabase.rpc('get_user_by_email', {
+                            user_email: session.user.email
+                        });
+                        if (!rpcError && data) {
+                            if (data.username) displayName = data.username;
+                            if (data.user_number) userNumber = data.user_number;
+                        } else {
+                            console.warn('RPC 查询失败，使用邮箱作为显示名', rpcError);
                         }
 
-                        // 构建右上角区域
                         let html = '';
-                        if (userNumber && displayName !== session.user.email) {
-                            // 有编号且用户名不是邮箱（说明成功获取到了用户名）
-                            html += `<a href="/user/index.html?uid=${userNumber}" class="user-email" style="text-decoration:none;">${escapeHtml(displayName)}</a>`;
+                        if (userNumber) {
+                            html += `<a href="/user/index.html?uid=${userNumber}" class="user-email">${escapeHtml(displayName)}</a>`;
                         } else {
-                            // 降级：只显示邮箱（无链接）
                             html += `<span class="user-email">${escapeHtml(displayName)}</span>`;
                         }
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
@@ -381,40 +370,36 @@
                         welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtml(displayName)}`;
                         welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
                         fortuneCard.innerHTML = `
-                            <div class="card-header">🧧 你的运势</div>
-                            <div style="text-align:center">
-                                <span style="font-size:2rem;">中吉</span>
-                                <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
-                                <p>连续打卡 <strong>228</strong> 天</p>
-                            </div>
-                        `;
+                        <div class="card-header">🧧 你的运势</div>
+                        <div style="text-align:center">
+                            <span style="font-size:2rem;">中吉</span>
+                            <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
+                            <p>连续打卡 <strong>228</strong> 天</p>
+                        </div>
+                    `;
                     } else {
-                        // 未登录
                         authButtons.innerHTML = `
-                            <a href="/login" class="auth-btn">登录</a>
-                            <a href="/register" class="auth-btn">注册</a>
-                        `;
-                        welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
-                        welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
-                        fortuneCard.innerHTML = `
-                            <div class="card-header">📅 今日日历</div>
-                            <div style="text-align:center">
-                                <span style="font-size:1.8rem;">6月2日</span>
-                                <p>星期一</p>
-                                <p>距 CSP-J/S 2026 第一轮还剩 109 天</p>
-                                <p><a href="/login">👉 登录后查看专属运势</a></p>
-                            </div>
-                        `;
-                    }
-                } catch (err) {
-                    console.error('updateUI 错误：', err);
-                    // 出错时至少显示登录/注册按钮
-                    authButtons.innerHTML = `
                         <a href="/login" class="auth-btn">登录</a>
                         <a href="/register" class="auth-btn">注册</a>
                     `;
-                    welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
-                    welcomeDesc.innerHTML = '请点击右上角登录或注册。';
+                        welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
+                        welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
+                        fortuneCard.innerHTML = `
+                        <div class="card-header">📅 今日日历</div>
+                        <div style="text-align:center">
+                            <span style="font-size:1.8rem;">6月2日</span>
+                            <p>星期一</p>
+                            <p>距 CSP-J/S 2026 第一轮还剩 109 天</p>
+                            <p><a href="/login">👉 登录后查看专属运势</a></p>
+                        </div>
+                    `;
+                    }
+                } catch (err) {
+                    console.error('updateUI 错误：', err);
+                    authButtons.innerHTML = `
+                    <a href="/login" class="auth-btn">登录</a>
+                    <a href="/register" class="auth-btn">注册</a>
+                `;
                 }
             }
 
