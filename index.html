@@ -62,6 +62,11 @@
             margin-right: 8px;
             font-size: 14px;
             color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
         }
 
         /* 三列布局 */
@@ -241,13 +246,12 @@
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
         <div class="auth-buttons" id="authButtons">
-            <!-- 初始显示加载中，防止闪烁 -->
             <span style="font-size:14px; color:#aaa;">加载中...</span>
         </div>
     </div>
 
     <div class="main-layout">
-        <!-- 左侧导航栏（与之前相同，省略重复） -->
+        <!-- 左侧导航栏 -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -273,6 +277,7 @@
             <div class="nav-item"><span class="nav-icon">🗳️</span><span class="nav-text">陶片放逐</span></div>
             <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
         </div>
+
         <div class="content-wrapper">
             <div class="main-content">
                 <div class="card" id="welcomeCard">
@@ -293,6 +298,7 @@
                 </div>
                 <div class="card" id="fortuneCard"></div>
             </div>
+
             <div class="right-sidebar">
                 <div class="card">
                     <div class="card-header">📢 本站公告</div>
@@ -337,21 +343,31 @@
                         // 查询用户名和编号
                         let displayName = session.user.email;
                         let userNumber = null;
-                        const { data: profile, error: profileError } = await supabase
-                            .from('profiles')
-                            .select('username, user_number')
-                            .eq('id', session.user.id)
-                            .single();
-                        if (!profileError && profile) {
-                            displayName = profile.username;
-                            userNumber = profile.user_number;
+                        try {
+                            const { data: profile, error: profileError } = await supabase
+                                .from('profiles')
+                                .select('username, user_number')
+                                .eq('id', session.user.id)
+                                .single();
+                            if (profileError) {
+                                console.error('查询 profiles 失败:', profileError);
+                            } else if (profile) {
+                                if (profile.username) displayName = profile.username;
+                                if (profile.user_number) userNumber = profile.user_number;
+                            } else {
+                                console.warn('未找到该用户的 profile 记录');
+                            }
+                        } catch (err) {
+                            console.error('查询 profiles 异常:', err);
                         }
 
                         // 构建右上角区域
                         let html = '';
-                        if (userNumber) {
+                        if (userNumber && displayName !== session.user.email) {
+                            // 有编号且用户名不是邮箱（说明成功获取到了用户名）
                             html += `<a href="/user/index.html?uid=${userNumber}" class="user-email" style="text-decoration:none;">${escapeHtml(displayName)}</a>`;
                         } else {
+                            // 降级：只显示邮箱（无链接）
                             html += `<span class="user-email">${escapeHtml(displayName)}</span>`;
                         }
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
@@ -373,7 +389,7 @@
                             </div>
                         `;
                     } else {
-                        // 未登录（原样保留）
+                        // 未登录
                         authButtons.innerHTML = `
                             <a href="/login" class="auth-btn">登录</a>
                             <a href="/register" class="auth-btn">注册</a>
