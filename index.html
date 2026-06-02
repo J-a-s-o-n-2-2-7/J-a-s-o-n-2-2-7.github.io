@@ -69,8 +69,7 @@
             text-decoration: underline;
         }
 
-        /* 三列布局（与之前相同，省略以节省篇幅，实际使用时保留完整样式） */
-        /* 建议从原文件中复制完整样式，或者直接使用之前能正常显示左侧导航的版本 */
+        /* 三列布局 */
         .main-layout {
             max-width: 1400px;
             margin: 20px auto;
@@ -249,8 +248,8 @@
         <div class="auth-buttons" id="authButtons"></div>
     </div>
 
-    <!-- 左侧导航和内容区（与之前相同，请保持原有结构） -->
     <div class="main-layout">
+        <!-- 左侧导航栏 -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -276,6 +275,7 @@
             <div class="nav-item"><span class="nav-icon">🗳️</span><span class="nav-text">陶片放逐</span></div>
             <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
         </div>
+
         <div class="content-wrapper">
             <div class="main-content">
                 <div class="card" id="welcomeCard">
@@ -296,6 +296,7 @@
                 </div>
                 <div class="card" id="fortuneCard"></div>
             </div>
+
             <div class="right-sidebar">
                 <div class="card">
                     <div class="card-header">📢 本站公告</div>
@@ -372,6 +373,7 @@
                 </div>
             `;
             } else {
+                // 未登录：显示登录和注册按钮
                 authButtons.innerHTML = `
                 <a href="/login" class="auth-btn">登录</a>
                 <a href="/register" class="auth-btn">注册</a>
