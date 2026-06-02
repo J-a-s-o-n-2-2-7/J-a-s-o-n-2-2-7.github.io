@@ -96,12 +96,10 @@
     </div>
     <script>
         (async function () {
-            // 配置
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // 获取当前路径中的编号（例如 /user/1 → 1）
             const path = window.location.pathname;
             const match = path.match(/^\/user\/(\d+)/);
             const userNumber = match ? match[1] : null;
@@ -113,30 +111,19 @@
             }
 
             try {
-                // 1. 获取当前登录用户信息
+                // 获取当前登录用户信息
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError) throw new Error(`获取登录状态失败: ${sessionError.message}`);
                 const currentUserId = session?.user?.id || null;
 
-                // 2. 调用 RPC 获取目标用户数据
+                // 调用 RPC 获取目标用户数据（现在包含 id）
                 const { data: user, error: rpcError } = await supabase.rpc('get_user_by_number', { p_user_number: parseInt(userNumber) });
                 if (rpcError) throw new Error(`RPC 调用失败: ${rpcError.message}`);
                 if (!user) throw new Error('用户不存在');
 
-                // 3. 判断是否为当前用户自己的主页
-                let isOwner = false;
-                if (currentUserId && user.email) {
-                    const { data: owner, error: ownerError } = await supabase
-                        .from('profiles')
-                        .select('id')
-                        .eq('email', user.email)
-                        .single();
-                    if (!ownerError && owner && owner.id === currentUserId) {
-                        isOwner = true;
-                    }
-                }
+                // 直接比较用户 id
+                const isOwner = currentUserId && user.id && currentUserId === user.id;
 
-                // 4. 渲染页面
                 document.title = `${user.username} 的个人主页 - Jason227`;
                 const bannedUntil = user.banned_until ? new Date(user.banned_until) : null;
                 const now = new Date();
@@ -166,7 +153,7 @@
                 profileDiv.innerHTML = html;
             } catch (err) {
                 console.error('加载出错：', err);
-                profileDiv.innerHTML = `<div class="error">❌ 加载失败: ${err.message}<br>请确认编号 ${userNumber} 存在，且 RPC 函数已创建。</div>`;
+                profileDiv.innerHTML = `<div class="error">❌ 加载失败: ${err.message}<br>请确认编号 ${userNumber} 存在，且 RPC 函数已返回 id 字段。</div>`;
             }
         })();
 
