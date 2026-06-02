@@ -84,6 +84,7 @@
             padding: 10px;
             border-radius: 12px;
             margin-bottom: 20px;
+            white-space: pre-wrap;
         }
 
         .loading {
@@ -117,24 +118,31 @@
         let isCurrentUserAdmin = false;
 
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.error('session错误:', sessionError);
+                document.getElementById('content').innerHTML = `<div class="error">获取登录状态失败: ${sessionError.message}</div>`;
+                return null;
+            }
             if (!session) {
                 window.location.href = '/login';
                 return null;
             }
             currentUser = session.user;
+            // 查询当前用户的管理员状态
             const { data, error } = await supabase
                 .from('profiles')
                 .select('is_admin')
                 .eq('id', currentUser.id)
-                .single();
-            if (error || !data) {
-                isCurrentUserAdmin = false;
-            } else {
-                isCurrentUserAdmin = data.is_admin === true;
+                .maybeSingle();
+            if (error) {
+                console.error('查询管理员状态失败:', error);
+                document.getElementById('content').innerHTML = `<div class="error">查询权限失败: ${error.message}<br>请检查 Supabase RLS 策略或确认 profiles 表存在。</div>`;
+                return null;
             }
+            isCurrentUserAdmin = data?.is_admin === true;
             if (!isCurrentUserAdmin) {
-                document.getElementById('content').innerHTML = '<div class="error">⛔ 你没有管理员权限，无法访问此页面。</div>';
+                document.getElementById('content').innerHTML = '<div class="error">⛔ 你没有管理员权限，无法访问此页面。请确保数据库中你的 is_admin 为 true。</div>';
                 return null;
             }
             return session;
@@ -146,31 +154,29 @@
                 .select('id, username, email, is_admin')
                 .order('created_at', { ascending: true });
             if (error) {
-                document.getElementById('content').innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+                console.error('加载用户列表失败:', error);
+                document.getElementById('content').innerHTML = `<div class="error">加载用户列表失败: ${error.message}<br>请确保你有权限读取 profiles 表（管理员策略）。</div>`;
                 return;
             }
             renderUserTable(users);
         }
 
         function renderUserTable(users) {
+            let rows = '';
+            for (const user of users) {
+                rows += `
+                <tr>
+                    <td>${escapeHtml(user.username)}</td>
+                    <td>${escapeHtml(user.email)}</td>
+                    <td>${user.is_admin ? '<span class="admin-badge">是</span>' : '否'}</td>
+                    <td>${user.id === currentUser.id ? '（自己）' : `<button onclick="toggleAdmin('${user.id}', ${user.is_admin})">${user.is_admin ? '撤销管理员' : '设为管理员'}</button>`}</td>
+                </tr>
+            `;
+            }
             const html = `
             <table>
-                <thead>
-                    <tr><th>用户名</th><th>邮箱</th><th>管理员</th><th>操作</th></tr>
-                </thead>
-                <tbody>
-                    ${users.map(user => `
-                        <tr>
-                            <td>${escapeHtml(user.username)}</td>
-                            <td>${escapeHtml(user.email)}</td>
-                            <td>${user.is_admin ? '<span class="admin-badge">是</span>' : '否'}</td>
-                            <td>${user.id === currentUser.id ?
-                    '（自己）' :
-                    `<button onclick="toggleAdmin('${user.id}', ${user.is_admin})">${user.is_admin ? '撤销管理员' : '设为管理员'}</button>`
-                }</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
+                <thead><tr><th>用户名</th><th>邮箱</th><th>管理员</th><th>操作</th></tr></thead>
+                <tbody>${rows}</tbody>
             </table>
         `;
             document.getElementById('content').innerHTML = html;
@@ -186,7 +192,7 @@
                 alert('操作失败: ' + error.message);
             } else {
                 alert('操作成功');
-                loadUsers(); // 刷新列表
+                await loadUsers();
             }
         }
 

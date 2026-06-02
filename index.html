@@ -241,12 +241,13 @@
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
         <div class="auth-buttons" id="authButtons">
-            <!-- 动态内容由 js 填充 -->
+            <!-- 初始显示加载中，防止闪烁 -->
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
         </div>
     </div>
 
     <div class="main-layout">
-        <!-- 左侧导航栏 -->
+        <!-- 左侧导航栏（与之前相同，省略重复） -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -272,7 +273,6 @@
             <div class="nav-item"><span class="nav-icon">🗳️</span><span class="nav-text">陶片放逐</span></div>
             <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
         </div>
-
         <div class="content-wrapper">
             <div class="main-content">
                 <div class="card" id="welcomeCard">
@@ -293,7 +293,6 @@
                 </div>
                 <div class="card" id="fortuneCard"></div>
             </div>
-
             <div class="right-sidebar">
                 <div class="card">
                     <div class="card-header">📢 本站公告</div>
@@ -315,79 +314,87 @@
 
     <script>
         (function () {
-            if (window.__MY_SUPABASE_CLIENT) return;
-            window.__MY_SUPABASE_CLIENT = window.supabase.createClient(
-                'https://nosikdfacxkuaxfrmoqn.supabase.co',
-                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
-            );
-        })();
-        const supabase = window.__MY_SUPABASE_CLIENT;
-
-        const authButtons = document.getElementById('authButtons');
-        const welcomeTitle = document.getElementById('welcomeTitle');
-        const welcomeDesc = document.getElementById('welcomeDesc');
-        const fortuneCard = document.getElementById('fortuneCard');
-
-        async function updateUI() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                // 查询是否是管理员
-                let isAdmin = false;
-                const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('is_admin')
-                    .eq('id', session.user.id)
-                    .single();
-                if (!error && profile) {
-                    isAdmin = profile.is_admin === true;
-                }
-
-                // 构建右上角区域
-                let html = `<span class="user-email">${session.user.email}</span>`;
-                if (isAdmin) {
-                    html += `<a href="/manage-users.html" class="auth-btn" style="background:#2c3e50; margin-left:8px;">管理</a>`;
-                }
-                html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
-                authButtons.innerHTML = html;
-
-                // 绑定登出事件
-                document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    await supabase.auth.signOut();
-                    location.reload();
-                });
-
-                // 更新欢迎语和运势（示例）
-                welcomeTitle.innerHTML = `👋 欢迎回来，${session.user.email}`;
-                welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
-                fortuneCard.innerHTML = `
-                <div class="card-header">🧧 你的运势</div>
-                <div style="text-align:center">
-                    <span style="font-size:2rem;">中吉</span>
-                    <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
-                    <p>连续打卡 <strong>228</strong> 天</p>
-                </div>
-            `;
-            } else {
-                // 未登录
-                authButtons.innerHTML = `
-                <a href="/login" class="auth-btn">登录</a>
-                <a href="/register" class="auth-btn">注册</a>
-            `;
-                welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
-                welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
-                fortuneCard.innerHTML = `
-                <div class="card-header">📅 今日日历</div>
-                <div style="text-align:center">
-                    <span style="font-size:1.8rem;">6月1日</span>
-                    <p>星期日</p>
-                    <p>距 CSP-J/S 2026 第一轮还剩 110 天</p>
-                    <p><a href="/login">👉 登录后查看专属运势</a></p>
-                </div>
-            `;
+            // 确保 Supabase 客户端只初始化一次
+            if (!window._supabaseClient) {
+                window._supabaseClient = window.supabase.createClient(
+                    'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                    'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+                );
             }
-        }
+            const supabase = window._supabaseClient;
 
-        updateUI();
+            const authButtons = document.getElementById('authButtons');
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            const welcomeDesc = document.getElementById('welcomeDesc');
+            const fortuneCard = document.getElementById('fortuneCard');
+
+            async function updateUI() {
+                try {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    if (error) throw error;
+
+                    if (session) {
+                        // 已登录
+                        authButtons.innerHTML = `
+                        <span class="user-email">${escapeHtml(session.user.email)}</span>
+                        <button id="logoutBtn" class="auth-btn logout">登出</button>
+                    `;
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
+                        welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtml(session.user.email)}`;
+                        welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
+                        fortuneCard.innerHTML = `
+                        <div class="card-header">🧧 你的运势</div>
+                        <div style="text-align:center">
+                            <span style="font-size:2rem;">中吉</span>
+                            <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
+                            <p>连续打卡 <strong>228</strong> 天</p>
+                        </div>
+                    `;
+                    } else {
+                        // 未登录
+                        authButtons.innerHTML = `
+                        <a href="/login" class="auth-btn">登录</a>
+                        <a href="/register" class="auth-btn">注册</a>
+                    `;
+                        welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
+                        welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
+                        fortuneCard.innerHTML = `
+                        <div class="card-header">📅 今日日历</div>
+                        <div style="text-align:center">
+                            <span style="font-size:1.8rem;">6月2日</span>
+                            <p>星期一</p>
+                            <p>距 CSP-J/S 2026 第一轮还剩 109 天</p>
+                            <p><a href="/login">👉 登录后查看专属运势</a></p>
+                        </div>
+                    `;
+                    }
+                } catch (err) {
+                    console.error('updateUI 错误：', err);
+                    // 出错时至少显示登录/注册按钮
+                    authButtons.innerHTML = `
+                    <a href="/login" class="auth-btn">登录</a>
+                    <a href="/register" class="auth-btn">注册</a>
+                `;
+                    welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
+                    welcomeDesc.innerHTML = '请点击右上角登录或注册。';
+                }
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            updateUI();
+        })();
     </script>
 </body>
 
