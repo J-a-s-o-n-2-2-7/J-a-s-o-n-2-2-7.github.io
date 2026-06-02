@@ -53,10 +53,9 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // 关键：从当前 URL 中提取编号，例如 /user/1 → 1
-    const pathParts = window.location.pathname.split('/').filter(p => p);
-    // 路径结构应为 ['user', '1']，所以 userNumber = pathParts[1]
-    const userNumber = pathParts[1];
+    // 从 URL 参数获取 uid
+    const urlParams = new URLSearchParams(window.location.search);
+    const userNumber = urlParams.get('uid');
 
     if (userNumber && /^\d+$/.test(userNumber)) {
         supabase.rpc('get_user_by_number', { p_user_number: parseInt(userNumber) })
@@ -90,7 +89,7 @@
                 `;
             });
     } else {
-        document.getElementById('profile').innerHTML = '<p class="error">无效的用户编号。</p>';
+        document.getElementById('profile').innerHTML = '<p class="error">请提供有效的用户编号（例如 ?uid=1）。</p>';
     }
 
     function escapeHtml(str) {
