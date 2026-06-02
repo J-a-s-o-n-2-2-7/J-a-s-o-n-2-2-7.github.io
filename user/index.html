@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户主页 - Jason227</title>
+    <title>用户主页 - 加载中...</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -63,12 +63,6 @@
             color: #5b6e8c;
             margin: 10px 0;
         }
-
-        footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #aaa;
-        }
     </style>
 </head>
 
@@ -82,14 +76,17 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const pathParts = window.location.pathname.split('/').filter(p => p);
-        const userNumber = pathParts[1];
+        const urlParams = new URLSearchParams(window.location.search);
+        const userNumber = urlParams.get('uid');
+
         if (userNumber && /^\d+$/.test(userNumber)) {
-            // 直接调用 Supabase RPC 函数
             supabase.rpc('get_user_by_number', { p_user_number: parseInt(userNumber) })
                 .then(({ data, error }) => {
                     if (error || !data) throw new Error('用户不存在');
                     const user = data;
+                    // 动态修改页面标题
+                    document.title = `${escapeHtml(user.username)} 的个人主页 - Jason227`;
+
                     const bannedUntil = user.banned_until ? new Date(user.banned_until) : null;
                     const now = new Date();
                     if (bannedUntil && bannedUntil > now) {
@@ -101,7 +98,7 @@
                     `;
                     } else {
                         document.getElementById('profile').innerHTML = `
-                        <div class="avatar">${user.username.charAt(0).toUpperCase()}</div>
+                        <div class="avatar">${escapeHtml(user.username.charAt(0).toUpperCase())}</div>
                         <h1>${escapeHtml(user.username)}</h1>
                         <p class="info">编号 #${user.user_number}</p>
                         <p class="info">注册时间：${new Date(user.created_at).toLocaleDateString()}</p>
@@ -110,6 +107,7 @@
                     }
                 })
                 .catch(err => {
+                    document.title = '用户不存在 - Jason227';
                     document.getElementById('profile').innerHTML = `
                     <div class="avatar">❓</div>
                     <h1>用户不存在</h1>
@@ -117,7 +115,8 @@
                 `;
                 });
         } else {
-            document.getElementById('profile').innerHTML = '<p class="error">无效的用户编号。</p>';
+            document.title = '无效的用户编号 - Jason227';
+            document.getElementById('profile').innerHTML = '<p class="error">无效的用户编号（缺少 ?uid=xxx）。</p>';
         }
 
         function escapeHtml(str) {
