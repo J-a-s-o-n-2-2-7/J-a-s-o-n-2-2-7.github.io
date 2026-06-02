@@ -1,19 +1,17 @@
-<script>
-    (function() {
-        if (window.__MY_SUPABASE_CLIENT) return;
-        window.__MY_SUPABASE_CLIENT = window.supabase.createClient(
-            'https://nosikdfacxkuaxfrmoqn.supabase.co',
-            'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
-        );
-    })();
-    const supabase = window.__MY_SUPABASE_CLIENT;
+<!DOCTYPE html>
+<html lang="zh-CN">
 
-    const authButtons = document.getElementById('authButtons');
-    const welcomeTitle = document.getElementById('welcomeTitle');
-    const welcomeDesc = document.getElementById('welcomeDesc');
-    const fortuneCard = document.getElementById('fortuneCard');
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jason227 · 算法竞赛社区</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<<<<<<< HEAD
         body {
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -71,7 +69,8 @@
             text-decoration: underline;
         }
 
-        /* 三列布局 */
+        /* 三列布局（与之前相同，省略以节省篇幅，实际使用时保留完整样式） */
+        /* 建议从原文件中复制完整样式，或者直接使用之前能正常显示左侧导航的版本 */
         .main-layout {
             max-width: 1400px;
             margin: 20px auto;
@@ -216,41 +215,18 @@
         @media (max-width: 900px) {
             .main-layout {
                 position: static;
-=======
-    async function updateUI() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            // 查询用户名和用户编号
-            const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('username, user_number')
-                .eq('id', session.user.id)
-                .single();
-            
-            let displayName = session.user.email; // 降级使用邮箱
-            let userNumber = null;
-            if (!error && profile) {
-                displayName = profile.username;
-                userNumber = profile.user_number;
->>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
             }
 
-            // 构建右上角：用户名（可点击） + 登出按钮
-            let html = '';
-            if (userNumber) {
-                html += `<a href="/user/index.html?uid=${userNumber}" class="user-email" style="text-decoration:none;">${escapeHtml(displayName)}</a>`;
-            } else {
-                html += `<span class="user-email">${escapeHtml(displayName)}</span>`;
+            .nav-sidebar {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
             }
-            html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
-            authButtons.innerHTML = html;
 
-            document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-                await supabase.auth.signOut();
-                location.reload();
-            });
+            .nav-sidebar:hover {
+                width: 100%;
+            }
 
-<<<<<<< HEAD
             .content-wrapper {
                 margin-left: 0;
             }
@@ -273,6 +249,7 @@
         <div class="auth-buttons" id="authButtons"></div>
     </div>
 
+    <!-- 左侧导航和内容区（与之前相同，请保持原有结构） -->
     <div class="main-layout">
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
@@ -304,38 +281,40 @@
                 <div class="card" id="welcomeCard">
                     <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
                     <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
-=======
-            welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtml(displayName)}`;
-            welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
-            fortuneCard.innerHTML = `
-                <div class="card-header">🧧 你的运势</div>
-                <div style="text-align:center">
-                    <span style="font-size:2rem;">中吉</span>
-                    <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
-                    <p>连续打卡 <strong>228</strong> 天</p>
->>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
                 </div>
-            `;
-        } else {
-            authButtons.innerHTML = `
-                <a href="/login" class="auth-btn">登录</a>
-                <a href="/register" class="auth-btn">注册</a>
-            `;
-            welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
-            welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
-            fortuneCard.innerHTML = `
-                <div class="card-header">📅 今日日历</div>
-                <div style="text-align:center">
-                    <span style="font-size:1.8rem;">6月2日</span>
-                    <p>星期一</p>
-                    <p>距 CSP-J/S 2026 第一轮还剩 109 天</p>
-                    <p><a href="/login">👉 登录后查看专属运势</a></p>
+                <div class="card">
+                    <div class="card-header">🏆 近期比赛</div>
+                    <div class="contest-item">🎯 [团队公开赛] 暑假算法挑战赛 · <span class="badge">未开始</span></div>
+                    <div class="contest-item">⚡ [官方] 蓝桥杯校内模拟赛 · <span class="badge">已结束</span></div>
                 </div>
-            `;
-        }
-    }
+                <div class="card">
+                    <div class="card-header">💬 最近讨论</div>
+                    <div class="discuss-item"><a href="javascript:void(0)">如何快速入门动态规划？</a> <span
+                            class="badge">10回复</span></div>
+                    <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span>
+                    </div>
+                </div>
+                <div class="card" id="fortuneCard"></div>
+            </div>
+            <div class="right-sidebar">
+                <div class="card">
+                    <div class="card-header">📢 本站公告</div>
+                    <ul style="list-style: none;">
+                        <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
+                        <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
+                        <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header">🔗 友情链接</div>
+                    <p><a href="javascript:void(0)">LibreOJ</a> | <a href="javascript:void(0)">Vijos</a> | <a
+                            href="javascript:void(0)">HydroOJ</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
 
-<<<<<<< HEAD
     <script>
         (function () {
             if (window.__MY_SUPABASE_CLIENT) return;
@@ -426,17 +405,3 @@
 </body>
 
 </html>
-=======
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    updateUI();
-</script>
->>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
