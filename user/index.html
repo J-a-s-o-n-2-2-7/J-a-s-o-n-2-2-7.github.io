@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户主页 - 加载中...</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -22,17 +16,15 @@
             align-items: center;
             min-height: 100vh;
         }
-
         .profile-card {
             background: white;
             max-width: 500px;
             width: 100%;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             text-align: center;
         }
-
         .avatar {
             width: 100px;
             height: 100px;
@@ -45,6 +37,7 @@
             color: white;
             font-size: 48px;
         }
+<<<<<<< HEAD
 
         .banned {
             color: #e74c3c;
@@ -63,19 +56,25 @@
             color: #5b6e8c;
             margin: 10px 0;
         }
+=======
+        .banned { color: #e74c3c; margin-top: 20px; }
+        .error { color: #7f8c8d; }
+        h1 { margin-bottom: 8px; }
+        .info { color: #5b6e8c; margin: 10px 0; }
+>>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
     </style>
 </head>
-
 <body>
-    <div class="profile-card" id="profile">
-        <div class="avatar">👤</div>
-        <p>加载中...</p>
-    </div>
-    <script>
-        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<div class="profile-card" id="profile">
+    <div class="avatar">👤</div>
+    <p>加载中...</p>
+</div>
+<script>
+    const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+<<<<<<< HEAD
         const urlParams = new URLSearchParams(window.location.search);
         const userNumber = urlParams.get('uid');
 
@@ -91,28 +90,56 @@
                     const now = new Date();
                     if (bannedUntil && bannedUntil > now) {
                         document.getElementById('profile').innerHTML = `
+=======
+    // 从 URL 参数获取 uid
+    const urlParams = new URLSearchParams(window.location.search);
+    const userNumber = urlParams.get('uid');
+
+    if (userNumber && /^\d+$/.test(userNumber)) {
+        supabase.rpc('get_user_by_number', { p_user_number: parseInt(userNumber) })
+            .then(({ data, error }) => {
+                if (error || !data) throw new Error('用户不存在');
+                const user = data;
+                const bannedUntil = user.banned_until ? new Date(user.banned_until) : null;
+                const now = new Date();
+                if (bannedUntil && bannedUntil > now) {
+                    document.getElementById('profile').innerHTML = `
+>>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
                         <div class="avatar">⛔</div>
                         <h1>该用户已被封禁</h1>
                         <p class="banned">封禁至：${bannedUntil.toLocaleString()}</p>
                         <p class="info">编号 #${user.user_number}</p>
                     `;
+<<<<<<< HEAD
                     } else {
                         document.getElementById('profile').innerHTML = `
+=======
+                } else {
+                    document.getElementById('profile').innerHTML = `
+>>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
                         <div class="avatar">${escapeHtml(user.username.charAt(0).toUpperCase())}</div>
                         <h1>${escapeHtml(user.username)}</h1>
                         <p class="info">编号 #${user.user_number}</p>
                         <p class="info">注册时间：${new Date(user.created_at).toLocaleDateString()}</p>
                         ${user.banned_until ? '<p class="info">⚠️ 曾封禁已解封</p>' : ''}
                     `;
+<<<<<<< HEAD
                     }
                 })
                 .catch(err => {
                     document.title = '用户不存在 - Jason227';
                     document.getElementById('profile').innerHTML = `
+=======
+                }
+            })
+            .catch(err => {
+                document.getElementById('profile').innerHTML = `
+>>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
                     <div class="avatar">❓</div>
                     <h1>用户不存在</h1>
                     <p class="error">编号 ${userNumber} 的用户未找到。</p>
                 `;
+<<<<<<< HEAD
                 });
         } else {
             document.title = '无效的用户编号 - Jason227';
@@ -126,9 +153,22 @@
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 return m;
+=======
+>>>>>>> 71f8af4dc2904949a9d3b55945586f59957881eb
             });
-        }
-    </script>
-</body>
+    } else {
+        document.getElementById('profile').innerHTML = '<p class="error">请提供有效的用户编号（例如 ?uid=1）。</p>';
+    }
 
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+</script>
+</body>
 </html>
