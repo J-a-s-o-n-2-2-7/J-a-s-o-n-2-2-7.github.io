@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安全设置 - 修改用户名</title>
+    <title>安全设置 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -15,7 +15,7 @@
 
         body {
             background: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             padding: 40px 20px;
             display: flex;
             justify-content: center;
@@ -66,12 +66,6 @@
 
         .input-group {
             margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
         }
 
         .input-group input {
@@ -128,8 +122,15 @@
             text-decoration: none;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        .debug {
+            background: #f0f0f0;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            text-align: left;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -142,40 +143,37 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        (async function () {
+            // 显示错误信息的辅助函数
+            function showError(msg, detail = '') {
+                const container = document.getElementById('content');
+                container.innerHTML = `
+                <div class="error">❌ ${msg}</div>
+                ${detail ? `<div class="debug">📋 详情：<br>${escapeHtml(detail)}</div>` : ''}
+                <div class="back-link" style="display:block; margin-top:20px;"><a href="/">返回首页</a></div>
+            `;
+            }
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
-        }
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+            }
 
-        function showMsg(msg, type, msgDiv) {
-            msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(msg)}</div>`;
-            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
-        }
-
-        function getRemainingDays(lastModified) {
-            if (!lastModified) return 0;
-            const last = new Date(lastModified);
-            const now = new Date();
-            const next = new Date(last);
-            next.setMonth(next.getMonth() + 4);
-            const diffMs = next - now;
-            return diffMs <= 0 ? 0 : Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        }
-
-        async function loadPage() {
-            const container = document.getElementById('content');
             try {
+                // 1. 初始化 Supabase 客户端
+                const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+                const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+                // 2. 获取 session
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError) throw new Error(`会话检查失败: ${sessionError.message}`);
+                if (sessionError) throw new Error(`会话获取失败: ${sessionError.message}`);
                 if (!session) {
-                    container.innerHTML = '<div class="error">请先 <a href="/login">登录</a> 后再访问此页面。</div>';
+                    showError('请先登录', '<a href="/login">点击登录</a>');
                     return;
                 }
 
+                // 3. 查询 profiles 表
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('username, email, user_number, username_last_modified, is_super_admin, is_admin')
@@ -183,23 +181,25 @@
                     .single();
 
                 if (profileError) {
-                    if (profileError.code === 'PGRST116') {
-                        container.innerHTML = '<div class="error">未找到用户资料，请确认您已注册。</div>';
-                    } else {
-                        throw new Error(`加载资料失败: ${profileError.message}`);
-                    }
-                    return;
+                    throw new Error(`查询 profiles 失败: ${profileError.message} (code: ${profileError.code})`);
                 }
                 if (!profile) throw new Error('未找到用户资料');
 
+                // 4. 渲染页面（正常流程）
                 const isSuperAdmin = profile.is_super_admin === true;
                 const lastModified = profile.username_last_modified ? new Date(profile.username_last_modified) : new Date();
-                const remainingDays = getRemainingDays(lastModified);
+                const remainingDays = (function () {
+                    if (!lastModified) return 0;
+                    const next = new Date(lastModified);
+                    next.setMonth(next.getMonth() + 4);
+                    const diffMs = next - new Date();
+                    return diffMs <= 0 ? 0 : Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                })();
                 const canModify = isSuperAdmin || remainingDays <= 0;
+                const nextAllowedText = isSuperAdmin ? '站长无限制' : (remainingDays <= 0 ? '现在即可修改' : `${remainingDays}天后`);
+                const roleText = isSuperAdmin ? '👑 站长' : (profile.is_admin ? '管理员' : '普通用户');
 
-                let nextAllowedText = isSuperAdmin ? '站长无限制' : (remainingDays <= 0 ? '现在即可修改' : `${remainingDays}天后`);
-                let roleText = isSuperAdmin ? '👑 站长' : (profile.is_admin ? '管理员' : '普通用户');
-
+                const container = document.getElementById('content');
                 container.innerHTML = `
                 <div class="info-group">
                     <div><span class="info-label">当前用户名：</span><span class="info-value">${escapeHtml(profile.username)}</span></div>
@@ -223,69 +223,75 @@
                 if (canModify) {
                     document.getElementById('updateBtn').addEventListener('click', () => updateUsername(profile.username, isSuperAdmin, lastModified));
                 } else {
-                    document.getElementById('updateBtn').title = `还需等待 ${remainingDays} 天才能修改用户名`;
+                    const btn = document.getElementById('updateBtn');
+                    btn.title = `还需等待 ${remainingDays} 天才能修改用户名`;
                 }
+
+                // 修改用户名函数
+                async function updateUsername(oldUsername, isSuperAdmin, lastModified) {
+                    const newUsername = document.getElementById('newUsername').value.trim();
+                    const msgDiv = document.getElementById('msg');
+                    if (!newUsername) {
+                        showMsg('请输入新用户名', 'error', msgDiv);
+                        return;
+                    }
+                    if (!/^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(newUsername)) {
+                        showMsg('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error', msgDiv);
+                        return;
+                    }
+                    if (newUsername === oldUsername) {
+                        showMsg('新用户名与当前相同，无需修改', 'warning', msgDiv);
+                        return;
+                    }
+                    const { data: existing } = await supabase
+                        .from('profiles')
+                        .select('username')
+                        .eq('username', newUsername)
+                        .maybeSingle();
+                    if (existing) {
+                        showMsg('用户名已被占用，请换一个', 'error', msgDiv);
+                        return;
+                    }
+                    if (!isSuperAdmin) {
+                        const next = new Date(lastModified);
+                        next.setMonth(next.getMonth() + 4);
+                        if (new Date() < next) {
+                            const days = Math.ceil((next - new Date()) / (1000 * 60 * 60 * 24));
+                            showMsg(`距离上次修改不足4个月，还需等待 ${days} 天`, 'error', msgDiv);
+                            return;
+                        }
+                    }
+
+                    const btn = document.getElementById('updateBtn');
+                    btn.disabled = true;
+                    btn.textContent = '提交中...';
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update({
+                            username: newUsername,
+                            username_last_modified: new Date().toISOString()
+                        })
+                        .eq('id', session.user.id);
+                    btn.disabled = false;
+                    btn.textContent = '修改用户名';
+                    if (error) {
+                        showMsg('修改失败: ' + error.message, 'error', msgDiv);
+                    } else {
+                        showMsg('修改成功！页面即将刷新...', 'success', msgDiv);
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                }
+
+                function showMsg(msg, type, msgDiv) {
+                    msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(msg)}</div>`;
+                    setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
+                }
+
             } catch (err) {
-                console.error('加载出错:', err);
-                container.innerHTML = `<div class="error">加载失败: ${err.message}</div>`;
+                console.error('加载失败:', err);
+                showError(err.message, err.stack || '');
             }
-        }
-
-        async function updateUsername(oldUsername, isSuperAdmin, lastModified) {
-            const newUsername = document.getElementById('newUsername').value.trim();
-            const msgDiv = document.getElementById('msg');
-            if (!newUsername) {
-                showMsg('请输入新用户名', 'error', msgDiv);
-                return;
-            }
-            if (!/^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(newUsername)) {
-                showMsg('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error', msgDiv);
-                return;
-            }
-            if (newUsername === oldUsername) {
-                showMsg('新用户名与当前相同，无需修改', 'warning', msgDiv);
-                return;
-            }
-            const { data: existing } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('username', newUsername)
-                .maybeSingle();
-            if (existing) {
-                showMsg('用户名已被占用，请换一个', 'error', msgDiv);
-                return;
-            }
-            if (!isSuperAdmin) {
-                const remainingDays = getRemainingDays(lastModified);
-                if (remainingDays > 0) {
-                    showMsg(`距离上次修改不足4个月，还需等待 ${remainingDays} 天`, 'error', msgDiv);
-                    return;
-                }
-            }
-
-            const btn = document.getElementById('updateBtn');
-            btn.disabled = true;
-            btn.textContent = '提交中...';
-
-            const { error } = await supabase
-                .from('profiles')
-                .update({
-                    username: newUsername,
-                    username_last_modified: new Date().toISOString()
-                })
-                .eq('id', (await supabase.auth.getSession()).data.session.user.id);
-
-            btn.disabled = false;
-            btn.textContent = '修改用户名';
-            if (error) {
-                showMsg('修改失败: ' + error.message, 'error', msgDiv);
-            } else {
-                showMsg('修改成功！页面即将刷新...', 'success', msgDiv);
-                setTimeout(() => location.reload(), 1500);
-            }
-        }
-
-        loadPage();
+        })();
     </script>
 </body>
 
