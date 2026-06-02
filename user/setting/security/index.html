@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人设置 - 修改用户名</title>
+    <title>安全设置 - 修改用户名</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -136,7 +136,7 @@
 
 <body>
     <div class="container" id="container">
-        <h1>⚙️ 个人设置</h1>
+        <h1>🔐 安全设置</h1>
         <div class="sub">修改你的用户名</div>
         <div id="content">加载中...</div>
     </div>
@@ -146,29 +146,55 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+
+        function showMsg(msg, type, msgDiv) {
+            msgDiv.innerHTML = `<div class="message ${type}">${escapeHtml(msg)}</div>`;
+            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
+        }
+
+        function getRemainingDays(lastModified) {
+            if (!lastModified) return 0;
+            const last = new Date(lastModified);
+            const now = new Date();
+            const next = new Date(last);
+            next.setMonth(next.getMonth() + 4);
+            const diffMs = next - now;
+            return diffMs <= 0 ? 0 : Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        }
+
         async function loadPage() {
             const container = document.getElementById('content');
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw new Error(`会话检查失败: ${sessionError.message}`);
                 if (!session) {
-                    container.innerHTML = '<div class="error">请先 <a href="/login">登录</a></div>';
+                    container.innerHTML = '<div class="error">请先 <a href="/login">登录</a> 后再访问此页面。</div>';
                     return;
                 }
-                const userId = session.user.id;
-                const { data: profile, error } = await supabase
+
+                const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('username, email, user_number, username_last_modified, is_super_admin, is_admin')
-                    .eq('id', userId)
+                    .eq('id', session.user.id)
                     .single();
-                if (error) throw new Error(`加载资料失败: ${error.message}`);
+
+                if (profileError) {
+                    if (profileError.code === 'PGRST116') {
+                        container.innerHTML = '<div class="error">未找到用户资料，请确认您已注册。</div>';
+                    } else {
+                        throw new Error(`加载资料失败: ${profileError.message}`);
+                    }
+                    return;
+                }
                 if (!profile) throw new Error('未找到用户资料');
 
                 const isSuperAdmin = profile.is_super_admin === true;
                 const lastModified = profile.username_last_modified ? new Date(profile.username_last_modified) : new Date();
-                const now = new Date();
-                const next = new Date(lastModified);
-                next.setMonth(next.getMonth() + 4);
-                const remainingDays = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+                const remainingDays = getRemainingDays(lastModified);
                 const canModify = isSuperAdmin || remainingDays <= 0;
 
                 let nextAllowedText = isSuperAdmin ? '站长无限制' : (remainingDays <= 0 ? '现在即可修改' : `${remainingDays}天后`);
@@ -194,13 +220,13 @@
                 </div>
             `;
 
-                if (!canModify) {
-                    document.getElementById('updateBtn').title = `还需等待 ${remainingDays} 天才能修改用户名`;
-                } else {
+                if (canModify) {
                     document.getElementById('updateBtn').addEventListener('click', () => updateUsername(profile.username, isSuperAdmin, lastModified));
+                } else {
+                    document.getElementById('updateBtn').title = `还需等待 ${remainingDays} 天才能修改用户名`;
                 }
             } catch (err) {
-                console.error(err);
+                console.error('加载出错:', err);
                 container.innerHTML = `<div class="error">加载失败: ${err.message}</div>`;
             }
         }
@@ -220,8 +246,7 @@
                 showMsg('新用户名与当前相同，无需修改', 'warning', msgDiv);
                 return;
             }
-            // 唯一性检查
-            const { data: existing, error: checkError } = await supabase
+            const { data: existing } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('username', newUsername)
@@ -231,12 +256,9 @@
                 return;
             }
             if (!isSuperAdmin) {
-                const now = new Date();
-                const next = new Date(lastModified);
-                next.setMonth(next.getMonth() + 4);
-                if (now < next) {
-                    const days = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
-                    showMsg(`距离上次修改不足4个月，还需等待 ${days} 天`, 'error', msgDiv);
+                const remainingDays = getRemainingDays(lastModified);
+                if (remainingDays > 0) {
+                    showMsg(`距离上次修改不足4个月，还需等待 ${remainingDays} 天`, 'error', msgDiv);
                     return;
                 }
             }
@@ -255,28 +277,12 @@
 
             btn.disabled = false;
             btn.textContent = '修改用户名';
-
             if (error) {
                 showMsg('修改失败: ' + error.message, 'error', msgDiv);
             } else {
                 showMsg('修改成功！页面即将刷新...', 'success', msgDiv);
                 setTimeout(() => location.reload(), 1500);
             }
-        }
-
-        function showMsg(msg, type, msgDiv) {
-            msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
-            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function (m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
         }
 
         loadPage();
