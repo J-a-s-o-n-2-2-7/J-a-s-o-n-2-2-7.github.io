@@ -135,26 +135,10 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" id="container">
         <h1>⚙️ 个人设置</h1>
         <div class="sub">修改你的用户名</div>
-
-        <div id="profileInfo" class="info-group">
-            <div><span class="info-label">当前用户名：</span><span id="currentUsername" class="info-value">加载中...</span></div>
-            <div><span class="info-label">邮箱：</span><span id="userEmail" class="info-value">加载中...</span></div>
-            <div><span class="info-label">上次修改：</span><span id="lastModified" class="info-value">加载中...</span></div>
-            <div><span class="info-label">下次可改：</span><span id="nextAllowed" class="info-value">加载中...</span></div>
-            <div><span class="info-label">身份：</span><span id="role" class="info-value">加载中...</span></div>
-        </div>
-
-        <div class="input-group">
-            <label>新用户名（6-16位字母/数字/下划线，不能以数字开头）</label>
-            <input type="text" id="newUsername" placeholder="输入新用户名" autocomplete="off">
-        </div>
-        <button id="updateBtn">修改用户名</button>
-        <div id="msg"></div>
-        <a href="/" class="back-link">← 返回首页</a>
-        <a href="/user/index.html?uid=?" id="profileLink" class="back-link" style="margin-left: 20px;">👤 我的主页</a>
+        <div id="content">加载中...</div>
     </div>
 
     <script>
@@ -162,112 +146,104 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentUser = null;
-        let profileData = null;
-        let isSuperAdmin = false;
+        async function loadPage() {
+            const container = document.getElementById('content');
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    container.innerHTML = '<div class="error">请先 <a href="/login">登录</a></div>';
+                    return;
+                }
+                const userId = session.user.id;
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('username, email, user_number, username_last_modified, is_super_admin, is_admin')
+                    .eq('id', userId)
+                    .single();
+                if (error) throw new Error(`加载资料失败: ${error.message}`);
+                if (!profile) throw new Error('未找到用户资料');
 
-        function isValidUsername(username) {
-            return /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(username);
-        }
+                const isSuperAdmin = profile.is_super_admin === true;
+                const lastModified = profile.username_last_modified ? new Date(profile.username_last_modified) : new Date();
+                const now = new Date();
+                const next = new Date(lastModified);
+                next.setMonth(next.getMonth() + 4);
+                const remainingDays = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+                const canModify = isSuperAdmin || remainingDays <= 0;
 
-        function getRemainingDays(lastModified) {
-            if (!lastModified) return 0;
-            const last = new Date(lastModified);
-            const now = new Date();
-            const next = new Date(last);
-            next.setMonth(next.getMonth() + 4);
-            const diffMs = next - now;
-            if (diffMs <= 0) return 0;
-            return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        }
+                let nextAllowedText = isSuperAdmin ? '站长无限制' : (remainingDays <= 0 ? '现在即可修改' : `${remainingDays}天后`);
+                let roleText = isSuperAdmin ? '👑 站长' : (profile.is_admin ? '管理员' : '普通用户');
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '未知';
-            const d = new Date(dateStr);
-            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-        }
+                container.innerHTML = `
+                <div class="info-group">
+                    <div><span class="info-label">当前用户名：</span><span class="info-value">${escapeHtml(profile.username)}</span></div>
+                    <div><span class="info-label">邮箱：</span><span class="info-value">${escapeHtml(profile.email)}</span></div>
+                    <div><span class="info-label">上次修改：</span><span class="info-value">${lastModified.toLocaleDateString()}</span></div>
+                    <div><span class="info-label">下次可改：</span><span class="info-value">${nextAllowedText}</span></div>
+                    <div><span class="info-label">身份：</span><span class="info-value">${roleText}</span></div>
+                </div>
+                <div class="input-group">
+                    <label>新用户名（6-16位字母/数字/下划线，不能以数字开头）</label>
+                    <input type="text" id="newUsername" placeholder="输入新用户名" autocomplete="off">
+                </div>
+                <button id="updateBtn" ${!canModify ? 'disabled' : ''}>修改用户名</button>
+                <div id="msg"></div>
+                <div>
+                    <a href="/" class="back-link">← 返回首页</a>
+                    ${profile.user_number ? `<a href="/user/${profile.user_number}" class="back-link" style="margin-left:20px;">👤 我的主页</a>` : ''}
+                </div>
+            `;
 
-        async function loadProfile() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = '/login';
-                return;
-            }
-            currentUser = session.user;
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('username, email, user_number, username_last_modified, is_super_admin, is_admin')
-                .eq('id', currentUser.id)
-                .single();
-            if (error) {
-                document.getElementById('profileInfo').innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
-                return;
-            }
-            profileData = data;
-            isSuperAdmin = data.is_super_admin === true;
-
-            const remaining = getRemainingDays(data.username_last_modified);
-            const canModify = isSuperAdmin || remaining === 0;
-
-            document.getElementById('currentUsername').innerText = data.username;
-            document.getElementById('userEmail').innerText = data.email;
-            document.getElementById('lastModified').innerText = formatDate(data.username_last_modified);
-            document.getElementById('nextAllowed').innerHTML = isSuperAdmin ? '站长无限制' : (remaining === 0 ? '现在即可修改' : `${remaining}天后`);
-            document.getElementById('role').innerHTML = isSuperAdmin ? '👑 站长' : (data.is_admin ? '管理员' : '普通用户');
-
-            // 设置个人主页链接（使用 user_number）
-            if (data.user_number) {
-                const profileLink = document.getElementById('profileLink');
-                profileLink.href = `/user/${data.user_number}`;
-            }
-
-            const updateBtn = document.getElementById('updateBtn');
-            if (!canModify) {
-                updateBtn.disabled = true;
-                updateBtn.title = `还需等待 ${remaining} 天才能修改用户名`;
-            } else {
-                updateBtn.disabled = false;
+                if (!canModify) {
+                    document.getElementById('updateBtn').title = `还需等待 ${remainingDays} 天才能修改用户名`;
+                } else {
+                    document.getElementById('updateBtn').addEventListener('click', () => updateUsername(profile.username, isSuperAdmin, lastModified));
+                }
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="error">加载失败: ${err.message}</div>`;
             }
         }
 
-        async function updateUsername() {
+        async function updateUsername(oldUsername, isSuperAdmin, lastModified) {
             const newUsername = document.getElementById('newUsername').value.trim();
+            const msgDiv = document.getElementById('msg');
             if (!newUsername) {
-                showMsg('请输入新用户名', 'error');
+                showMsg('请输入新用户名', 'error', msgDiv);
                 return;
             }
-            if (!isValidUsername(newUsername)) {
-                showMsg('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error');
+            if (!/^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(newUsername)) {
+                showMsg('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error', msgDiv);
                 return;
             }
-            // 检查是否与当前相同
-            if (newUsername === profileData.username) {
-                showMsg('新用户名与当前相同，无需修改', 'warning');
+            if (newUsername === oldUsername) {
+                showMsg('新用户名与当前相同，无需修改', 'warning', msgDiv);
                 return;
             }
-            // 检查唯一性
+            // 唯一性检查
             const { data: existing, error: checkError } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('username', newUsername)
                 .maybeSingle();
             if (existing) {
-                showMsg('用户名已被占用，请换一个', 'error');
+                showMsg('用户名已被占用，请换一个', 'error', msgDiv);
                 return;
             }
-
-            // 再次检查修改权限（避免前端绕过）
             if (!isSuperAdmin) {
-                const remaining = getRemainingDays(profileData.username_last_modified);
-                if (remaining > 0) {
-                    showMsg(`距离上次修改不足4个月，还需等待 ${remaining} 天`, 'error');
+                const now = new Date();
+                const next = new Date(lastModified);
+                next.setMonth(next.getMonth() + 4);
+                if (now < next) {
+                    const days = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+                    showMsg(`距离上次修改不足4个月，还需等待 ${days} 天`, 'error', msgDiv);
                     return;
                 }
             }
 
-            const updateBtn = document.getElementById('updateBtn');
-            updateBtn.disabled = true;
-            updateBtn.textContent = '提交中...';
+            const btn = document.getElementById('updateBtn');
+            btn.disabled = true;
+            btn.textContent = '提交中...';
 
             const { error } = await supabase
                 .from('profiles')
@@ -275,27 +251,35 @@
                     username: newUsername,
                     username_last_modified: new Date().toISOString()
                 })
-                .eq('id', currentUser.id);
+                .eq('id', (await supabase.auth.getSession()).data.session.user.id);
 
-            updateBtn.disabled = false;
-            updateBtn.textContent = '修改用户名';
+            btn.disabled = false;
+            btn.textContent = '修改用户名';
 
             if (error) {
-                showMsg('修改失败: ' + error.message, 'error');
+                showMsg('修改失败: ' + error.message, 'error', msgDiv);
             } else {
-                showMsg('用户名修改成功！页面即将刷新...', 'success');
+                showMsg('修改成功！页面即将刷新...', 'success', msgDiv);
                 setTimeout(() => location.reload(), 1500);
             }
         }
 
-        function showMsg(msg, type) {
-            const msgDiv = document.getElementById('msg');
+        function showMsg(msg, type, msgDiv) {
             msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
-            setTimeout(() => { msgDiv.innerHTML = ''; }, 4000);
+            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
         }
 
-        document.getElementById('updateBtn').addEventListener('click', updateUsername);
-        loadProfile();
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        loadPage();
     </script>
 </body>
 
