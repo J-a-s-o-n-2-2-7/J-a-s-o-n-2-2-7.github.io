@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人设置 - 修改用户名</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            color: #e74c3c;
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            color: #5b6e8c;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-group div {
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 130px;
+            display: inline-block;
+        }
+
+        .info-value {
+            color: #4a5b7a;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
+        }
+
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>⚙️ 个人设置</h1>
+        <div class="sub">修改你的用户名</div>
+
+        <div id="profileInfo" class="info-group">
+            <div><span class="info-label">当前用户名：</span><span id="currentUsername" class="info-value">加载中...</span></div>
+            <div><span class="info-label">邮箱：</span><span id="userEmail" class="info-value">加载中...</span></div>
+            <div><span class="info-label">上次修改：</span><span id="lastModified" class="info-value">加载中...</span></div>
+            <div><span class="info-label">下次可改：</span><span id="nextAllowed" class="info-value">加载中...</span></div>
+            <div><span class="info-label">身份：</span><span id="role" class="info-value">加载中...</span></div>
+        </div>
+
+        <div class="input-group">
+            <label>新用户名（6-16位字母/数字/下划线，不能以数字开头）</label>
+            <input type="text" id="newUsername" placeholder="输入新用户名" autocomplete="off">
+        </div>
+        <button id="updateBtn">修改用户名</button>
+        <div id="msg"></div>
+        <a href="/" class="back-link">← 返回首页</a>
+        <a href="/user/index.html?uid=?" id="profileLink" class="back-link" style="margin-left: 20px;">👤 我的主页</a>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let profileData = null;
+        let isSuperAdmin = false;
+
+        function isValidUsername(username) {
+            return /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(username);
+        }
+
+        function getRemainingDays(lastModified) {
+            if (!lastModified) return 0;
+            const last = new Date(lastModified);
+            const now = new Date();
+            const next = new Date(last);
+            next.setMonth(next.getMonth() + 4);
+            const diffMs = next - now;
+            if (diffMs <= 0) return 0;
+            return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '未知';
+            const d = new Date(dateStr);
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        async function loadProfile() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = '/login';
+                return;
+            }
+            currentUser = session.user;
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('username, email, user_number, username_last_modified, is_super_admin, is_admin')
+                .eq('id', currentUser.id)
+                .single();
+            if (error) {
+                document.getElementById('profileInfo').innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+                return;
+            }
+            profileData = data;
+            isSuperAdmin = data.is_super_admin === true;
+
+            const remaining = getRemainingDays(data.username_last_modified);
+            const canModify = isSuperAdmin || remaining === 0;
+
+            document.getElementById('currentUsername').innerText = data.username;
+            document.getElementById('userEmail').innerText = data.email;
+            document.getElementById('lastModified').innerText = formatDate(data.username_last_modified);
+            document.getElementById('nextAllowed').innerHTML = isSuperAdmin ? '站长无限制' : (remaining === 0 ? '现在即可修改' : `${remaining}天后`);
+            document.getElementById('role').innerHTML = isSuperAdmin ? '👑 站长' : (data.is_admin ? '管理员' : '普通用户');
+
+            // 设置个人主页链接（使用 user_number）
+            if (data.user_number) {
+                const profileLink = document.getElementById('profileLink');
+                profileLink.href = `/user/${data.user_number}`;
+            }
+
+            const updateBtn = document.getElementById('updateBtn');
+            if (!canModify) {
+                updateBtn.disabled = true;
+                updateBtn.title = `还需等待 ${remaining} 天才能修改用户名`;
+            } else {
+                updateBtn.disabled = false;
+            }
+        }
+
+        async function updateUsername() {
+            const newUsername = document.getElementById('newUsername').value.trim();
+            if (!newUsername) {
+                showMsg('请输入新用户名', 'error');
+                return;
+            }
+            if (!isValidUsername(newUsername)) {
+                showMsg('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error');
+                return;
+            }
+            // 检查是否与当前相同
+            if (newUsername === profileData.username) {
+                showMsg('新用户名与当前相同，无需修改', 'warning');
+                return;
+            }
+            // 检查唯一性
+            const { data: existing, error: checkError } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('username', newUsername)
+                .maybeSingle();
+            if (existing) {
+                showMsg('用户名已被占用，请换一个', 'error');
+                return;
+            }
+
+            // 再次检查修改权限（避免前端绕过）
+            if (!isSuperAdmin) {
+                const remaining = getRemainingDays(profileData.username_last_modified);
+                if (remaining > 0) {
+                    showMsg(`距离上次修改不足4个月，还需等待 ${remaining} 天`, 'error');
+                    return;
+                }
+            }
+
+            const updateBtn = document.getElementById('updateBtn');
+            updateBtn.disabled = true;
+            updateBtn.textContent = '提交中...';
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    username: newUsername,
+                    username_last_modified: new Date().toISOString()
+                })
+                .eq('id', currentUser.id);
+
+            updateBtn.disabled = false;
+            updateBtn.textContent = '修改用户名';
+
+            if (error) {
+                showMsg('修改失败: ' + error.message, 'error');
+            } else {
+                showMsg('用户名修改成功！页面即将刷新...', 'success');
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        function showMsg(msg, type) {
+            const msgDiv = document.getElementById('msg');
+            msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
+            setTimeout(() => { msgDiv.innerHTML = ''; }, 4000);
+        }
+
+        document.getElementById('updateBtn').addEventListener('click', updateUsername);
+        loadProfile();
+    </script>
+</body>
+
+</html>

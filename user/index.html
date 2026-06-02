@@ -15,7 +15,7 @@
 
         body {
             background: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             padding: 40px 20px;
             display: flex;
             justify-content: center;
@@ -25,7 +25,7 @@
 
         .profile-card {
             background: white;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             border-radius: 20px;
             padding: 30px;
@@ -63,6 +63,29 @@
             color: #5b6e8c;
             margin: 10px 0;
         }
+
+        .button-group {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 24px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+        }
     </style>
 </head>
 
@@ -72,16 +95,21 @@
         <p>加载中...</p>
     </div>
     <script>
-        (async function () {
-            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // 从当前路径中提取用户编号，例如 /user/1 → 1
+        // 获取当前登录用户的ID
+        let currentUserId = null;
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) currentUserId = session.user.id;
+            loadUserPage();
+        }).catch(err => console.error(err));
+
+        async function loadUserPage() {
             const path = window.location.pathname;           // 例如 "/user/1"
-            const match = path.match(/^\/user\/(\d+)/);      // 正则匹配数字
+            const match = path.match(/^\/user\/(\d+)/);
             const userNumber = match ? match[1] : null;
-
             const profileDiv = document.getElementById('profile');
 
             if (!userNumber) {
@@ -98,42 +126,65 @@
                 document.title = `${user.username} 的个人主页 - Jason227`;
                 const bannedUntil = user.banned_until ? new Date(user.banned_until) : null;
                 const now = new Date();
+
+                let isOwner = false;
+                if (currentUserId) {
+                    // 通过 user.email 获取该用户的 id（因为 RPC 返回了 email）
+                    if (user.email) {
+                        const { data: ownerData, error: ownerError } = await supabase
+                            .from('profiles')
+                            .select('id')
+                            .eq('email', user.email)
+                            .single();
+                        if (!ownerError && ownerData && ownerData.id === currentUserId) {
+                            isOwner = true;
+                        }
+                    }
+                }
+
+                let html = '';
                 if (bannedUntil && bannedUntil > now) {
-                    profileDiv.innerHTML = `
+                    html = `
                     <div class="avatar">⛔</div>
                     <h1>该用户已被封禁</h1>
                     <p class="banned">封禁至：${bannedUntil.toLocaleString()}</p>
                     <p class="info">编号 #${user.user_number}</p>
                 `;
                 } else {
-                    profileDiv.innerHTML = `
+                    html = `
                     <div class="avatar">${escapeHtml(user.username.charAt(0).toUpperCase())}</div>
                     <h1>${escapeHtml(user.username)}</h1>
                     <p class="info">编号 #${user.user_number}</p>
                     <p class="info">注册时间：${new Date(user.created_at).toLocaleDateString()}</p>
                     ${user.banned_until ? '<p class="info">⚠️ 曾封禁已解封</p>' : ''}
                 `;
+                    if (isOwner) {
+                        html += `<div class="button-group">
+                        <a href="/profile.html" class="btn">个人设置</a>
+                    </div>`;
+                    }
                 }
+                profileDiv.innerHTML = html;
             } catch (err) {
                 console.error('加载用户信息时出错:', err);
                 profileDiv.innerHTML = `
                 <div class="avatar">❌</div>
                 <h1>加载失败</h1>
                 <p class="error">${err.message}</p>
-                <p class="error">请检查控制台(F12)并确认 RPC 函数已创建。</p>
+                <p class="error">请检查控制台并确认 RPC 函数已创建。</p>
             `;
             }
+        }
 
-            function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/[&<>]/g, function (m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    return m;
-                });
-            }
-        })();
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
     </script>
 </body>
 
