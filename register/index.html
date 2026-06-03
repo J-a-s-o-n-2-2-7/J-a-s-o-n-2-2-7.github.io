@@ -26,7 +26,7 @@
 
         .register-card {
             background: white;
-            width: 420px;
+            width: 480px;
             max-width: 90%;
             border-radius: 16px;
             padding: 32px 28px;
@@ -47,6 +47,38 @@
             font-size: 14px;
         }
 
+        .tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 28px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #6c7a8e;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #e74c3c;
+            border-bottom-color: #e74c3c;
+        }
+
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
         .input-group {
             margin-bottom: 20px;
         }
@@ -65,6 +97,32 @@
             border-color: #e74c3c;
             box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
             background: white;
+        }
+
+        .info-note {
+            font-size: 12px;
+            color: #5b6e8c;
+            margin-top: -12px;
+            margin-bottom: 16px;
+            padding-left: 8px;
+        }
+
+        .verification-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .verification-row input {
+            flex: 1;
+        }
+
+        .verification-row button {
+            width: auto;
+            padding: 12px 16px;
+            background: #3498db;
+            font-size: 14px;
+            white-space: nowrap;
         }
 
         button {
@@ -106,6 +164,11 @@
             color: #166534;
         }
 
+        .info {
+            background: #e3f2fd;
+            color: #0c5460;
+        }
+
         .footer-links {
             text-align: center;
             margin-top: 24px;
@@ -115,10 +178,6 @@
         .footer-links a {
             color: #e74c3c;
             text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
         }
 
         .turnstile-wrapper {
@@ -159,37 +218,69 @@
     <div class="register-card">
         <h1>创建新账号</h1>
         <div class="sub">加入 Jason227 社区</div>
+
+        <div class="tabs">
+            <div class="tab active" data-type="email">邮箱注册</div>
+            <div class="tab" data-type="phone">手机号注册</div>
+        </div>
+
+        <!-- 邮箱注册面板（使用 Supabase 确认邮件） -->
+        <div id="emailPanel" class="form-panel active">
+            <div class="input-group">
+                <input type="email" id="regEmail" placeholder="邮箱" autocomplete="email">
+            </div>
+            <div class="info-note">📧 注册后请查收确认邮件，点击链接激活账号。</div>
+        </div>
+
+        <!-- 手机号注册面板（演示模式，暂不可用） -->
+        <div id="phonePanel" class="form-panel">
+            <div class="input-group">
+                <input type="tel" id="regPhone" placeholder="手机号" autocomplete="tel">
+            </div>
+            <div class="input-group">
+                <div class="verification-row">
+                    <input type="text" id="smsCode" placeholder="短信验证码" autocomplete="off">
+                    <button type="button" id="sendSmsCodeBtn">发送验证码</button>
+                </div>
+            </div>
+            <div class="info-note">⚠️ 手机号注册为演示模式，验证码固定为 123456，建议使用邮箱注册。</div>
+        </div>
+
+        <!-- 公共字段 -->
         <div class="input-group">
             <input type="text" id="regUsername" placeholder="用户名 (6-16位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
         </div>
         <div class="input-group">
-            <input type="email" id="regEmail" placeholder="邮箱" autocomplete="email">
-        </div>
-        <div class="input-group">
             <input type="password" id="regPassword" placeholder="密码（至少6位）" autocomplete="new-password">
         </div>
+
+        <!-- 图形验证码 -->
         <div class="input-group">
             <div class="captcha-row">
-                <input type="text" id="captchaInput" placeholder="验证码" autocomplete="off" maxlength="6">
+                <input type="text" id="captchaInput" placeholder="图形验证码" autocomplete="off" maxlength="6">
                 <canvas id="captchaCanvas" width="120" height="44"></canvas>
             </div>
             <div class="captcha-hint">点击图片刷新验证码</div>
         </div>
+
+        <!-- Turnstile -->
         <div class="turnstile-wrapper">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
         </div>
+
         <button id="registerBtn">注册</button>
         <div id="regMsg" class="message"></div>
         <div class="footer-links">
             已有账号？ <a href="/login">立即登录</a>
         </div>
     </div>
+
     <script>
         const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== 图形验证码（大小写不敏感，统一为大写） ==========
+        // ========== 图形验证码 ==========
         let currentCaptcha = '';
         const canvas = document.getElementById('captchaCanvas');
         const ctx = canvas.getContext('2d');
@@ -198,14 +289,12 @@
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
             let captcha = '';
             for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
-            // 转为大写，实现大小写不敏感
             currentCaptcha = captcha.toUpperCase();
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#f9fafb';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 干扰线
             for (let i = 0; i < 6; i++) {
                 ctx.beginPath();
                 ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
@@ -213,12 +302,10 @@
                 ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
                 ctx.stroke();
             }
-            // 噪点
             for (let i = 0; i < 60; i++) {
                 ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
                 ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
             }
-            // 绘制文字（显示大写字母）
             for (let i = 0; i < currentCaptcha.length; i++) {
                 ctx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
                 ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
@@ -235,10 +322,50 @@
         canvas.addEventListener('click', generateCaptcha);
         generateCaptcha();
 
-        // 用户名辅助函数
+        // ========== 选项卡切换 ==========
+        const emailPanel = document.getElementById('emailPanel');
+        const phonePanel = document.getElementById('phonePanel');
+        const tabs = document.querySelectorAll('.tab');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const type = tab.getAttribute('data-type');
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (type === 'email') {
+                    emailPanel.classList.add('active');
+                    phonePanel.classList.remove('active');
+                } else {
+                    phonePanel.classList.add('active');
+                    emailPanel.classList.remove('active');
+                }
+                document.getElementById('regMsg').innerHTML = '';
+            });
+        });
+
+        // ========== 手机号验证码（演示） ==========
+        document.getElementById('sendSmsCodeBtn').addEventListener('click', () => {
+            const phone = document.getElementById('regPhone').value.trim();
+            if (!phone) {
+                showMessage('请先填写手机号', 'error');
+                return;
+            }
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                showMessage('手机号格式不正确', 'error');
+                return;
+            }
+            showMessage('演示模式：验证码为 123456', 'info');
+            document.getElementById('smsCode').value = '123456';
+        });
+
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('regMsg');
+            msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
+            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
+        }
+
         function isValidUsername(username) {
-            const re = /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/;
-            return re.test(username);
+            return /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(username);
         }
 
         async function isUsernameUnique(username) {
@@ -247,41 +374,36 @@
                 .select('username')
                 .eq('username', username)
                 .maybeSingle();
-            if (error && error.code !== 'PGRST116') {
-                console.error(error);
-                return false;
-            }
+            if (error && error.code !== 'PGRST116') return false;
             return !data;
         }
 
         const registerBtn = document.getElementById('registerBtn');
-        const regMsg = document.getElementById('regMsg');
 
         async function handleRegister() {
             const username = document.getElementById('regUsername').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
             const userCaptcha = document.getElementById('captchaInput').value.trim();
+            const activeTab = document.querySelector('.tab.active').getAttribute('data-type');
 
-            if (!username || !email || !password) {
-                regMsg.innerHTML = '<div class="message error">请填写所有字段</div>';
+            if (!username || !password) {
+                showMessage('请填写用户名和密码', 'error');
                 return;
             }
             if (!isValidUsername(username)) {
-                regMsg.innerHTML = '<div class="message error">用户名格式：6-16位字母/数字/下划线，不能以数字开头</div>';
+                showMessage('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error');
                 return;
             }
             if (password.length < 6) {
-                regMsg.innerHTML = '<div class="message error">密码长度至少6位</div>';
+                showMessage('密码长度至少6位', 'error');
                 return;
             }
             if (!userCaptcha) {
-                regMsg.innerHTML = '<div class="message error">请输入图形验证码</div>';
+                showMessage('请输入图形验证码', 'error');
                 return;
             }
-            // 大小写不敏感比较：将用户输入转为大写
             if (userCaptcha.toUpperCase() !== currentCaptcha) {
-                regMsg.innerHTML = '<div class="message error">图形验证码错误</div>';
+                showMessage('图形验证码错误', 'error');
                 generateCaptcha();
                 document.getElementById('captchaInput').value = '';
                 return;
@@ -289,27 +411,73 @@
 
             const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
             if (!captchaToken) {
-                regMsg.innerHTML = '<div class="message error">请完成安全验证</div>';
+                showMessage('请完成安全验证', 'error');
                 return;
             }
 
+            let email, phone, smsCode;
+
+            if (activeTab === 'email') {
+                email = document.getElementById('regEmail').value.trim();
+                if (!email) {
+                    showMessage('请填写邮箱', 'error');
+                    return;
+                }
+                if (!/^\S+@\S+\.\S+$/.test(email)) {
+                    showMessage('邮箱格式不正确', 'error');
+                    return;
+                }
+            } else {
+                phone = document.getElementById('regPhone').value.trim();
+                smsCode = document.getElementById('smsCode').value.trim();
+                if (!phone) {
+                    showMessage('请填写手机号', 'error');
+                    return;
+                }
+                if (!/^1[3-9]\d{9}$/.test(phone)) {
+                    showMessage('手机号格式不正确', 'error');
+                    return;
+                }
+                if (!smsCode) {
+                    showMessage('请输入短信验证码', 'error');
+                    return;
+                }
+                if (smsCode !== '123456') {
+                    showMessage('短信验证码错误', 'error');
+                    return;
+                }
+                // 手机号注册：生成虚拟邮箱
+                email = `phone+${phone}@temp.com`;
+            }
+
+            // 检查用户名唯一性
             const unique = await isUsernameUnique(username);
             if (!unique) {
-                regMsg.innerHTML = '<div class="message error">用户名已被占用，请换一个</div>';
+                showMessage('用户名已被占用，请换一个', 'error');
                 return;
             }
 
             registerBtn.disabled = true;
             registerBtn.textContent = '注册中...';
 
+            // 注册选项：邮箱注册需要用户确认邮件，手机号注册则自动确认（因为虚拟邮箱无需确认）
+            const options = { captchaToken };
+            if (activeTab === 'email') {
+                // 邮箱注册：Supabase 默认会发送确认邮件
+                options.emailRedirectTo = `${window.location.origin}/login`; // 可选：确认后跳转地址
+            } else {
+                // 手机号注册：自动确认（避免用户需要去虚拟邮箱确认）
+                options.data = { confirm_email: true };
+            }
+
             const { data: authData, error: signUpError } = await sb.auth.signUp({
                 email,
                 password,
-                options: { captchaToken }
+                options
             });
 
             if (signUpError) {
-                regMsg.innerHTML = `<div class="message error">${signUpError.message}</div>`;
+                showMessage(signUpError.message, 'error');
                 registerBtn.disabled = false;
                 registerBtn.textContent = '注册';
                 return;
@@ -317,28 +485,35 @@
 
             const userId = authData.user?.id;
             if (!userId) {
-                regMsg.innerHTML = '<div class="message error">注册失败，请稍后重试</div>';
+                showMessage('注册失败，请稍后重试', 'error');
                 registerBtn.disabled = false;
                 registerBtn.textContent = '注册';
                 return;
             }
+
+            const profileData = { id: userId, username, email };
+            if (phone) profileData.phone = phone;
 
             const { error: profileError } = await sb
                 .from('profiles')
-                .insert([{ id: userId, username, email }]);
+                .insert([profileData]);
 
             if (profileError) {
                 console.error(profileError);
-                regMsg.innerHTML = '<div class="message error">注册失败，用户名可能冲突，请重试</div>';
+                showMessage('注册失败，用户名可能冲突，请重试', 'error');
                 registerBtn.disabled = false;
                 registerBtn.textContent = '注册';
                 return;
             }
 
-            regMsg.innerHTML = '<div class="message success">注册成功！请前往登录</div>';
+            if (activeTab === 'email') {
+                showMessage('注册成功！请查收确认邮件（可能在垃圾箱），点击链接激活账号后即可登录。', 'success');
+            } else {
+                showMessage('注册成功！请前往登录', 'success');
+            }
             setTimeout(() => {
                 window.location.href = '/login';
-            }, 2000);
+            }, 3000);
         }
 
         registerBtn.addEventListener('click', handleRegister);

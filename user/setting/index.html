@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息 - Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            max-width: 700px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            color: #e74c3c;
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            color: #5b6e8c;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .button-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #6c7a8e;
+            padding: 8px 0;
+            text-decoration: none;
+        }
+
+        .nav-btn.active {
+            color: #e74c3c;
+            border-bottom: 2px solid #e74c3c;
+            cursor: default;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .field-group input,
+        .field-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #f9fafb;
+        }
+
+        .field-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e9ecef;
+            border: 2px solid #e74c3c;
+        }
+
+        .avatar-upload-btn {
+            background: #3498db;
+            padding: 8px 16px;
+            border-radius: 30px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .small-note {
+            font-size: 12px;
+            color: #6c7a8e;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>⚙️ 用户设置</h1>
+        <div class="sub">管理你的账户信息</div>
+
+        <div class="button-bar">
+            <span class="nav-btn active">个人信息</span>
+            <a href="/user/setting/security" class="nav-btn">安全设置</a>
+        </div>
+
+        <div class="avatar-section">
+            <img id="avatarImg" class="avatar-preview" src="https://placehold.co/80" alt="头像">
+            <div>
+                <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/gif" style="display:none;">
+                <button id="uploadAvatarBtn" class="avatar-upload-btn" style="width:auto;">选择头像</button>
+                <p class="small-note">支持 JPG/PNG，建议正方形图片</p>
+            </div>
+        </div>
+        <div class="field-group">
+            <label>用户名</label>
+            <input type="text" id="username" disabled style="background:#f0f0f0;">
+        </div>
+        <div class="field-group">
+            <label>个人简介</label>
+            <textarea id="bio" placeholder="介绍一下你自己..."></textarea>
+        </div>
+        <div class="field-group">
+            <label>邮箱</label>
+            <input type="email" id="email" disabled style="background:#f0f0f0;">
+        </div>
+        <button id="updateProfileBtn">保存修改</button>
+        <div id="profileMsg"></div>
+
+        <a href="/" class="back-link">← 返回首页</a>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null;
+
+        async function loadUserData() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = '/login';
+                return;
+            }
+            currentUser = session.user;
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('username, bio, avatar_url')
+                .eq('id', currentUser.id)
+                .single();
+            if (!error && data) {
+                document.getElementById('username').value = data.username || '';
+                document.getElementById('bio').value = data.bio || '';
+                if (data.avatar_url) document.getElementById('avatarImg').src = data.avatar_url;
+            } else {
+                document.getElementById('username').value = currentUser.email;
+            }
+            document.getElementById('email').value = currentUser.email;
+        }
+
+        async function updateProfile() {
+            const bio = document.getElementById('bio').value.trim();
+            const btn = document.getElementById('updateProfileBtn');
+            const msgDiv = document.getElementById('profileMsg');
+            btn.disabled = true; btn.textContent = '保存中...';
+            const { error } = await supabase.from('profiles').update({ bio }).eq('id', currentUser.id);
+            btn.disabled = false; btn.textContent = '保存修改';
+            if (error) msgDiv.innerHTML = `<div class="message error">更新失败: ${error.message}</div>`;
+            else { msgDiv.innerHTML = '<div class="message success">保存成功！</div>'; setTimeout(() => msgDiv.innerHTML = '', 3000); }
+        }
+
+        async function uploadAvatar(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+            const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+            if (uploadError) throw new Error(`上传失败: ${uploadError.message}`);
+            const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+            const { error: updateError } = await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+            if (updateError) throw new Error(`更新头像URL失败: ${updateError.message}`);
+            return publicUrl;
+        }
+
+        document.getElementById('uploadAvatarBtn').addEventListener('click', () => document.getElementById('avatarInput').click());
+        document.getElementById('avatarInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('请选择图片文件'); return; }
+            const msgDiv = document.getElementById('profileMsg');
+            const btn = document.getElementById('uploadAvatarBtn');
+            btn.disabled = true; btn.textContent = '上传中...';
+            try {
+                const url = await uploadAvatar(file);
+                document.getElementById('avatarImg').src = url;
+                msgDiv.innerHTML = '<div class="message success">头像更新成功！</div>';
+                setTimeout(() => msgDiv.innerHTML = '', 3000);
+            } catch (err) { msgDiv.innerHTML = `<div class="message error">${err.message}</div>`; }
+            finally { btn.disabled = false; btn.textContent = '选择头像'; document.getElementById('avatarInput').value = ''; }
+        });
+
+        document.getElementById('updateProfileBtn').addEventListener('click', updateProfile);
+        loadUserData();
+    </script>
+</body>
+
+</html>
