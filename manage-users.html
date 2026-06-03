@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -63,6 +63,14 @@
             font-size: 12px;
         }
 
+        .super-admin-badge {
+            background: #8e44ad;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
         button {
             background: #e74c3c;
             color: white;
@@ -71,6 +79,11 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 13px;
+            margin-right: 6px;
+        }
+
+        button.secondary {
+            background: #3498db;
         }
 
         button:disabled {
@@ -97,6 +110,35 @@
             background: #7f8c8d;
             margin-bottom: 20px;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 350px;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            margin: 12px 0;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
@@ -104,118 +146,190 @@
     <div class="container" id="app">
         <button class="logout-btn" id="logoutBtn">登出</button>
         <h1>👥 用户管理</h1>
-        <div class="sub">这里可以查看所有用户，并授予或撤销其他用户的管理员权限。</div>
+        <div class="sub">这里可以查看所有用户，授予/撤销管理员权限，重置用户密码（站长专属）</div>
         <div id="content">
             <div class="loading">加载中...</div>
         </div>
     </div>
+
+    <div id="resetPwdModal" class="modal">
+        <div class="modal-content">
+            <h3>重置用户密码</h3>
+            <p id="resetUserEmail" style="margin-bottom:8px;"></p>
+            <input type="password" id="newPwdInput" placeholder="新密码（至少6位）">
+            <button id="confirmResetBtn">确认重置</button>
+            <button id="cancelResetBtn" style="background:#7f8c8d; margin-top:8px;">取消</button>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        const EDGE_FUNCTION_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/reset-password';
+        const ADMIN_SECRET = 'supabasetiti0730';
+
         let currentUser = null;
-        let isCurrentUserAdmin = false;
+        let isSuperAdmin = false;
+        let currentUserId = null;
+        let pendingResetUserId = null;
+        let pendingResetEmail = null;
+
+        const modal = document.getElementById('resetPwdModal');
+        const newPwdInput = document.getElementById('newPwdInput');
+        const resetUserEmailSpan = document.getElementById('resetUserEmail');
+
+        function showError(message) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
 
         async function checkAuth() {
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) {
-                console.error('session错误:', sessionError);
-                document.getElementById('content').innerHTML = `<div class="error">获取登录状态失败: ${sessionError.message}</div>`;
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw new Error(`获取会话失败: ${sessionError.message}`);
+                if (!session) {
+                    window.location.href = '/login';
+                    return null;
+                }
+                currentUserId = session.user.id;
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('is_super_admin, is_admin')
+                    .eq('id', currentUserId)
+                    .single();
+                if (error) throw new Error(`查询权限失败: ${error.message}`);
+                isSuperAdmin = data?.is_super_admin === true;
+                const isAdmin = data?.is_admin === true;
+                if (!isSuperAdmin && !isAdmin) {
+                    showError('⛔ 你没有管理员权限，无法访问此页面。');
+                    return null;
+                }
+                return session;
+            } catch (err) {
+                showError(err.message);
                 return null;
             }
-            if (!session) {
-                window.location.href = '/login';
-                return null;
-            }
-            currentUser = session.user;
-            // 查询当前用户的管理员状态
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('is_admin')
-                .eq('id', currentUser.id)
-                .maybeSingle();
-            if (error) {
-                console.error('查询管理员状态失败:', error);
-                document.getElementById('content').innerHTML = `<div class="error">查询权限失败: ${error.message}<br>请检查 Supabase RLS 策略或确认 profiles 表存在。</div>`;
-                return null;
-            }
-            isCurrentUserAdmin = data?.is_admin === true;
-            if (!isCurrentUserAdmin) {
-                document.getElementById('content').innerHTML = '<div class="error">⛔ 你没有管理员权限，无法访问此页面。请确保数据库中你的 is_admin 为 true。</div>';
-                return null;
-            }
-            return session;
         }
 
         async function loadUsers() {
-            const { data: users, error } = await supabase
-                .from('profiles')
-                .select('id, username, email, is_admin')
-                .order('created_at', { ascending: true });
-            if (error) {
-                console.error('加载用户列表失败:', error);
-                document.getElementById('content').innerHTML = `<div class="error">加载用户列表失败: ${error.message}<br>请确保你有权限读取 profiles 表（管理员策略）。</div>`;
-                return;
+            try {
+                const { data: users, error } = await supabase
+                    .from('profiles')
+                    .select('id, username, email, is_admin, is_super_admin, username_last_modified')
+                    .order('created_at', { ascending: true });
+                if (error) throw new Error(`加载用户列表失败: ${error.message}`);
+                if (!users || users.length === 0) {
+                    document.getElementById('content').innerHTML = '<div class="loading">暂无用户</div>';
+                    return;
+                }
+                renderUserTable(users);
+            } catch (err) {
+                showError(err.message);
             }
-            renderUserTable(users);
-        }
-
-        function renderUserTable(users) {
-            let rows = '';
-            for (const user of users) {
-                rows += `
-                <tr>
-                    <td>${escapeHtml(user.username)}</td>
-                    <td>${escapeHtml(user.email)}</td>
-                    <td>${user.is_admin ? '<span class="admin-badge">是</span>' : '否'}</td>
-                    <td>${user.id === currentUser.id ? '（自己）' : `<button onclick="toggleAdmin('${user.id}', ${user.is_admin})">${user.is_admin ? '撤销管理员' : '设为管理员'}</button>`}</td>
-                </tr>
-            `;
-            }
-            const html = `
-            <table>
-                <thead><tr><th>用户名</th><th>邮箱</th><th>管理员</th><th>操作</th></tr></thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
-            document.getElementById('content').innerHTML = html;
         }
 
         async function toggleAdmin(userId, currentIsAdmin) {
+            if (!isSuperAdmin) { alert('只有站长可以操作管理员权限'); return; }
             if (!confirm(`确定要${currentIsAdmin ? '撤销' : '授予'}该用户管理员权限吗？`)) return;
             const { error } = await supabase
                 .from('profiles')
                 .update({ is_admin: !currentIsAdmin })
                 .eq('id', userId);
-            if (error) {
-                alert('操作失败: ' + error.message);
-            } else {
-                alert('操作成功');
-                await loadUsers();
+            if (error) alert('操作失败: ' + error.message);
+            else { alert('操作成功'); await loadUsers(); }
+        }
+
+        async function editUsername(userId, currentUsername) {
+            if (!isSuperAdmin) { alert('只有站长可以修改用户名'); return; }
+            const newUsername = prompt(`请输入新用户名（当前: ${currentUsername}）\n格式：6-16位字母/数字/下划线，不能以数字开头`, currentUsername);
+            if (!newUsername || newUsername === currentUsername) return;
+            if (!/^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(newUsername)) { alert('用户名格式不正确'); return; }
+            const { data: existing } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('username', newUsername)
+                .maybeSingle();
+            if (existing && existing.username !== currentUsername) { alert('用户名已被占用'); return; }
+            const { error } = await supabase
+                .from('profiles')
+                .update({ username: newUsername, username_last_modified: new Date().toISOString() })
+                .eq('id', userId);
+            if (error) alert('修改失败: ' + error.message);
+            else { alert('修改成功'); await loadUsers(); }
+        }
+
+        function showResetModal(userId, email) {
+            pendingResetUserId = userId;
+            pendingResetEmail = email;
+            resetUserEmailSpan.innerText = `用户邮箱: ${email}`;
+            newPwdInput.value = '';
+            modal.style.display = 'flex';
+        }
+
+        async function confirmReset() {
+            const newPassword = newPwdInput.value.trim();
+            if (!newPassword) { alert('请输入新密码'); return; }
+            if (newPassword.length < 6) { alert('新密码至少6位'); return; }
+            const confirmBtn = document.getElementById('confirmResetBtn');
+            confirmBtn.disabled = true; confirmBtn.textContent = '提交中...';
+            try {
+                const response = await fetch(EDGE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    body: JSON.stringify({ userId: pendingResetUserId, newPassword })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`密码重置成功！新密码：${newPassword}`);
+                    modal.style.display = 'none';
+                } else {
+                    alert(`重置失败: ${result.error || '未知错误'}`);
+                }
+            } catch (err) {
+                alert('网络错误: ' + err.message);
+            } finally {
+                confirmBtn.disabled = false; confirmBtn.textContent = '确认重置';
             }
+        }
+
+        function renderUserTable(users) {
+            let rows = '';
+            for (const user of users) {
+                const isSelf = user.id === currentUserId;
+                rows += `
+                <tr>
+                    <td>${escapeHtml(user.username)}${user.is_super_admin ? ' <span class="super-admin-badge">站长</span>' : ''}</td>
+                    <td>${escapeHtml(user.email)}</td>
+                    <td>${user.is_admin ? '<span class="admin-badge">是</span>' : '否'}${user.is_super_admin ? '（站长）' : ''}</td>
+                    <td>
+                        ${isSuperAdmin && !user.is_super_admin && !isSelf ? `<button onclick="toggleAdmin('${user.id}', ${user.is_admin})">${user.is_admin ? '撤销管理员' : '设为管理员'}</button>` : ''}
+                        ${isSuperAdmin ? `<button class="secondary" onclick="showResetModal('${user.id}', '${escapeHtml(user.email)}')">重置密码</button>` : ''}
+                        <button class="secondary edit-username" onclick="editUsername('${user.id}', '${escapeHtml(user.username)}')">修改用户名</button>
+                    </td>
+                </tr>
+            `;
+            }
+            const html = `<table><thead><tr><th>用户名</th><th>邮箱</th><th>管理员</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table>`;
+            document.getElementById('content').innerHTML = html;
         }
 
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function (m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.href = '/';
         });
+        document.getElementById('confirmResetBtn').addEventListener('click', confirmReset);
+        document.getElementById('cancelResetBtn').addEventListener('click', () => modal.style.display = 'none');
 
         (async () => {
             const session = await checkAuth();
-            if (session && isCurrentUserAdmin) {
-                await loadUsers();
-            }
+            if (session) await loadUsers();
         })();
     </script>
 </body>
