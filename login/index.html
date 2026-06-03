@@ -148,6 +148,23 @@
             display: flex;
             justify-content: center;
         }
+
+        /* 新增忘记密码链接样式 */
+        .forgot-password {
+            text-align: right;
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+
+        .forgot-password a {
+            font-size: 13px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -160,6 +177,10 @@
         </div>
         <div class="input-group">
             <input type="password" id="loginPassword" placeholder="密码" autocomplete="current-password">
+        </div>
+        <!-- 新增忘记密码链接 -->
+        <div class="forgot-password">
+            <a href="#" id="forgotPwdLink">忘记密码？</a>
         </div>
         <div class="input-group">
             <div class="captcha-row">
@@ -254,6 +275,28 @@
             }
         }
 
+        // ========== 忘记密码功能 ==========
+        async function forgotPassword() {
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            if (!identifier) {
+                alert('请输入注册时使用的手机号/用户名/邮箱');
+                return;
+            }
+            const email = await getEmailByIdentifier(identifier);
+            if (!email) {
+                alert('未找到对应的账号');
+                return;
+            }
+            const { error } = await sb.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/login` // 重置后跳转回登录页
+            });
+            if (error) {
+                alert('发送失败: ' + error.message);
+            } else {
+                alert('密码重置邮件已发送，请查收邮箱（注意垃圾箱）');
+            }
+        }
+
         const loginBtn = document.getElementById('loginBtn');
         const loginMsg = document.getElementById('loginMsg');
         let isSubmitting = false;
@@ -338,6 +381,12 @@
                 loginBtn.disabled = false;
             }
         }
+
+        // 绑定忘记密码事件
+        document.getElementById('forgotPwdLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotPassword();
+        });
 
         loginBtn.addEventListener('click', handleLogin);
     </script>
