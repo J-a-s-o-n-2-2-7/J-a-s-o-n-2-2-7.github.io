@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * {
             margin: 0;
@@ -71,19 +70,12 @@
             border-bottom-color: #e74c3c;
         }
 
-        .form-panel {
-            display: none;
-        }
-
-        .form-panel.active {
-            display: block;
-        }
-
         .input-group {
             margin-bottom: 20px;
         }
 
-        .input-group input {
+        .input-group input,
+        .verification-row input {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #d1d5db;
@@ -92,7 +84,8 @@
             background: #f9fafb;
         }
 
-        .input-group input:focus {
+        .input-group input:focus,
+        .verification-row input:focus {
             outline: none;
             border-color: #e74c3c;
             box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
@@ -111,18 +104,23 @@
             display: flex;
             gap: 12px;
             align-items: center;
-        }
-
-        .verification-row input {
-            flex: 1;
+            margin-bottom: 20px;
         }
 
         .verification-row button {
             width: auto;
             padding: 12px 16px;
-            background: #3498db;
+            background: #e74c3c;
             font-size: 14px;
             white-space: nowrap;
+            border: none;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .verification-row button:hover {
+            background: #c0392b;
         }
 
         button {
@@ -180,16 +178,11 @@
             text-decoration: none;
         }
 
-        .turnstile-wrapper {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
-
         .captcha-row {
             display: flex;
             gap: 12px;
             align-items: center;
+            margin-bottom: 20px;
         }
 
         .captcha-row input {
@@ -211,47 +204,51 @@
             margin-top: 4px;
             text-align: right;
         }
+
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
     <div class="register-card">
-        <h1>创建新账号</h1>
-        <div class="sub">加入 Jason227 社区</div>
+        <h1>✨ Jason227</h1>
+        <div class="sub">注册账号</div>
 
         <div class="tabs">
             <div class="tab active" data-type="email">邮箱注册</div>
             <div class="tab" data-type="phone">手机号注册</div>
         </div>
 
-        <!-- 邮箱注册面板（使用 Supabase 确认邮件） -->
+        <!-- 公共字段 -->
+        <div class="input-group">
+            <input type="text" id="regUsername" placeholder="用户名 (4-20位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <input type="password" id="regPassword" placeholder="密码（至少6位）" autocomplete="new-password">
+        </div>
+        <div class="input-group">
+            <input type="password" id="confirmPassword" placeholder="再次输入密码" autocomplete="off">
+        </div>
+
+        <!-- 邮箱注册面板 -->
         <div id="emailPanel" class="form-panel active">
             <div class="input-group">
                 <input type="email" id="regEmail" placeholder="邮箱" autocomplete="email">
             </div>
-            <div class="info-note">📧 注册后请查收确认邮件，点击链接激活账号。</div>
         </div>
 
-        <!-- 手机号注册面板（演示模式，暂不可用） -->
+        <!-- 手机号注册面板 -->
         <div id="phonePanel" class="form-panel">
             <div class="input-group">
                 <input type="tel" id="regPhone" placeholder="手机号" autocomplete="tel">
             </div>
-            <div class="input-group">
-                <div class="verification-row">
-                    <input type="text" id="smsCode" placeholder="短信验证码" autocomplete="off">
-                    <button type="button" id="sendSmsCodeBtn">发送验证码</button>
-                </div>
-            </div>
             <div class="info-note">⚠️ 手机号注册为演示模式，验证码固定为 123456，建议使用邮箱注册。</div>
-        </div>
-
-        <!-- 公共字段 -->
-        <div class="input-group">
-            <input type="text" id="regUsername" placeholder="用户名 (6-16位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
-        </div>
-        <div class="input-group">
-            <input type="password" id="regPassword" placeholder="密码（至少6位）" autocomplete="new-password">
         </div>
 
         <!-- 图形验证码 -->
@@ -260,18 +257,22 @@
                 <input type="text" id="captchaInput" placeholder="图形验证码" autocomplete="off" maxlength="6">
                 <canvas id="captchaCanvas" width="120" height="44"></canvas>
             </div>
-            <div class="captcha-hint">点击图片刷新验证码</div>
         </div>
 
-        <!-- Turnstile -->
-        <div class="turnstile-wrapper">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
+        <!-- 6位数字验证码行 -->
+        <div id="emailVerification" class="verification-row">
+            <input type="text" id="emailCode" placeholder="邮箱验证码" autocomplete="off" maxlength="6">
+            <button type="button" id="sendEmailCodeBtn">发送验证码</button>
+        </div>
+        <div id="phoneVerification" class="verification-row" style="display: none;">
+            <input type="text" id="smsCode" placeholder="短信验证码" autocomplete="off" maxlength="6">
+            <button type="button" id="sendSmsCodeBtn">发送验证码</button>
         </div>
 
         <button id="registerBtn">注册</button>
         <div id="regMsg" class="message"></div>
         <div class="footer-links">
-            已有账号？ <a href="/auth/login">立即登录</a>
+            <a href="/auth/login">已有账号？</a>
         </div>
     </div>
 
@@ -280,21 +281,23 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== 图形验证码 ==========
+        // Edge Function 配置
+        const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-email-code';
+        const EDGE_VERIFY_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-email-code';
+        const ADMIN_SECRET = 'supabasetiti0730';
+
+        // 图形验证码
         let currentCaptcha = '';
         const canvas = document.getElementById('captchaCanvas');
         const ctx = canvas.getContext('2d');
-
         function generateCaptcha() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
             let captcha = '';
             for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
             currentCaptcha = captcha.toUpperCase();
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#f9fafb';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             for (let i = 0; i < 6; i++) {
                 ctx.beginPath();
                 ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
@@ -318,15 +321,15 @@
                 ctx.restore();
             }
         }
-
         canvas.addEventListener('click', generateCaptcha);
         generateCaptcha();
 
-        // ========== 选项卡切换 ==========
+        // 选项卡切换
         const emailPanel = document.getElementById('emailPanel');
         const phonePanel = document.getElementById('phonePanel');
+        const emailVerification = document.getElementById('emailVerification');
+        const phoneVerification = document.getElementById('phoneVerification');
         const tabs = document.querySelectorAll('.tab');
-
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const type = tab.getAttribute('data-type');
@@ -335,28 +338,99 @@
                 if (type === 'email') {
                     emailPanel.classList.add('active');
                     phonePanel.classList.remove('active');
+                    emailVerification.style.display = 'flex';
+                    phoneVerification.style.display = 'none';
                 } else {
                     phonePanel.classList.add('active');
                     emailPanel.classList.remove('active');
+                    phoneVerification.style.display = 'flex';
+                    emailVerification.style.display = 'none';
                 }
                 document.getElementById('regMsg').innerHTML = '';
             });
         });
 
-        // ========== 手机号验证码（演示） ==========
-        document.getElementById('sendSmsCodeBtn').addEventListener('click', () => {
+        // 邮箱发送验证码（真实调用 Edge Function）
+        let emailTimer = null;
+        let emailCountdown = 0;
+        const sendEmailBtn = document.getElementById('sendEmailCodeBtn');
+        async function sendEmailCode() {
+            const email = document.getElementById('regEmail').value.trim();
+            if (!email) { showMessage('请先填写邮箱', 'error'); return; }
+            if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
+            // 图形验证码校验（防止滥用）
+            const userCaptcha = document.getElementById('captchaInput').value.trim();
+            if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
+            if (userCaptcha.toUpperCase() !== currentCaptcha) { showMessage('图形验证码错误', 'error'); generateCaptcha(); return; }
+
+            sendEmailBtn.disabled = true;
+            sendEmailBtn.textContent = '发送中...';
+            try {
+                const response = await fetch(EDGE_SEND_CODE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    body: JSON.stringify({ email })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showMessage('验证码已发送至邮箱，有效期10分钟', 'success');
+                    startEmailCountdown(60);
+                } else {
+                    showMessage(`发送失败: ${result.error}`, 'error');
+                    sendEmailBtn.disabled = false;
+                    sendEmailBtn.textContent = '发送验证码';
+                }
+            } catch (err) {
+                showMessage('网络错误', 'error');
+                sendEmailBtn.disabled = false;
+                sendEmailBtn.textContent = '发送验证码';
+            }
+        }
+        function startEmailCountdown(seconds) {
+            emailCountdown = seconds;
+            sendEmailBtn.disabled = true;
+            if (emailTimer) clearInterval(emailTimer);
+            emailTimer = setInterval(() => {
+                if (emailCountdown <= 0) {
+                    clearInterval(emailTimer);
+                    sendEmailBtn.disabled = false;
+                    sendEmailBtn.textContent = '发送验证码';
+                } else {
+                    sendEmailBtn.textContent = `${emailCountdown}秒后重试`;
+                    emailCountdown--;
+                }
+            }, 1000);
+        }
+        sendEmailBtn.addEventListener('click', sendEmailCode);
+
+        // 手机号发送验证码（演示）
+        let phoneTimer = null;
+        let phoneCountdown = 0;
+        const sendPhoneBtn = document.getElementById('sendSmsCodeBtn');
+        async function sendPhoneCode() {
             const phone = document.getElementById('regPhone').value.trim();
-            if (!phone) {
-                showMessage('请先填写手机号', 'error');
-                return;
-            }
-            if (!/^1[3-9]\d{9}$/.test(phone)) {
-                showMessage('手机号格式不正确', 'error');
-                return;
-            }
+            if (!phone) { showMessage('请先填写手机号', 'error'); return; }
+            if (!/^1[3-9]\d{9}$/.test(phone)) { showMessage('手机号格式不正确', 'error'); return; }
             showMessage('演示模式：验证码为 123456', 'info');
             document.getElementById('smsCode').value = '123456';
-        });
+            startPhoneCountdown(60);
+        }
+        function startPhoneCountdown(seconds) {
+            phoneCountdown = seconds;
+            sendPhoneBtn.disabled = true;
+            if (phoneTimer) clearInterval(phoneTimer);
+            phoneTimer = setInterval(() => {
+                if (phoneCountdown <= 0) {
+                    clearInterval(phoneTimer);
+                    sendPhoneBtn.disabled = false;
+                    sendPhoneBtn.textContent = '发送验证码';
+                } else {
+                    sendPhoneBtn.textContent = `${phoneCountdown}秒后重试`;
+                    phoneCountdown--;
+                }
+            }, 1000);
+        }
+        sendPhoneBtn.addEventListener('click', sendPhoneCode);
 
         function showMessage(msg, type) {
             const msgDiv = document.getElementById('regMsg');
@@ -364,8 +438,9 @@
             setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
         }
 
+        // 用户名验证规则：4-20位（首字符字母或下划线，后续3-19个字母数字下划线）
         function isValidUsername(username) {
-            return /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/.test(username);
+            return /^[a-zA-Z_][a-zA-Z0-9_]{3,19}$/.test(username);
         }
 
         async function isUsernameUnique(username) {
@@ -379,19 +454,23 @@
         }
 
         const registerBtn = document.getElementById('registerBtn');
-
         async function handleRegister() {
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
             const userCaptcha = document.getElementById('captchaInput').value.trim();
             const activeTab = document.querySelector('.tab.active').getAttribute('data-type');
 
-            if (!username || !password) {
-                showMessage('请填写用户名和密码', 'error');
+            if (!username || !password || !confirmPwd) {
+                showMessage('请填写用户名、密码和确认密码', 'error');
+                return;
+            }
+            if (password !== confirmPwd) {
+                showMessage('两次输入的密码不一致', 'error');
                 return;
             }
             if (!isValidUsername(username)) {
-                showMessage('用户名格式：6-16位字母/数字/下划线，不能以数字开头', 'error');
+                showMessage('用户名格式：4-20位字母/数字/下划线，不能以数字开头', 'error');
                 return;
             }
             if (password.length < 6) {
@@ -409,71 +488,43 @@
                 return;
             }
 
-            const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-            if (!captchaToken) {
-                showMessage('请完成安全验证', 'error');
-                return;
-            }
-
-            let email, phone, smsCode;
-
+            let email, phone, code;
             if (activeTab === 'email') {
                 email = document.getElementById('regEmail').value.trim();
-                if (!email) {
-                    showMessage('请填写邮箱', 'error');
-                    return;
-                }
-                if (!/^\S+@\S+\.\S+$/.test(email)) {
-                    showMessage('邮箱格式不正确', 'error');
+                code = document.getElementById('emailCode').value.trim();
+                if (!email) { showMessage('请填写邮箱', 'error'); return; }
+                if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
+                if (!code) { showMessage('请输入邮箱验证码', 'error'); return; }
+                // 调用 Edge Function 验证验证码
+                const verifyResp = await fetch(EDGE_VERIFY_CODE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    body: JSON.stringify({ email, code })
+                });
+                const verifyResult = await verifyResp.json();
+                if (!verifyResp.ok) {
+                    showMessage(`验证码错误: ${verifyResult.error}`, 'error');
                     return;
                 }
             } else {
                 phone = document.getElementById('regPhone').value.trim();
-                smsCode = document.getElementById('smsCode').value.trim();
-                if (!phone) {
-                    showMessage('请填写手机号', 'error');
-                    return;
-                }
-                if (!/^1[3-9]\d{9}$/.test(phone)) {
-                    showMessage('手机号格式不正确', 'error');
-                    return;
-                }
-                if (!smsCode) {
-                    showMessage('请输入短信验证码', 'error');
-                    return;
-                }
-                if (smsCode !== '123456') {
-                    showMessage('短信验证码错误', 'error');
-                    return;
-                }
-                // 手机号注册：生成虚拟邮箱
+                code = document.getElementById('smsCode').value.trim();
+                if (!phone) { showMessage('请填写手机号', 'error'); return; }
+                if (!/^1[3-9]\d{9}$/.test(phone)) { showMessage('手机号格式不正确', 'error'); return; }
+                if (!code) { showMessage('请输入短信验证码', 'error'); return; }
+                if (code !== '123456') { showMessage('短信验证码错误', 'error'); return; }
                 email = `phone+${phone}@temp.com`;
             }
 
-            // 检查用户名唯一性
             const unique = await isUsernameUnique(username);
-            if (!unique) {
-                showMessage('用户名已被占用，请换一个', 'error');
-                return;
-            }
+            if (!unique) { showMessage('用户名已被占用，请换一个', 'error'); return; }
 
             registerBtn.disabled = true;
             registerBtn.textContent = '注册中...';
-
-            // 注册选项：邮箱注册需要用户确认邮件，手机号注册则自动确认（因为虚拟邮箱无需确认）
-            const options = { captchaToken };
-            if (activeTab === 'email') {
-                // 邮箱注册：Supabase 默认会发送确认邮件，确认后跳转到 /auth/login
-                options.emailRedirectTo = `${window.location.origin}/auth/login`;
-            } else {
-                // 手机号注册：自动确认（避免用户需要去虚拟邮箱确认）
-                options.data = { confirm_email: true };
-            }
-
             const { data: authData, error: signUpError } = await sb.auth.signUp({
                 email,
                 password,
-                options
+                options: {}
             });
 
             if (signUpError) {
@@ -506,11 +557,7 @@
                 return;
             }
 
-            if (activeTab === 'email') {
-                showMessage('注册成功！请查收确认邮件（可能在垃圾箱），点击链接激活账号后即可登录。', 'success');
-            } else {
-                showMessage('注册成功！请前往登录', 'success');
-            }
+            showMessage('注册成功！请前往登录', 'success');
             setTimeout(() => {
                 window.location.href = '/auth/login';
             }, 3000);
