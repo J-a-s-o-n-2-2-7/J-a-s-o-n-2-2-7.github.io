@@ -378,9 +378,10 @@
                         </div>
                     `;
                     } else {
+                        // 修改点：将 /login 和 /register 改为带 /auth 前缀
                         authButtons.innerHTML = `
-                        <a href="/login" class="auth-btn">登录</a>
-                        <a href="/register" class="auth-btn">注册</a>
+                        <a href="/auth/login" class="auth-btn">登录</a>
+                        <a href="/auth/register" class="auth-btn">注册</a>
                     `;
                         welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
                         welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
@@ -390,15 +391,15 @@
                             <span style="font-size:1.8rem;">6月2日</span>
                             <p>星期一</p>
                             <p>距 CSP-J/S 2026 第一轮还剩 109 天</p>
-                            <p><a href="/login">👉 登录后查看专属运势</a></p>
+                            <p><a href="/auth/login">👉 登录后查看专属运势</a></p>
                         </div>
                     `;
                     }
                 } catch (err) {
                     console.error('updateUI 错误：', err);
                     authButtons.innerHTML = `
-                    <a href="/login" class="auth-btn">登录</a>
-                    <a href="/register" class="auth-btn">注册</a>
+                    <a href="/auth/login" class="auth-btn">登录</a>
+                    <a href="/auth/register" class="auth-btn">注册</a>
                 `;
                 }
             }
