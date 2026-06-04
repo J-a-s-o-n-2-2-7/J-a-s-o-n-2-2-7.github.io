@@ -225,7 +225,6 @@
             <div class="tab" data-type="phone">手机号注册</div>
         </div>
 
-        <!-- 公共字段 -->
         <div class="input-group">
             <input type="text" id="regUsername" placeholder="用户名 (4-20位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
         </div>
@@ -236,14 +235,12 @@
             <input type="password" id="confirmPassword" placeholder="再次输入密码" autocomplete="off">
         </div>
 
-        <!-- 邮箱注册面板 -->
         <div id="emailPanel" class="form-panel active">
             <div class="input-group">
                 <input type="email" id="regEmail" placeholder="邮箱" autocomplete="email">
             </div>
         </div>
 
-        <!-- 手机号注册面板 -->
         <div id="phonePanel" class="form-panel">
             <div class="input-group">
                 <input type="tel" id="regPhone" placeholder="手机号" autocomplete="tel">
@@ -251,7 +248,6 @@
             <div class="info-note">⚠️ 手机号注册为演示模式，验证码固定为 123456，建议使用邮箱注册。</div>
         </div>
 
-        <!-- 图形验证码 -->
         <div class="input-group">
             <div class="captcha-row">
                 <input type="text" id="captchaInput" placeholder="图形验证码" autocomplete="off" maxlength="6">
@@ -259,7 +255,6 @@
             </div>
         </div>
 
-        <!-- 6位数字验证码行 -->
         <div id="emailVerification" class="verification-row">
             <input type="text" id="emailCode" placeholder="邮箱验证码" autocomplete="off" maxlength="6">
             <button type="button" id="sendEmailCodeBtn">发送验证码</button>
@@ -281,12 +276,10 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Edge Function 配置
         const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-email-code';
         const EDGE_VERIFY_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-email-code';
         const ADMIN_SECRET = 'supabasetiti0730';
 
-        // 图形验证码
         let currentCaptcha = '';
         const canvas = document.getElementById('captchaCanvas');
         const ctx = canvas.getContext('2d');
@@ -324,7 +317,6 @@
         canvas.addEventListener('click', generateCaptcha);
         generateCaptcha();
 
-        // 选项卡切换
         const emailPanel = document.getElementById('emailPanel');
         const phonePanel = document.getElementById('phonePanel');
         const emailVerification = document.getElementById('emailVerification');
@@ -350,7 +342,6 @@
             });
         });
 
-        // 邮箱发送验证码（真实调用 Edge Function）
         let emailTimer = null;
         let emailCountdown = 0;
         const sendEmailBtn = document.getElementById('sendEmailCodeBtn');
@@ -358,7 +349,6 @@
             const email = document.getElementById('regEmail').value.trim();
             if (!email) { showMessage('请先填写邮箱', 'error'); return; }
             if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
-            // 图形验证码校验（防止滥用）
             const userCaptcha = document.getElementById('captchaInput').value.trim();
             if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
             if (userCaptcha.toUpperCase() !== currentCaptcha) { showMessage('图形验证码错误', 'error'); generateCaptcha(); return; }
@@ -403,7 +393,6 @@
         }
         sendEmailBtn.addEventListener('click', sendEmailCode);
 
-        // 手机号发送验证码（演示）
         let phoneTimer = null;
         let phoneCountdown = 0;
         const sendPhoneBtn = document.getElementById('sendSmsCodeBtn');
@@ -438,7 +427,6 @@
             setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
         }
 
-        // 用户名验证规则：4-20位（首字符字母或下划线，后续3-19个字母数字下划线）
         function isValidUsername(username) {
             return /^[a-zA-Z_][a-zA-Z0-9_]{3,19}$/.test(username);
         }
@@ -495,7 +483,6 @@
                 if (!email) { showMessage('请填写邮箱', 'error'); return; }
                 if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
                 if (!code) { showMessage('请输入邮箱验证码', 'error'); return; }
-                // 调用 Edge Function 验证验证码
                 const verifyResp = await fetch(EDGE_VERIFY_CODE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
