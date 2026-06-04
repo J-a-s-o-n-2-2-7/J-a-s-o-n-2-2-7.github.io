@@ -271,7 +271,7 @@
         <button id="registerBtn">注册</button>
         <div id="regMsg" class="message"></div>
         <div class="footer-links">
-            已有账号？ <a href="/login">立即登录</a>
+            已有账号？ <a href="/auth/login">立即登录</a>
         </div>
     </div>
 
@@ -463,8 +463,8 @@
             // 注册选项：邮箱注册需要用户确认邮件，手机号注册则自动确认（因为虚拟邮箱无需确认）
             const options = { captchaToken };
             if (activeTab === 'email') {
-                // 邮箱注册：Supabase 默认会发送确认邮件
-                options.emailRedirectTo = `${window.location.origin}/login`; // 可选：确认后跳转地址
+                // 邮箱注册：Supabase 默认会发送确认邮件，确认后跳转到 /auth/login
+                options.emailRedirectTo = `${window.location.origin}/auth/login`;
             } else {
                 // 手机号注册：自动确认（避免用户需要去虚拟邮箱确认）
                 options.data = { confirm_email: true };
@@ -512,7 +512,7 @@
                 showMessage('注册成功！请前往登录', 'success');
             }
             setTimeout(() => {
-                window.location.href = '/login';
+                window.location.href = '/auth/login';
             }, 3000);
         }
 
