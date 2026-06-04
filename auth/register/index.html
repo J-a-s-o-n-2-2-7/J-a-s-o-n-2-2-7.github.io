@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * {
             margin: 0;
@@ -212,6 +213,13 @@
         .form-panel.active {
             display: block;
         }
+
+        /* Turnstile 容器样式 */
+        .turnstile-wrapper {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 
@@ -226,10 +234,10 @@
         </div>
 
         <div class="input-group">
-            <input type="text" id="regUsername" placeholder="用户名 (4-20位字母/数字/下划线, 不能以数字开头)" autocomplete="off">
+            <input type="text" id="regUsername" placeholder="用户名 (6至16位，建议大小写字母、数字)" autocomplete="off">
         </div>
         <div class="input-group">
-            <input type="password" id="regPassword" placeholder="密码（至少6位）" autocomplete="new-password">
+            <input type="password" id="regPassword" placeholder="密码" autocomplete="new-password">
         </div>
         <div class="input-group">
             <input type="password" id="confirmPassword" placeholder="再次输入密码" autocomplete="off">
@@ -245,23 +253,25 @@
             <div class="input-group">
                 <input type="tel" id="regPhone" placeholder="手机号" autocomplete="tel">
             </div>
-            <div class="info-note">⚠️ 手机号注册为演示模式，验证码固定为 123456，建议使用邮箱注册。</div>
         </div>
 
+        <!-- 图形验证码（公共） -->
         <div class="input-group">
             <div class="captcha-row">
-                <input type="text" id="captchaInput" placeholder="图形验证码" autocomplete="off" maxlength="6">
+                <input type="text" id="captchaInput" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
                 <canvas id="captchaCanvas" width="120" height="44"></canvas>
             </div>
         </div>
 
-        <div id="emailVerification" class="verification-row">
-            <input type="text" id="emailCode" placeholder="邮箱验证码" autocomplete="off" maxlength="6">
-            <button type="button" id="sendEmailCodeBtn">发送验证码</button>
+        <!-- Turnstile 公共区域（仅手机号注册时显示） -->
+        <div id="turnstileContainer" class="turnstile-wrapper" style="display: none;">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx"></div>
         </div>
-        <div id="phoneVerification" class="verification-row" style="display: none;">
-            <input type="text" id="smsCode" placeholder="短信验证码" autocomplete="off" maxlength="6">
-            <button type="button" id="sendSmsCodeBtn">发送验证码</button>
+
+        <!-- 邮箱验证码行（仅邮箱注册时显示） -->
+        <div id="emailVerification" class="verification-row">
+            <input type="text" id="emailCode" placeholder="6位数字验证码" autocomplete="off" maxlength="6">
+            <button type="button" id="sendEmailCodeBtn">发送验证码</button>
         </div>
 
         <button id="registerBtn">注册</button>
@@ -278,6 +288,7 @@
 
         const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-email-code';
         const EDGE_VERIFY_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-email-code';
+        const EDGE_VERIFY_TURNSTILE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-phone-turnstile';
         const ADMIN_SECRET = 'supabasetiti0730';
 
         let currentCaptcha = '';
@@ -320,7 +331,7 @@
         const emailPanel = document.getElementById('emailPanel');
         const phonePanel = document.getElementById('phonePanel');
         const emailVerification = document.getElementById('emailVerification');
-        const phoneVerification = document.getElementById('phoneVerification');
+        const turnstileContainer = document.getElementById('turnstileContainer');
         const tabs = document.querySelectorAll('.tab');
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -331,12 +342,12 @@
                     emailPanel.classList.add('active');
                     phonePanel.classList.remove('active');
                     emailVerification.style.display = 'flex';
-                    phoneVerification.style.display = 'none';
+                    turnstileContainer.style.display = 'none'; // 邮箱注册时隐藏 Turnstile
                 } else {
                     phonePanel.classList.add('active');
                     emailPanel.classList.remove('active');
-                    phoneVerification.style.display = 'flex';
                     emailVerification.style.display = 'none';
+                    turnstileContainer.style.display = 'flex'; // 手机号注册时显示 Turnstile
                 }
                 document.getElementById('regMsg').innerHTML = '';
             });
@@ -393,34 +404,6 @@
         }
         sendEmailBtn.addEventListener('click', sendEmailCode);
 
-        let phoneTimer = null;
-        let phoneCountdown = 0;
-        const sendPhoneBtn = document.getElementById('sendSmsCodeBtn');
-        async function sendPhoneCode() {
-            const phone = document.getElementById('regPhone').value.trim();
-            if (!phone) { showMessage('请先填写手机号', 'error'); return; }
-            if (!/^1[3-9]\d{9}$/.test(phone)) { showMessage('手机号格式不正确', 'error'); return; }
-            showMessage('演示模式：验证码为 123456', 'info');
-            document.getElementById('smsCode').value = '123456';
-            startPhoneCountdown(60);
-        }
-        function startPhoneCountdown(seconds) {
-            phoneCountdown = seconds;
-            sendPhoneBtn.disabled = true;
-            if (phoneTimer) clearInterval(phoneTimer);
-            phoneTimer = setInterval(() => {
-                if (phoneCountdown <= 0) {
-                    clearInterval(phoneTimer);
-                    sendPhoneBtn.disabled = false;
-                    sendPhoneBtn.textContent = '发送验证码';
-                } else {
-                    sendPhoneBtn.textContent = `${phoneCountdown}秒后重试`;
-                    phoneCountdown--;
-                }
-            }, 1000);
-        }
-        sendPhoneBtn.addEventListener('click', sendPhoneCode);
-
         function showMessage(msg, type) {
             const msgDiv = document.getElementById('regMsg');
             msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
@@ -476,10 +459,11 @@
                 return;
             }
 
-            let email, phone, code;
+            let email, phone;
+
             if (activeTab === 'email') {
                 email = document.getElementById('regEmail').value.trim();
-                code = document.getElementById('emailCode').value.trim();
+                const code = document.getElementById('emailCode').value.trim();
                 if (!email) { showMessage('请填写邮箱', 'error'); return; }
                 if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
                 if (!code) { showMessage('请输入邮箱验证码', 'error'); return; }
@@ -495,11 +479,28 @@
                 }
             } else {
                 phone = document.getElementById('regPhone').value.trim();
-                code = document.getElementById('smsCode').value.trim();
                 if (!phone) { showMessage('请填写手机号', 'error'); return; }
                 if (!/^1[3-9]\d{9}$/.test(phone)) { showMessage('手机号格式不正确', 'error'); return; }
-                if (!code) { showMessage('请输入短信验证码', 'error'); return; }
-                if (code !== '123456') { showMessage('短信验证码错误', 'error'); return; }
+
+                // 获取 Turnstile token（位于公共区域的 Turnstile 组件）
+                const turnstileToken = document.querySelector('#turnstileContainer .cf-turnstile [name="cf-turnstile-response"]')?.value;
+                if (!turnstileToken) {
+                    showMessage('请完成安全验证', 'error');
+                    return;
+                }
+
+                // 调用 Edge Function 验证 Turnstile
+                const turnstileResp = await fetch(EDGE_VERIFY_TURNSTILE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    body: JSON.stringify({ token: turnstileToken })
+                });
+                const turnstileResult = await turnstileResp.json();
+                if (!turnstileResp.ok) {
+                    showMessage(turnstileResult.error || '安全验证失败', 'error');
+                    return;
+                }
+
                 email = `phone+${phone}@temp.com`;
             }
 
