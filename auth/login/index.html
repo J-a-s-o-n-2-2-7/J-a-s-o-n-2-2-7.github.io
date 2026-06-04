@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * {
             margin: 0;
@@ -132,12 +131,6 @@
             text-align: right;
         }
 
-        .turnstile-wrapper {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
-
         .footer-links {
             display: flex;
             justify-content: space-between;
@@ -162,22 +155,18 @@
         <h1>✨ Jason227</h1>
         <div class="sub">登录账号</div>
         <div class="input-group">
-            <input type="text" id="loginIdentifier" placeholder="手机号 / 用户名 / 邮箱" autocomplete="off">
+            <input type="text" id="loginIdentifier" placeholder="用户名、UID、手机或电子邮箱" autocomplete="off">
         </div>
         <div class="input-group">
-            <input type="password" id="loginPassword" placeholder="密码" autocomplete="current-password">
+            <input type="password" id="loginPassword" placeholder="输入密码" autocomplete="current-password">
         </div>
         <div class="input-group">
             <div class="captcha-row">
-                <input type="text" id="captchaInput" placeholder="验证码" autocomplete="off" maxlength="6">
+                <input type="text" id="captchaInput" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
                 <canvas id="captchaCanvas" width="120" height="44"></canvas>
             </div>
-            <div class="captcha-hint">点击图片刷新验证码</div>
         </div>
-        <div class="turnstile-wrapper">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
-        </div>
-        <button id="loginBtn">登录</button>
+        <button id="loginBtn">使用账户密码登录</button>
         <div id="loginMsg" class="message"></div>
         <div class="footer-links">
             <a href="/auth/register">没有账号？</a>
@@ -228,8 +217,9 @@
         canvas.addEventListener('click', generateCaptcha);
         generateCaptcha();
 
-        // ========== 辅助函数 ==========
+        // ========== 辅助函数：根据用户名/UID/手机号/邮箱 获取邮箱 ==========
         async function getEmailByIdentifier(identifier) {
+            // 1. 手机号（11位数字，以1开头）
             if (/^1[3-9]\d{9}$/.test(identifier)) {
                 const { data, error } = await sb
                     .from('profiles')
@@ -239,7 +229,21 @@
                 if (error || !data) return null;
                 return data.email;
             }
-            if (identifier.includes('@')) return identifier;
+            // 2. UID（用户编号）: 纯数字，且长度小于等于6位（避免与手机号冲突）
+            if (/^\d{1,6}$/.test(identifier)) {
+                const { data, error } = await sb
+                    .from('profiles')
+                    .select('email')
+                    .eq('user_number', parseInt(identifier))
+                    .maybeSingle();
+                if (error || !data) return null;
+                return data.email;
+            }
+            // 3. 邮箱（包含@）
+            if (identifier.includes('@')) {
+                return identifier;
+            }
+            // 4. 用户名
             const { data, error } = await sb
                 .from('profiles')
                 .select('email')
@@ -247,13 +251,6 @@
                 .maybeSingle();
             if (error || !data) return null;
             return data.email;
-        }
-
-        function resetTurnstile() {
-            if (window.turnstile) {
-                const widget = document.querySelector('.cf-turnstile');
-                if (widget) turnstile.reset(widget);
-            }
         }
 
         // ========== 登录逻辑 ==========
@@ -283,42 +280,22 @@
                     loginMsg.innerHTML = '<div class="message error">图形验证码错误</div>';
                     generateCaptcha();
                     document.getElementById('captchaInput').value = '';
-                    resetTurnstile();
-                    return;
-                }
-
-                let captchaToken = null;
-                const tokenInput = document.querySelector('[name="cf-turnstile-response"]');
-                if (tokenInput?.value) captchaToken = tokenInput.value;
-                if (!captchaToken) {
-                    await new Promise(r => setTimeout(r, 500));
-                    const tokenRetry = document.querySelector('[name="cf-turnstile-response"]');
-                    if (tokenRetry?.value) captchaToken = tokenRetry.value;
-                }
-                if (!captchaToken) {
-                    loginMsg.innerHTML = '<div class="message error">请完成安全验证</div>';
-                    resetTurnstile();
                     return;
                 }
 
                 const email = await getEmailByIdentifier(identifier);
                 if (!email) {
                     loginMsg.innerHTML = '<div class="message error">用户不存在</div>';
-                    resetTurnstile();
                     return;
                 }
 
                 const { error } = await sb.auth.signInWithPassword({
                     email,
-                    password,
-                    options: { captchaToken }
+                    password
                 });
 
                 if (error) {
-                    if (error.message?.includes('timeout-or-duplicate')) {
-                        loginMsg.innerHTML = '<div class="message error">安全验证已过期，请重新验证</div>';
-                        resetTurnstile();
-                    } else if (error.message?.includes('Email not confirmed')) {
+                    if (error.message?.includes('Email not confirmed')) {
                         loginMsg.innerHTML = '<div class="message error">邮箱未确认，请先查收确认邮件</div>';
                     } else {
                         loginMsg.innerHTML = `<div class="message error">${error.message}</div>`;
