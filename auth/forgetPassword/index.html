@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>忘记密码 - Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * {
@@ -15,15 +16,15 @@
 
         body {
             background: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             padding: 20px;
         }
 
-        .card {
+        .forget-card {
             background: white;
             width: 480px;
             max-width: 90%;
@@ -70,19 +71,12 @@
             border-bottom-color: #e74c3c;
         }
 
-        .form-panel {
-            display: none;
-        }
-
-        .form-panel.active {
-            display: block;
-        }
-
         .input-group {
             margin-bottom: 20px;
         }
 
-        .input-group input {
+        .input-group input,
+        .verification-row input {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #d1d5db;
@@ -91,26 +85,35 @@
             background: #f9fafb;
         }
 
+        .input-group input:focus,
+        .verification-row input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: white;
+        }
+
         .verification-row {
             display: flex;
             gap: 12px;
             align-items: center;
-        }
-
-        .verification-row input {
-            flex: 1;
+            margin-bottom: 20px;
         }
 
         .verification-row button {
             width: auto;
             padding: 12px 16px;
-            background: #3498db;
+            background: #e74c3c;
             font-size: 14px;
             white-space: nowrap;
             border: none;
-            border-radius: 30px;
+            border-radius: 40px;
             color: white;
             cursor: pointer;
+        }
+
+        .verification-row button:hover {
+            background: #c0392b;
         }
 
         button {
@@ -125,6 +128,10 @@
             cursor: pointer;
         }
 
+        button:hover {
+            background: #c0392b;
+        }
+
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -132,9 +139,9 @@
 
         .message {
             margin-top: 16px;
-            padding: 10px;
+            padding: 8px;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
         }
 
@@ -164,16 +171,11 @@
             text-decoration: none;
         }
 
-        .turnstile-wrapper {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
-
         .captcha-row {
             display: flex;
             gap: 12px;
             align-items: center;
+            margin-bottom: 20px;
         }
 
         .captcha-row input {
@@ -196,96 +198,117 @@
             text-align: right;
         }
 
-        .info-note {
-            font-size: 12px;
-            color: #6c7a8e;
-            margin-top: 4px;
-            text-align: center;
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
+        .turnstile-wrapper {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
         }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <h1>🔐 忘记密码</h1>
-        <div class="sub">通过邮箱或手机号重置密码</div>
+    <div class="forget-card">
+        <h1>✨ Jason227</h1>
+        <div class="sub">忘记密码</div>
 
         <div class="tabs">
-            <div class="tab active" data-type="email">邮箱重置</div>
-            <div class="tab" data-type="phone">手机号重置</div>
+            <div class="tab active" data-type="email">邮箱</div>
+            <div class="tab" data-type="phone">手机号</div>
         </div>
 
         <!-- 邮箱重置面板 -->
         <div id="emailPanel" class="form-panel active">
             <div class="input-group">
-                <input type="email" id="emailInput" placeholder="注册邮箱" autocomplete="email">
+                <input type="email" id="resetEmail" placeholder="邮箱" autocomplete="email">
+            </div>
+            <!-- 图形验证码（公共） -->
+            <div class="input-group">
+                <div class="captcha-row">
+                    <input type="text" id="captchaInput" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
+                    <canvas id="captchaCanvas" width="120" height="44"></canvas>
+                </div>
+            </div>
+            <!-- 邮箱验证码行 -->
+            <div class="verification-row" id="emailCodeRow">
+                <input type="text" id="emailCode" placeholder="6位数字验证码" autocomplete="off" maxlength="6">
+                <button type="button" id="sendEmailCodeBtn">发送验证码</button>
+            </div>
+            <!-- 新密码和确认密码 -->
+            <div class="input-group">
+                <input type="password" id="newPassword" placeholder="新密码" autocomplete="new-password">
             </div>
             <div class="input-group">
-                <div class="verification-row">
-                    <input type="text" id="emailCode" placeholder="6位验证码" autocomplete="off" maxlength="6">
-                    <button id="sendEmailCodeBtn">发送验证码</button>
-                </div>
+                <input type="password" id="confirmPassword" placeholder="再次输入密码" autocomplete="off">
             </div>
         </div>
 
         <!-- 手机号重置面板 -->
         <div id="phonePanel" class="form-panel">
             <div class="input-group">
-                <input type="tel" id="phoneInput" placeholder="手机号" autocomplete="tel">
+                <input type="tel" id="resetPhone" placeholder="手机号" autocomplete="tel">
             </div>
+            <!-- 图形验证码（公共） -->
             <div class="input-group">
-                <div class="verification-row">
-                    <input type="text" id="phoneCode" placeholder="6位验证码" autocomplete="off" maxlength="6">
-                    <button id="sendPhoneCodeBtn">发送验证码</button>
+                <div class="captcha-row">
+                    <input type="text" id="captchaInput2" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
+                    <canvas id="captchaCanvas2" width="120" height="44"></canvas>
                 </div>
             </div>
-            <div class="info-note">📱 手机号重置为演示模式，验证码固定为 123456，实际会向对应邮箱发送重置邮件。</div>
-        </div>
-
-        <!-- 公共字段：新密码和确认密码 -->
-        <div class="input-group">
-            <input type="password" id="newPassword" placeholder="新密码（至少6位）" autocomplete="new-password">
-        </div>
-        <div class="input-group">
-            <input type="password" id="confirmPassword" placeholder="再次输入密码" autocomplete="off">
-        </div>
-
-        <!-- 图形验证码 -->
-        <div class="input-group">
-            <div class="captcha-row">
-                <input type="text" id="captchaInput" placeholder="图形验证码" autocomplete="off" maxlength="6">
-                <canvas id="captchaCanvas" width="120" height="44"></canvas>
+            <!-- 新密码和确认密码 -->
+            <div class="input-group">
+                <input type="password" id="newPasswordPhone" placeholder="新密码" autocomplete="new-password">
             </div>
-            <div class="captcha-hint">点击图片刷新验证码</div>
-        </div>
-
-        <!-- Turnstile -->
-        <div class="turnstile-wrapper">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
+            <div class="input-group">
+                <input type="password" id="confirmPasswordPhone" placeholder="再次输入密码" autocomplete="off">
+            </div>
+            <!-- Turnstile 验证（放在最下面） -->
+            <div class="turnstile-wrapper">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
+            </div>
         </div>
 
         <button id="resetBtn">重置密码</button>
         <div id="msg" class="message"></div>
         <div class="footer-links">
-            <a href="/auth/login">返回登录</a> &nbsp;|&nbsp; <a href="/auth/register">注册账号</a>
+            <a href="/auth/login">返回登录</a>
         </div>
     </div>
 
     <script>
-        // ========== 配置 ==========
-        const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-reset-code';
-        const EDGE_VERIFY_RESET = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-reset-code';
+        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Edge Functions 地址
+        const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-email-code';
+        const EDGE_VERIFY_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-email-code';
+        const EDGE_RESET_PASSWORD = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/reset-password';
+        const EDGE_VERIFY_TURNSTILE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-phone-turnstile';
         const ADMIN_SECRET = 'supabasetiti0730';
 
-        // ========== 图形验证码 ==========
-        let currentCaptcha = '';
-        const canvas = document.getElementById('captchaCanvas');
-        const ctx = canvas.getContext('2d');
-        function generateCaptcha() {
+        // 图形验证码（两个 canvas 共用一个生成逻辑，但分别存储）
+        let currentCaptchaEmail = '';
+        let currentCaptchaPhone = '';
+        const canvasEmail = document.getElementById('captchaCanvas');
+        const ctxEmail = canvasEmail.getContext('2d');
+        const canvasPhone = document.getElementById('captchaCanvas2');
+        const ctxPhone = canvasPhone.getContext('2d');
+
+        function generateCaptcha(ctx, canvas, setVar) {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
             let captcha = '';
             for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
-            currentCaptcha = captcha.toUpperCase();
+            const code = captcha.toUpperCase();
+            if (setVar === 'email') currentCaptchaEmail = code;
+            else currentCaptchaPhone = code;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#f9fafb';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -293,72 +316,67 @@
                 ctx.beginPath();
                 ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
                 ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-                ctx.strokeStyle = `rgba(0,0,0,0.3)`;
+                ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
                 ctx.stroke();
             }
             for (let i = 0; i < 60; i++) {
-                ctx.fillStyle = `rgba(0,0,0,0.3)`;
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
                 ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
             }
-            for (let i = 0; i < currentCaptcha.length; i++) {
-                ctx.font = `24px "Courier New"`;
-                ctx.fillStyle = `rgb(${30 + Math.random() * 80}, ${30 + Math.random() * 80}, ${30 + Math.random() * 80})`;
-                const x = 12 + i * 22 + Math.random() * 4;
-                const y = 32 + Math.random() * 6;
-                ctx.fillText(currentCaptcha[i], x, y);
+            for (let i = 0; i < code.length; i++) {
+                ctx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
+                ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
+                const x = 12 + i * 20 + Math.random() * 6;
+                const y = 30 + Math.random() * 8;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(code[i], 0, 0);
+                ctx.restore();
             }
         }
-        canvas.addEventListener('click', generateCaptcha);
-        generateCaptcha();
 
-        // ========== 选项卡切换 ==========
+        canvasEmail.addEventListener('click', () => generateCaptcha(ctxEmail, canvasEmail, 'email'));
+        canvasPhone.addEventListener('click', () => generateCaptcha(ctxPhone, canvasPhone, 'phone'));
+        generateCaptcha(ctxEmail, canvasEmail, 'email');
+        generateCaptcha(ctxPhone, canvasPhone, 'phone');
+
+        // 选项卡切换
         const emailPanel = document.getElementById('emailPanel');
         const phonePanel = document.getElementById('phonePanel');
         const tabs = document.querySelectorAll('.tab');
-        let currentTab = 'email';
-
+        let activeTab = 'email';
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const type = tab.getAttribute('data-type');
-                if (type === currentTab) return;
+                if (type === activeTab) return;
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 if (type === 'email') {
                     emailPanel.classList.add('active');
                     phonePanel.classList.remove('active');
-                    currentTab = 'email';
+                    activeTab = 'email';
                 } else {
                     phonePanel.classList.add('active');
                     emailPanel.classList.remove('active');
-                    currentTab = 'phone';
+                    activeTab = 'phone';
                 }
-                // 清空消息
                 document.getElementById('msg').innerHTML = '';
-                if (type === 'email') {
-                    document.getElementById('emailCode').value = '';
-                } else {
-                    document.getElementById('phoneCode').value = '';
-                }
             });
         });
-
-        // ========== 辅助函数 ==========
-        function showMessage(msg, type) {
-            const msgDiv = document.getElementById('msg');
-            msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
-            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
-        }
 
         // 邮箱发送验证码
         let emailTimer = null;
         let emailCountdown = 0;
         const sendEmailBtn = document.getElementById('sendEmailCodeBtn');
         async function sendEmailCode() {
-            const email = document.getElementById('emailInput').value.trim();
-            if (!email) { showMessage('请输入邮箱', 'error'); return; }
+            const email = document.getElementById('resetEmail').value.trim();
+            if (!email) { showMessage('请填写邮箱', 'error'); return; }
             if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
-            const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-            if (!captchaToken) { showMessage('请完成安全验证', 'error'); return; }
+            const userCaptcha = document.getElementById('captchaInput').value.trim();
+            if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
+            if (userCaptcha.toUpperCase() !== currentCaptchaEmail) { showMessage('图形验证码错误', 'error'); generateCaptcha(ctxEmail, canvasEmail, 'email'); return; }
+
             sendEmailBtn.disabled = true;
             sendEmailBtn.textContent = '发送中...';
             try {
@@ -397,120 +415,113 @@
                 }
             }, 1000);
         }
-
-        // 手机号发送验证码（演示）
-        let phoneTimer = null;
-        let phoneCountdown = 0;
-        const sendPhoneBtn = document.getElementById('sendPhoneCodeBtn');
-        async function sendPhoneCode() {
-            const phone = document.getElementById('phoneInput').value.trim();
-            if (!phone) { showMessage('请输入手机号', 'error'); return; }
-            if (!/^1[3-9]\d{9}$/.test(phone)) { showMessage('手机号格式不正确', 'error'); return; }
-            const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-            if (!captchaToken) { showMessage('请完成安全验证', 'error'); return; }
-            // 演示模式：直接填充验证码123456
-            showMessage('演示模式：验证码为 123456', 'info');
-            document.getElementById('phoneCode').value = '123456';
-            startPhoneCountdown(60);
-        }
-        function startPhoneCountdown(seconds) {
-            phoneCountdown = seconds;
-            sendPhoneBtn.disabled = true;
-            if (phoneTimer) clearInterval(phoneTimer);
-            phoneTimer = setInterval(() => {
-                if (phoneCountdown <= 0) {
-                    clearInterval(phoneTimer);
-                    sendPhoneBtn.disabled = false;
-                    sendPhoneBtn.textContent = '发送验证码';
-                } else {
-                    sendPhoneBtn.textContent = `${phoneCountdown}秒后重试`;
-                    phoneCountdown--;
-                }
-            }, 1000);
-        }
-
         sendEmailBtn.addEventListener('click', sendEmailCode);
-        sendPhoneBtn.addEventListener('click', sendPhoneCode);
 
-        // ========== 重置密码 ==========
-        async function resetPassword() {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPwd = document.getElementById('confirmPassword').value;
-            const userCaptcha = document.getElementById('captchaInput').value.trim();
-            const captchaToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('msg');
+            msgDiv.innerHTML = `<div class="message ${type}">${msg}</div>`;
+            setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
+        }
 
-            if (!newPassword || !confirmPwd) {
-                showMessage('请填写新密码和确认密码', 'error');
-                return;
-            }
-            if (newPassword.length < 6) {
-                showMessage('新密码至少6位', 'error');
-                return;
-            }
-            if (newPassword !== confirmPwd) {
-                showMessage('两次输入的密码不一致', 'error');
-                return;
-            }
-            if (!userCaptcha) {
-                showMessage('请输入图形验证码', 'error');
-                return;
-            }
-            if (userCaptcha.toUpperCase() !== currentCaptcha) {
-                showMessage('图形验证码错误', 'error');
-                generateCaptcha();
-                document.getElementById('captchaInput').value = '';
-                return;
-            }
-            if (!captchaToken) {
-                showMessage('请完成安全验证', 'error');
-                return;
-            }
+        // 根据手机号获取邮箱
+        async function getEmailByPhone(phone) {
+            const { data, error } = await sb
+                .from('profiles')
+                .select('email')
+                .eq('phone', phone)
+                .maybeSingle();
+            if (error || !data) return null;
+            return data.email;
+        }
 
-            let identifier, code;
-            if (currentTab === 'email') {
-                identifier = document.getElementById('emailInput').value.trim();
-                code = document.getElementById('emailCode').value.trim();
-                if (!identifier) { showMessage('请填写邮箱', 'error'); return; }
-                if (!code) { showMessage('请输入邮箱验证码', 'error'); return; }
+        // 重置密码（通用）
+        async function resetPassword(userId, newPassword) {
+            const response = await fetch(EDGE_RESET_PASSWORD, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                body: JSON.stringify({ userId, newPassword })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                showMessage('密码重置成功，请使用新密码登录', 'success');
+                setTimeout(() => { window.location.href = '/auth/login'; }, 2000);
             } else {
-                identifier = document.getElementById('phoneInput').value.trim();
-                code = document.getElementById('phoneCode').value.trim();
-                if (!identifier) { showMessage('请填写手机号', 'error'); return; }
-                if (!code) { showMessage('请输入短信验证码', 'error'); return; }
-                if (code !== '123456') { showMessage('短信验证码错误', 'error'); return; }
+                showMessage(`重置失败: ${result.error}`, 'error');
             }
+        }
 
-            const btn = document.getElementById('resetBtn');
-            btn.disabled = true;
-            btn.textContent = '重置中...';
-            try {
-                const response = await fetch(EDGE_VERIFY_RESET, {
+        const resetBtn = document.getElementById('resetBtn');
+        resetBtn.addEventListener('click', async () => {
+            if (activeTab === 'email') {
+                const email = document.getElementById('resetEmail').value.trim();
+                const code = document.getElementById('emailCode').value.trim();
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPwd = document.getElementById('confirmPassword').value;
+                const userCaptcha = document.getElementById('captchaInput').value.trim();
+
+                if (!email || !code || !newPassword || !confirmPwd) {
+                    showMessage('请填写所有字段', 'error'); return;
+                }
+                if (newPassword !== confirmPwd) { showMessage('两次输入的密码不一致', 'error'); return; }
+                if (newPassword.length < 6) { showMessage('新密码至少6位', 'error'); return; }
+                if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
+                if (userCaptcha.toUpperCase() !== currentCaptchaEmail) { showMessage('图形验证码错误', 'error'); generateCaptcha(ctxEmail, canvasEmail, 'email'); return; }
+
+                // 验证邮箱验证码
+                const verifyResp = await fetch(EDGE_VERIFY_CODE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
-                    body: JSON.stringify({
-                        identifier,
-                        code,
-                        newPassword,
-                        type: currentTab
-                    })
+                    body: JSON.stringify({ email, code })
                 });
-                const result = await response.json();
-                if (response.ok) {
-                    showMessage('密码重置成功！请使用新密码登录', 'success');
-                    setTimeout(() => { window.location.href = '/auth/login'; }, 2000);
-                } else {
-                    showMessage(`重置失败: ${result.error}`, 'error');
-                    btn.disabled = false;
-                    btn.textContent = '重置密码';
-                }
-            } catch (err) {
-                showMessage('网络错误', 'error');
-                btn.disabled = false;
-                btn.textContent = '重置密码';
-            }
-        }
+                const verifyResult = await verifyResp.json();
+                if (!verifyResp.ok) { showMessage(`验证码错误: ${verifyResult.error}`, 'error'); return; }
 
-        document.getElementById('resetBtn').addEventListener('click', resetPassword);
+                // 获取用户ID
+                const { data: userData, error: userError } = await sb
+                    .from('profiles')
+                    .select('id')
+                    .eq('email', email)
+                    .single();
+                if (userError || !userData) { showMessage('用户不存在', 'error'); return; }
+
+                await resetPassword(userData.id, newPassword);
+            }
+            else { // 手机号重置
+                const phone = document.getElementById('resetPhone').value.trim();
+                const newPassword = document.getElementById('newPasswordPhone').value;
+                const confirmPwd = document.getElementById('confirmPasswordPhone').value;
+                const userCaptcha = document.getElementById('captchaInput2').value.trim();
+                const turnstileToken = document.querySelector('#phonePanel .cf-turnstile [name="cf-turnstile-response"]')?.value;
+
+                if (!phone || !newPassword || !confirmPwd) { showMessage('请填写所有字段', 'error'); return; }
+                if (newPassword !== confirmPwd) { showMessage('两次输入的密码不一致', 'error'); return; }
+                if (newPassword.length < 6) { showMessage('新密码至少6位', 'error'); return; }
+                if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
+                if (userCaptcha.toUpperCase() !== currentCaptchaPhone) { showMessage('图形验证码错误', 'error'); generateCaptcha(ctxPhone, canvasPhone, 'phone'); return; }
+                if (!turnstileToken) { showMessage('请完成安全验证', 'error'); return; }
+
+                // 验证 Turnstile
+                const turnstileResp = await fetch(EDGE_VERIFY_TURNSTILE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    body: JSON.stringify({ token: turnstileToken })
+                });
+                const turnstileResult = await turnstileResp.json();
+                if (!turnstileResp.ok) { showMessage(turnstileResult.error || '安全验证失败', 'error'); return; }
+
+                // 根据手机号获取邮箱和用户ID
+                const email = await getEmailByPhone(phone);
+                if (!email) { showMessage('手机号未关联账户', 'error'); return; }
+                const { data: userData, error: userError } = await sb
+                    .from('profiles')
+                    .select('id')
+                    .eq('email', email)
+                    .single();
+                if (userError || !userData) { showMessage('用户不存在', 'error'); return; }
+
+                await resetPassword(userData.id, newPassword);
+            }
+        });
     </script>
 </body>
 
