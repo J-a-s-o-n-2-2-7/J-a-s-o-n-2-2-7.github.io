@@ -248,8 +248,8 @@
                 if (error || !data) return null;
                 return data.email;
             }
-            // 2. UID（用户编号）: 纯数字，且长度小于等于6位（避免与手机号冲突）
-            if (/^\d{1,6}$/.test(identifier)) {
+            // 2. UID（用户编号）: 整数，可正可负，最多6位数字（含负号）
+            if (/^-?\d{1,6}$/.test(identifier)) {
                 const { data, error } = await sb
                     .from('profiles')
                     .select('email')
