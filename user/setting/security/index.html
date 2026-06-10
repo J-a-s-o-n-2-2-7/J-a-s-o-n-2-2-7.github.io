@@ -81,6 +81,37 @@
             padding-left: 12px;
         }
 
+        .info-text {
+            margin: 12px 0;
+            font-size: 14px;
+            color: #5b6e8c;
+            line-height: 1.6;
+        }
+
+        /* 禁止修改提示框样式与 info-text 一致 */
+        .warning-text {
+            margin: 12px 0;
+            font-size: 14px;
+            color: #5b6e8c;
+            line-height: 1.6;
+        }
+
+        .btn-link {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
         .field-group {
             margin-bottom: 20px;
         }
@@ -113,11 +144,6 @@
             width: 100%;
         }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
         .message {
             margin-top: 16px;
             padding: 10px;
@@ -143,50 +169,10 @@
             text-decoration: none;
         }
 
-        .restriction-box {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 16px 0;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .info {
-            background: #e3f2fd;
-            color: #0c5460;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            width: 300px;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        .modal-content input {
-            width: 100%;
-            margin: 12px 0;
-            padding: 8px;
+        .password-section {
+            margin-top: 30px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
         }
     </style>
 </head>
@@ -204,24 +190,12 @@
         <!-- 修改用户名区块 -->
         <div class="section">
             <div class="section-title">修改用户名</div>
-            <div class="field-group">
-                <label>当前用户名</label>
-                <input type="text" id="currentUsername" disabled style="background:#f0f0f0;">
-            </div>
-            <div id="usernameRestriction" class="restriction-box">加载中...</div>
-            <button id="verifyPasswordBtn">验证密码并修改用户名</button>
-            <div id="usernameEditArea" style="display:none; margin-top:20px;">
-                <div class="field-group">
-                    <label>新用户名（6-16位字母/数字/下划线，不能以数字开头）</label>
-                    <input type="text" id="newUsername" placeholder="输入新用户名">
-                </div>
-                <button id="submitUsernameBtn">提交修改</button>
-            </div>
-            <div id="usernameMsg" class="message"></div>
+            <div class="info-text">一年（365天）内仅可修改一次用户名。</div>
+            <div id="usernameActionArea"></div>
         </div>
 
         <!-- 修改密码区块 -->
-        <div class="section">
+        <div class="password-section">
             <div class="section-title">修改密码</div>
             <div class="field-group">
                 <label>当前密码</label>
@@ -242,16 +216,6 @@
         <a href="/" class="back-link">← 返回首页</a>
     </div>
 
-    <!-- 密码验证模态框 -->
-    <div id="passwordModal" class="modal">
-        <div class="modal-content">
-            <h3>验证当前密码</h3>
-            <input type="password" id="modalPassword" placeholder="请输入密码">
-            <button id="confirmPasswordBtn">确认</button>
-            <button id="cancelModalBtn" style="background:#7f8c8d; margin-top:8px;">取消</button>
-        </div>
-    </div>
-
     <script>
         (function () {
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
@@ -260,15 +224,10 @@
 
             let currentUser = null;
             let profileData = null;
-            let passwordVerified = false; // 标记密码已验证
 
-            const modal = document.getElementById('passwordModal');
-            const verifyBtn = document.getElementById('verifyPasswordBtn');
-            const usernameEditArea = document.getElementById('usernameEditArea');
-            const usernameMsgDiv = document.getElementById('usernameMsg');
+            const usernameActionArea = document.getElementById('usernameActionArea');
 
             async function loadUserData() {
-                const restrictionDiv = document.getElementById('usernameRestriction');
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (!session) {
@@ -278,159 +237,50 @@
                     currentUser = session.user;
                     const { data, error } = await supabase
                         .from('profiles')
-                        .select('username, username_last_modified, is_super_admin')
+                        .select('username, username_last_modified')
                         .eq('id', currentUser.id)
                         .single();
                     if (error) throw new Error(error.message);
                     profileData = data;
-                    document.getElementById('currentUsername').value = data.username;
 
-                    const isSuperAdmin = data.is_super_admin === true;
                     const lastModified = data.username_last_modified ? new Date(data.username_last_modified) : null;
                     const now = new Date();
                     let canModify = false;
-                    let restrictionHtml = '';
-                    let remainingDays = 0;
+                    let lastModifiedStr = '';
 
-                    if (isSuperAdmin) {
+                    if (!lastModified) {
                         canModify = true;
-                        restrictionHtml = '<div class="info">👑 站长无修改时间限制</div>';
                     } else {
-                        if (!lastModified) {
-                            canModify = true;
-                            restrictionHtml = '<div class="info">✅ 首次修改，无时间限制</div>';
-                        } else {
-                            const nextAllowed = new Date(lastModified);
-                            nextAllowed.setFullYear(nextAllowed.getFullYear() + 1);
-                            if (now >= nextAllowed) {
-                                canModify = true;
-                                restrictionHtml = '<div class="info">✅ 现在可以修改用户名</div>';
-                            } else {
-                                canModify = false;
-                                remainingDays = Math.ceil((nextAllowed - now) / (1000 * 60 * 60 * 24));
-                                restrictionHtml = `<div class="warning">上次修改时间：${lastModified.toLocaleDateString('zh-CN')}<br>一年（365天）内仅可修改一次用户名。<br>⚠️ 还需等待 ${remainingDays} 天</div>`;
-                            }
-                        }
-                    }
-                    restrictionDiv.innerHTML = restrictionHtml;
-                    if (!canModify) {
-                        verifyBtn.disabled = true;
-                        verifyBtn.title = `${remainingDays}天后可修改`;
-                    } else {
-                        verifyBtn.disabled = false;
-                    }
-                } catch (err) {
-                    restrictionDiv.innerHTML = `<div class="error">加载失败: ${err.message}</div>`;
-                }
-            }
-
-            // 显示模态框
-            function showModal() {
-                modal.style.display = 'flex';
-                document.getElementById('modalPassword').value = '';
-            }
-
-            function hideModal() {
-                modal.style.display = 'none';
-            }
-
-            // 验证密码
-            async function verifyPassword(password) {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email: currentUser.email,
-                    password: password
-                });
-                return !error;
-            }
-
-            // 处理密码确认
-            async function onConfirmPassword() {
-                const password = document.getElementById('modalPassword').value;
-                if (!password) {
-                    alert('请输入密码');
-                    return;
-                }
-                const isValid = await verifyPassword(password);
-                if (!isValid) {
-                    alert('密码错误');
-                    return;
-                }
-                passwordVerified = true;
-                hideModal();
-                // 显示用户名修改区域
-                usernameEditArea.style.display = 'block';
-                verifyBtn.disabled = true;
-                verifyBtn.textContent = '已验证';
-            }
-
-            // 提交用户名修改
-            async function submitUsername() {
-                if (!passwordVerified) {
-                    alert('请先验证密码');
-                    return;
-                }
-                const newUsername = document.getElementById('newUsername').value.trim();
-                if (!newUsername) {
-                    usernameMsgDiv.innerHTML = '<div class="message error">请输入新用户名</div>';
-                    return;
-                }
-                const usernameRegex = /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/;
-                if (!usernameRegex.test(newUsername)) {
-                    usernameMsgDiv.innerHTML = '<div class="message error">用户名格式错误（6-16位字母/数字/下划线，不能以数字开头）</div>';
-                    return;
-                }
-                if (newUsername === profileData.username) {
-                    usernameMsgDiv.innerHTML = '<div class="message error">新用户名与当前相同，无需修改</div>';
-                    return;
-                }
-                // 唯一性检查
-                const { data: existing, error: checkError } = await supabase
-                    .from('profiles')
-                    .select('username')
-                    .eq('username', newUsername)
-                    .maybeSingle();
-                if (existing) {
-                    usernameMsgDiv.innerHTML = '<div class="message error">用户名已被占用，请换一个</div>';
-                    return;
-                }
-                // 再次检查时间限制
-                const isSuperAdmin = profileData.is_super_admin === true;
-                if (!isSuperAdmin) {
-                    const lastModified = profileData.username_last_modified ? new Date(profileData.username_last_modified) : null;
-                    if (lastModified) {
                         const nextAllowed = new Date(lastModified);
                         nextAllowed.setFullYear(nextAllowed.getFullYear() + 1);
-                        if (new Date() < nextAllowed) {
-                            const days = Math.ceil((nextAllowed - new Date()) / (1000 * 60 * 60 * 24));
-                            usernameMsgDiv.innerHTML = `<div class="message error">距离上次修改不足一年，还需等待 ${days} 天</div>`;
-                            return;
+                        if (now >= nextAllowed) {
+                            canModify = true;
+                        } else {
+                            canModify = false;
+                            const year = lastModified.getFullYear();
+                            const month = String(lastModified.getMonth() + 1).padStart(2, '0');
+                            const day = String(lastModified.getDate()).padStart(2, '0');
+                            const hours = String(lastModified.getHours()).padStart(2, '0');
+                            const minutes = String(lastModified.getMinutes()).padStart(2, '0');
+                            const seconds = String(lastModified.getSeconds()).padStart(2, '0');
+                            lastModifiedStr = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
                         }
                     }
-                }
-                const submitBtn = document.getElementById('submitUsernameBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = '提交中...';
-                const { error } = await supabase
-                    .from('profiles')
-                    .update({
-                        username: newUsername,
-                        username_last_modified: new Date().toISOString()
-                    })
-                    .eq('id', currentUser.id);
-                submitBtn.disabled = false;
-                submitBtn.textContent = '提交修改';
-                if (error) {
-                    usernameMsgDiv.innerHTML = `<div class="message error">修改失败: ${error.message}</div>`;
-                } else {
-                    usernameMsgDiv.innerHTML = '<div class="message success">用户名修改成功！请重新登录</div>';
-                    setTimeout(() => {
-                        supabase.auth.signOut();
-                        window.location.href = '/login';
-                    }, 2000);
+
+                    if (canModify) {
+                        usernameActionArea.innerHTML = `
+                            <a href="/user/security/usernameUpdate" class="btn-link">修改用户名</a>
+                        `;
+                    } else {
+                        usernameActionArea.innerHTML = `
+                            <div class="warning-text">上次修改时间：${lastModifiedStr}，禁止修改。</div>
+                        `;
+                    }
+                } catch (err) {
+                    usernameActionArea.innerHTML = `<div class="warning-text">加载失败: ${err.message}</div>`;
                 }
             }
 
-            // 修改密码
             async function updatePassword() {
                 const oldPwd = document.getElementById('oldPassword').value;
                 const newPwd = document.getElementById('newPassword').value;
@@ -468,12 +318,7 @@
                 }
             }
 
-            verifyBtn.addEventListener('click', showModal);
-            document.getElementById('confirmPasswordBtn').addEventListener('click', onConfirmPassword);
-            document.getElementById('cancelModalBtn').addEventListener('click', hideModal);
-            document.getElementById('submitUsernameBtn').addEventListener('click', submitUsername);
             document.getElementById('updatePasswordBtn').addEventListener('click', updatePassword);
-
             loadUserData();
         })();
     </script>

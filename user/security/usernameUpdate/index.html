@@ -16,16 +16,16 @@
         body {
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             padding: 20px;
         }
 
         .card {
             background: white;
-            width: 450px;
+            width: 400px;
             max-width: 90%;
             border-radius: 16px;
             padding: 32px 28px;
@@ -33,7 +33,7 @@
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 28px;
             text-align: center;
             color: #e74c3c;
             margin-bottom: 8px;
@@ -42,27 +42,36 @@
         .sub {
             text-align: center;
             color: #5b6e8c;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             font-size: 14px;
         }
 
-        .field-group {
+        .info-line {
+            text-align: center;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #5b6e8c;
+            line-height: 1.5;
+        }
+
+        .input-group {
             margin-bottom: 20px;
         }
 
-        .field-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .field-group input {
+        .input-group input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 16px;
             border: 1px solid #d1d5db;
             border-radius: 12px;
             font-size: 15px;
+            background: #f9fafb;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: white;
         }
 
         button {
@@ -77,11 +86,20 @@
             cursor: pointer;
         }
 
+        button:hover {
+            background: #c0392b;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .message {
             margin-top: 16px;
-            padding: 10px;
+            padding: 8px;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
         }
 
@@ -95,144 +113,281 @@
             color: #166534;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            font-size: 14px;
+        }
+
+        .footer-links a {
             color: #e74c3c;
             text-decoration: none;
         }
 
-        .restriction {
-            font-size: 12px;
-            color: #6c7a8e;
-            margin-top: 8px;
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 300px;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            margin: 16px 0;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            margin-top: 0;
         }
     </style>
 </head>
 
 <body>
     <div class="card">
-        <h1>📝 修改用户名</h1>
-        <div class="sub">一年（365天）内仅可修改一次用户名</div>
-        <div class="field-group">
-            <label>新用户名</label>
-            <input type="text" id="newUsername" placeholder="6-16位字母/数字/下划线，不能以数字开头" autocomplete="off">
+        <h1>✨ Jason227</h1>
+        <div class="sub">修改用户名</div>
+
+        <div id="dynamicContent"></div>
+
+        <div class="footer-links">
+            <a href="/user/setting/security">← 返回安全设置</a>
         </div>
-        <div id="restrictionMsg" class="restriction"></div>
-        <button id="submitBtn">提交</button>
-        <div id="msg" class="message"></div>
-        <a href="/user/setting/security" class="back-link">← 返回安全设置</a>
+    </div>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3>验证当前密码</h3>
+            <input type="password" id="modalPassword" placeholder="请输入密码">
+            <div class="modal-buttons">
+                <button id="confirmPwdBtn" style="background:#e74c3c;">确认</button>
+                <button id="cancelModalBtn" style="background:#7f8c8d;">取消</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        (function () {
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentUser = null;
-        let profileData = null;
+            let currentUser = null;
+            let profileData = null;
+            let pendingNewUsername = null;
 
-        async function loadData() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = '/login';
-                return;
+            const dynamicContent = document.getElementById('dynamicContent');
+            const modal = document.getElementById('passwordModal');
+            const modalPassword = document.getElementById('modalPassword');
+            const confirmPwdBtn = document.getElementById('confirmPwdBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+
+            function showModal() {
+                modal.style.display = 'flex';
+                modalPassword.value = '';
             }
-            currentUser = session.user;
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('username, username_last_modified, is_super_admin')
-                .eq('id', currentUser.id)
-                .single();
-            if (error) return;
-            profileData = data;
+            function hideModal() {
+                modal.style.display = 'none';
+            }
 
-            const isSuperAdmin = data.is_super_admin === true;
-            const lastModified = data.username_last_modified ? new Date(data.username_last_modified) : null;
-            const restrictionDiv = document.getElementById('restrictionMsg');
-            if (isSuperAdmin) {
-                restrictionDiv.innerHTML = '👑 站长无修改时间限制';
-            } else {
-                if (!lastModified) {
-                    restrictionDiv.innerHTML = '✅ 首次修改，无时间限制';
-                } else {
-                    const nextAllowed = new Date(lastModified);
-                    nextAllowed.setFullYear(nextAllowed.getFullYear() + 1);
-                    const now = new Date();
-                    if (now >= nextAllowed) {
-                        restrictionDiv.innerHTML = '✅ 现在可以修改用户名';
-                    } else {
-                        const days = Math.ceil((nextAllowed - now) / (1000 * 60 * 60 * 24));
-                        restrictionDiv.innerHTML = `⏰ 距离上次修改不足一年，还需等待 ${days} 天<br>暂不可修改。`;
-                        document.getElementById('submitBtn').disabled = true;
+            async function verifyPassword(password) {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: currentUser.email,
+                    password: password
+                });
+                return !error;
+            }
+
+            async function loadUserData() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = '/auth/login';
+                        return;
                     }
+                    currentUser = session.user;
+
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('username, username_last_modified')
+                        .eq('id', currentUser.id)
+                        .single();
+
+                    if (error) throw new Error(error.message);
+                    profileData = data;
+
+                    const lastModified = data.username_last_modified ? new Date(data.username_last_modified) : null;
+                    const now = new Date();
+                    let canModify = false;
+                    let lastModifiedStr = '';
+
+                    if (!lastModified) {
+                        canModify = true;
+                        lastModifiedStr = '首次修改';
+                    } else {
+                        const nextAllowed = new Date(lastModified);
+                        nextAllowed.setFullYear(nextAllowed.getFullYear() + 1);
+                        if (now >= nextAllowed) {
+                            canModify = true;
+                            const year = lastModified.getFullYear();
+                            const month = String(lastModified.getMonth() + 1).padStart(2, '0');
+                            const day = String(lastModified.getDate()).padStart(2, '0');
+                            const hours = String(lastModified.getHours()).padStart(2, '0');
+                            const minutes = String(lastModified.getMinutes()).padStart(2, '0');
+                            lastModifiedStr = `${year}-${month}-${day} ${hours}:${minutes}`;
+                        } else {
+                            canModify = false;
+                            const year = lastModified.getFullYear();
+                            const month = String(lastModified.getMonth() + 1).padStart(2, '0');
+                            const day = String(lastModified.getDate()).padStart(2, '0');
+                            const hours = String(lastModified.getHours()).padStart(2, '0');
+                            const minutes = String(lastModified.getMinutes()).padStart(2, '0');
+                            lastModifiedStr = `${year}-${month}-${day} ${hours}:${minutes}`;
+                        }
+                    }
+
+                    if (canModify) {
+                        dynamicContent.innerHTML = `
+                            <div class="info-line">上次修改时间<br>${lastModifiedStr}</div>
+                            <div class="input-group">
+                                <input type="text" id="newUsername" placeholder="新用户名" autocomplete="off">
+                            </div>
+                            <button id="submitBtn">确认修改</button>
+                            <div id="msg" class="message"></div>
+                        `;
+                        const submitBtn = document.getElementById('submitBtn');
+                        const newUsernameInput = document.getElementById('newUsername');
+                        const msgDiv = document.getElementById('msg');
+
+                        submitBtn.addEventListener('click', () => {
+                            const newUsername = newUsernameInput.value.trim();
+                            msgDiv.innerHTML = '';
+                            const usernameRegex = /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/;
+                            if (!newUsername) {
+                                msgDiv.innerHTML = '<div class="message error">请输入用户名</div>';
+                                return;
+                            }
+                            if (!usernameRegex.test(newUsername)) {
+                                msgDiv.innerHTML = '<div class="message error">用户名长度应在 4 到 20 字节之间 用户名不能为纯数字、或以数字开头</div>';
+                                return;
+                            }
+                            if (newUsername === profileData.username) {
+                                msgDiv.innerHTML = '<div class="message error">新用户名不能与当前用户名相同</div>';
+                                return;
+                            }
+                            pendingNewUsername = newUsername;
+                            showModal();
+                        });
+                    } else {
+                        // 不可修改：一行显示，灰色文字
+                        dynamicContent.innerHTML = `
+                            <div class="info-line">上次修改时间：${lastModifiedStr}，禁止修改。</div>
+                        `;
+                    }
+                } catch (err) {
+                    dynamicContent.innerHTML = `<div class="info-line">加载失败: ${err.message}</div>`;
                 }
             }
-        }
 
-        async function updateUsername() {
-            const newUsername = document.getElementById('newUsername').value.trim();
-            const msgDiv = document.getElementById('msg');
-            if (!newUsername) {
-                msgDiv.innerHTML = '<div class="message error">请输入新用户名</div>';
-                return;
-            }
-            const usernameRegex = /^[a-zA-Z_][a-zA-Z0-9_]{5,15}$/;
-            if (!usernameRegex.test(newUsername)) {
-                msgDiv.innerHTML = '<div class="message error">用户名格式错误（6-16位字母/数字/下划线，不能以数字开头）</div>';
-                return;
-            }
-            if (newUsername === profileData.username) {
-                msgDiv.innerHTML = '<div class="message error">新用户名与当前相同，无需修改</div>';
-                return;
-            }
-            const { data: existing, error: checkError } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('username', newUsername)
-                .maybeSingle();
-            if (existing) {
-                msgDiv.innerHTML = '<div class="message error">用户名已被占用，请换一个</div>';
-                return;
-            }
-            const isSuperAdmin = profileData.is_super_admin === true;
-            if (!isSuperAdmin) {
+            confirmPwdBtn.addEventListener('click', async () => {
+                const password = modalPassword.value.trim();
+                if (!password) {
+                    alert('请输入密码');
+                    return;
+                }
+                const isValid = await verifyPassword(password);
+                if (!isValid) {
+                    alert('密码错误');
+                    return;
+                }
+                hideModal();
+
+                const msgDiv = document.getElementById('msg');
+                if (msgDiv) msgDiv.innerHTML = '<div class="message success">提交中...</div>';
+
+                const { data: existing } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('username', pendingNewUsername)
+                    .maybeSingle();
+                if (existing) {
+                    if (msgDiv) msgDiv.innerHTML = '<div class="message error">用户名已被占用，请换一个</div>';
+                    return;
+                }
+
                 const lastModified = profileData.username_last_modified ? new Date(profileData.username_last_modified) : null;
                 if (lastModified) {
                     const nextAllowed = new Date(lastModified);
                     nextAllowed.setFullYear(nextAllowed.getFullYear() + 1);
                     if (new Date() < nextAllowed) {
                         const days = Math.ceil((nextAllowed - new Date()) / (1000 * 60 * 60 * 24));
-                        msgDiv.innerHTML = `<div class="message error">距离上次修改不足一年，还需等待 ${days} 天</div>`;
+                        if (msgDiv) msgDiv.innerHTML = `<div class="message error">距离上次修改不足一年，还需等待 ${days} 天</div>`;
                         return;
                     }
                 }
-            }
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = '提交中...';
-            const { error } = await supabase
-                .from('profiles')
-                .update({
-                    username: newUsername,
-                    username_last_modified: new Date().toISOString()
-                })
-                .eq('id', currentUser.id);
-            btn.disabled = false;
-            btn.textContent = '提交';
-            if (error) {
-                msgDiv.innerHTML = `<div class="message error">修改失败: ${error.message}</div>`;
-            } else {
-                msgDiv.innerHTML = '<div class="message success">用户名修改成功！请重新登录</div>';
-                setTimeout(() => {
-                    supabase.auth.signOut();
-                    window.location.href = '/login';
-                }, 2000);
-            }
-        }
 
-        document.getElementById('submitBtn').addEventListener('click', updateUsername);
-        loadData();
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '提交中...';
+                }
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                        username: pendingNewUsername,
+                        username_last_modified: new Date().toISOString()
+                    })
+                    .eq('id', currentUser.id);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '确认修改';
+                }
+                if (updateError) {
+                    if (msgDiv) msgDiv.innerHTML = `<div class="message error">修改失败: ${updateError.message}</div>`;
+                } else {
+                    if (msgDiv) msgDiv.innerHTML = '<div class="message success">用户名修改成功！请重新登录</div>';
+                    setTimeout(async () => {
+                        await supabase.auth.signOut();
+                        window.location.href = '/auth/login';
+                    }, 2000);
+                }
+            });
+
+            cancelModalBtn.addEventListener('click', hideModal);
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) hideModal();
+            });
+
+            loadUserData();
+        })();
     </script>
 </body>
 
