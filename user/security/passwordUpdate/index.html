@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改密码 - Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            color: #e74c3c;
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #5b6e8c;
+            margin-bottom: 28px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #f9fafb;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            border: none;
+            border-radius: 40px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #c0392b;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 8px;
+            border-radius: 12px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            font-size: 14px;
+        }
+
+        .footer-links a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>✨ Jason227</h1>
+        <div class="sub">修改密码</div>
+
+        <div class="input-group">
+            <input type="password" id="oldPassword" placeholder="原密码" autocomplete="current-password">
+        </div>
+        <div class="input-group">
+            <input type="password" id="newPassword" placeholder="新密码" autocomplete="new-password">
+        </div>
+        <div class="input-group">
+            <input type="password" id="confirmPassword" placeholder="再次输入密码" autocomplete="off">
+        </div>
+
+        <button id="submitBtn">确认修改</button>
+        <div id="msg" class="message"></div>
+    </div>
+
+    <script>
+        (function () {
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            let currentUser = null;
+
+            const oldPasswordInput = document.getElementById('oldPassword');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const submitBtn = document.getElementById('submitBtn');
+            const msgDiv = document.getElementById('msg');
+
+            async function loadUserData() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = '/auth/login';
+                        return;
+                    }
+                    currentUser = session.user;
+                } catch (err) {
+                    msgDiv.innerHTML = '<div class="message error">请先登录</div>';
+                    setTimeout(() => {
+                        window.location.href = '/auth/login';
+                    }, 1500);
+                }
+            }
+
+            async function updatePassword() {
+                msgDiv.innerHTML = '';
+
+                const oldPwd = oldPasswordInput.value.trim();
+                const newPwd = newPasswordInput.value.trim();
+                const confirmPwd = confirmPasswordInput.value.trim();
+
+                if (!oldPwd || !newPwd || !confirmPwd) {
+                    msgDiv.innerHTML = '<div class="message error">请输入密码</div>';
+                    return;
+                }
+                if (newPwd.length < 6) {
+                    msgDiv.innerHTML = '<div class="message error">密码长度过短或过长</div>';
+                    return;
+                }
+                if (newPwd !== confirmPwd) {
+                    msgDiv.innerHTML = '<div class="message error">两次输入的新密码不匹配</div>';
+                    return;
+                }
+                if (oldPwd === newPwd) {
+                    msgDiv.innerHTML = '<div class="message error">新密码不能与原密码相同</div>';
+                    return;
+                }
+
+                // 验证当前密码
+                const { error: signInError } = await supabase.auth.signInWithPassword({
+                    email: currentUser.email,
+                    password: oldPwd
+                });
+                if (signInError) {
+                    msgDiv.innerHTML = '<div class="message error">密码与当前记录的不匹配</div>';
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = '提交中...';
+
+                const { error: updateError } = await supabase.auth.updateUser({ password: newPwd });
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = '确认修改';
+
+                if (updateError) {
+                    msgDiv.innerHTML = `<div class="message error">修改失败: ${updateError.message}</div>`;
+                } else {
+                    msgDiv.innerHTML = '<div class="message success">修改成功</div>';
+                    // 不清空表单，不登出，不跳转
+                }
+            }
+
+            submitBtn.addEventListener('click', updatePassword);
+            loadUserData();
+        })();
+    </script>
+</body>
+
+</html>

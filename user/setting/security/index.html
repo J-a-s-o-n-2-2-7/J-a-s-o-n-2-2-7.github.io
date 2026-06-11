@@ -88,7 +88,6 @@
             line-height: 1.6;
         }
 
-        /* 禁止修改提示框样式与 info-text 一致 */
         .warning-text {
             margin: 12px 0;
             font-size: 14px;
@@ -112,67 +111,11 @@
             margin-top: 8px;
         }
 
-        .field-group {
-            margin-bottom: 20px;
-        }
-
-        .field-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .field-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 15px;
-            background: #f9fafb;
-        }
-
-        button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .message {
-            margin-top: 16px;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
         .back-link {
             display: inline-block;
             margin-top: 20px;
             color: #e74c3c;
             text-decoration: none;
-        }
-
-        .password-section {
-            margin-top: 30px;
-            border-top: 1px solid #e9ecef;
-            padding-top: 20px;
         }
     </style>
 </head>
@@ -195,22 +138,9 @@
         </div>
 
         <!-- 修改密码区块 -->
-        <div class="password-section">
+        <div class="section">
             <div class="section-title">修改密码</div>
-            <div class="field-group">
-                <label>当前密码</label>
-                <input type="password" id="oldPassword" placeholder="输入当前密码">
-            </div>
-            <div class="field-group">
-                <label>新密码</label>
-                <input type="password" id="newPassword" placeholder="至少6位">
-            </div>
-            <div class="field-group">
-                <label>确认新密码</label>
-                <input type="password" id="confirmPassword" placeholder="再次输入新密码">
-            </div>
-            <button id="updatePasswordBtn">修改密码</button>
-            <div id="passwordMsg" class="message"></div>
+            <a href="/user/security/passwordUpdate" class="btn-link">修改密码</a>
         </div>
 
         <a href="/" class="back-link">← 返回首页</a>
@@ -281,44 +211,6 @@
                 }
             }
 
-            async function updatePassword() {
-                const oldPwd = document.getElementById('oldPassword').value;
-                const newPwd = document.getElementById('newPassword').value;
-                const confirmPwd = document.getElementById('confirmPassword').value;
-                const msgDiv = document.getElementById('passwordMsg');
-                if (!oldPwd || !newPwd || !confirmPwd) {
-                    msgDiv.innerHTML = '<div class="message error">请填写所有密码字段</div>';
-                    return;
-                }
-                if (newPwd.length < 6) {
-                    msgDiv.innerHTML = '<div class="message error">新密码至少6位</div>';
-                    return;
-                }
-                if (newPwd !== confirmPwd) {
-                    msgDiv.innerHTML = '<div class="message error">两次输入的新密码不一致</div>';
-                    return;
-                }
-                const { error: signInError } = await supabase.auth.signInWithPassword({
-                    email: currentUser.email,
-                    password: oldPwd
-                });
-                if (signInError) {
-                    msgDiv.innerHTML = '<div class="message error">当前密码错误</div>';
-                    return;
-                }
-                const { error: updateError } = await supabase.auth.updateUser({ password: newPwd });
-                if (updateError) {
-                    msgDiv.innerHTML = `<div class="message error">修改失败: ${updateError.message}</div>`;
-                } else {
-                    msgDiv.innerHTML = '<div class="message success">密码修改成功！请重新登录</div>';
-                    setTimeout(() => {
-                        supabase.auth.signOut();
-                        window.location.href = '/login';
-                    }, 2000);
-                }
-            }
-
-            document.getElementById('updatePasswordBtn').addEventListener('click', updatePassword);
             loadUserData();
         })();
     </script>
