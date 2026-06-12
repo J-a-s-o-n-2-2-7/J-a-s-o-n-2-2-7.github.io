@@ -155,11 +155,6 @@
             color: #166534;
         }
 
-        .info {
-            background: #e3f2fd;
-            color: #0c5460;
-        }
-
         .footer-links {
             text-align: center;
             margin-top: 24px;
@@ -189,13 +184,6 @@
             background: #f9fafb;
             width: 120px;
             height: 44px;
-        }
-
-        .captcha-hint {
-            font-size: 12px;
-            color: #6c7a8e;
-            margin-top: 4px;
-            text-align: right;
         }
 
         .form-panel {
@@ -229,19 +217,16 @@
             <div class="input-group">
                 <input type="email" id="resetEmail" placeholder="邮箱" autocomplete="email">
             </div>
-            <!-- 图形验证码（公共） -->
             <div class="input-group">
                 <div class="captcha-row">
                     <input type="text" id="captchaInput" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
                     <canvas id="captchaCanvas" width="120" height="44"></canvas>
                 </div>
             </div>
-            <!-- 邮箱验证码行 -->
             <div class="verification-row" id="emailCodeRow">
                 <input type="text" id="emailCode" placeholder="6位数字验证码" autocomplete="off" maxlength="6">
                 <button type="button" id="sendEmailCodeBtn">发送验证码</button>
             </div>
-            <!-- 新密码和确认密码 -->
             <div class="input-group">
                 <input type="password" id="newPassword" placeholder="新密码" autocomplete="new-password">
             </div>
@@ -250,26 +235,23 @@
             </div>
         </div>
 
-        <!-- 手机号重置面板 -->
+        <!-- 手机号重置面板（保留图形验证码和 Turnstile） -->
         <div id="phonePanel" class="form-panel">
             <div class="input-group">
                 <input type="tel" id="resetPhone" placeholder="手机号" autocomplete="tel">
             </div>
-            <!-- 图形验证码（公共） -->
             <div class="input-group">
                 <div class="captcha-row">
                     <input type="text" id="captchaInput2" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
                     <canvas id="captchaCanvas2" width="120" height="44"></canvas>
                 </div>
             </div>
-            <!-- 新密码和确认密码 -->
             <div class="input-group">
                 <input type="password" id="newPasswordPhone" placeholder="新密码" autocomplete="new-password">
             </div>
             <div class="input-group">
                 <input type="password" id="confirmPasswordPhone" placeholder="再次输入密码" autocomplete="off">
             </div>
-            <!-- Turnstile 验证（放在最下面） -->
             <div class="turnstile-wrapper">
                 <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx" data-theme="light"></div>
             </div>
@@ -287,14 +269,12 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Edge Functions 地址
         const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-email-code';
         const EDGE_VERIFY_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-email-code';
         const EDGE_RESET_PASSWORD = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/reset-password';
         const EDGE_VERIFY_TURNSTILE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-phone-turnstile';
-        const ADMIN_SECRET = 'supabasetiti0730';
 
-        // 图形验证码（两个 canvas 共用一个生成逻辑，但分别存储）
+        // 图形验证码（邮箱和手机各一套）
         let currentCaptchaEmail = '';
         let currentCaptchaPhone = '';
         const canvasEmail = document.getElementById('captchaCanvas');
@@ -371,28 +351,37 @@
         const sendEmailBtn = document.getElementById('sendEmailCodeBtn');
         async function sendEmailCode() {
             const email = document.getElementById('resetEmail').value.trim();
-            if (!email) { showMessage('请填写邮箱', 'error'); return; }
-            if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage('邮箱格式不正确', 'error'); return; }
             const userCaptcha = document.getElementById('captchaInput').value.trim();
-            if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
-            if (userCaptcha.toUpperCase() !== currentCaptchaEmail) { showMessage('图形验证码错误', 'error'); generateCaptcha(ctxEmail, canvasEmail, 'email'); return; }
+            if (!email || !userCaptcha) {
+                showMessage('请填写完整所有内容', 'error');
+                return;
+            }
+            if (!/^\S+@\S+\.\S+$/.test(email)) {
+                showMessage('邮箱地址不合法', 'error');
+                return;
+            }
+            if (userCaptcha.toUpperCase() !== currentCaptchaEmail) {
+                showMessage('图形验证码错误', 'error');
+                generateCaptcha(ctxEmail, canvasEmail, 'email');
+                document.getElementById('captchaInput').value = '';
+                return;
+            }
 
             sendEmailBtn.disabled = true;
             sendEmailBtn.textContent = '发送中...';
             try {
                 const response = await fetch(EDGE_SEND_CODE, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
-                const result = await response.json();
                 if (response.ok) {
-                    showMessage('验证码已发送至邮箱，有效期10分钟', 'success');
                     startEmailCountdown(60);
                 } else {
-                    showMessage(`发送失败: ${result.error}`, 'error');
                     sendEmailBtn.disabled = false;
                     sendEmailBtn.textContent = '发送验证码';
+                    const result = await response.json();
+                    showMessage(result.error || '发送失败', 'error');
                 }
             } catch (err) {
                 showMessage('网络错误', 'error');
@@ -410,7 +399,7 @@
                     sendEmailBtn.disabled = false;
                     sendEmailBtn.textContent = '发送验证码';
                 } else {
-                    sendEmailBtn.textContent = `${emailCountdown}秒后重试`;
+                    sendEmailBtn.textContent = `${emailCountdown}s 后重试`;
                     emailCountdown--;
                 }
             }, 1000);
@@ -423,7 +412,6 @@
             setTimeout(() => { if (msgDiv) msgDiv.innerHTML = ''; }, 4000);
         }
 
-        // 根据手机号获取邮箱
         async function getEmailByPhone(phone) {
             const { data, error } = await sb
                 .from('profiles')
@@ -434,16 +422,15 @@
             return data.email;
         }
 
-        // 重置密码（通用）
         async function resetPassword(userId, newPassword) {
             const response = await fetch(EDGE_RESET_PASSWORD, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, newPassword })
             });
             const result = await response.json();
             if (response.ok) {
-                showMessage('密码重置成功，请使用新密码登录', 'success');
+                showMessage('重置成功', 'success');
                 setTimeout(() => { window.location.href = '/auth/login'; }, 2000);
             } else {
                 showMessage(`重置失败: ${result.error}`, 'error');
@@ -459,24 +446,27 @@
                 const confirmPwd = document.getElementById('confirmPassword').value;
                 const userCaptcha = document.getElementById('captchaInput').value.trim();
 
-                if (!email || !code || !newPassword || !confirmPwd) {
-                    showMessage('请填写所有字段', 'error'); return;
+                if (!email || !code || !newPassword || !confirmPwd || !userCaptcha) {
+                    showMessage('请填写完整所有内容', 'error');
+                    return;
                 }
-                if (newPassword !== confirmPwd) { showMessage('两次输入的密码不一致', 'error'); return; }
-                if (newPassword.length < 6) { showMessage('新密码至少6位', 'error'); return; }
-                if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
-                if (userCaptcha.toUpperCase() !== currentCaptchaEmail) { showMessage('图形验证码错误', 'error'); generateCaptcha(ctxEmail, canvasEmail, 'email'); return; }
+                if (newPassword !== confirmPwd) { showMessage('两次输入的密码不匹配', 'error'); return; }
+                if (newPassword.length < 6) { showMessage('密码长度过短或过长', 'error'); return; }
+                if (userCaptcha.toUpperCase() !== currentCaptchaEmail) {
+                    showMessage('图形验证码错误', 'error');
+                    generateCaptcha(ctxEmail, canvasEmail, 'email');
+                    document.getElementById('captchaInput').value = '';
+                    return;
+                }
 
-                // 验证邮箱验证码
                 const verifyResp = await fetch(EDGE_VERIFY_CODE, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, code })
                 });
                 const verifyResult = await verifyResp.json();
                 if (!verifyResp.ok) { showMessage(`验证码错误: ${verifyResult.error}`, 'error'); return; }
 
-                // 获取用户ID
                 const { data: userData, error: userError } = await sb
                     .from('profiles')
                     .select('id')
@@ -493,25 +483,29 @@
                 const userCaptcha = document.getElementById('captchaInput2').value.trim();
                 const turnstileToken = document.querySelector('#phonePanel .cf-turnstile [name="cf-turnstile-response"]')?.value;
 
-                if (!phone || !newPassword || !confirmPwd) { showMessage('请填写所有字段', 'error'); return; }
-                if (newPassword !== confirmPwd) { showMessage('两次输入的密码不一致', 'error'); return; }
-                if (newPassword.length < 6) { showMessage('新密码至少6位', 'error'); return; }
-                if (!userCaptcha) { showMessage('请输入图形验证码', 'error'); return; }
-                if (userCaptcha.toUpperCase() !== currentCaptchaPhone) { showMessage('图形验证码错误', 'error'); generateCaptcha(ctxPhone, canvasPhone, 'phone'); return; }
-                if (!turnstileToken) { showMessage('请完成安全验证', 'error'); return; }
+                if (!phone || !newPassword || !confirmPwd || !userCaptcha || !turnstileToken) {
+                    showMessage('请填写完整所有内容', 'error');
+                    return;
+                }
+                if (newPassword !== confirmPwd) { showMessage('两次输入的密码不匹配', 'error'); return; }
+                if (newPassword.length < 6) { showMessage('密码长度过短或过长', 'error'); return; }
+                if (userCaptcha.toUpperCase() !== currentCaptchaPhone) {
+                    showMessage('图形验证码错误', 'error');
+                    generateCaptcha(ctxPhone, canvasPhone, 'phone');
+                    document.getElementById('captchaInput2').value = '';
+                    return;
+                }
 
-                // 验证 Turnstile
                 const turnstileResp = await fetch(EDGE_VERIFY_TURNSTILE, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_SECRET}` },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: turnstileToken })
                 });
                 const turnstileResult = await turnstileResp.json();
                 if (!turnstileResp.ok) { showMessage(turnstileResult.error || '安全验证失败', 'error'); return; }
 
-                // 根据手机号获取邮箱和用户ID
                 const email = await getEmailByPhone(phone);
-                if (!email) { showMessage('手机号未关联账户', 'error'); return; }
+                if (!email) { showMessage('用户不存在', 'error'); return; }
                 const { data: userData, error: userError } = await sb
                     .from('profiles')
                     .select('id')

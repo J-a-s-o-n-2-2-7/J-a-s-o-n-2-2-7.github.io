@@ -124,13 +124,6 @@
             height: 44px;
         }
 
-        .captcha-hint {
-            font-size: 12px;
-            color: #6c7a8e;
-            margin-top: 4px;
-            text-align: right;
-        }
-
         .footer-links {
             display: flex;
             justify-content: space-between;
@@ -154,6 +147,7 @@
     <div class="login-card">
         <h1>✨ Jason227</h1>
         <div class="sub">登录账号</div>
+
         <div class="input-group">
             <input type="text" id="loginIdentifier" placeholder="用户名、UID、手机或电子邮箱" autocomplete="off">
         </div>
@@ -166,8 +160,10 @@
                 <canvas id="captchaCanvas" width="120" height="44"></canvas>
             </div>
         </div>
+
         <button id="loginBtn">使用账户密码登录</button>
         <div id="loginMsg" class="message"></div>
+
         <div class="footer-links">
             <a href="/auth/register">没有账号？</a>
             <a href="/auth/forgetPassword">忘记密码？</a>
@@ -179,45 +175,40 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ========== 已登录自动跳转 ==========
         async function redirectIfLoggedIn() {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-                // 获取 user_number
-                const { data: profile } = await sb
-                    .from('profiles')
-                    .select('user_number')
-                    .eq('id', session.user.id)
-                    .single();
-                if (profile?.user_number) {
-                    window.location.href = `/user/${profile.user_number}`;
-                } else {
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
                     window.location.href = '/';
                 }
+            } catch (err) {
+                console.error('检查登录状态失败:', err);
             }
         }
         redirectIfLoggedIn();
 
-        // ========== 图形验证码 ==========
         let currentCaptcha = '';
         const canvas = document.getElementById('captchaCanvas');
         const ctx = canvas.getContext('2d');
+
         function generateCaptcha() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
             let captcha = '';
             for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
             currentCaptcha = captcha.toUpperCase();
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#f9fafb';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < 6; i++) {
+
+            for (let i = 0; i < 10; i++) {
                 ctx.beginPath();
                 ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
                 ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
                 ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
                 ctx.stroke();
             }
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 100; i++) {
                 ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
                 ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
             }
@@ -233,12 +224,14 @@
                 ctx.restore();
             }
         }
-        canvas.addEventListener('click', generateCaptcha);
+
+        canvas.addEventListener('click', () => {
+            generateCaptcha();
+            document.getElementById('captchaInput').value = '';
+        });
         generateCaptcha();
 
-        // ========== 辅助函数：根据用户名/UID/手机号/邮箱 获取邮箱 ==========
         async function getEmailByIdentifier(identifier) {
-            // 1. 手机号（11位数字，以1开头）
             if (/^1[3-9]\d{9}$/.test(identifier)) {
                 const { data, error } = await sb
                     .from('profiles')
@@ -248,7 +241,6 @@
                 if (error || !data) return null;
                 return data.email;
             }
-            // 2. UID（用户编号）: 整数，可正可负，最多6位数字（含负号）
             if (/^-?\d{1,6}$/.test(identifier)) {
                 const { data, error } = await sb
                     .from('profiles')
@@ -258,11 +250,9 @@
                 if (error || !data) return null;
                 return data.email;
             }
-            // 3. 邮箱（包含@）
             if (identifier.includes('@')) {
                 return identifier;
             }
-            // 4. 用户名
             const { data, error } = await sb
                 .from('profiles')
                 .select('email')
@@ -272,31 +262,9 @@
             return data.email;
         }
 
-        // ========== 登录逻辑（错误提示已中文化） ==========
         const loginBtn = document.getElementById('loginBtn');
         const loginMsg = document.getElementById('loginMsg');
         let isSubmitting = false;
-
-        function translateErrorMessage(englishMessage) {
-            const map = {
-                'Invalid login credentials': '账号或密码错误，请检查后重试',
-                'Email not confirmed': '邮箱未确认，请先查收确认邮件并激活账号',
-                'User already registered': '用户已注册，请直接登录',
-                'Password should be at least 6 characters': '密码长度不能少于6位',
-                'User not found': '用户不存在',
-                'Invalid email': '邮箱格式不正确',
-                'Weak password': '密码强度不足，请使用更复杂的密码',
-                'email address in use': '该邮箱已被其他账号使用',
-                'Unable to validate email address': '邮箱验证失败，请检查邮箱是否正确',
-                'timeout-or-duplicate': '安全验证已过期，请重新尝试'
-            };
-            for (const [en, zh] of Object.entries(map)) {
-                if (englishMessage && englishMessage.toLowerCase().includes(en.toLowerCase())) {
-                    return zh;
-                }
-            }
-            return `错误：${englishMessage}`;
-        }
 
         async function handleLogin() {
             if (isSubmitting) return;
@@ -308,12 +276,16 @@
             const userCaptcha = document.getElementById('captchaInput').value.trim();
 
             try {
-                if (!identifier || !password) {
-                    loginMsg.innerHTML = '<div class="message error">请填写账号和密码</div>';
+                if (!identifier) {
+                    loginMsg.innerHTML = '<div class="message error">请输入用户名、UID、手机或电子邮箱</div>';
+                    return;
+                }
+                if (!password) {
+                    loginMsg.innerHTML = '<div class="message error">请输入密码</div>';
                     return;
                 }
                 if (!userCaptcha) {
-                    loginMsg.innerHTML = '<div class="message error">请输入图形验证码</div>';
+                    loginMsg.innerHTML = '<div class="message error">请输入验证码</div>';
                     return;
                 }
                 if (userCaptcha.toUpperCase() !== currentCaptcha) {
@@ -329,18 +301,15 @@
                     return;
                 }
 
-                const { error } = await sb.auth.signInWithPassword({
-                    email,
-                    password
-                });
+                const { error } = await sb.auth.signInWithPassword({ email, password });
 
                 if (error) {
-                    const friendlyMsg = translateErrorMessage(error.message);
-                    loginMsg.innerHTML = `<div class="message error">${friendlyMsg}</div>`;
+                    // 统一提示账号或密码错误
+                    loginMsg.innerHTML = '<div class="message error">用户名或密码错误</div>';
                     generateCaptcha();
                     document.getElementById('captchaInput').value = '';
                 } else {
-                    loginMsg.innerHTML = '<div class="message success">登录成功！正在跳转...</div>';
+                    loginMsg.innerHTML = '<div class="message success">登录成功</div>';
                     setTimeout(() => {
                         window.location.href = '/';
                     }, 1500);

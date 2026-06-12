@@ -219,7 +219,10 @@
                     msgDiv.innerHTML = `<div class="message error">修改失败: ${updateError.message}</div>`;
                 } else {
                     msgDiv.innerHTML = '<div class="message success">修改成功</div>';
-                    // 不清空表单，不登出，不跳转
+                    // 1.5秒后跳转到安全设置页面
+                    setTimeout(() => {
+                        window.location.href = '/user/setting/security';
+                    }, 1500);
                 }
             }
 
