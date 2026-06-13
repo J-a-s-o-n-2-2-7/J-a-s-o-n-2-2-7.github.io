@@ -278,19 +278,23 @@
 
         .benben-list {
             margin-top: 20px;
-            max-height: 500px;
-            overflow-y: auto;
         }
 
         .benben-item {
             display: flex;
             gap: 12px;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 16px;
+            position: relative;
         }
 
         .benben-avatar {
             flex-shrink: 0;
+            width: 40px;
+            margin-top: 8px;
+        }
+
+        .benben-avatar a {
+            display: block;
         }
 
         .benben-avatar img {
@@ -303,6 +307,37 @@
 
         .benben-content {
             flex: 1;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 12px 16px;
+            position: relative;
+        }
+
+        .benben-content::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 16px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 8px 8px 0;
+            border-color: transparent #f0f2f5 transparent transparent;
+            z-index: 1;
+        }
+
+        .benben-content::after {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 16px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 8px 8px 0;
+            border-color: transparent #e9ecef transparent transparent;
+            z-index: 0;
         }
 
         .benben-item-header {
@@ -310,8 +345,11 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 8px;
             gap: 8px;
+            background: #f0f2f5;
+            padding: 6px 12px;
+            margin: -12px -16px 12px -16px;
+            border-radius: 16px 16px 0 0;
         }
 
         .benben-user-info {
@@ -366,10 +404,28 @@
             white-space: pre-wrap;
         }
 
-        .benben-empty {
+        .benben-text a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .benben-text a:hover {
+            text-decoration: underline;
+        }
+
+        .benben-empty,
+        .no-more-message {
             text-align: center;
             padding: 40px;
             color: #999;
+            font-size: 14px;
+        }
+
+        .loading-sentinel {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 13px;
         }
 
         @media (max-width: 900px) {
@@ -480,7 +536,7 @@
                     </div>
 
                     <div id="benbenList" class="benben-list"></div>
-                    <div id="benbenLoading" style="text-align: center; padding: 20px; display: none;">加载中...</div>
+                    <div id="loadingSentinel" class="loading-sentinel" style="display: none;">加载中...</div>
                 </div>
 
                 <div class="card" id="fortuneCard"></div>
@@ -521,6 +577,7 @@
             let isLoading = false;
             let hasMore = true;
             let lastId = null;
+            let currentReplyingId = null;   // 记录正在回复的犇犇ID
             const MAX_LENGTH = 227;
 
             const authButtons = document.getElementById('authButtons');
@@ -530,11 +587,8 @@
             const benbenList = document.getElementById('benbenList');
             const benbenContent = document.getElementById('benbenContent');
             const benbenSubmit = document.getElementById('benbenSubmit');
-            const benbenLoading = document.getElementById('benbenLoading');
+            const loadingSentinel = document.getElementById('loadingSentinel');
 
-            // 移除实时截断逻辑，保留输入框自由输入
-
-            // 绝对时间格式化：YYYY-MM-DD HH:MM:SS
             function formatAbsoluteTime(timestamp) {
                 const date = new Date(timestamp);
                 const year = date.getFullYear();
@@ -556,17 +610,32 @@
                 }).replace(/\n/g, '<br>');
             }
 
+            function renderMentions(text, mentionMap) {
+                if (!mentionMap) return escapeHtml(text);
+                const regex = /@([a-zA-Z0-9_]+)/g;
+                return text.replace(regex, (match, username) => {
+                    const userNumber = mentionMap[username];
+                    if (userNumber) {
+                        return `@<a href="/user/${userNumber}">${escapeHtml(username)}</a>`;
+                    } else {
+                        return match;
+                    }
+                });
+            }
+
             async function loadBenbenList(reset = true) {
                 if (isLoading) return;
                 if (reset) {
                     hasMore = true;
                     lastId = null;
                     if (benbenList) benbenList.innerHTML = '';
+                    const existingNoMore = document.querySelector('.no-more-message');
+                    if (existingNoMore) existingNoMore.remove();
                 }
                 if (!hasMore) return;
 
                 isLoading = true;
-                if (benbenLoading) benbenLoading.style.display = 'block';
+                if (loadingSentinel) loadingSentinel.style.display = 'block';
 
                 try {
                     let query = supabase
@@ -581,24 +650,68 @@
                     const { data, error } = await query;
                     if (error) throw error;
 
+                    // 提取 @ 映射
+                    const mentionSet = new Set();
+                    data?.forEach(item => {
+                        const matches = item.content.match(/@([a-zA-Z0-9_]+)/g);
+                        if (matches) {
+                            matches.forEach(m => {
+                                const username = m.slice(1);
+                                mentionSet.add(username);
+                            });
+                        }
+                    });
+                    let mentionMap = {};
+                    if (mentionSet.size > 0) {
+                        const usernames = Array.from(mentionSet);
+                        const { data: userData, error: userError } = await supabase
+                            .from('profiles')
+                            .select('username, user_number')
+                            .in('username', usernames);
+                        if (!userError && userData) {
+                            userData.forEach(u => {
+                                mentionMap[u.username] = u.user_number;
+                            });
+                        }
+                    }
+
                     if (data && data.length > 0) {
+                        // 先渲染数据
+                        renderBenbenList(data, reset, mentionMap);
                         lastId = data[data.length - 1].id;
-                        if (data.length < 20) hasMore = false;
-                        renderBenbenList(data, reset);
-                    } else if (reset) {
-                        if (benbenList) benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
+                        if (data.length < 20) {
+                            hasMore = false;
+                            // 在列表末尾添加“没有更多动态了”
+                            const noMoreDiv = document.createElement('div');
+                            noMoreDiv.className = 'no-more-message';
+                            noMoreDiv.textContent = '没有更多动态了';
+                            benbenList.appendChild(noMoreDiv);
+                        } else {
+                            hasMore = true;
+                        }
+                    } else {
                         hasMore = false;
+                        if (reset) {
+                            benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
+                        } else {
+                            const noMoreDiv = document.createElement('div');
+                            noMoreDiv.className = 'no-more-message';
+                            noMoreDiv.textContent = '没有更多动态了';
+                            benbenList.appendChild(noMoreDiv);
+                        }
                     }
                 } catch (error) {
                     console.error('加载犇犇失败:', error);
-                    if (reset && benbenList) benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
+                    if (reset && benbenList && benbenList.children.length === 0) {
+                        benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
+                    }
                 } finally {
                     isLoading = false;
-                    if (benbenLoading) benbenLoading.style.display = 'none';
+                    if (loadingSentinel) loadingSentinel.style.display = 'none';
                 }
             }
 
-            function renderBenbenList(data, reset) {
+            function renderBenbenList(data, reset, mentionMap = {}) {
                 if (!benbenList) return;
                 if (reset) benbenList.innerHTML = '';
 
@@ -607,10 +720,13 @@
                     const fullContentEncoded = encodeURIComponent(item.content);
                     const username = escapeHtml(item.profiles?.username || '用户');
                     const timeStr = formatAbsoluteTime(item.created_at);
+                    const renderedText = renderMentions(item.content, mentionMap);
                     const benbenHtml = `
                         <div class="benben-item" data-id="${item.id}">
                             <div class="benben-avatar">
-                                <img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'">
+                                <a href="/user/${item.user_number}">
+                                    <img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'">
+                                </a>
                             </div>
                             <div class="benben-content">
                                 <div class="benben-item-header">
@@ -620,18 +736,18 @@
                                     </div>
                                     <div class="benben-actions">
                                         <button class="benben-report-btn" data-id="${item.id}">举报</button>
-                                        <button class="benben-reply-btn" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
+                                        <button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
                                         ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
                                     </div>
                                 </div>
-                                <div class="benben-text">${escapeHtml(item.content)}</div>
+                                <div class="benben-text">${renderedText}</div>
                             </div>
                         </div>
                     `;
                     benbenList.insertAdjacentHTML('beforeend', benbenHtml);
                 });
 
-                // 删除事件
+                // 绑定事件
                 document.querySelectorAll('.benben-delete').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         e.stopPropagation();
@@ -640,21 +756,21 @@
                     });
                 });
 
-                // 回复事件
                 document.querySelectorAll('.benben-reply-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
+                        const replyToId = btn.dataset.replytoId;
                         const username = btn.dataset.username;
                         const fullContent = decodeURIComponent(btn.dataset.fullcontent);
                         const replyText = ` || @${username} : ${fullContent}`;
                         if (benbenContent) {
                             benbenContent.value = replyText;
+                            currentReplyingId = replyToId;   // 记录被回复的ID
                             benbenContent.focus();
                             benbenContent.setSelectionRange(0, 0);
                         }
                     });
                 });
 
-                // 举报事件（暂时弹窗）
                 document.querySelectorAll('.benben-report-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         alert('举报功能暂未开放，请联系管理员。');
@@ -669,14 +785,21 @@
                     window.location.href = '/auth/login';
                     return;
                 }
-                // 发送时截断到 MAX_LENGTH
                 const finalContent = content.length > MAX_LENGTH ? content.substring(0, MAX_LENGTH) : content;
+                const insertData = {
+                    user_number: currentProfile.user_number,
+                    content: finalContent
+                };
+                if (currentReplyingId) {
+                    insertData.reply_to = currentReplyingId;
+                }
                 try {
                     const { error } = await supabase
                         .from('benben')
-                        .insert({ user_number: currentProfile.user_number, content: finalContent });
+                        .insert(insertData);
                     if (error) throw error;
                     if (benbenContent) benbenContent.value = '';
+                    currentReplyingId = null;   // 重置回复状态
                     loadBenbenList(true);
                 } catch (error) {
                     console.error('发布失败:', error);
@@ -697,6 +820,7 @@
                 feedMode = mode;
                 lastId = null;
                 hasMore = true;
+                currentReplyingId = null;   // 切换模式时重置回复状态
                 loadBenbenList(true);
                 document.querySelectorAll('.benben-tab').forEach(tab => {
                     if (tab.dataset.mode === mode) tab.classList.add('active');
@@ -705,16 +829,13 @@
             }
 
             function setupInfiniteScroll() {
-                if (!benbenList) return;
+                if (!loadingSentinel) return;
                 const observer = new IntersectionObserver((entries) => {
                     if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) {
                         loadBenbenList(false);
                     }
                 }, { threshold: 0.1 });
-                const sentinel = document.createElement('div');
-                sentinel.style.height = '20px';
-                benbenList.parentElement?.appendChild(sentinel);
-                observer.observe(sentinel);
+                observer.observe(loadingSentinel);
             }
 
             async function getProfile(userId) {
@@ -765,6 +886,7 @@
                         const nav = document.getElementById('benbenNav');
                         if (editor) editor.style.display = 'block';
                         if (nav) nav.style.display = 'flex';
+                        if (loadingSentinel) loadingSentinel.style.display = 'block';
 
                         loadBenbenList(true);
                         setupInfiniteScroll();
@@ -788,6 +910,7 @@
                         if (editor) editor.style.display = 'none';
                         if (nav) nav.style.display = 'none';
                         if (benbenList) benbenList.innerHTML = '<div class="benben-empty">请先登录，查看犇犇～</div>';
+                        if (loadingSentinel) loadingSentinel.style.display = 'none';
                     }
                 } catch (err) {
                     console.error('updateUI 错误：', err);
@@ -807,9 +930,6 @@
 
             updateUI();
             bindBenbenEvents();
-            window.addEventListener('load', () => {
-                if (benbenList && currentProfile) setupInfiniteScroll();
-            });
         })();
     </script>
 </body>
