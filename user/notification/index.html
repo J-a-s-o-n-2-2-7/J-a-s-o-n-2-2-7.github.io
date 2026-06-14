@@ -255,7 +255,8 @@
             <div class="notifications-wrapper">
                 <!-- 左侧标签栏 -->
                 <div class="tabs" id="notificationTabs">
-                    <div class="tab active" data-type="benben">@我的</div>
+                    <div class="tab active" data-type="mention">@我的</div>
+                    <div class="tab" data-type="reply">回复我的</div>
                     <div class="tab" data-type="system">系统通知</div>
                     <div class="tab" data-type="activity">活动通知</div>
                 </div>
@@ -284,7 +285,7 @@
             let isLoading = false;
             let hasMore = true;
             let page = 1;           // 当前页码
-            let currentType = 'benben'; // benben, system, activity
+            let currentType = 'mention'; // mention, reply, system, activity
             const pageSize = 20;
 
             const authButtons = document.getElementById('authButtons');
@@ -293,10 +294,9 @@
             const markAllBtn = document.getElementById('markAllReadBtn');
             const tabs = document.querySelectorAll('.tab');
 
-            const typeMap = { benben: 1, system: 3, activity: 4 };
-            const typeFromInt = { 1: 'benben', 3: 'system', 4: 'activity' };
+            const typeMap = { mention: 1, reply: 2, system: 3, activity: 4 };
+            const typeFromInt = { 1: 'mention', 2: 'reply', 3: 'system', 4: 'activity' };
 
-            // 解析 URL 参数
             function parseURLParams() {
                 const params = new URLSearchParams(window.location.search);
                 const typeParam = params.get('type');
@@ -304,7 +304,7 @@
                 if (typeParam && typeFromInt[typeParam]) {
                     currentType = typeFromInt[typeParam];
                 } else {
-                    currentType = 'benben';
+                    currentType = 'mention';
                 }
                 if (pageParam && !isNaN(parseInt(pageParam))) {
                     page = parseInt(pageParam);
@@ -313,7 +313,6 @@
                 }
             }
 
-            // 更新 URL 参数（不刷新页面）
             function updateURLParams() {
                 const newURL = `${window.location.pathname}?type=${typeMap[currentType]}&page=${page}`;
                 window.history.pushState({ type: currentType, page: page }, '', newURL);
@@ -364,14 +363,11 @@
                         .update({ read: true })
                         .eq('user_number', currentProfile.user_number)
                         .eq('read', false);
-                    if (currentType === 'benben') {
-                        // 犇犇相关：包括 mention 和 reply
-                        query = query.in('type', ['mention', 'reply']);
-                    } else if (currentType === 'system') {
-                        query = query.eq('type', 'system');
-                    } else if (currentType === 'activity') {
-                        query = query.eq('type', 'activity');
-                    }
+                    if (currentType === 'mention') query = query.eq('type', 'mention');
+                    else if (currentType === 'reply') query = query.eq('type', 'reply');
+                    else if (currentType === 'system') query = query.eq('type', 'system');
+                    else if (currentType === 'activity') query = query.eq('type', 'activity');
+
                     const { error } = await query;
                     if (error) throw error;
                     page = 1;
@@ -389,7 +385,8 @@
 
                 if (notifications.length === 0 && !append) {
                     let emptyText = '';
-                    if (currentType === 'benben') emptyText = '暂无@我的通知';
+                    if (currentType === 'mention') emptyText = '暂无@我的通知';
+                    else if (currentType === 'reply') emptyText = '暂无回复我的通知';
                     else if (currentType === 'system') emptyText = '暂无系统通知';
                     else emptyText = '暂无活动通知';
                     notificationList.innerHTML = `<div class="empty-message">${emptyText}</div>`;
@@ -450,7 +447,7 @@
                             notif.read = true;
                         }
                         if (benbenId) {
-                            window.location.href = `/benben/${benbenId}`;
+                            window.location.href = `/benben/feed/${benbenId}`;
                         }
                     });
 
@@ -480,23 +477,15 @@
                         .order('created_at', { ascending: false })
                         .range(from, to);
 
-                    if (currentType === 'benben') {
-                        // 犇犇相关：mention 和 reply
-                        query = query.in('type', ['mention', 'reply']);
-                    } else if (currentType === 'system') {
-                        query = query.eq('type', 'system');
-                    } else if (currentType === 'activity') {
-                        query = query.eq('type', 'activity');
-                    } else {
-                        // 默认只显示犇犇相关
-                        query = query.in('type', ['mention', 'reply']);
-                    }
+                    if (currentType === 'mention') query = query.eq('type', 'mention');
+                    else if (currentType === 'reply') query = query.eq('type', 'reply');
+                    else if (currentType === 'system') query = query.eq('type', 'system');
+                    else if (currentType === 'activity') query = query.eq('type', 'activity');
 
                     const { data, error } = await query;
                     if (error) throw error;
 
                     if (data && data.length > 0) {
-                        // 获取所有 from_user_number 对应的用户名
                         const userIds = [...new Set(data.map(n => n.from_user_number))];
                         let userMap = {};
                         if (userIds.length > 0) {
@@ -608,7 +597,7 @@
                         }
                         tab.addEventListener('click', () => {
                             const type = tab.dataset.type;
-                            if (type === 'benben' || type === 'system' || type === 'activity') {
+                            if (type === 'mention' || type === 'reply' || type === 'system' || type === 'activity') {
                                 switchTab(type);
                             }
                         });
