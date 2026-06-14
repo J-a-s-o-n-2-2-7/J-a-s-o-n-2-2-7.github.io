@@ -71,7 +71,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 20px auto;
             padding: 0 20px;
         }
@@ -111,8 +111,48 @@
             cursor: pointer;
         }
 
-        .mark-all-btn:hover {
-            background: #c0392b;
+        /* 左右两栏布局 */
+        .notifications-wrapper {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* 左侧标签栏 - 垂直排列 */
+        .tabs {
+            width: 120px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tab {
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #6c7a8e;
+            border-radius: 12px;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .tab:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        .tab.active {
+            background: #f0f2f5;
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        /* 右侧通知列表 */
+        .notification-list-container {
+            flex: 1;
+            min-width: 0;
         }
 
         .notification-list {
@@ -178,22 +218,20 @@
             font-size: 13px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 0 12px;
+        @media (max-width: 700px) {
+            .notifications-wrapper {
+                flex-direction: column;
             }
 
-            .card {
-                padding: 16px;
+            .tabs {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
             }
 
-            .notification-item {
-                padding: 12px 0;
-            }
-
-            .notification-item.unread {
-                margin: 0 -16px;
-                padding: 12px 16px;
+            .tab {
+                text-align: center;
+                flex: 1;
             }
         }
     </style>
@@ -213,8 +251,21 @@
                 <h1>通知中心</h1>
                 <button id="markAllReadBtn" class="mark-all-btn">全部标记已读</button>
             </div>
-            <div id="notificationList" class="notification-list"></div>
-            <div id="loadingSentinel" class="loading-sentinel" style="display: none;">加载中...</div>
+
+            <div class="notifications-wrapper">
+                <!-- 左侧标签栏 -->
+                <div class="tabs" id="notificationTabs">
+                    <div class="tab active" data-type="benben">@我的</div>
+                    <div class="tab" data-type="system">系统通知</div>
+                    <div class="tab" data-type="activity">活动通知</div>
+                </div>
+
+                <!-- 右侧通知列表 -->
+                <div class="notification-list-container">
+                    <div id="notificationList" class="notification-list"></div>
+                    <div id="loadingSentinel" class="loading-sentinel" style="display: none;">加载中...</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -232,13 +283,41 @@
             let currentProfile = null;
             let isLoading = false;
             let hasMore = true;
-            let page = 0;
+            let page = 1;           // 当前页码
+            let currentType = 'benben'; // benben, system, activity
             const pageSize = 20;
 
             const authButtons = document.getElementById('authButtons');
             const notificationList = document.getElementById('notificationList');
             const loadingSentinel = document.getElementById('loadingSentinel');
             const markAllBtn = document.getElementById('markAllReadBtn');
+            const tabs = document.querySelectorAll('.tab');
+
+            const typeMap = { benben: 1, system: 3, activity: 4 };
+            const typeFromInt = { 1: 'benben', 3: 'system', 4: 'activity' };
+
+            // 解析 URL 参数
+            function parseURLParams() {
+                const params = new URLSearchParams(window.location.search);
+                const typeParam = params.get('type');
+                const pageParam = params.get('page');
+                if (typeParam && typeFromInt[typeParam]) {
+                    currentType = typeFromInt[typeParam];
+                } else {
+                    currentType = 'benben';
+                }
+                if (pageParam && !isNaN(parseInt(pageParam))) {
+                    page = parseInt(pageParam);
+                } else {
+                    page = 1;
+                }
+            }
+
+            // 更新 URL 参数（不刷新页面）
+            function updateURLParams() {
+                const newURL = `${window.location.pathname}?type=${typeMap[currentType]}&page=${page}`;
+                window.history.pushState({ type: currentType, page: page }, '', newURL);
+            }
 
             function formatTime(timestamp) {
                 const date = new Date(timestamp);
@@ -280,13 +359,22 @@
             async function markAllRead() {
                 if (!currentProfile) return;
                 try {
-                    const { error } = await supabase
+                    let query = supabase
                         .from('notifications')
                         .update({ read: true })
                         .eq('user_number', currentProfile.user_number)
                         .eq('read', false);
+                    if (currentType === 'benben') {
+                        // 犇犇相关：包括 mention 和 reply
+                        query = query.in('type', ['mention', 'reply']);
+                    } else if (currentType === 'system') {
+                        query = query.eq('type', 'system');
+                    } else if (currentType === 'activity') {
+                        query = query.eq('type', 'activity');
+                    }
+                    const { error } = await query;
                     if (error) throw error;
-                    page = 0;
+                    page = 1;
                     hasMore = true;
                     loadNotifications(true);
                 } catch (err) {
@@ -300,7 +388,11 @@
                 if (!append) notificationList.innerHTML = '';
 
                 if (notifications.length === 0 && !append) {
-                    notificationList.innerHTML = '<div class="empty-message">暂无通知～</div>';
+                    let emptyText = '';
+                    if (currentType === 'benben') emptyText = '暂无@我的通知';
+                    else if (currentType === 'system') emptyText = '暂无系统通知';
+                    else emptyText = '暂无活动通知';
+                    notificationList.innerHTML = `<div class="empty-message">${emptyText}</div>`;
                     return;
                 }
 
@@ -320,6 +412,12 @@
                     } else if (type === 'reply') {
                         headerText = `${username} 回复了你`;
                         contentText = `${username} 回复了你的犇犇，快去看看吧！`;
+                    } else if (type === 'system') {
+                        headerText = `系统通知`;
+                        contentText = notif.content || '有一条系统通知';
+                    } else if (type === 'activity') {
+                        headerText = `活动通知`;
+                        contentText = notif.content || '有一条活动通知';
                     } else {
                         headerText = `${username} 通知`;
                         contentText = notif.content || '有一条新通知';
@@ -363,7 +461,6 @@
             async function loadNotifications(reset = true) {
                 if (isLoading) return;
                 if (reset) {
-                    page = 0;
                     hasMore = true;
                     if (notificationList) notificationList.innerHTML = '';
                 }
@@ -373,39 +470,58 @@
                 if (loadingSentinel) loadingSentinel.style.display = 'block';
 
                 try {
-                    const from = page * pageSize;
+                    const from = (page - 1) * pageSize;
                     const to = from + pageSize - 1;
 
-                    const { data, error } = await supabase
+                    let query = supabase
                         .from('notifications')
-                        .select(`
-                            id,
-                            from_user_number,
-                            type,
-                            benben_id,
-                            read,
-                            created_at,
-                            from_user:from_user_number (username)
-                        `)
+                        .select('*')
                         .eq('user_number', currentProfile.user_number)
                         .order('created_at', { ascending: false })
                         .range(from, to);
 
+                    if (currentType === 'benben') {
+                        // 犇犇相关：mention 和 reply
+                        query = query.in('type', ['mention', 'reply']);
+                    } else if (currentType === 'system') {
+                        query = query.eq('type', 'system');
+                    } else if (currentType === 'activity') {
+                        query = query.eq('type', 'activity');
+                    } else {
+                        // 默认只显示犇犇相关
+                        query = query.in('type', ['mention', 'reply']);
+                    }
+
+                    const { data, error } = await query;
                     if (error) throw error;
 
                     if (data && data.length > 0) {
+                        // 获取所有 from_user_number 对应的用户名
+                        const userIds = [...new Set(data.map(n => n.from_user_number))];
+                        let userMap = {};
+                        if (userIds.length > 0) {
+                            const { data: profiles, error: profileError } = await supabase
+                                .from('profiles')
+                                .select('user_number, username')
+                                .in('user_number', userIds);
+                            if (!profileError && profiles) {
+                                userMap = Object.fromEntries(profiles.map(p => [p.user_number, p.username]));
+                            }
+                        }
                         const formatted = data.map(item => ({
                             ...item,
-                            from_user: item.from_user ? item.from_user : { username: null }
+                            from_user: { username: userMap[item.from_user_number] || '用户' }
                         }));
                         renderNotifications(formatted, !reset);
-                        page++;
                         if (data.length < pageSize) {
                             hasMore = false;
                             if (loadingSentinel) loadingSentinel.style.display = 'none';
                         } else {
+                            hasMore = true;
+                            page++;
                             if (loadingSentinel) loadingSentinel.style.display = 'block';
                         }
+                        updateURLParams();
                     } else {
                         hasMore = false;
                         if (loadingSentinel) loadingSentinel.style.display = 'none';
@@ -430,6 +546,21 @@
                     }
                 }, { threshold: 0.1 });
                 observer.observe(loadingSentinel);
+            }
+
+            function switchTab(type) {
+                currentType = type;
+                page = 1;
+                hasMore = true;
+                updateURLParams();
+                loadNotifications(true);
+                tabs.forEach(tab => {
+                    if (tab.dataset.type === type) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
             }
 
             async function getProfile(userId) {
@@ -466,6 +597,21 @@
                     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                         await supabase.auth.signOut();
                         location.reload();
+                    });
+
+                    parseURLParams();
+                    tabs.forEach(tab => {
+                        if (tab.dataset.type === currentType) {
+                            tab.classList.add('active');
+                        } else {
+                            tab.classList.remove('active');
+                        }
+                        tab.addEventListener('click', () => {
+                            const type = tab.dataset.type;
+                            if (type === 'benben' || type === 'system' || type === 'activity') {
+                                switchTab(type);
+                            }
+                        });
                     });
 
                     await loadNotifications(true);
