@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>犇犇详情 - Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        /* 样式与之前相同，这里只展示关键部分，完整样式请参考前文，也可保持简洁 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .benben-item {
+            display: flex;
+            gap: 14px;
+        }
+
+        .benben-avatar img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .benben-content {
+            flex: 1;
+        }
+
+        .benben-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .benben-username {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .benben-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .benben-text {
+            line-height: 1.5;
+            color: #333;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .reply-section {
+            margin-top: 20px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+        }
+
+        .reply-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .reply-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .reply-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .reply-content {
+            flex: 1;
+        }
+
+        .reply-username {
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .reply-time {
+            font-size: 11px;
+            color: #999;
+            margin-left: 8px;
+        }
+
+        .reply-text {
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="logo">✨ Jason227</div>
+        <div class="auth-buttons" id="authButtons">
+            <a href="/auth/login" class="auth-btn">登录</a>
+            <a href="/auth/register" class="auth-btn">注册</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="content" class="card">
+            <div class="empty-message">加载中...</div>
+        </div>
+        <a href="/" class="back-link">← 返回首页</a>
+    </div>
+
+    <script>
+        (function () {
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            function getBenbenId() {
+                const path = window.location.pathname;
+                // 匹配 /benben/feed/数字
+                const match = path.match(/\/benben\/feed\/(\d+)/);
+                if (match) return parseInt(match[1]);
+                const urlParams = new URLSearchParams(window.location.search);
+                const idParam = urlParams.get('id');
+                if (idParam) return parseInt(idParam);
+                return null;
+            }
+
+            async function loadBenben() {
+                const id = getBenbenId();
+                if (!id) {
+                    document.getElementById('content').innerHTML = '<div class="empty-message">无效的犇犇链接</div>';
+                    return;
+                }
+
+                try {
+                    const { data: benben, error } = await supabase
+                        .from('benben')
+                        .select(`*, profiles:user_number (username, user_number)`)
+                        .eq('id', id)
+                        .single();
+
+                    if (error || !benben) {
+                        document.getElementById('content').innerHTML = '<div class="empty-message">该犇犇不存在或已被删除</div>';
+                        return;
+                    }
+
+                    const { data: replies, error: repliesError } = await supabase
+                        .from('benben')
+                        .select(`*, profiles:user_number (username, user_number)`)
+                        .eq('reply_to', id)
+                        .order('created_at', { ascending: true });
+
+                    if (repliesError) console.error(repliesError);
+                    renderBenbenDetail(benben, replies || []);
+                } catch (err) {
+                    console.error(err);
+                    document.getElementById('content').innerHTML = '<div class="empty-message">加载失败，请刷新重试</div>';
+                }
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                }).replace(/\n/g, '<br>');
+            }
+
+            function formatTime(timestamp) {
+                const date = new Date(timestamp);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            }
+
+            function renderMentions(text) {
+                const regex = /@([a-zA-Z0-9_]+)/g;
+                return text.replace(regex, (match, username) => `@${escapeHtml(username)}`);
+            }
+
+            function renderBenbenDetail(benben, replies) {
+                const username = benben.profiles?.username || '用户';
+                const userNumber = benben.user_number;
+                const timeStr = formatTime(benben.created_at);
+                const contentHtml = renderMentions(escapeHtml(benben.content));
+
+                let repliesHtml = '';
+                if (replies.length > 0) {
+                    repliesHtml = `
+                        <div class="reply-section">
+                            <div class="reply-title">${replies.length} 条回复</div>
+                            <ul class="reply-list">
+                                ${replies.map(reply => {
+                        const replyUsername = reply.profiles?.username || '用户';
+                        const replyUserNumber = reply.user_number;
+                        const replyTime = formatTime(reply.created_at);
+                        const replyTextHtml = renderMentions(escapeHtml(reply.content));
+                        return `
+                                        <li class="reply-item">
+                                            <div class="reply-avatar">
+                                                <img src="/images/default-avatar.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2214%22%3E${(replyUsername[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'">
+                                            </div>
+                                            <div class="reply-content">
+                                                <div>
+                                                    <a href="/user/${replyUserNumber}" class="reply-username">${escapeHtml(replyUsername)}</a>
+                                                    <span class="reply-time">${replyTime}</span>
+                                                </div>
+                                                <div class="reply-text">${replyTextHtml}</div>
+                                            </div>
+                                        </li>
+                                    `;
+                    }).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                const html = `
+                    <div class="benben-item">
+                        <div class="benben-avatar">
+                            <a href="/user/${userNumber}">
+                                <img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22 viewBox=%220 0 48 48%22%3E%3Crect width=%2248%22 height=%2248%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2220%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'">
+                            </a>
+                        </div>
+                        <div class="benben-content">
+                            <div class="benben-header">
+                                <a href="/user/${userNumber}" class="benben-username">${escapeHtml(username)}</a>
+                                <span class="benben-time">${timeStr}</span>
+                            </div>
+                            <div class="benben-text">${contentHtml}</div>
+                        </div>
+                    </div>
+                    ${repliesHtml}
+                `;
+                document.getElementById('content').innerHTML = html;
+            }
+
+            loadBenben();
+        })();
+    </script>
+</body>
+
+</html>
