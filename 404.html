@@ -39,9 +39,26 @@
             // 1. 犇犇永久链接：/benben/feed/数字
             var benbenMatch = path.match(/^\/benben\/feed\/(\d+)/);
             if (benbenMatch) {
-                var benbenId = benbenMatch[1];
-                // 重定向到 /benben/feed/index.html?id=数字
-                window.location.replace('/benben/feed/index.html?id=' + benbenId);
+                // 不重定向，直接加载页面内容并替换，保持 URL
+                fetch('/benben/feed/index.html')
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('无法加载犇犇详情页');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        // 替换历史记录，保持当前 URL
+                        history.replaceState({}, '', path);
+                        // 重要：页面加载后需要让其中的脚本能够从 path 获取 ID
+                        // 可以通过自定义事件或全局变量触发重新初始化
+                        // 但最简单的方式是在 index.html 中监听 DOMContentLoaded 时从 path 读取
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法获取犇犇详情页，请稍后再试。</p>';
+                    });
                 return;
             }
 
