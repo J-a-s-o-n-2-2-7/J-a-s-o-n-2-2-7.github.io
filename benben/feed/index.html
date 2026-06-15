@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>犇犇详情 - Jason227</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
-        /* 原有样式保持不变，此处省略（实际使用时请复制完整样式） */
         * {
             margin: 0;
             padding: 0;
@@ -54,13 +56,6 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-        }
-
-        .user-email {
-            font-size: 14px;
-            color: #2c3e50;
-            text-decoration: none;
-            margin-right: 8px;
         }
 
         .container {
@@ -119,6 +114,46 @@
             color: #333;
             word-break: break-word;
             white-space: pre-wrap;
+        }
+
+        .benben-text ul,
+        .benben-text ol {
+            margin-left: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .benben-text li {
+            margin-bottom: 0.25em;
+        }
+
+        .benben-text p {
+            margin-bottom: 0.5em;
+        }
+
+        .benben-text code {
+            background: #f4f4f4;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .benben-text pre {
+            background: #f4f4f4;
+            padding: 0.8em;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 0.5em;
+        }
+
+        .benben-text .katex {
+            font-size: 1.1em;
+        }
+
+        .benben-text .katex-display {
+            margin: 0.5em 0;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .reply-section {
@@ -181,110 +216,37 @@
             text-decoration: none;
         }
     </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
         <div class="auth-buttons" id="authButtons">
-            <span style="font-size:14px; color:#aaa;">加载中...</span>
+            <a href="/auth/login" class="auth-btn">登录</a>
+            <a href="/auth/register" class="auth-btn">注册</a>
         </div>
     </div>
-
     <div class="container">
         <div id="content" class="card">
             <div class="empty-message">加载中...</div>
         </div>
         <a href="/" class="back-link">← 返回首页</a>
     </div>
-
     <script>
         (function () {
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // 从当前路径提取 ID（例如 /benben/feed/123）
-            function getBenbenId() {
-                const path = window.location.pathname;
-                const match = path.match(/^\/benben\/feed\/(\d+)/);
-                return match ? parseInt(match[1]) : null;
-            }
-
-            let currentUser = null;
-            let currentProfile = null;
-
-            // 获取用户信息并更新顶部栏
-            async function updateUI() {
-                const { data: { session } } = await supabase.auth.getSession();
-                const authButtons = document.getElementById('authButtons');
-                if (session) {
-                    // 获取 profile（user_number 和 username）
-                    const { data: profile, error } = await supabase
-                        .from('profiles')
-                        .select('user_number, username')
-                        .eq('id', session.user.id)
-                        .single();
-                    if (!error && profile) {
-                        currentProfile = profile;
-                        currentUser = session.user;
-                        let displayName = profile.username || session.user.email;
-                        authButtons.innerHTML = `
-                            <a href="/user/${profile.user_number}" class="user-email">${escapeHtml(displayName)}</a>
-                            <button id="logoutBtn" class="auth-btn logout">登出</button>
-                        `;
-                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-                            await supabase.auth.signOut();
-                            location.reload();
-                        });
-                    } else {
-                        // 降级：只显示邮箱
-                        authButtons.innerHTML = `
-                            <span class="user-email">${escapeHtml(session.user.email)}</span>
-                            <button id="logoutBtn" class="auth-btn logout">登出</button>
-                        `;
-                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-                            await supabase.auth.signOut();
-                            location.reload();
-                        });
-                    }
-                } else {
-                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
-                }
-            }
-
-            async function loadBenben() {
-                const id = getBenbenId();
-                if (!id) {
-                    document.getElementById('content').innerHTML = '<div class="empty-message">无效的犇犇链接</div>';
-                    return;
-                }
-
-                try {
-                    const { data: benben, error } = await supabase
-                        .from('benben')
-                        .select(`*, profiles:user_number (username, user_number)`)
-                        .eq('id', id)
-                        .single();
-
-                    if (error || !benben) {
-                        document.getElementById('content').innerHTML = '<div class="empty-message">该犇犇不存在或已被删除</div>';
-                        return;
-                    }
-
-                    const { data: replies, error: repliesError } = await supabase
-                        .from('benben')
-                        .select(`*, profiles:user_number (username, user_number)`)
-                        .eq('reply_to', id)
-                        .order('created_at', { ascending: true });
-
-                    if (repliesError) console.error(repliesError);
-                    renderBenbenDetail(benben, replies || []);
-                } catch (err) {
-                    console.error(err);
-                    document.getElementById('content').innerHTML = '<div class="empty-message">加载失败，请刷新重试</div>';
-                }
-            }
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                headerIds: false,
+                mangle: false,
+                silent: true,
+                async: false
+            });
 
             function escapeHtml(str) {
                 if (!str) return '';
@@ -293,7 +255,66 @@
                     if (m === '<') return '&lt;';
                     if (m === '>') return '&gt;';
                     return m;
-                }).replace(/\n/g, '<br>');
+                });
+            }
+
+            function renderMarkdownAndLatex(text) {
+                if (!text) return '';
+
+                const CODE_PLACEHOLDER = '\x1FCODE\x1F';
+                const MATH_PLACEHOLDER = '\x1FMATH\x1F';
+
+                // 提取代码块
+                const codeBlocks = [];
+                let processed = text.replace(/(```[\s\S]*?```)/g, (match) => {
+                    const idx = codeBlocks.length;
+                    codeBlocks.push(match);
+                    return `${CODE_PLACEHOLDER}${idx}${CODE_PLACEHOLDER}`;
+                });
+
+                // 提取 LaTeX
+                const mathItems = [];
+                processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
+                    const idx = mathItems.length;
+                    mathItems.push({ type: 'display', math });
+                    return `${MATH_PLACEHOLDER}display${idx}${MATH_PLACEHOLDER}`;
+                }).replace(/\$([^\$\n]+?)\$/g, (match, math) => {
+                    const idx = mathItems.length;
+                    mathItems.push({ type: 'inline', math });
+                    return `${MATH_PLACEHOLDER}inline${idx}${MATH_PLACEHOLDER}`;
+                });
+
+                // marked 解析
+                let html = marked.parse(processed);
+
+                // 恢复代码块（不再额外转义，因为数据库内容已是安全实体）
+                html = html.replace(new RegExp(`${CODE_PLACEHOLDER}(\\d+)${CODE_PLACEHOLDER}`, 'g'), (match, idx) => {
+                    let block = codeBlocks[parseInt(idx)];
+                    const lines = block.split('\n');
+                    const firstLine = lines[0];
+                    let lang = '';
+                    if (firstLine.startsWith('```')) {
+                        lang = firstLine.slice(3).trim();
+                    }
+                    let codeContent = lines.slice(1, -1).join('\n');
+                    return `<pre><code class="language-${lang}">${codeContent}</code></pre>`;
+                });
+
+                // 恢复 LaTeX
+                html = html.replace(new RegExp(`${MATH_PLACEHOLDER}(display|inline)(\\d+)${MATH_PLACEHOLDER}`, 'g'), (match, type, idx) => {
+                    const item = mathItems[parseInt(idx)];
+                    if (!item) return match;
+                    try {
+                        return katex.renderToString(item.math, {
+                            displayMode: item.type === 'display',
+                            throwOnError: false
+                        });
+                    } catch (e) {
+                        return `<code>${escapeHtml(item.math)}</code>`;
+                    }
+                });
+
+                return DOMPurify.sanitize(html);
             }
 
             function formatTime(timestamp) {
@@ -306,17 +327,50 @@
                 return `${year}-${month}-${day} ${hours}:${minutes}`;
             }
 
-            function renderMentions(text) {
-                const regex = /@([a-zA-Z0-9_]+)/g;
-                return text.replace(regex, (match, username) => `@${escapeHtml(username)}`);
+            function getBenbenId() {
+                const path = window.location.pathname;
+                const match = path.match(/\/benben\/feed\/(\d+)/);
+                if (match) return parseInt(match[1]);
+                const urlParams = new URLSearchParams(window.location.search);
+                const idParam = urlParams.get('id');
+                if (idParam) return parseInt(idParam);
+                return null;
+            }
+
+            async function loadBenben() {
+                const id = getBenbenId();
+                if (!id) {
+                    document.getElementById('content').innerHTML = '<div class="empty-message">无效的犇犇链接</div>';
+                    return;
+                }
+                try {
+                    const { data: benben, error } = await supabase
+                        .from('benben')
+                        .select(`*, profiles:user_number (username, user_number)`)
+                        .eq('id', id)
+                        .single();
+                    if (error || !benben) {
+                        document.getElementById('content').innerHTML = '<div class="empty-message">该犇犇不存在或已被删除</div>';
+                        return;
+                    }
+                    const { data: replies, error: repliesError } = await supabase
+                        .from('benben')
+                        .select(`*, profiles:user_number (username, user_number)`)
+                        .eq('reply_to', id)
+                        .order('created_at', { ascending: true });
+                    if (repliesError) console.error(repliesError);
+                    renderBenbenDetail(benben, replies || []);
+                } catch (err) {
+                    console.error(err);
+                    document.getElementById('content').innerHTML = '<div class="empty-message">加载失败，请刷新重试</div>';
+                }
             }
 
             function renderBenbenDetail(benben, replies) {
                 const username = benben.profiles?.username || '用户';
                 const userNumber = benben.user_number;
                 const timeStr = formatTime(benben.created_at);
-                const contentHtml = renderMentions(escapeHtml(benben.content));
-
+                const contentHtml = renderMarkdownAndLatex(benben.content);
                 let repliesHtml = '';
                 if (replies.length > 0) {
                     repliesHtml = `
@@ -327,7 +381,7 @@
                         const replyUsername = reply.profiles?.username || '用户';
                         const replyUserNumber = reply.user_number;
                         const replyTime = formatTime(reply.created_at);
-                        const replyTextHtml = renderMentions(escapeHtml(reply.content));
+                        const replyTextHtml = renderMarkdownAndLatex(reply.content);
                         return `
                                         <li class="reply-item">
                                             <div class="reply-avatar">
@@ -347,7 +401,6 @@
                         </div>
                     `;
                 }
-
                 const html = `
                     <div class="benben-item">
                         <div class="benben-avatar">
@@ -368,8 +421,7 @@
                 document.getElementById('content').innerHTML = html;
             }
 
-            // 初始化
-            updateUI().then(() => loadBenben());
+            loadBenben();
         })();
     </script>
 </body>

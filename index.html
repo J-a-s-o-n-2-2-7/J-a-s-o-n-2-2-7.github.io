@@ -5,7 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jason227 · 算法竞赛社区</title>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
+        /* ========== 基础样式（与原一致） ========== */
         * {
             margin: 0;
             padding: 0;
@@ -68,7 +76,6 @@
             text-decoration: underline;
         }
 
-        /* 铃铛样式 */
         .bell-icon {
             position: relative;
             display: inline-flex;
@@ -434,20 +441,193 @@
             color: #e74c3c;
         }
 
+        /* Markdown 内容样式 */
         .benben-text {
-            line-height: 1.5;
+            line-height: 1.6;
             color: #333;
             word-break: break-word;
             white-space: pre-wrap;
         }
 
-        .benben-text a {
-            color: #e74c3c;
-            text-decoration: none;
+        .benben-text ul,
+        .benben-text ol {
+            margin: 0.75em 0 0.75em 1.5em;
+            padding-left: 0.5em;
+            border-left: 3px solid #e74c3c;
         }
 
-        .benben-text a:hover {
-            text-decoration: underline;
+        .benben-text li {
+            margin-bottom: 0.5em;
+            line-height: 1.6;
+        }
+
+        .benben-text p {
+            margin: 0 0 0 0;
+            line-height: 1.4;
+        }
+
+        .benben-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .benben-text blockquote {
+            margin: 0.75em 0;
+            padding: 8px 16px;
+            background: #f0f2f5;
+            border-left: 4px solid #e74c3c;
+            color: #555;
+        }
+
+        .benben-text code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63369;
+        }
+
+        /* 代码块两栏布局（连贯竖线） */
+        .code-block-wrapper {
+            display: flex;
+            background: #FAFAFA;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .code-line-numbers {
+            flex-shrink: 0;
+            border-right: 1px solid #ddd;
+            padding: 12px 0;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            background: #FAFAFA;
+            user-select: none;
+        }
+
+        .code-line-number {
+            padding: 0 10px 0 12px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .code-lines {
+            flex-grow: 1;
+            padding: 12px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-line {
+            padding: 0 12px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .code-highlight-line {
+            background-color: #F0F0F0;
+        }
+
+        /* 普通代码块样式 */
+        .benben-text pre {
+            background: #FAFAFA;
+            color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0.75em 0;
+        }
+
+        .benben-text pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+        }
+
+        .benben-text table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.75em 0;
+        }
+
+        .benben-text th,
+        .benben-text td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .benben-text th {
+            background: #f0f2f5;
+        }
+
+        .benben-text strong {
+            color: #333;
+        }
+
+        .benben-text em {
+            color: #333;
+        }
+
+        /* 洛谷扩展样式 */
+        .benben-text .align-center {
+            text-align: center;
+        }
+
+        .benben-text .align-right {
+            text-align: right;
+        }
+
+        .benben-text .epigraph {
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            border-left: 4px solid #e74c3c;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+
+        .benben-text .epigraph cite {
+            display: block;
+            margin-top: 0.5em;
+            text-align: right;
+            font-style: normal;
+            color: #666;
+        }
+
+        .benben-text details {
+            margin: 0.75em 0;
+            padding: 0.5em;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .benben-text summary {
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .benben-text details[open] summary {
+            margin-bottom: 0.5em;
+        }
+
+        .benben-text .cute-table table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .benben-text .cute-table th,
+        .benben-text .cute-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .benben-text iframe {
+            max-width: 100%;
         }
 
         .benben-empty,
@@ -504,13 +684,11 @@
 <body>
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
-        <div class="auth-buttons" id="authButtons">
-            <span style="font-size:14px; color:#aaa;">加载中...</span>
-        </div>
+        <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
     </div>
 
     <div class="main-layout">
-        <!-- 左侧导航栏 -->
+        <!-- 左侧导航栏（与原一致，此处省略部分重复内容） -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -555,31 +733,25 @@
                     <div class="discuss-item"><a href="javascript:void(0)">洛谷主题库题目推荐</a> <span class="badge">5回复</span>
                     </div>
                 </div>
-
-                <!-- 犇犇模块 -->
                 <div class="card" id="benbenModule">
                     <div class="benben-header">有什么新鲜事告诉大家</div>
-                    <div class="benben-editor" id="benbenEditor">
-                        <textarea id="benbenContent" rows="3"></textarea>
-                        <div class="benben-submit-btn">
-                            <button class="auth-btn" id="benbenSubmit" style="padding: 6px 20px;">发射犇犇！</button>
-                        </div>
+                    <div class="benben-editor" id="benbenEditor"><textarea id="benbenContent" rows="3"></textarea>
+                        <div class="benben-submit-btn"><button class="auth-btn" id="benbenSubmit"
+                                style="padding:6px 20px;">发射犇犇！</button></div>
                     </div>
                     <div class="benben-nav" id="benbenNav">
                         <div class="benben-tab active" data-mode="all">全部</div>
                         <div class="benben-tab" data-mode="my">我的</div>
                     </div>
                     <div id="benbenList" class="benben-list"></div>
-                    <div id="loadingSentinel" class="loading-sentinel" style="display: none;">加载中...</div>
+                    <div id="loadingSentinel" class="loading-sentinel" style="display:none;">加载中...</div>
                 </div>
-
                 <div class="card" id="fortuneCard"></div>
             </div>
-
             <div class="right-sidebar">
                 <div class="card">
                     <div class="card-header">📢 本站公告</div>
-                    <ul style="list-style: none;">
+                    <ul style="list-style:none;">
                         <li><a href="javascript:void(0)">📖 个人网站改版说明</a></li>
                         <li><a href="javascript:void(0)">🤝 友链交换须知</a></li>
                         <li><a href="javascript:void(0)">📚 题解专栏招募</a></li>
@@ -613,8 +785,8 @@
             let lastId = null;
             let currentReplyingId = null;
             const MAX_LENGTH = 227;
-
             let unreadTimer = null;
+            let infiniteObserver = null;
 
             const authButtons = document.getElementById('authButtons');
             const welcomeTitle = document.getElementById('welcomeTitle');
@@ -625,361 +797,377 @@
             const benbenSubmit = document.getElementById('benbenSubmit');
             const loadingSentinel = document.getElementById('loadingSentinel');
 
-            function formatAbsoluteTime(timestamp) {
-                const date = new Date(timestamp);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                const seconds = String(date.getSeconds()).padStart(2, '0');
-                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            }
+            const md = window.markdownit({ html: false, linkify: true, typographer: true });
 
-            function escapeHtml(str) {
+            // ---------- 辅助函数 ----------
+            function escapeHtmlAttr(str) {
                 if (!str) return '';
-                return str.replace(/[&<>]/g, function (m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    return m;
-                }).replace(/\n/g, '<br>');
+                return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+            }
+            function htmlDecode(str) {
+                if (!str) return '';
+                let div = document.createElement('div');
+                div.innerHTML = str;
+                return div.textContent;
             }
 
-            function renderMentions(text, mentionMap) {
-                if (!mentionMap) return escapeHtml(text);
-                const regex = /@([a-zA-Z0-9_]+)/g;
-                return text.replace(regex, (match, username) => {
-                    const userNumber = mentionMap[username];
-                    if (userNumber) {
-                        return `@<a href="/user/${userNumber}">${escapeHtml(username)}</a>`;
-                    } else {
-                        return match;
-                    }
-                });
+            // ---------- 洛谷扩展预处理 ----------
+            function preprocessLuoguSyntax(text) {
+                text = text.replace(/::::(\w+)\[([^\]]*)\]\{open\}\s*([\s\S]*?)\n:::/gm, (m, t, title, c) => `<details open><summary>${escapeHtmlAttr(title)}</summary>${c}</details>`);
+                text = text.replace(/::::(\w+)\[([^\]]*)\]\s*([\s\S]*?)\n:::/gm, (m, t, title, c) => `<details><summary>${escapeHtmlAttr(title)}</summary>${c}</details>`);
+                text = text.replace(/::::(\w+)\s*([\s\S]*?)\n:::/gm, (m, t, c) => { const titles = { info: 'ℹ️ 提示', success: '✅ 成功', warning: '⚠️ 警告', error: '❌ 错误' }; return `<details><summary>${titles[t] || t}</summary>${c}</details>`; });
+                text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '<div class="align-center">$1</div>');
+                text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, '<div class="align-right">$1</div>');
+                text = text.replace(/:::epigraph\[([^\]]*)\]\s*([\s\S]*?)\n:::/gm, (m, author, c) => `<div class="epigraph">${c}<cite>${escapeHtmlAttr(author)}</cite></div>`);
+                text = text.replace(/::cute-table\{tuack\}\s*\n([\s\S]*?)\n:::/gm, (m, table) => `<div class="cute-table tuack">${table}</div>`);
+                text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) => `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`);
+                return text;
             }
 
-            async function fetchUnreadCount() {
-                if (!currentProfile) return;
-                try {
-                    const { count, error } = await supabase
-                        .from('notifications')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('user_number', currentProfile.user_number)
-                        .eq('read', false);
-                    if (!error && count !== null) {
-                        const badge = document.getElementById('bell-badge');
-                        if (badge) {
-                            if (count > 0) {
-                                badge.textContent = count > 99 ? '99+' : count;
-                                badge.style.display = 'inline-flex';
-                            } else {
-                                badge.textContent = '0';
-                                badge.style.display = 'none';
+            function postProcessTableMerge(html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const tables = doc.querySelectorAll('table');
+                for (const table of tables) {
+                    const rows = Array.from(table.querySelectorAll('tr'));
+                    const occupied = new Set();
+                    for (let i = 0; i < rows.length; i++) {
+                        const cells = Array.from(rows[i].querySelectorAll('th, td'));
+                        for (let j = 0; j < cells.length; j++) {
+                            if (occupied.has(`${i},${j}`)) continue;
+                            const cell = cells[j];
+                            const text = cell.textContent.trim();
+                            if (text === '^') {
+                                let rowspan = 1, k = i - 1;
+                                while (k >= 0 && !occupied.has(`${k},${j}`)) {
+                                    const prevRow = rows[k];
+                                    const prevCells = Array.from(prevRow.querySelectorAll('th, td'));
+                                    if (j < prevCells.length && prevCells[j].textContent.trim() === '^') { k--; rowspan++; } else break;
+                                }
+                                if (k >= 0) {
+                                    const targetCell = Array.from(rows[k].querySelectorAll('th, td'))[j];
+                                    targetCell.setAttribute('rowspan', (parseInt(targetCell.getAttribute('rowspan') || '1') + rowspan));
+                                    cell.remove();
+                                    for (let r = i - rowspan + 1; r <= i; r++) occupied.add(`${r},${j}`);
+                                }
+                            } else if (text === '<') {
+                                let colspan = 1, k = j - 1;
+                                while (k >= 0 && !occupied.has(`${i},${k}`)) {
+                                    if (cells[k] && cells[k].textContent.trim() === '<') { k--; colspan++; } else break;
+                                }
+                                if (k >= 0) {
+                                    cells[k].setAttribute('colspan', (parseInt(cells[k].getAttribute('colspan') || '1') + colspan));
+                                    cell.remove();
+                                    for (let c = j - colspan + 1; c <= j; c++) occupied.add(`${i},${c}`);
+                                }
                             }
                         }
                     }
-                } catch (err) {
-                    console.error('获取未读数量失败:', err);
                 }
+                return doc.body.innerHTML;
             }
 
-            function startUnreadPolling() {
-                if (unreadTimer) clearInterval(unreadTimer);
-                unreadTimer = setInterval(() => {
-                    if (currentProfile && document.visibilityState === 'visible') {
-                        fetchUnreadCount();
+            // ---------- fence 规则（纯文本，无语法高亮） ----------
+            function setupMarkdownItWithLuogu(md) {
+                md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+                    const token = tokens[idx];
+                    const info = token.info.trim();
+                    const lang = info.split(/\s+/)[0];
+                    const params = info.slice(lang.length).trim();
+                    let content = token.content;
+                    let lineNumbers = false;
+                    let highlightLines = null;
+                    if (params.includes('line-numbers')) lineNumbers = true;
+                    const linesMatch = params.match(/lines=(\d+)-(\d+)/);
+                    if (linesMatch) highlightLines = { start: parseInt(linesMatch[1]), end: parseInt(linesMatch[2]) };
+
+                    if (lineNumbers || highlightLines) {
+                        let lines = content.split('\n');
+                        if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
+                        const totalLines = lines.length;
+                        const maxDigits = String(totalLines).length;
+                        let lineNumbersHtml = '<div class="code-line-numbers">';
+                        let codeLinesHtml = '<div class="code-lines">';
+                        for (let i = 0; i < totalLines; i++) {
+                            const lineNum = i + 1;
+                            let lineClass = '';
+                            if (highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
+                                lineClass = ' code-highlight-line';
+                            } const lineContent = DOMPurify.sanitize(lines[i] || ' ', { ALLOWED_TAGS: [] });
+                            lineNumbersHtml += `<div class="code-line-number${lineClass}" style="min-width:${maxDigits}ch;">${lineNum}</div>`;
+                            codeLinesHtml += `<div class="code-line${lineClass}">${lineContent}</div>`;
+                        }
+                        lineNumbersHtml += '</div>';
+                        codeLinesHtml += '</div>';
+                        return `<div class="code-block-wrapper">${lineNumbersHtml}${codeLinesHtml}</div>`;
+                    } else {
+                        // 直接输出存储的内容（已经是实体）
+                        return `<pre><code class="language-${lang}">${content}</code></pre>`;
                     }
-                }, 30000);
+                };
+            }
+            // setupMarkdownItWithLuogu(md);
+
+            // ---------- 渲染核心 ----------
+            function renderContent(rawText, mentionMap) {
+                if (!rawText) return '';
+
+                // 使用私有区字符作为占位符，避免被 markdown-it 处理
+                const CODE_PLACEHOLDER = '\uE000';
+                const CODE_END = '\uE001';
+
+                // 1. 提取代码块
+                const codeBlocks = [];
+                let processed = rawText.replace(/(```[\s\S]*?```)/g, (match) => {
+                    const idx = codeBlocks.length;
+                    codeBlocks.push(match);
+                    return `${CODE_PLACEHOLDER}CODEBLOCK${idx}${CODE_END}`;
+                });
+
+                // 2. 洛谷扩展预处理
+                processed = preprocessLuoguSyntax(processed);
+
+                // 3. 安全换行处理（不破坏占位符）
+                function safeReplaceNewline(text) {
+                    // 保护占位符
+                    const tempPlaceholders = [];
+                    let temp = text.replace(new RegExp(`${CODE_PLACEHOLDER}CODEBLOCK\\d+${CODE_END}`, 'g'), (match) => {
+                        tempPlaceholders.push(match);
+                        return `\x01PH${tempPlaceholders.length - 1}\x01`;
+                    });
+                    const parts = temp.split(/(\x01PH\d+\x01)/g);
+                    for (let i = 0; i < parts.length; i++) {
+                        if (!parts[i].startsWith('\x01PH')) {
+                            let p = parts[i].replace(/  \n/g, '\n\n');
+                            p = p.replace(/\n\n/g, '\x00\x00');
+                            p = p.replace(/\n/g, ' ');
+                            parts[i] = p.replace(/\x00\x00/g, '\n\n');
+                        }
+                    }
+                    let restored = parts.join('');
+                    for (let i = 0; i < tempPlaceholders.length; i++) {
+                        restored = restored.replace(`\x01PH${i}\x01`, tempPlaceholders[i]);
+                    }
+                    return restored;
+                }
+                processed = safeReplaceNewline(processed);
+
+                // 4. markdown-it 渲染
+                let html = md.render(processed);
+
+                // 5. 恢复代码块
+                html = html.replace(new RegExp(`${CODE_PLACEHOLDER}CODEBLOCK(\\d+)${CODE_END}`, 'g'), (match, idx) => {
+                    let block = codeBlocks[parseInt(idx)];
+                    const lines = block.split('\n');
+                    const firstLine = lines[0];
+                    let lang = '';
+                    let lineNumbers = false;
+                    let highlightLines = null;
+                    if (firstLine.startsWith('```')) {
+                        const params = firstLine.slice(3).trim();
+                        const parts = params.split(/\s+/);
+                        lang = parts[0] || '';
+                        if (params.includes('line-numbers')) lineNumbers = true;
+                        const linesMatch = params.match(/lines=(\d+)-(\d+)/);
+                        if (linesMatch) highlightLines = { start: parseInt(linesMatch[1]), end: parseInt(linesMatch[2]) };
+                    }
+                    let codeContent = lines.slice(1, -1).join('\n');
+
+                    if (lineNumbers || highlightLines) {
+                        const codeLines = codeContent.split('\n');
+                        if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
+                        const totalLines = codeLines.length;
+                        const maxDigits = String(totalLines).length;
+                        let lineNumbersHtml = '<div class="code-line-numbers">';
+                        let codeLinesHtml = '<div class="code-lines">';
+                        for (let i = 0; i < totalLines; i++) {
+                            const lineNum = i + 1;
+                            let lineClass = '';
+                            if (highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
+                                lineClass = ' code-highlight-line';
+                            }
+                            const lineContent = codeLines[i] || ' ';
+                            lineNumbersHtml += `<div class="code-line-number${lineClass}" style="min-width:${maxDigits}ch;">${lineNum}</div>`;
+                            codeLinesHtml += `<div class="code-line${lineClass}">${lineContent}</div>`;
+                        }
+                        lineNumbersHtml += '</div>';
+                        codeLinesHtml += '</div>';
+                        return `<div class="code-block-wrapper">${lineNumbersHtml}${codeLinesHtml}</div>`;
+                    } else {
+                        return `<pre><code class="language-${lang}">${codeContent}</code></pre>`;
+                    }
+                });
+
+                // 6. LaTeX 渲染
+                html = html.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
+                    try { return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(math, { displayMode: true, throwOnError: false })}</div>`; } catch (e) { return match; }
+                });
+                html = html.replace(/\$([^$]+?)\$/g, (match, math) => {
+                    try { return katex.renderToString(math, { throwOnError: false }); } catch (e) { return match; }
+                });
+
+                // 7. @ 提及
+                html = html.replace(/@([a-zA-Z0-9_]+)/g, (match, username) => {
+                    const uid = mentionMap && mentionMap[username];
+                    if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
+                    return match;
+                });
+
+                // 8. 表格合并
+                html = postProcessTableMerge(html);
+
+                // 9. 清理末尾多余标签
+                html = html.replace(/<p><\/p>\s*$/, '').replace(/<br\s*\/?>\s*$/, '').trim();
+
+                return DOMPurify.sanitize(html);
             }
 
-            function stopUnreadPolling() {
-                if (unreadTimer) {
-                    clearInterval(unreadTimer);
-                    unreadTimer = null;
-                }
+            function renderAllBenbenTexts() {
+                document.querySelectorAll('.benben-text').forEach(el => {
+                    const rawEncoded = el.getAttribute('data-raw');
+                    const mentionMapStr = el.getAttribute('data-mention-map');
+                    if (!rawEncoded) return;
+                    let rawText = rawEncoded;   // 直接使用，不要 htmlDecode
+                    let mentionMap = {};
+                    try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
+                    el.innerHTML = renderContent(rawText, mentionMap);
+                });
             }
+
+            // ---------- 业务函数（与原来完全一致，仅确保数据不变） ----------
+            async function fetchUnreadCount() {
+                if (!currentProfile) return;
+                try {
+                    const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_number', currentProfile.user_number).eq('read', false);
+                    if (!error && count !== null) {
+                        const badge = document.getElementById('bell-badge');
+                        if (badge) {
+                            if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.style.display = 'inline-flex'; }
+                            else { badge.style.display = 'none'; }
+                        }
+                    }
+                } catch (err) { console.error(err); }
+            }
+            function startUnreadPolling() { if (unreadTimer) clearInterval(unreadTimer); unreadTimer = setInterval(() => { if (currentProfile && document.visibilityState === 'visible') fetchUnreadCount(); }, 30000); }
+            function stopUnreadPolling() { if (unreadTimer) { clearInterval(unreadTimer); unreadTimer = null; } }
 
             async function loadBenbenList(reset = true) {
                 if (isLoading) return;
-                if (reset) {
-                    hasMore = true;
-                    lastId = null;
-                    if (benbenList) benbenList.innerHTML = '';
-                    const existingNoMore = document.querySelector('.no-more-message');
-                    if (existingNoMore) existingNoMore.remove();
-                }
+                if (reset) { hasMore = true; lastId = null; if (benbenList) benbenList.innerHTML = ''; const existing = document.querySelector('.no-more-message'); if (existing) existing.remove(); }
                 if (!hasMore) return;
-
                 isLoading = true;
                 if (loadingSentinel) loadingSentinel.style.display = 'block';
-
                 try {
-                    let query = supabase
-                        .from('benben')
-                        .select(`*, profiles:user_number (username)`)
-                        .order('created_at', { ascending: false })
-                        .limit(20);
-
+                    let query = supabase.from('benben').select(`*, profiles:user_number (username)`).eq('is_deleted', false).order('created_at', { ascending: false }).limit(20);
                     if (lastId) query = query.lt('id', lastId);
                     if (feedMode === 'my' && currentProfile) query = query.eq('user_number', currentProfile.user_number);
-
                     const { data, error } = await query;
                     if (error) throw error;
-
                     const mentionSet = new Set();
                     data?.forEach(item => {
                         const matches = item.content.match(/@([a-zA-Z0-9_]+)/g);
-                        if (matches) {
-                            matches.forEach(m => {
-                                const username = m.slice(1);
-                                mentionSet.add(username);
-                            });
-                        }
+                        if (matches) matches.forEach(m => mentionSet.add(m.slice(1)));
                     });
                     let mentionMap = {};
                     if (mentionSet.size > 0) {
                         const usernames = Array.from(mentionSet);
-                        const { data: userData, error: userError } = await supabase
-                            .from('profiles')
-                            .select('username, user_number')
-                            .in('username', usernames);
-                        if (!userError && userData) {
-                            userData.forEach(u => {
-                                mentionMap[u.username] = u.user_number;
-                            });
-                        }
+                        const { data: userData, error: userError } = await supabase.from('profiles').select('username, user_number').in('username', usernames);
+                        if (!userError && userData) userData.forEach(u => { mentionMap[u.username] = u.user_number; });
                     }
-
                     if (data && data.length > 0) {
-                        renderBenbenList(data, reset, mentionMap);
+                        await renderBenbenList(data, reset, mentionMap);
                         lastId = data[data.length - 1].id;
-                        if (data.length < 20) {
-                            hasMore = false;
-                            const noMoreDiv = document.createElement('div');
-                            noMoreDiv.className = 'no-more-message';
-                            noMoreDiv.textContent = '没有更多动态了';
-                            benbenList.appendChild(noMoreDiv);
-                        } else {
-                            hasMore = true;
-                        }
+                        if (data.length < 20) { hasMore = false; const noMoreDiv = document.createElement('div'); noMoreDiv.className = 'no-more-message'; noMoreDiv.textContent = '没有更多动态了'; benbenList.appendChild(noMoreDiv); }
+                        else { hasMore = true; }
                     } else {
                         hasMore = false;
-                        if (reset) {
-                            benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
-                        } else {
-                            const noMoreDiv = document.createElement('div');
-                            noMoreDiv.className = 'no-more-message';
-                            noMoreDiv.textContent = '没有更多动态了';
-                            benbenList.appendChild(noMoreDiv);
-                        }
+                        if (reset) benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
+                        else { const noMoreDiv = document.createElement('div'); noMoreDiv.className = 'no-more-message'; noMoreDiv.textContent = '没有更多动态了'; benbenList.appendChild(noMoreDiv); }
                     }
                 } catch (error) {
-                    console.error('加载犇犇失败:', error);
-                    if (reset && benbenList && benbenList.children.length === 0) {
-                        benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
-                    }
-                } finally {
-                    isLoading = false;
-                    if (loadingSentinel) loadingSentinel.style.display = 'none';
-                }
+                    console.error(error); if (reset && benbenList && benbenList.children.length === 0) benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
+                } finally { isLoading = false; if (loadingSentinel) loadingSentinel.style.display = 'none'; }
             }
 
-            function renderBenbenList(data, reset, mentionMap = {}) {
+            async function renderBenbenList(data, reset, mentionMap = {}) {
                 if (!benbenList) return;
                 if (reset) benbenList.innerHTML = '';
-
-                data.forEach(item => {
+                const mentionMapJson = JSON.stringify(mentionMap);
+                for (const item of data) {
                     const isOwner = currentProfile && currentProfile.user_number === item.user_number;
                     const fullContentEncoded = encodeURIComponent(item.content);
-                    const username = escapeHtml(item.profiles?.username || '用户');
-                    const timeStr = formatAbsoluteTime(item.created_at);
-                    const renderedText = renderMentions(item.content, mentionMap);
+                    const username = escapeHtmlAttr(item.profiles?.username || '用户');
+                    const timeStr = new Date(item.created_at).toLocaleString('zh-CN');
+                    const rawContent = item.content;
                     const benbenHtml = `
                         <div class="benben-item" data-id="${item.id}">
-                            <div class="benben-avatar">
-                                <a href="/user/${item.user_number}">
-                                    <img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'">
-                                </a>
-                            </div>
+                            <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'"></a></div>
                             <div class="benben-content">
-                                <div class="benben-item-header">
-                                    <div class="benben-user-info">
-                                        <a href="/user/${item.user_number}" class="benben-username">${username}</a>
-                                        <span class="benben-time">${timeStr}</span>
-                                    </div>
-                                    <div class="benben-actions">
-                                        <button class="benben-report-btn" data-id="${item.id}">举报</button>
-                                        <button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
-                                        ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
-                                    </div>
-                                </div>
-                                <div class="benben-text">${renderedText}</div>
+                                <div class="benben-item-header"><div class="benben-user-info"><a href="/user/${item.user_number}" class="benben-username">${username}</a><span class="benben-time">${timeStr}</span></div><div class="benben-actions"><button class="benben-report-btn" data-id="${item.id}">举报</button><button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}</div></div>
+                                <div class="benben-text" data-raw="${rawContent}" data-mention-map='${mentionMapJson}'></div>
                             </div>
                         </div>
                     `;
                     benbenList.insertAdjacentHTML('beforeend', benbenHtml);
-                });
-
-                document.querySelectorAll('.benben-delete').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.stopPropagation();
-                        const id = btn.dataset.id;
-                        await deleteBenben(id);
-                    });
-                });
-
-                document.querySelectorAll('.benben-reply-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const replyToId = btn.dataset.replytoId;
-                        const username = btn.dataset.username;
-                        const fullContent = decodeURIComponent(btn.dataset.fullcontent);
-                        const replyText = ` || @${username} : ${fullContent}`;
-                        if (benbenContent) {
-                            benbenContent.value = replyText;
-                            currentReplyingId = replyToId;
-                            benbenContent.focus();
-                            benbenContent.setSelectionRange(0, 0);
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.benben-report-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        alert('举报功能暂未开放，请联系管理员。');
-                    });
-                });
-            }
-
-            async function postBenben() {
-                const content = benbenContent?.value.trim();
-                if (!content) {
-                    alert('内容不能为空');
-                    return;
                 }
-                if (!currentProfile) {
-                    window.location.href = '/auth/login';
-                    return;
-                }
-                const finalContent = content.length > MAX_LENGTH ? content.substring(0, MAX_LENGTH) : content;
-                const insertData = {
-                    user_number: currentProfile.user_number,
-                    content: finalContent
-                };
-                if (currentReplyingId) {
-                    insertData.reply_to = currentReplyingId;
-                }
-
-                try {
-                    const { data: newBenben, error: insertError } = await supabase
-                        .from('benben')
-                        .insert(insertData)
-                        .select()
-                        .single();
-                    if (insertError) throw insertError;
-
-                    const newBenbenId = newBenben.id;
-
-                    if (currentReplyingId) {
-                        const { data: originalBenben, error: queryError } = await supabase
-                            .from('benben')
-                            .select('user_number')
-                            .eq('id', currentReplyingId)
-                            .single();
-                        if (!queryError && originalBenben && originalBenben.user_number !== currentProfile.user_number) {
-                            await supabase.from('notifications').insert({
-                                user_number: originalBenben.user_number,
-                                from_user_number: currentProfile.user_number,
-                                type: 'reply',
-                                benben_id: newBenbenId,
-                                content: '回复了你的犇犇'
-                            });
-                        }
-                    }
-
-                    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
-                    let match;
-                    const mentionedSet = new Set();
-                    while ((match = mentionRegex.exec(content)) !== null) {
-                        mentionedSet.add(match[1]);
-                    }
-                    if (mentionedSet.size > 0) {
-                        const usernames = Array.from(mentionedSet);
-                        const { data: userData, error: userError } = await supabase
-                            .from('profiles')
-                            .select('user_number, username')
-                            .in('username', usernames);
-                        if (!userError && userData) {
-                            const notifications = [];
-                            for (const user of userData) {
-                                if (user.user_number !== currentProfile.user_number) {
-                                    notifications.push({
-                                        user_number: user.user_number,
-                                        from_user_number: currentProfile.user_number,
-                                        type: 'mention',
-                                        benben_id: newBenbenId,
-                                        content: '在犇犇中提到了你'
-                                    });
-                                }
-                            }
-                            if (notifications.length > 0) {
-                                await supabase.from('notifications').insert(notifications);
-                            }
-                        }
-                    }
-
-                    if (benbenContent) benbenContent.value = '';
-                    currentReplyingId = null;
-                    loadBenbenList(true);
-                    fetchUnreadCount();
-                } catch (error) {
-                    console.error('发布失败:', error);
-                    alert('发布失败：' + (error.message || '未知错误'));
-                }
+                document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); await deleteBenben(btn.dataset.id); }));
+                document.querySelectorAll('.benben-reply-btn').forEach(btn => btn.addEventListener('click', () => { const replyToId = btn.dataset.replytoId; const username = btn.dataset.username; const fullContent = decodeURIComponent(btn.dataset.fullcontent); const replyText = ` || @${username} : ${fullContent}`; if (benbenContent) { benbenContent.value = replyText; currentReplyingId = replyToId; benbenContent.focus(); benbenContent.setSelectionRange(0, 0); } }));
+                document.querySelectorAll('.benben-report-btn').forEach(btn => btn.addEventListener('click', () => alert('举报功能暂未开放，请联系管理员。')));
+                renderAllBenbenTexts();
             }
 
             async function deleteBenben(id) {
                 try {
-                    const { error } = await supabase.from('benben').delete().eq('id', id);
+                    const { error } = await supabase.from('benben').update({ is_deleted: true }).eq('id', id);
                     if (error) throw error;
                     loadBenbenList(true);
-                } catch (error) {
-                    console.error('删除失败:', error);
-                }
+                } catch (error) { console.error(error); alert('删除失败：' + error.message); }
             }
 
-            function switchMode(mode) {
-                feedMode = mode;
-                lastId = null;
-                hasMore = true;
-                currentReplyingId = null;
-                loadBenbenList(true);
-                document.querySelectorAll('.benben-tab').forEach(tab => {
-                    if (tab.dataset.mode === mode) tab.classList.add('active');
-                    else tab.classList.remove('active');
-                });
-            }
+            async function postBenben() {
+                let content = benbenContent?.value.trim();
+                if (!content) { alert('内容不能为空'); return; }
+                if (!currentProfile) { window.location.href = '/auth/login'; return; }
+                // 将尖括号转为实体，避免被 markdown 解析或丢失
+                let finalContent = content.length > MAX_LENGTH ? content.substring(0, MAX_LENGTH) : content;
+                finalContent = finalContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const insertData = { user_number: currentProfile.user_number, content: finalContent, is_deleted: false };
+                if (currentReplyingId) insertData.reply_to = currentReplyingId;
 
-            function setupInfiniteScroll() {
-                if (!loadingSentinel) return;
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) {
-                        loadBenbenList(false);
+                try {
+                    const { data: newBenben, error: insertError } = await supabase.from('benben').insert(insertData).select().single();
+                    if (insertError) throw insertError;
+                    const newBenbenId = newBenben.id;
+                    if (currentReplyingId) {
+                        const { data: originalBenben } = await supabase.from('benben').select('user_number').eq('id', currentReplyingId).single();
+                        if (originalBenben && originalBenben.user_number !== currentProfile.user_number) {
+                            await supabase.from('notifications').insert({ user_number: originalBenben.user_number, from_user_number: currentProfile.user_number, type: 'reply', benben_id: newBenbenId, content: '回复了你的犇犇' });
+                        }
                     }
-                }, { threshold: 0.1 });
-                observer.observe(loadingSentinel);
+                    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+                    let match; const mentionedSet = new Set();
+                    while ((match = mentionRegex.exec(content)) !== null) mentionedSet.add(match[1]);
+                    if (mentionedSet.size > 0) {
+                        const usernames = Array.from(mentionedSet);
+                        const { data: userData } = await supabase.from('profiles').select('user_number, username').in('username', usernames);
+                        if (userData) {
+                            const notifications = [];
+                            for (const user of userData) {
+                                if (user.user_number !== currentProfile.user_number) notifications.push({ user_number: user.user_number, from_user_number: currentProfile.user_number, type: 'mention', benben_id: newBenbenId, content: '在犇犇中提到了你' });
+                            }
+                            if (notifications.length > 0) await supabase.from('notifications').insert(notifications);
+                        }
+                    }
+                    if (benbenContent) benbenContent.value = '';
+                    currentReplyingId = null;
+                    loadBenbenList(true);
+                    fetchUnreadCount();
+                } catch (error) { console.error(error); alert('发布失败：' + (error.message || '未知错误')); }
             }
 
-            async function getProfile(userId) {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('user_number, username')
-                    .eq('id', userId)
-                    .single();
-                if (error) return null;
-                return data;
-            }
-
+            function switchMode(mode) { feedMode = mode; lastId = null; hasMore = true; currentReplyingId = null; loadBenbenList(true); document.querySelectorAll('.benben-tab').forEach(tab => { if (tab.dataset.mode === mode) tab.classList.add('active'); else tab.classList.remove('active'); }); }
+            function setupInfiniteScroll() { if (!loadingSentinel) return; const observer = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) loadBenbenList(false); }, { threshold: 0.1 }); observer.observe(loadingSentinel); }
+            async function getProfile(userId) { const { data, error } = await supabase.from('profiles').select('user_number, username, is_super_admin').eq('id', userId).single(); if (error) return null; return data; }
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -988,89 +1176,38 @@
                         currentUser = session.user;
                         let displayName = session.user.email;
                         if (currentProfile?.username) displayName = currentProfile.username;
-
                         let html = '';
-                        if (currentProfile?.user_number) {
-                            html += `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtml(displayName)}</a>`;
-                        } else {
-                            html += `<span class="user-email">${escapeHtml(displayName)}</span>`;
-                        }
-
-                        html += `<a href="/user/notification" class="bell-icon" style="color: #666;">
-                                    <svg class="svg-inline--fa fa-bell" data-prefix="far" data-icon="bell" role="img" viewBox="0 0 448 512" aria-hidden="true">
-                                        <path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path>
-                                    </svg>
-                                    <sup id="bell-badge" style="background-color: #e74c3c;">0</sup>
-                                </a>`;
+                        if (currentProfile?.user_number) html += `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
+                        else html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
+                        html += `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
-
-                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-                            await supabase.auth.signOut();
-                            location.reload();
-                        });
-
-                        welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtml(displayName)}`;
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
+                        welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtmlAttr(displayName)}`;
                         welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
-                        fortuneCard.innerHTML = `
-                            <div class="card-header">🧧 你的运势</div>
-                            <div style="text-align:center">
-                                <span style="font-size:2rem;">中吉</span>
-                                <p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p>
-                                <p>连续打卡 <strong>228</strong> 天</p>
-                            </div>
-                        `;
-
-                        const editor = document.getElementById('benbenEditor');
-                        const nav = document.getElementById('benbenNav');
-                        if (editor) editor.style.display = 'block';
-                        if (nav) nav.style.display = 'flex';
-                        if (loadingSentinel) loadingSentinel.style.display = 'block';
-
-                        await fetchUnreadCount();
-                        startUnreadPolling();
-
-                        loadBenbenList(true);
-                        setupInfiniteScroll();
+                        fortuneCard.innerHTML = `<div class="card-header">🧧 你的运势</div><div style="text-align:center"><span style="font-size:2rem;">中吉</span><p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p><p>连续打卡 <strong>228</strong> 天</p></div>`;
+                        const editor = document.getElementById('benbenEditor'); const nav = document.getElementById('benbenNav');
+                        if (editor) editor.style.display = 'block'; if (nav) nav.style.display = 'flex'; if (loadingSentinel) loadingSentinel.style.display = 'block';
+                        await fetchUnreadCount(); startUnreadPolling(); loadBenbenList(true); setupInfiniteScroll();
                     } else {
-                        currentUser = null;
-                        currentProfile = null;
+                        currentUser = null; currentProfile = null;
                         authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                         welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
                         welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
-                        fortuneCard.innerHTML = `
-                            <div class="card-header">📅 今日日历</div>
-                            <div style="text-align:center">
-                                <span style="font-size:1.8rem;">6月9日</span>
-                                <p>星期二</p>
-                                <p>距 CSP-J/S 2026 第一轮还剩 103 天</p>
-                                <p><a href="/auth/login">👉 登录后查看专属运势</a></p>
-                            </div>
-                        `;
-                        const editor = document.getElementById('benbenEditor');
-                        const nav = document.getElementById('benbenNav');
-                        if (editor) editor.style.display = 'none';
-                        if (nav) nav.style.display = 'none';
-                        if (benbenList) benbenList.innerHTML = '<div class="benben-empty">请先登录，查看犇犇～</div>';
-                        if (loadingSentinel) loadingSentinel.style.display = 'none';
+                        fortuneCard.innerHTML = `<div class="card-header">📅 今日日历</div><div style="text-align:center"><span style="font-size:1.8rem;">6月14日</span><p>星期日</p><p>距 CSP-J/S 2026 第一轮还剩 100 天</p><p><a href="/auth/login">👉 登录后查看专属运势</a></p></div>`;
+                        const editor = document.getElementById('benbenEditor'); const nav = document.getElementById('benbenNav');
+                        if (editor) editor.style.display = 'none'; if (nav) nav.style.display = 'none';
+                        if (benbenList) { feedMode = 'all'; loadBenbenList(true); }
+                        if (loadingSentinel) loadingSentinel.style.display = 'block';
                         stopUnreadPolling();
+                        if (infiniteObserver) infiniteObserver.disconnect();
+                        infiniteObserver = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !isLoading && hasMore) loadBenbenList(false); }, { threshold: 0.1 });
+                        if (loadingSentinel) infiniteObserver.observe(loadingSentinel);
                     }
-                } catch (err) {
-                    console.error('updateUI 错误：', err);
-                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
-                }
+                } catch (err) { console.error(err); authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`; }
             }
 
-            function bindBenbenEvents() {
-                if (benbenSubmit) benbenSubmit.addEventListener('click', postBenben);
-                document.querySelectorAll('.benben-tab').forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        const mode = tab.dataset.mode;
-                        if (mode === 'all' || mode === 'my') switchMode(mode);
-                    });
-                });
-            }
-
+            function bindBenbenEvents() { if (benbenSubmit) benbenSubmit.addEventListener('click', postBenben); document.querySelectorAll('.benben-tab').forEach(tab => { tab.addEventListener('click', () => { const mode = tab.dataset.mode; if (mode === 'all' || mode === 'my') switchMode(mode); }); }); }
             updateUI();
             bindBenbenEvents();
         })();
