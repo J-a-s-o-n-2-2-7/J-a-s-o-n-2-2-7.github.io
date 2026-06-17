@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none
+        }
+
+        .user-email:hover {
+            text-decoration: underline
+        }
+
+        .bell-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: color .2s
+        }
+
+        .bell-icon:hover {
+            color: #e74c3c
+        }
+
+        .bell-icon svg {
+            width: 20px;
+            height: 20px
+        }
+
+        .bell-icon sup {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            line-height: 1
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            margin-bottom: 24px
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border .2s
+        }
+
+        .search-bar input:focus {
+            border-color: #e74c3c
+        }
+
+        .search-bar .result-count {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap
+        }
+
+        .table-wrap {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle
+        }
+
+        th {
+            background: #f8f9fc;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2
+        }
+
+        th:first-child,
+        td:first-child {
+            padding-left: 8px
+        }
+
+        th.check-col,
+        td.check-col {
+            width: 40px;
+            text-align: center
+        }
+
+        th.check-col input,
+        td.check-col input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px
+        }
+
+        .role-tag {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer
+        }
+
+        .role-tag.user {
+            background: #e9ecef;
+            color: #333
+        }
+
+        .role-tag.admin {
+            background: #8E44AD;
+            color: #fff
+        }
+
+        .action-link {
+            text-decoration: none;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer
+        }
+
+        .action-link.green {
+            color: #2ECC71;
+            font-weight: 500
+        }
+
+        .action-link.red {
+            color: #E74C3C;
+            font-weight: 500
+        }
+
+        .action-link.green:hover {
+            background: #eafaf1
+        }
+
+        .action-link.red:hover {
+            background: #fdedec
+        }
+
+        .action-link.disabled {
+            cursor: default;
+            opacity: 0.6
+        }
+
+        .action-link.disabled:hover {
+            background: transparent
+        }
+
+        .editable-field {
+            cursor: default;
+            padding: 2px 4px;
+            border-radius: 3px
+        }
+
+        .editable-field:hover {
+            background: #f0f2f5
+        }
+
+        .editable-field-input {
+            border: 1px solid #e74c3c;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 14px;
+            width: 100%;
+            min-width: 80px;
+            outline: none
+        }
+
+        .username-display {
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 500
+        }
+
+        .username-display:hover {
+            background: #f0f2f5
+        }
+
+        .user-tag-display {
+            display: inline-block;
+            border-radius: 3px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 2px 5px;
+            cursor: default;
+            background-color: #8e44ad;
+            transition: filter 0.15s
+        }
+
+        .user-tag-display:hover {
+            filter: brightness(0.9)
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 2px
+        }
+
+        .btn-sm.grant {
+            background: #2ECC71;
+            color: #fff
+        }
+
+        .btn-sm.revoke {
+            background: #E74C3C;
+            color: #fff
+        }
+
+        .btn-sm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed
+        }
+
+        .btn-sm.batch {
+            background: #3498DB;
+            color: #fff;
+            padding: 6px 16px;
+            font-size: 13px
+        }
+
+        .batch-bar {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #f8f9fc;
+            border-radius: 8px;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap
+        }
+
+        .batch-bar.show {
+            display: flex
+        }
+
+        .batch-bar .info {
+            font-size: 14px;
+            color: #2c3e50
+        }
+
+        .batch-bar .btn-sm {
+            font-size: 13px;
+            padding: 6px 16px
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #e74c3c;
+            text-decoration: none;
+            font-size: 14px
+        }
+
+        .back-link:hover {
+            text-decoration: underline
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c
+        }
+
+        .loading-text {
+            color: #999;
+            text-align: center;
+            padding: 40px
+        }
+
+        @media (max-width:800px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block
+            }
+
+            thead tr {
+                display: none
+            }
+
+            tr {
+                border: 1px solid #eee;
+                margin-bottom: 10px;
+                padding: 10px
+            }
+
+            td {
+                border: none;
+                padding: 6px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #333;
+                margin-right: 10px;
+                flex-shrink: 0
+            }
+
+            td.check-col {
+                display: flex;
+                justify-content: flex-start
+            }
+
+            td.check-col::before {
+                content: '';
+                display: none
+            }
+
+            .batch-bar {
+                flex-direction: column;
+                align-items: stretch
+            }
+
+            .editable-field-input {
+                width: auto
+            }
+        }
+
+        /* 失败状态样式 */
+        .action-link.failed {
+            color: #E74C3C;
+            background: #fdedec;
+            pointer-events: none;
+            opacity: 0.7
+        }
+
+        .action-link.loading {
+            color: #999;
+            pointer-events: none;
+            opacity: 0.7
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="logo">✨ Jason227</div>
+        <div class="auth-buttons" id="authButtons">
+            <a href="/user/notification" class="bell-icon" id="bellLink">
+                <svg viewBox="0 0 448 512" width="20" height="20">
+                    <path fill="currentColor"
+                        d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z" />
+                </svg>
+                <sup id="bell-badge" style="display:none;background-color:#e74c3c;">0</sup>
+            </a>
+            <span class="user-email" id="userDisplay">加载中...</span>
+            <button id="logoutBtn" class="auth-btn logout">登出</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">👑 管理后台</div>
+            <p style="color:#6c7a8e;margin-bottom:16px;font-size:14px;">管理所有用户的角色和权限（仅管理员可见）</p>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 搜索用户编号、用户名、备注名、用户标签、角色...">
+                <span class="result-count" id="resultCount">共 0 位用户</span>
+            </div>
+            <div class="table-wrap">
+                <div id="userList">
+                    <div class="loading-text">加载用户列表...</div>
+                </div>
+            </div>
+            <div class="batch-bar" id="batchBar">
+                <span class="info" id="batchInfo">已选 0 位用户</span>
+                <button class="btn-sm grant" id="batchGrantAdmin">授予管理员</button>
+                <button class="btn-sm revoke" id="batchRevokeAdmin">撤销管理员</button>
+                <button class="btn-sm grant" id="batchUnban">解封</button>
+                <button class="btn-sm revoke" id="batchBan">封禁</button>
+            </div>
+            <div id="msgDiv"></div>
+        </div>
+        <a href="/" class="back-link">← 返回首页</a>
+    </div>
+    <script>
+        (function () {
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            let currentUser = null, currentProfile = null, allUsers = [], filteredUsers = [];
+            const authButtons = document.getElementById('authButtons');
+            const userList = document.getElementById('userList');
+            const msgDiv = document.getElementById('msgDiv');
+            const searchInput = document.getElementById('searchInput');
+            const resultCount = document.getElementById('resultCount');
+            const batchBar = document.getElementById('batchBar');
+            const batchInfo = document.getElementById('batchInfo');
+            const batchGrantAdmin = document.getElementById('batchGrantAdmin');
+            const batchRevokeAdmin = document.getElementById('batchRevokeAdmin');
+            const batchUnban = document.getElementById('batchUnban');
+            const batchBan = document.getElementById('batchBan');
+            const bellBadge = document.getElementById('bell-badge');
+            const userDisplay = document.getElementById('userDisplay');
+
+            function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
+            function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
+            function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
+            function clearMsg() { msgDiv.innerHTML = ''; }
+
+            async function fetchUnreadCount() {
+                if (!currentProfile) return;
+                try {
+                    const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_number', currentProfile.user_number).eq('read', false);
+                    if (!error && count !== null) {
+                        if (count > 0) { bellBadge.textContent = count > 99 ? '99+' : count; bellBadge.style.display = 'inline-flex'; }
+                        else { bellBadge.style.display = 'none'; }
+                    }
+                } catch (err) { console.error(err); }
+            }
+
+            async function init() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) { window.location.href = '/login'; return; }
+                    currentUser = session.user;
+                    const { data: profile, error: profileError } = await supabase.from('profiles').select('user_number,username,is_admin').eq('id', currentUser.id).single();
+                    if (profileError || !profile || !profile.is_admin) { window.location.href = '/'; return; }
+                    currentProfile = profile;
+                    const displayName = profile.username || currentUser.email;
+                    userDisplay.textContent = displayName;
+                    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); window.location.href = '/'; });
+                    await loadUsers();
+                    searchInput.addEventListener('input', function () { filterUsers(this.value.trim()); });
+                    await fetchUnreadCount();
+                    setInterval(fetchUnreadCount, 30000);
+                } catch (err) { console.error(err); window.location.href = '/'; }
+            }
+
+            async function loadUsers() {
+                try {
+                    const { data, error } = await supabase.from('profiles').select('user_number,username,is_admin,created_at,can_speak,is_banned,remark,can_manage_users,can_manage_posts,username_color,user_tag').order('user_number');
+                    if (error) throw error;
+                    allUsers = data;
+                    filterUsers(searchInput.value.trim());
+                } catch (err) { userList.innerHTML = `<div class="error">加载用户失败：${err.message}</div>`; }
+            }
+
+            function filterUsers(keyword) {
+                if (!keyword) { filteredUsers = [...allUsers]; } else {
+                    const lower = keyword.toLowerCase();
+                    filteredUsers = allUsers.filter(user => {
+                        const isAdmin = user.is_admin;
+                        const roleLabel = isAdmin ? '管理员' : '普通用户';
+                        const remark = user.remark || '';
+                        const tag = user.user_tag || '';
+                        return String(user.user_number).includes(keyword) ||
+                            (user.username && user.username.toLowerCase().includes(lower)) ||
+                            remark.toLowerCase().includes(lower) ||
+                            tag.toLowerCase().includes(lower) ||
+                            roleLabel.includes(keyword);
+                    });
+                }
+                renderUserList();
+            }
+
+            async function togglePermission(userId, field, currentValue) {
+                try {
+                    const { error } = await supabase.from('profiles').update({ [field]: !currentValue }).eq('user_number', userId);
+                    if (error) throw error;
+                    await loadUsers();
+                } catch (err) { showError('权限更新失败：' + err.message); }
+            }
+
+            // 改进的 grantAdmin，带详细错误反馈
+            async function grantAdmin(userId, btnElement) {
+                if (!btnElement) return;
+                // 保存原始文本
+                const originalText = btnElement.textContent;
+                btnElement.classList.add('loading');
+                btnElement.textContent = '处理中...';
+                btnElement.style.pointerEvents = 'none';
+
+                try {
+                    // 先获取当前 user_tag
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('profiles')
+                        .select('user_tag')
+                        .eq('user_number', userId)
+                        .single();
+                    if (fetchError) throw new Error('获取用户信息失败: ' + fetchError.message);
+                    let newTag = userData.user_tag || '';
+                    if (!newTag) newTag = '管理员';
+
+                    // 执行更新
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .update({ is_admin: true, user_tag: newTag })
+                        .eq('user_number', userId);
+                    if (updateError) throw new Error('更新失败: ' + updateError.message);
+
+                    // 成功，刷新列表
+                    await loadUsers();
+                    // 成功后按钮会被重新渲染，无需手动恢复
+                } catch (err) {
+                    console.error('进入后台错误:', err);
+                    showError('操作失败: ' + err.message);
+                    // 恢复按钮状态（但元素可能已不存在？我们尝试恢复）
+                    // 因为刷新列表失败不会刷新，所以按钮还在
+                    if (btnElement.parentNode) {
+                        btnElement.classList.remove('loading');
+                        btnElement.classList.add('failed');
+                        btnElement.textContent = '失败';
+                        btnElement.style.pointerEvents = 'none';
+                    }
+                }
+            }
+
+            function renderUserList() {
+                if (!filteredUsers || filteredUsers.length === 0) {
+                    userList.innerHTML = '<div class="loading-text">没有找到匹配的用户</div>';
+                    resultCount.textContent = '共 0 位用户';
+                    batchBar.classList.remove('show');
+                    return;
+                }
+                resultCount.textContent = `共 ${filteredUsers.length} 位用户`;
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
+                                <th>注册时间</th>
+                                <th>用户编号</th>
+                                <th>用户名</th>
+                                <th>备注名</th>
+                                <th>用户类型</th>
+                                <th>权限</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                for (const user of filteredUsers) {
+                    const isSelf = currentProfile.user_number === user.user_number;
+                    const isAdmin = user.is_admin;
+                    const roleClass = isAdmin ? 'admin' : 'user';
+                    const roleLabel = isAdmin ? '管理员' : '普通用户';
+                    const userNameColor = isAdmin ? '#9b59b6' : '#333';
+                    let tagHtml = '';
+                    if (user.user_tag) {
+                        tagHtml = `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.user_tag)}">${escapeHtmlAttr(user.user_tag)}</span>`;
+                    }
+                    const remarkDisplay = user.remark || '';
+
+                    let userMgmtHtml, postMgmtHtml;
+                    const mgmtStatus = user.can_manage_users;
+                    const postStatus = user.can_manage_posts;
+                    if (isSelf) {
+                        userMgmtHtml = `<span class="action-link ${mgmtStatus ? 'green' : 'red'} disabled" style="cursor:default;">用户管理</span>`;
+                        postMgmtHtml = `<span class="action-link ${postStatus ? 'green' : 'red'} disabled" style="cursor:default;">秩序管理</span>`;
+                    } else {
+                        userMgmtHtml = `<span class="action-link ${mgmtStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_users" data-current="${mgmtStatus}">用户管理</span>`;
+                        postMgmtHtml = `<span class="action-link ${postStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_posts" data-current="${postStatus}">秩序管理</span>`;
+                    }
+
+                    const isBanned = user.is_banned || false;
+                    const banColor = isBanned ? 'red' : 'green';
+                    const banAction = `<span class="action-link ${banColor}" style="cursor:pointer;" data-action="toggle-ban" data-user="${user.user_number}">进入主站</span>`;
+                    const speakStatus = user.can_speak !== false;
+                    const speakColor = speakStatus ? 'green' : 'red';
+                    const speakAction = `<span class="action-link ${speakColor}" style="cursor:pointer;" data-action="toggle-speak" data-user="${user.user_number}">自由发言</span>`;
+                    const canManage = !isSelf;
+
+                    let enterAdminAction = '';
+                    if (!isAdmin && canManage) {
+                        enterAdminAction = ` | <span class="action-link green" style="cursor:pointer;" data-action="grant-admin" data-user="${user.user_number}">进入后台</span>`;
+                    }
+
+                    const userNameHtml = `
+                        <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};font-weight:500;">${escapeHtmlAttr(user.username || '未命名')}</span>
+                        ${tagHtml}
+                    `;
+
+                    html += `
+                        <tr>
+                            <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isSelf ? 'disabled' : ''}></td>
+                            <td data-label="注册时间">${formatTime(user.created_at)}</td>
+                            <td data-label="用户编号">${user.user_number}</td>
+                            <td data-label="用户名">${userNameHtml}</td>
+                            <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
+                            <td data-label="用户类型"><span class="role-tag ${roleClass}" data-action="change-role" data-user="${user.user_number}">${roleLabel}</span></td>
+                            <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml}</td>
+                            <td data-label="操作">
+                                ${canManage ? `${banAction} | ${speakAction}${enterAdminAction}` : '<span style="color:#999;">（自己）</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }
+                html += `</tbody></table>`;
+                userList.innerHTML = html;
+
+                // ---- 用户名交互：双击编辑，三击跳转 ----
+                document.querySelectorAll('.username-display').forEach(el => {
+                    let clickCount = 0;
+                    let timer = null;
+
+                    el.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        clickCount++;
+                        if (timer) clearTimeout(timer);
+                        timer = setTimeout(() => {
+                            if (clickCount === 2) {
+                                enterEditMode(this);
+                            } else if (clickCount >= 3) {
+                                const userId = parseInt(this.dataset.user);
+                                window.open('/user/' + userId, '_blank');
+                            }
+                            clickCount = 0;
+                            timer = null;
+                        }, 300);
+                    });
+
+                    function enterEditMode(el) {
+                        const userId = parseInt(el.dataset.user);
+                        const currentName = el.dataset.current || el.textContent.trim();
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'editable-field-input';
+                        input.value = currentName;
+                        input.placeholder = '输入新用户名';
+                        el.innerHTML = '';
+                        el.appendChild(input);
+                        input.focus();
+                        input.select();
+
+                        const save = async () => {
+                            const newName = input.value.trim();
+                            if (newName === currentName) {
+                                el.textContent = currentName;
+                                el.dataset.current = currentName;
+                                return;
+                            }
+                            if (!newName) {
+                                showError('用户名不能为空');
+                                el.textContent = currentName;
+                                el.dataset.current = currentName;
+                                return;
+                            }
+                            try {
+                                const { error } = await supabase
+                                    .from('profiles')
+                                    .update({ username: newName })
+                                    .eq('user_number', userId);
+                                if (error) throw error;
+                                await loadUsers();
+                            } catch (err) {
+                                showError('更新失败：' + err.message);
+                                el.textContent = currentName;
+                                el.dataset.current = currentName;
+                            }
+                        };
+
+                        input.addEventListener('blur', save);
+                        input.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+                            if (e.key === 'Escape') {
+                                el.textContent = currentName;
+                                el.dataset.current = currentName;
+                            }
+                        });
+                    }
+                });
+
+                // 备注名双击编辑
+                document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
+                    el.addEventListener('dblclick', function (e) {
+                        e.stopPropagation();
+                        const userId = parseInt(this.dataset.user);
+                        const currentVal = this.dataset.value || '';
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'editable-field-input';
+                        input.value = currentVal;
+                        input.placeholder = '输入备注名';
+                        this.innerHTML = '';
+                        this.appendChild(input);
+                        input.focus();
+                        input.select();
+                        const save = async () => {
+                            const newVal = input.value.trim();
+                            if (newVal === currentVal) { this.textContent = currentVal || '-'; this.dataset.value = currentVal; return; }
+                            try {
+                                const { error } = await supabase.from('profiles').update({ remark: newVal }).eq('user_number', userId);
+                                if (error) throw error;
+                                await loadUsers();
+                            } catch (err) { showError('更新失败：' + err.message); this.textContent = currentVal || '-'; this.dataset.value = currentVal; }
+                        };
+                        input.addEventListener('blur', save);
+                        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } if (e.key === 'Escape') { const parent = this.parentNode; parent.textContent = currentVal || '-'; parent.dataset.value = currentVal; } });
+                    });
+                });
+
+                // 标签双击编辑
+                document.querySelectorAll('.user-tag-display').forEach(el => {
+                    el.addEventListener('dblclick', function (e) {
+                        e.stopPropagation();
+                        const userId = parseInt(this.dataset.user);
+                        const currentTag = this.dataset.current || this.textContent.trim();
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'editable-field-input';
+                        input.value = currentTag;
+                        input.placeholder = '输入用户标签（留空恢复管理员）';
+                        this.innerHTML = '';
+                        this.appendChild(input);
+                        input.focus();
+                        input.select();
+                        const save = async () => {
+                            const newTag = input.value.trim();
+                            const user = allUsers.find(u => u.user_number === userId);
+                            const isAdmin = user ? user.is_admin : false;
+                            let finalTag;
+                            if (newTag === '') { finalTag = isAdmin ? '管理员' : null; } else { finalTag = newTag; }
+                            if (finalTag === currentTag) { this.textContent = currentTag; this.dataset.current = currentTag; return; }
+                            try {
+                                const { error } = await supabase.from('profiles').update({ user_tag: finalTag }).eq('user_number', userId);
+                                if (error) throw error;
+                                await loadUsers();
+                            } catch (err) { showError('更新失败：' + err.message); this.textContent = currentTag; this.dataset.current = currentTag; }
+                        };
+                        input.addEventListener('blur', save);
+                        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } if (e.key === 'Escape') { const parent = this.parentNode; parent.textContent = currentTag; parent.dataset.current = currentTag; } });
+                    });
+                });
+
+                // 进入后台 → 授予管理员权限（带详细错误处理）
+                document.querySelectorAll('[data-action="grant-admin"]').forEach(el => {
+                    el.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const userId = parseInt(this.dataset.user);
+                        await grantAdmin(userId, this);
+                    });
+                });
+
+                // 权限切换
+                document.querySelectorAll('[data-action="toggle-perm"]').forEach(el => {
+                    el.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const userId = parseInt(this.dataset.user);
+                        const field = this.dataset.field;
+                        const current = this.dataset.current === 'true';
+                        await togglePermission(userId, field, current);
+                    });
+                });
+
+                // 切换用户类型
+                document.querySelectorAll('[data-action="change-role"]').forEach(el => {
+                    el.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const userId = parseInt(this.dataset.user);
+                        const currentRole = this.textContent.trim();
+                        const options = ['普通用户', '管理员'];
+                        const newRole = prompt('选择新角色（输入数字）：\n1. 普通用户\n2. 管理员', '1');
+                        if (newRole === null) return;
+                        const idx = parseInt(newRole) - 1;
+                        if (isNaN(idx) || idx < 0 || idx > 1) { showError('无效选项'); return; }
+                        const targetRole = options[idx];
+                        if (targetRole === currentRole) return;
+                        const { data: userData, error: fetchError } = await supabase.from('profiles').select('user_tag').eq('user_number', userId).single();
+                        if (fetchError) { showError('获取用户信息失败'); return; }
+                        let currentTag = userData.user_tag || '';
+                        let newTag = currentTag;
+                        let update = {};
+                        if (targetRole === '管理员') { update.is_admin = true; if (!currentTag) newTag = '管理员'; } else { update.is_admin = false; if (currentTag === '管理员') newTag = null; }
+                        update.user_tag = newTag;
+                        try {
+                            const { error } = await supabase.from('profiles').update(update).eq('user_number', userId);
+                            if (error) throw error;
+                            await loadUsers();
+                        } catch (err) { showError('操作失败：' + err.message); }
+                    });
+                });
+
+                // 切换封禁
+                document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
+                    el.addEventListener('click', async function () {
+                        const userId = parseInt(this.dataset.user);
+                        const currentStatus = this.textContent.trim() === '进入主站';
+                        const newStatus = !currentStatus;
+                        try {
+                            const { error } = await supabase.from('profiles').update({ is_banned: newStatus }).eq('user_number', userId);
+                            if (error) throw error;
+                            await loadUsers();
+                        } catch (err) { showError('操作失败：' + err.message); }
+                    });
+                });
+
+                // 切换自由发言
+                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
+                    el.addEventListener('click', async function () {
+                        const userId = parseInt(this.dataset.user);
+                        const currentStatus = this.textContent.trim() === '自由发言';
+                        const newStatus = !currentStatus;
+                        try {
+                            const { error } = await supabase.from('profiles').update({ can_speak: newStatus }).eq('user_number', userId);
+                            if (error) throw error;
+                            await loadUsers();
+                        } catch (err) { showError('操作失败：' + err.message); }
+                    });
+                });
+
+                // 全选
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) {
+                    selectAll.addEventListener('change', function () {
+                        document.querySelectorAll('.row-checkbox:not(:disabled)').forEach(cb => cb.checked = this.checked);
+                        updateBatchBar();
+                    });
+                }
+                document.querySelectorAll('.row-checkbox').forEach(cb => cb.addEventListener('change', updateBatchBar));
+                updateBatchBar();
+            }
+
+            function updateBatchBar() {
+                const checked = document.querySelectorAll('.row-checkbox:checked:not(:disabled)');
+                const count = checked.length;
+                if (count === 0) { batchBar.classList.remove('show'); return; }
+                batchBar.classList.add('show');
+                batchInfo.textContent = `已选 ${count} 位用户`;
+                const selectedIds = Array.from(checked).map(cb => parseInt(cb.dataset.user));
+                batchBar.dataset.selected = JSON.stringify(selectedIds);
+            }
+
+            async function batchAction(action, actionName, updateObj) {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                try {
+                    const { error } = await supabase.from('profiles').update(updateObj).in('user_number', ids);
+                    if (error) throw error;
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) { showError('批量操作失败：' + err.message); }
+            }
+
+            batchUnban.addEventListener('click', () => batchAction('解封', '解封', { is_banned: false }));
+            batchBan.addEventListener('click', () => batchAction('封禁', '封禁', { is_banned: true }));
+
+            batchGrantAdmin.addEventListener('click', async function () {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                try {
+                    const { data: users, error: fetchError } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
+                    if (fetchError) throw fetchError;
+                    for (const u of users) {
+                        let newTag = u.user_tag || '';
+                        if (!newTag) newTag = '管理员';
+                        await supabase.from('profiles').update({ is_admin: true, user_tag: newTag }).eq('user_number', u.user_number);
+                    }
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) { showError('批量操作失败：' + err.message); }
+            });
+
+            batchRevokeAdmin.addEventListener('click', async function () {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                try {
+                    const { data: users, error: fetchError } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
+                    if (fetchError) throw fetchError;
+                    for (const u of users) {
+                        let newTag = u.user_tag || '';
+                        if (newTag === '管理员') newTag = null;
+                        await supabase.from('profiles').update({ is_admin: false, user_tag: newTag }).eq('user_number', u.user_number);
+                    }
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) { showError('批量操作失败：' + err.message); }
+            });
+
+            init();
+        })();
+    </script>
+</body>
+
+</html>

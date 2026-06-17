@@ -13,7 +13,7 @@
     <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
-        /* ========== 基础样式（与原一致） ========== */
+        /* ========== 基础样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -441,7 +441,23 @@
             color: #e74c3c;
         }
 
-        /* Markdown 内容样式 */
+        /* 用户标签和角色标签 */
+        .user-tag,
+        .role-tag {
+            display: inline-block;
+            background: #eee;
+            border-radius: 12px;
+            padding: 0 8px;
+            font-size: 12px;
+            margin-left: 4px;
+            color: #333;
+        }
+
+        .role-tag {
+            background: #ffd700;
+        }
+
+        /* Markdown 内容样式（全部保留） */
         .benben-text {
             line-height: 1.6;
             color: #333;
@@ -482,54 +498,10 @@
             background: #f4f4f4;
             padding: 2px 5px;
             border-radius: 4px;
-            font-family: 'Courier New', monospace;
             font-size: 0.9em;
             color: #d63369;
         }
 
-        /* 代码块两栏布局（连贯竖线） */
-        .code-block-wrapper {
-            display: flex;
-            background: #FAFAFA;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-
-        .code-line-numbers {
-            flex-shrink: 0;
-            border-right: 1px solid #ddd;
-            padding: 12px 0;
-            text-align: right;
-            font-family: 'Courier New', monospace;
-            background: #FAFAFA;
-            user-select: none;
-        }
-
-        .code-line-number {
-            padding: 0 10px 0 12px;
-            color: #aaa;
-            line-height: 1.6;
-        }
-
-        .code-lines {
-            flex-grow: 1;
-            padding: 12px 0;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .code-line {
-            padding: 0 12px;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-
-        .code-highlight-line {
-            background-color: #F0F0F0;
-        }
-
-        /* 普通代码块样式 */
         .benben-text pre {
             background: #FAFAFA;
             color: #333;
@@ -543,7 +515,7 @@
             background: transparent;
             padding: 0;
             color: inherit;
-            font-size: 0.9em;
+            font-size: 14px;
             white-space: pre-wrap;
         }
 
@@ -572,7 +544,6 @@
             color: #333;
         }
 
-        /* 洛谷扩展样式 */
         .benben-text .align-center {
             text-align: center;
         }
@@ -688,7 +659,6 @@
     </div>
 
     <div class="main-layout">
-        <!-- 左侧导航栏（与原一致，此处省略部分重复内容） -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -784,6 +754,7 @@
             let hasMore = true;
             let lastId = null;
             let currentReplyingId = null;
+            let currentReplyUsername = null;
             const MAX_LENGTH = 227;
             let unreadTimer = null;
             let infiniteObserver = null;
@@ -797,13 +768,30 @@
             const benbenSubmit = document.getElementById('benbenSubmit');
             const loadingSentinel = document.getElementById('loadingSentinel');
 
-            const md = window.markdownit({ html: false, linkify: true, typographer: true });
+            const md = window.markdownit({ html: true, linkify: true, typographer: true });
 
             // ---------- 辅助函数 ----------
             function escapeHtmlAttr(str) {
                 if (!str) return '';
-                return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
             }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
             function htmlDecode(str) {
                 if (!str) return '';
                 let div = document.createElement('div');
@@ -811,7 +799,7 @@
                 return div.textContent;
             }
 
-            // ---------- 洛谷扩展预处理 ----------
+            // ---------- Markdown 渲染核心（完整） ----------
             function preprocessLuoguSyntax(text) {
                 text = text.replace(/::::(\w+)\[([^\]]*)\]\{open\}\s*([\s\S]*?)\n:::/gm, (m, t, title, c) => `<details open><summary>${escapeHtmlAttr(title)}</summary>${c}</details>`);
                 text = text.replace(/::::(\w+)\[([^\]]*)\]\s*([\s\S]*?)\n:::/gm, (m, t, title, c) => `<details><summary>${escapeHtmlAttr(title)}</summary>${c}</details>`);
@@ -867,71 +855,33 @@
                 return doc.body.innerHTML;
             }
 
-            // ---------- fence 规则（纯文本，无语法高亮） ----------
-            function setupMarkdownItWithLuogu(md) {
-                md.renderer.rules.fence = function (tokens, idx, options, env, self) {
-                    const token = tokens[idx];
-                    const info = token.info.trim();
-                    const lang = info.split(/\s+/)[0];
-                    const params = info.slice(lang.length).trim();
-                    let content = token.content;
-                    let lineNumbers = false;
-                    let highlightLines = null;
-                    if (params.includes('line-numbers')) lineNumbers = true;
-                    const linesMatch = params.match(/lines=(\d+)-(\d+)/);
-                    if (linesMatch) highlightLines = { start: parseInt(linesMatch[1]), end: parseInt(linesMatch[2]) };
-
-                    if (lineNumbers || highlightLines) {
-                        let lines = content.split('\n');
-                        if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
-                        const totalLines = lines.length;
-                        const maxDigits = String(totalLines).length;
-                        let lineNumbersHtml = '<div class="code-line-numbers">';
-                        let codeLinesHtml = '<div class="code-lines">';
-                        for (let i = 0; i < totalLines; i++) {
-                            const lineNum = i + 1;
-                            let lineClass = '';
-                            if (highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
-                                lineClass = ' code-highlight-line';
-                            } const lineContent = DOMPurify.sanitize(lines[i] || ' ', { ALLOWED_TAGS: [] });
-                            lineNumbersHtml += `<div class="code-line-number${lineClass}" style="min-width:${maxDigits}ch;">${lineNum}</div>`;
-                            codeLinesHtml += `<div class="code-line${lineClass}">${lineContent}</div>`;
-                        }
-                        lineNumbersHtml += '</div>';
-                        codeLinesHtml += '</div>';
-                        return `<div class="code-block-wrapper">${lineNumbersHtml}${codeLinesHtml}</div>`;
-                    } else {
-                        // 直接输出存储的内容（已经是实体）
-                        return `<pre><code class="language-${lang}">${content}</code></pre>`;
-                    }
-                };
-            }
-            // setupMarkdownItWithLuogu(md);
-
-            // ---------- 渲染核心 ----------
             function renderContent(rawText, mentionMap) {
                 if (!rawText) return '';
+                rawText = rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-                // 使用私有区字符作为占位符，避免被 markdown-it 处理
-                const CODE_PLACEHOLDER = '\uE000';
-                const CODE_END = '\uE001';
-
-                // 1. 提取代码块
+                // 1. 提取围栏代码块
                 const codeBlocks = [];
                 let processed = rawText.replace(/(```[\s\S]*?```)/g, (match) => {
                     const idx = codeBlocks.length;
-                    codeBlocks.push(match);
-                    return `${CODE_PLACEHOLDER}CODEBLOCK${idx}${CODE_END}`;
+                    codeBlocks.push({ type: 'fence', content: match });
+                    return `@@CODEBLOCK_${idx}@@`;
                 });
 
-                // 2. 洛谷扩展预处理
+                // 2. 提取行内代码
+                processed = processed.replace(/`([^`]+)`/g, (match, code) => {
+                    const idx = codeBlocks.length;
+                    const safeCode = code.replace(/\n/g, '&#10;');
+                    codeBlocks.push({ type: 'inline', content: safeCode });
+                    return `@@INLINE_${idx}@@`;
+                });
+
+                // 3. 洛谷扩展预处理
                 processed = preprocessLuoguSyntax(processed);
 
-                // 3. 安全换行处理（不破坏占位符）
+                // 4. 安全换行处理
                 function safeReplaceNewline(text) {
-                    // 保护占位符
                     const tempPlaceholders = [];
-                    let temp = text.replace(new RegExp(`${CODE_PLACEHOLDER}CODEBLOCK\\d+${CODE_END}`, 'g'), (match) => {
+                    let temp = text.replace(/@@(?:CODEBLOCK|INLINE)_\d+@@/g, (match) => {
                         tempPlaceholders.push(match);
                         return `\x01PH${tempPlaceholders.length - 1}\x01`;
                     });
@@ -952,71 +902,85 @@
                 }
                 processed = safeReplaceNewline(processed);
 
-                // 4. markdown-it 渲染
+                // 5. 处理 LaTeX
+                processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
+                    let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                    try {
+                        return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`;
+                    } catch (e) { return match; }
+                });
+                processed = processed.replace(/\$([^$]+?)\$/g, (match, math) => {
+                    let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                    try {
+                        return katex.renderToString(realMath, { throwOnError: false });
+                    } catch (e) { return match; }
+                });
+
+                // 6. markdown-it 渲染
                 let html = md.render(processed);
 
-                // 5. 恢复代码块
-                html = html.replace(new RegExp(`${CODE_PLACEHOLDER}CODEBLOCK(\\d+)${CODE_END}`, 'g'), (match, idx) => {
+                // 7. 恢复代码块
+                html = html.replace(/@@(?:CODEBLOCK|INLINE)_(\d+)@@/g, (match, idx) => {
                     let block = codeBlocks[parseInt(idx)];
-                    const lines = block.split('\n');
+                    if (!block) return '';
+                    if (block.type === 'inline') {
+                        return `<code>${block.content}</code>`;
+                    }
+                    const lines = block.content.split('\n');
                     const firstLine = lines[0];
-                    let lang = '';
-                    let lineNumbers = false;
-                    let highlightLines = null;
+                    let lang = '', showLineNumbers = false, showHighlight = false, highlightLines = null;
                     if (firstLine.startsWith('```')) {
                         const params = firstLine.slice(3).trim();
                         const parts = params.split(/\s+/);
                         lang = parts[0] || '';
-                        if (params.includes('line-numbers')) lineNumbers = true;
+                        if (params.includes('line-numbers')) showLineNumbers = true;
                         const linesMatch = params.match(/lines=(\d+)-(\d+)/);
-                        if (linesMatch) highlightLines = { start: parseInt(linesMatch[1]), end: parseInt(linesMatch[2]) };
+                        if (linesMatch) {
+                            showHighlight = true;
+                            highlightLines = { start: parseInt(linesMatch[1]), end: parseInt(linesMatch[2]) };
+                        }
                     }
                     let codeContent = lines.slice(1, -1).join('\n');
 
-                    if (lineNumbers || highlightLines) {
-                        const codeLines = codeContent.split('\n');
-                        if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
-                        const totalLines = codeLines.length;
-                        const maxDigits = String(totalLines).length;
-                        let lineNumbersHtml = '<div class="code-line-numbers">';
-                        let codeLinesHtml = '<div class="code-lines">';
-                        for (let i = 0; i < totalLines; i++) {
-                            const lineNum = i + 1;
-                            let lineClass = '';
-                            if (highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
-                                lineClass = ' code-highlight-line';
-                            }
-                            const lineContent = codeLines[i] || ' ';
-                            lineNumbersHtml += `<div class="code-line-number${lineClass}" style="min-width:${maxDigits}ch;">${lineNum}</div>`;
-                            codeLinesHtml += `<div class="code-line${lineClass}">${lineContent}</div>`;
-                        }
-                        lineNumbersHtml += '</div>';
-                        codeLinesHtml += '</div>';
-                        return `<div class="code-block-wrapper">${lineNumbersHtml}${codeLinesHtml}</div>`;
-                    } else {
+                    if (!showLineNumbers && !showHighlight) {
                         return `<pre><code class="language-${lang}">${codeContent}</code></pre>`;
                     }
+
+                    const codeLines = codeContent.split('\n');
+                    if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
+                    const totalLines = codeLines.length;
+                    const maxDigits = String(totalLines).length;
+
+                    let numberedHtml = `<pre><code>`;
+                    for (let i = 0; i < totalLines; i++) {
+                        const lineNum = i + 1;
+                        const lineContent = codeLines[i] || ' ';
+                        let lineClass = '';
+                        if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
+                            lineClass = ' code-highlight-line';
+                        }
+                        numberedHtml += `<div class="code-line${lineClass}">`;
+                        if (showLineNumbers) {
+                            numberedHtml += `<span class="line-number" style="display:inline-block; min-width:${maxDigits * 2}ch; text-align:right; margin-right:8px; white-space:nowrap; border-right:1px solid #ddd; padding-right:8px;">${lineNum}</span>`;
+                        }
+                        numberedHtml += `<span class="code-text">${lineContent}</span>`;
+                        numberedHtml += `</div>`;
+                    }
+                    numberedHtml += `</code></pre>`;
+                    return numberedHtml;
                 });
 
-                // 6. LaTeX 渲染
-                html = html.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
-                    try { return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(math, { displayMode: true, throwOnError: false })}</div>`; } catch (e) { return match; }
-                });
-                html = html.replace(/\$([^$]+?)\$/g, (match, math) => {
-                    try { return katex.renderToString(math, { throwOnError: false }); } catch (e) { return match; }
-                });
-
-                // 7. @ 提及
+                // 8. @ 提及
                 html = html.replace(/@([a-zA-Z0-9_]+)/g, (match, username) => {
                     const uid = mentionMap && mentionMap[username];
                     if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
                     return match;
                 });
 
-                // 8. 表格合并
+                // 9. 表格合并
                 html = postProcessTableMerge(html);
 
-                // 9. 清理末尾多余标签
+                // 10. 清理
                 html = html.replace(/<p><\/p>\s*$/, '').replace(/<br\s*\/?>\s*$/, '').trim();
 
                 return DOMPurify.sanitize(html);
@@ -1027,14 +991,14 @@
                     const rawEncoded = el.getAttribute('data-raw');
                     const mentionMapStr = el.getAttribute('data-mention-map');
                     if (!rawEncoded) return;
-                    let rawText = rawEncoded;   // 直接使用，不要 htmlDecode
+                    let rawText = rawEncoded;
                     let mentionMap = {};
                     try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
                     el.innerHTML = renderContent(rawText, mentionMap);
                 });
             }
 
-            // ---------- 业务函数（与原来完全一致，仅确保数据不变） ----------
+            // ---------- 业务函数 ----------
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
                 try {
@@ -1058,7 +1022,18 @@
                 isLoading = true;
                 if (loadingSentinel) loadingSentinel.style.display = 'block';
                 try {
-                    let query = supabase.from('benben').select(`*, profiles:user_number (username)`).eq('is_deleted', false).order('created_at', { ascending: false }).limit(20);
+                    let query = supabase.from('benben').select(`
+                            *, 
+                            profiles:user_number (
+                                username, 
+                                is_admin,
+                                username_color,
+                                user_tag
+                            )
+                        `)
+                        .eq('is_deleted', false)
+                        .order('created_at', { ascending: false })
+                        .limit(20);
                     if (lastId) query = query.lt('id', lastId);
                     if (feedMode === 'my' && currentProfile) query = query.eq('user_number', currentProfile.user_number);
                     const { data, error } = await query;
@@ -1099,19 +1074,59 @@
                     const username = escapeHtmlAttr(item.profiles?.username || '用户');
                     const timeStr = new Date(item.created_at).toLocaleString('zh-CN');
                     const rawContent = item.content;
+
+                    const prof = item.profiles || {};
+                    const isAdmin = prof.is_admin || false;
+                    const userTag = prof.user_tag || '';
+                    const usernameColor = prof.username_color || '#333';
+                    const color = isAdmin ? '#9b59b6' : usernameColor;
+                    const roleLabel = isAdmin ? '管理员' : '';
+
+                    let userHtml = `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
+                    if (userTag) {
+                        userHtml += `<span class="user-tag">${escapeHtml(userTag)}</span>`;
+                    }
+                    if (roleLabel) {
+                        userHtml += `<span class="role-tag">${roleLabel}</span>`;
+                    }
+
                     const benbenHtml = `
-                        <div class="benben-item" data-id="${item.id}">
-                            <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'"></a></div>
-                            <div class="benben-content">
-                                <div class="benben-item-header"><div class="benben-user-info"><a href="/user/${item.user_number}" class="benben-username">${username}</a><span class="benben-time">${timeStr}</span></div><div class="benben-actions"><button class="benben-report-btn" data-id="${item.id}">举报</button><button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}</div></div>
-                                <div class="benben-text" data-raw="${rawContent}" data-mention-map='${mentionMapJson}'></div>
-                            </div>
+            <div class="benben-item" data-id="${item.id}">
+                <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'"></a></div>
+                <div class="benben-content">
+                    <div class="benben-item-header">
+                        <div class="benben-user-info">
+                            ${userHtml}
+                            <span class="benben-time">${timeStr}</span>
                         </div>
-                    `;
+                        <div class="benben-actions">
+                            <button class="benben-report-btn" data-id="${item.id}">举报</button>
+                            <button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
+                            ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
+                        </div>
+                    </div>
+                    <div class="benben-text" data-raw="${escapeHtmlAttr(rawContent)}" data-mention-map='${escapeHtmlAttr(mentionMapJson)}'></div>
+                </div>
+            </div>
+        `;
                     benbenList.insertAdjacentHTML('beforeend', benbenHtml);
                 }
                 document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); await deleteBenben(btn.dataset.id); }));
-                document.querySelectorAll('.benben-reply-btn').forEach(btn => btn.addEventListener('click', () => { const replyToId = btn.dataset.replytoId; const username = btn.dataset.username; const fullContent = decodeURIComponent(btn.dataset.fullcontent); const replyText = ` || @${username} : ${fullContent}`; if (benbenContent) { benbenContent.value = replyText; currentReplyingId = replyToId; benbenContent.focus(); benbenContent.setSelectionRange(0, 0); } }));
+                document.querySelectorAll('.benben-reply-btn').forEach(btn => btn.addEventListener('click', () => {
+                    const replyToId = btn.dataset.replytoId;
+                    const username = btn.dataset.username;
+                    const fullContent = decodeURIComponent(btn.dataset.fullcontent)
+                        .replace(/&lt;/g, '<')
+                        .replace(/&gt;/g, '>');
+                    currentReplyingId = replyToId;
+                    currentReplyUsername = username;
+                    const replyText = ` || @${username} : ${fullContent}`;
+                    if (benbenContent) {
+                        benbenContent.value = replyText;
+                        benbenContent.focus();
+                        benbenContent.setSelectionRange(0, 0);
+                    }
+                }));
                 document.querySelectorAll('.benben-report-btn').forEach(btn => btn.addEventListener('click', () => alert('举报功能暂未开放，请联系管理员。')));
                 renderAllBenbenTexts();
             }
@@ -1128,22 +1143,43 @@
                 let content = benbenContent?.value.trim();
                 if (!content) { alert('内容不能为空'); return; }
                 if (!currentProfile) { window.location.href = '/auth/login'; return; }
-                // 将尖括号转为实体，避免被 markdown 解析或丢失
+
+                let finalReplyToId = null;
+                if (currentReplyingId && currentReplyUsername) {
+                    const trimmed = content.trimStart();
+                    const prefix = `|| @${currentReplyUsername} :`;
+                    if (trimmed.startsWith(prefix)) {
+                        finalReplyToId = currentReplyingId;
+                    } else {
+                        currentReplyingId = null;
+                        currentReplyUsername = null;
+                    }
+                }
+
                 let finalContent = content.length > MAX_LENGTH ? content.substring(0, MAX_LENGTH) : content;
-                finalContent = finalContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 const insertData = { user_number: currentProfile.user_number, content: finalContent, is_deleted: false };
-                if (currentReplyingId) insertData.reply_to = currentReplyingId;
+                if (finalReplyToId) {
+                    insertData.reply_to = finalReplyToId;
+                }
 
                 try {
                     const { data: newBenben, error: insertError } = await supabase.from('benben').insert(insertData).select().single();
                     if (insertError) throw insertError;
                     const newBenbenId = newBenben.id;
-                    if (currentReplyingId) {
-                        const { data: originalBenben } = await supabase.from('benben').select('user_number').eq('id', currentReplyingId).single();
+
+                    if (finalReplyToId) {
+                        const { data: originalBenben } = await supabase.from('benben').select('user_number').eq('id', finalReplyToId).single();
                         if (originalBenben && originalBenben.user_number !== currentProfile.user_number) {
-                            await supabase.from('notifications').insert({ user_number: originalBenben.user_number, from_user_number: currentProfile.user_number, type: 'reply', benben_id: newBenbenId, content: '回复了你的犇犇' });
+                            await supabase.from('notifications').insert({
+                                user_number: originalBenben.user_number,
+                                from_user_number: currentProfile.user_number,
+                                type: 'reply',
+                                benben_id: newBenbenId,
+                                content: '回复了你的犇犇'
+                            });
                         }
                     }
+
                     const mentionRegex = /@([a-zA-Z0-9_]+)/g;
                     let match; const mentionedSet = new Set();
                     while ((match = mentionRegex.exec(content)) !== null) mentionedSet.add(match[1]);
@@ -1153,21 +1189,34 @@
                         if (userData) {
                             const notifications = [];
                             for (const user of userData) {
-                                if (user.user_number !== currentProfile.user_number) notifications.push({ user_number: user.user_number, from_user_number: currentProfile.user_number, type: 'mention', benben_id: newBenbenId, content: '在犇犇中提到了你' });
+                                if (user.user_number !== currentProfile.user_number) {
+                                    notifications.push({
+                                        user_number: user.user_number,
+                                        from_user_number: currentProfile.user_number,
+                                        type: 'mention',
+                                        benben_id: newBenbenId,
+                                        content: '在犇犇中提到了你'
+                                    });
+                                }
                             }
                             if (notifications.length > 0) await supabase.from('notifications').insert(notifications);
                         }
                     }
+
                     if (benbenContent) benbenContent.value = '';
                     currentReplyingId = null;
+                    currentReplyUsername = null;
                     loadBenbenList(true);
                     fetchUnreadCount();
-                } catch (error) { console.error(error); alert('发布失败：' + (error.message || '未知错误')); }
+                } catch (error) {
+                    console.error(error);
+                    alert('发布失败：' + (error.message || '未知错误'));
+                }
             }
 
             function switchMode(mode) { feedMode = mode; lastId = null; hasMore = true; currentReplyingId = null; loadBenbenList(true); document.querySelectorAll('.benben-tab').forEach(tab => { if (tab.dataset.mode === mode) tab.classList.add('active'); else tab.classList.remove('active'); }); }
             function setupInfiniteScroll() { if (!loadingSentinel) return; const observer = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) loadBenbenList(false); }, { threshold: 0.1 }); observer.observe(loadingSentinel); }
-            async function getProfile(userId) { const { data, error } = await supabase.from('profiles').select('user_number, username, is_super_admin').eq('id', userId).single(); if (error) return null; return data; }
+            async function getProfile(userId) { const { data, error } = await supabase.from('profiles').select('user_number, username, is_admin').eq('id', userId).single(); if (error) return null; return data; }
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
