@@ -386,6 +386,11 @@
             color: #b91c1c
         }
 
+        .success {
+            background: #dcfce7;
+            color: #166534
+        }
+
         .loading-text {
             color: #999;
             text-align: center;
@@ -448,20 +453,6 @@
                 width: auto
             }
         }
-
-        /* 失败状态样式 */
-        .action-link.failed {
-            color: #E74C3C;
-            background: #fdedec;
-            pointer-events: none;
-            opacity: 0.7
-        }
-
-        .action-link.loading {
-            color: #999;
-            pointer-events: none;
-            opacity: 0.7
-        }
     </style>
 </head>
 
@@ -474,7 +465,7 @@
                     <path fill="currentColor"
                         d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z" />
                 </svg>
-                <sup id="bell-badge" style="display:none;background-color:#e74c3c;">0</sup>
+                <sup id="bell-badge" style="display:none;">0</sup>
             </a>
             <span class="user-email" id="userDisplay">加载中...</span>
             <button id="logoutBtn" class="auth-btn logout">登出</button>
@@ -483,9 +474,9 @@
     <div class="container">
         <div class="card">
             <div class="card-header">👑 管理后台</div>
-            <p style="color:#6c7a8e;margin-bottom:16px;font-size:14px;">管理所有用户的角色和权限（仅管理员可见）</p>
+            <p style="color:#6c7a8e;margin-bottom:16px;font-size:14px;">管理所有用户的角色和权限</p>
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="🔍 搜索用户编号、用户名、备注名、用户标签、角色...">
+                <input type="text" id="searchInput" placeholder="🔍 搜索用户...">
                 <span class="result-count" id="resultCount">共 0 位用户</span>
             </div>
             <div class="table-wrap">
@@ -504,6 +495,7 @@
         </div>
         <a href="/" class="back-link">← 返回首页</a>
     </div>
+
     <script>
         (function () {
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
@@ -527,7 +519,7 @@
             function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
             function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
             function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
-            function clearMsg() { msgDiv.innerHTML = ''; }
+            function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
@@ -545,8 +537,8 @@
                     const { data: { session } } = await supabase.auth.getSession();
                     if (!session) { window.location.href = '/login'; return; }
                     currentUser = session.user;
-                    const { data: profile, error: profileError } = await supabase.from('profiles').select('user_number,username,is_admin').eq('id', currentUser.id).single();
-                    if (profileError || !profile || !profile.is_admin) { window.location.href = '/'; return; }
+                    const { data: profile, error: profileError } = await supabase.from('profiles').select('user_number,username,can_manage_users').eq('id', currentUser.id).single();
+                    if (profileError || !profile || !profile.can_manage_users) { window.location.href = '/'; return; }
                     currentProfile = profile;
                     const displayName = profile.username || currentUser.email;
                     userDisplay.textContent = displayName;
@@ -585,54 +577,77 @@
                 renderUserList();
             }
 
-            async function togglePermission(userId, field, currentValue) {
+            // ★ 通用更新函数
+            async function updateUserField(userNumber, updateData, successMsg) {
+                console.log('📤 更新用户', userNumber, updateData);
                 try {
-                    const { error } = await supabase.from('profiles').update({ [field]: !currentValue }).eq('user_number', userId);
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .update(updateData)
+                        .eq('user_number', userNumber)
+                        .select();
                     if (error) throw error;
+                    if (data && data.length > 0) {
+                        const target = allUsers.find(u => u.user_number === userNumber);
+                        if (target) Object.assign(target, data[0]);
+                    }
+                    showSuccess(successMsg || '✅ 更新成功');
                     await loadUsers();
-                } catch (err) { showError('权限更新失败：' + err.message); }
+                } catch (err) {
+                    console.error('❌ 更新失败:', err);
+                    showError('操作失败：' + err.message);
+                }
             }
 
-            // 改进的 grantAdmin，带详细错误反馈
-            async function grantAdmin(userId, btnElement) {
-                if (!btnElement) return;
-                // 保存原始文本
-                const originalText = btnElement.textContent;
-                btnElement.classList.add('loading');
-                btnElement.textContent = '处理中...';
-                btnElement.style.pointerEvents = 'none';
-
+            // 切换 is_admin
+            async function toggleAdmin(userNumber, btnElement) {
+                if (btnElement) {
+                    btnElement.style.pointerEvents = 'none';
+                    btnElement.textContent = '处理中...';
+                }
                 try {
-                    // 先获取当前 user_tag
-                    const { data: userData, error: fetchError } = await supabase
+                    const { data: u, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('user_tag')
-                        .eq('user_number', userId)
+                        .select('is_admin, user_tag')
+                        .eq('user_number', userNumber)
                         .single();
-                    if (fetchError) throw new Error('获取用户信息失败: ' + fetchError.message);
-                    let newTag = userData.user_tag || '';
-                    if (!newTag) newTag = '管理员';
-
-                    // 执行更新
-                    const { error: updateError } = await supabase
-                        .from('profiles')
-                        .update({ is_admin: true, user_tag: newTag })
-                        .eq('user_number', userId);
-                    if (updateError) throw new Error('更新失败: ' + updateError.message);
-
-                    // 成功，刷新列表
-                    await loadUsers();
-                    // 成功后按钮会被重新渲染，无需手动恢复
+                    if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
+                    const newAdmin = !u.is_admin;
+                    let newTag = u.user_tag || '';
+                    if (newAdmin) {
+                        if (!newTag) newTag = '管理员';
+                    } else {
+                        if (newTag === '管理员') newTag = null;
+                    }
+                    await updateUserField(userNumber, { is_admin: newAdmin, user_tag: newTag }, newAdmin ? '✅ 已授予管理员' : '✅ 已撤销管理员');
+                    if (btnElement && btnElement.parentNode) {
+                        btnElement.style.pointerEvents = 'auto';
+                    }
                 } catch (err) {
-                    console.error('进入后台错误:', err);
-                    showError('操作失败: ' + err.message);
-                    // 恢复按钮状态（但元素可能已不存在？我们尝试恢复）
-                    // 因为刷新列表失败不会刷新，所以按钮还在
-                    if (btnElement.parentNode) {
-                        btnElement.classList.remove('loading');
-                        btnElement.classList.add('failed');
-                        btnElement.textContent = '失败';
-                        btnElement.style.pointerEvents = 'none';
+                    console.error('❌ 操作失败:', err);
+                    showError('操作失败：' + err.message);
+                    if (btnElement && btnElement.parentNode) {
+                        btnElement.style.pointerEvents = 'auto';
+                    }
+                }
+            }
+
+            // 切换权限（用户管理、秩序管理）
+            async function togglePermission(userId, field, currentValue, btnElement) {
+                if (btnElement) {
+                    btnElement.style.pointerEvents = 'none';
+                    btnElement.textContent = '处理中...';
+                }
+                try {
+                    const newValue = !currentValue;
+                    await updateUserField(userId, { [field]: newValue }, `${field} 已切换`);
+                    if (btnElement && btnElement.parentNode) {
+                        btnElement.style.pointerEvents = 'auto';
+                    }
+                } catch (err) {
+                    showError('权限更新失败：' + err.message);
+                    if (btnElement && btnElement.parentNode) {
+                        btnElement.style.pointerEvents = 'auto';
                     }
                 }
             }
@@ -684,17 +699,21 @@
                         postMgmtHtml = `<span class="action-link ${postStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_posts" data-current="${postStatus}">秩序管理</span>`;
                     }
 
+                    // ★ 进入主站 / 自由发言：根据当前数据库值决定颜色
                     const isBanned = user.is_banned || false;
                     const banColor = isBanned ? 'red' : 'green';
                     const banAction = `<span class="action-link ${banColor}" style="cursor:pointer;" data-action="toggle-ban" data-user="${user.user_number}">进入主站</span>`;
-                    const speakStatus = user.can_speak !== false;
-                    const speakColor = speakStatus ? 'green' : 'red';
+
+                    const canSpeak = user.can_speak !== false;
+                    const speakColor = canSpeak ? 'green' : 'red';
                     const speakAction = `<span class="action-link ${speakColor}" style="cursor:pointer;" data-action="toggle-speak" data-user="${user.user_number}">自由发言</span>`;
+
                     const canManage = !isSelf;
 
-                    let enterAdminAction = '';
-                    if (!isAdmin && canManage) {
-                        enterAdminAction = ` | <span class="action-link green" style="cursor:pointer;" data-action="grant-admin" data-user="${user.user_number}">进入后台</span>`;
+                    let adminAction = '';
+                    if (canManage) {
+                        const adminColor = isAdmin ? 'green' : 'red';
+                        adminAction = ` | <span class="action-link ${adminColor}" style="cursor:pointer;" data-action="toggle-admin" data-user="${user.user_number}">进入后台</span>`;
                     }
 
                     const userNameHtml = `
@@ -712,7 +731,7 @@
                             <td data-label="用户类型"><span class="role-tag ${roleClass}" data-action="change-role" data-user="${user.user_number}">${roleLabel}</span></td>
                             <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml}</td>
                             <td data-label="操作">
-                                ${canManage ? `${banAction} | ${speakAction}${enterAdminAction}` : '<span style="color:#999;">（自己）</span>'}
+                                ${canManage ? `${banAction} | ${speakAction}${adminAction}` : '<span style="color:#999;">（自己）</span>'}
                             </td>
                         </tr>
                     `;
@@ -720,74 +739,43 @@
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ---- 用户名交互：双击编辑，三击跳转 ----
+                // ---- 事件绑定 ----
+                // 用户名双击编辑，三击跳转
                 document.querySelectorAll('.username-display').forEach(el => {
-                    let clickCount = 0;
-                    let timer = null;
-
+                    let clickCount = 0, timer = null;
                     el.addEventListener('click', function (e) {
                         e.stopPropagation();
                         clickCount++;
                         if (timer) clearTimeout(timer);
                         timer = setTimeout(() => {
-                            if (clickCount === 2) {
-                                enterEditMode(this);
-                            } else if (clickCount >= 3) {
-                                const userId = parseInt(this.dataset.user);
-                                window.open('/user/' + userId, '_blank');
+                            if (clickCount === 2) enterEditMode(this);
+                            else if (clickCount >= 3) {
+                                const uid = parseInt(this.dataset.user);
+                                window.open('/user/' + uid, '_blank');
                             }
-                            clickCount = 0;
-                            timer = null;
+                            clickCount = 0; timer = null;
                         }, 300);
                     });
-
                     function enterEditMode(el) {
-                        const userId = parseInt(el.dataset.user);
-                        const currentName = el.dataset.current || el.textContent.trim();
+                        const uid = parseInt(el.dataset.user);
+                        const current = el.dataset.current || el.textContent.trim();
                         const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
-                        input.value = currentName;
-                        input.placeholder = '输入新用户名';
-                        el.innerHTML = '';
-                        el.appendChild(input);
-                        input.focus();
-                        input.select();
-
+                        input.type = 'text'; input.className = 'editable-field-input';
+                        input.value = current; input.placeholder = '输入新用户名';
+                        el.innerHTML = ''; el.appendChild(input);
+                        input.focus(); input.select();
                         const save = async () => {
-                            const newName = input.value.trim();
-                            if (newName === currentName) {
-                                el.textContent = currentName;
-                                el.dataset.current = currentName;
-                                return;
-                            }
-                            if (!newName) {
-                                showError('用户名不能为空');
-                                el.textContent = currentName;
-                                el.dataset.current = currentName;
-                                return;
-                            }
+                            const val = input.value.trim();
+                            if (val === current) { el.textContent = current; el.dataset.current = current; return; }
+                            if (!val) { showError('用户名不能为空'); el.textContent = current; el.dataset.current = current; return; }
                             try {
-                                const { error } = await supabase
-                                    .from('profiles')
-                                    .update({ username: newName })
-                                    .eq('user_number', userId);
-                                if (error) throw error;
-                                await loadUsers();
-                            } catch (err) {
-                                showError('更新失败：' + err.message);
-                                el.textContent = currentName;
-                                el.dataset.current = currentName;
-                            }
+                                await updateUserField(uid, { username: val }, '✅ 用户名已更新');
+                            } catch (err) { showError('更新失败：' + err.message); el.textContent = current; el.dataset.current = current; }
                         };
-
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
                             if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-                            if (e.key === 'Escape') {
-                                el.textContent = currentName;
-                                el.dataset.current = currentName;
-                            }
+                            if (e.key === 'Escape') { el.textContent = current; el.dataset.current = current; }
                         });
                     }
                 });
@@ -796,28 +784,25 @@
                 document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
-                        const userId = parseInt(this.dataset.user);
-                        const currentVal = this.dataset.value || '';
+                        const uid = parseInt(this.dataset.user);
+                        const cur = this.dataset.value || '';
                         const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
-                        input.value = currentVal;
-                        input.placeholder = '输入备注名';
-                        this.innerHTML = '';
-                        this.appendChild(input);
-                        input.focus();
-                        input.select();
+                        input.type = 'text'; input.className = 'editable-field-input';
+                        input.value = cur; input.placeholder = '输入备注名';
+                        this.innerHTML = ''; this.appendChild(input);
+                        input.focus(); input.select();
                         const save = async () => {
-                            const newVal = input.value.trim();
-                            if (newVal === currentVal) { this.textContent = currentVal || '-'; this.dataset.value = currentVal; return; }
+                            const val = input.value.trim();
+                            if (val === cur) { this.textContent = cur || '-'; this.dataset.value = cur; return; }
                             try {
-                                const { error } = await supabase.from('profiles').update({ remark: newVal }).eq('user_number', userId);
-                                if (error) throw error;
-                                await loadUsers();
-                            } catch (err) { showError('更新失败：' + err.message); this.textContent = currentVal || '-'; this.dataset.value = currentVal; }
+                                await updateUserField(uid, { remark: val }, '✅ 备注名已更新');
+                            } catch (err) { showError('更新失败：' + err.message); this.textContent = cur || '-'; this.dataset.value = cur; }
                         };
                         input.addEventListener('blur', save);
-                        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } if (e.key === 'Escape') { const parent = this.parentNode; parent.textContent = currentVal || '-'; parent.dataset.value = currentVal; } });
+                        input.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+                            if (e.key === 'Escape') { const p = this.parentNode; p.textContent = cur || '-'; p.dataset.value = cur; }
+                        });
                     });
                 });
 
@@ -825,52 +810,72 @@
                 document.querySelectorAll('.user-tag-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
-                        const userId = parseInt(this.dataset.user);
-                        const currentTag = this.dataset.current || this.textContent.trim();
+                        const uid = parseInt(this.dataset.user);
+                        const cur = this.dataset.current || this.textContent.trim();
                         const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
-                        input.value = currentTag;
-                        input.placeholder = '输入用户标签（留空恢复管理员）';
-                        this.innerHTML = '';
-                        this.appendChild(input);
-                        input.focus();
-                        input.select();
+                        input.type = 'text'; input.className = 'editable-field-input';
+                        input.value = cur; input.placeholder = '输入用户标签（留空恢复管理员）';
+                        this.innerHTML = ''; this.appendChild(input);
+                        input.focus(); input.select();
                         const save = async () => {
-                            const newTag = input.value.trim();
-                            const user = allUsers.find(u => u.user_number === userId);
+                            const val = input.value.trim();
+                            const user = allUsers.find(u => u.user_number === uid);
                             const isAdmin = user ? user.is_admin : false;
-                            let finalTag;
-                            if (newTag === '') { finalTag = isAdmin ? '管理员' : null; } else { finalTag = newTag; }
-                            if (finalTag === currentTag) { this.textContent = currentTag; this.dataset.current = currentTag; return; }
+                            let final = val ? val : (isAdmin ? '管理员' : null);
+                            if (final === cur) { this.textContent = cur; this.dataset.current = cur; return; }
                             try {
-                                const { error } = await supabase.from('profiles').update({ user_tag: finalTag }).eq('user_number', userId);
-                                if (error) throw error;
-                                await loadUsers();
-                            } catch (err) { showError('更新失败：' + err.message); this.textContent = currentTag; this.dataset.current = currentTag; }
+                                await updateUserField(uid, { user_tag: final }, '✅ 标签已更新');
+                            } catch (err) { showError('更新失败：' + err.message); this.textContent = cur; this.dataset.current = cur; }
                         };
                         input.addEventListener('blur', save);
-                        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } if (e.key === 'Escape') { const parent = this.parentNode; parent.textContent = currentTag; parent.dataset.current = currentTag; } });
+                        input.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+                            if (e.key === 'Escape') { const p = this.parentNode; p.textContent = cur; p.dataset.current = cur; }
+                        });
                     });
                 });
 
-                // 进入后台 → 授予管理员权限（带详细错误处理）
-                document.querySelectorAll('[data-action="grant-admin"]').forEach(el => {
+                // ★ 进入后台
+                document.querySelectorAll('[data-action="toggle-admin"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
-                        const userId = parseInt(this.dataset.user);
-                        await grantAdmin(userId, this);
+                        const uid = parseInt(this.dataset.user);
+                        await toggleAdmin(uid, this);
                     });
                 });
 
-                // 权限切换
+                // ★ 权限切换（用户管理、秩序管理）
                 document.querySelectorAll('[data-action="toggle-perm"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
-                        const userId = parseInt(this.dataset.user);
+                        const uid = parseInt(this.dataset.user);
                         const field = this.dataset.field;
                         const current = this.dataset.current === 'true';
-                        await togglePermission(userId, field, current);
+                        await togglePermission(uid, field, current, this);
+                    });
+                });
+
+                // ★ 进入主站（修复：从 allUsers 读取当前状态）
+                document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
+                    el.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const uid = parseInt(this.dataset.user);
+                        const targetUser = allUsers.find(u => u.user_number === uid);
+                        if (!targetUser) { showError('用户不存在'); return; }
+                        const current = targetUser.is_banned || false;
+                        await updateUserField(uid, { is_banned: !current }, current ? '✅ 已允许进入主站' : '✅ 已禁止进入主站');
+                    });
+                });
+
+                // ★ 自由发言（修复：从 allUsers 读取当前状态）
+                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
+                    el.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const uid = parseInt(this.dataset.user);
+                        const targetUser = allUsers.find(u => u.user_number === uid);
+                        if (!targetUser) { showError('用户不存在'); return; }
+                        const current = targetUser.can_speak !== false;
+                        await updateUserField(uid, { can_speak: !current }, current ? '✅ 已禁止发言' : '✅ 已允许发言');
                     });
                 });
 
@@ -878,54 +883,29 @@
                 document.querySelectorAll('[data-action="change-role"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
-                        const userId = parseInt(this.dataset.user);
+                        const uid = parseInt(this.dataset.user);
                         const currentRole = this.textContent.trim();
                         const options = ['普通用户', '管理员'];
                         const newRole = prompt('选择新角色（输入数字）：\n1. 普通用户\n2. 管理员', '1');
                         if (newRole === null) return;
                         const idx = parseInt(newRole) - 1;
                         if (isNaN(idx) || idx < 0 || idx > 1) { showError('无效选项'); return; }
-                        const targetRole = options[idx];
-                        if (targetRole === currentRole) return;
-                        const { data: userData, error: fetchError } = await supabase.from('profiles').select('user_tag').eq('user_number', userId).single();
-                        if (fetchError) { showError('获取用户信息失败'); return; }
-                        let currentTag = userData.user_tag || '';
-                        let newTag = currentTag;
+                        const target = options[idx];
+                        if (target === currentRole) return;
+                        const { data: u, error: fetchErr } = await supabase.from('profiles').select('user_tag').eq('user_number', uid).single();
+                        if (fetchErr) { showError('获取用户信息失败'); return; }
+                        let tag = u.user_tag || '';
                         let update = {};
-                        if (targetRole === '管理员') { update.is_admin = true; if (!currentTag) newTag = '管理员'; } else { update.is_admin = false; if (currentTag === '管理员') newTag = null; }
-                        update.user_tag = newTag;
+                        if (target === '管理员') {
+                            update.is_admin = true;
+                            if (!tag) tag = '管理员';
+                        } else {
+                            update.is_admin = false;
+                            if (tag === '管理员') tag = null;
+                        }
+                        update.user_tag = tag;
                         try {
-                            const { error } = await supabase.from('profiles').update(update).eq('user_number', userId);
-                            if (error) throw error;
-                            await loadUsers();
-                        } catch (err) { showError('操作失败：' + err.message); }
-                    });
-                });
-
-                // 切换封禁
-                document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
-                    el.addEventListener('click', async function () {
-                        const userId = parseInt(this.dataset.user);
-                        const currentStatus = this.textContent.trim() === '进入主站';
-                        const newStatus = !currentStatus;
-                        try {
-                            const { error } = await supabase.from('profiles').update({ is_banned: newStatus }).eq('user_number', userId);
-                            if (error) throw error;
-                            await loadUsers();
-                        } catch (err) { showError('操作失败：' + err.message); }
-                    });
-                });
-
-                // 切换自由发言
-                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
-                    el.addEventListener('click', async function () {
-                        const userId = parseInt(this.dataset.user);
-                        const currentStatus = this.textContent.trim() === '自由发言';
-                        const newStatus = !currentStatus;
-                        try {
-                            const { error } = await supabase.from('profiles').update({ can_speak: newStatus }).eq('user_number', userId);
-                            if (error) throw error;
-                            await loadUsers();
+                            await updateUserField(uid, update, `✅ 角色已更新为「${target}」`);
                         } catch (err) { showError('操作失败：' + err.message); }
                     });
                 });
@@ -948,8 +928,8 @@
                 if (count === 0) { batchBar.classList.remove('show'); return; }
                 batchBar.classList.add('show');
                 batchInfo.textContent = `已选 ${count} 位用户`;
-                const selectedIds = Array.from(checked).map(cb => parseInt(cb.dataset.user));
-                batchBar.dataset.selected = JSON.stringify(selectedIds);
+                const ids = Array.from(checked).map(cb => parseInt(cb.dataset.user));
+                batchBar.dataset.selected = JSON.stringify(ids);
             }
 
             async function batchAction(action, actionName, updateObj) {
@@ -970,12 +950,14 @@
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
                 try {
-                    const { data: users, error: fetchError } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
-                    if (fetchError) throw fetchError;
+                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
                     for (const u of users) {
-                        let newTag = u.user_tag || '';
-                        if (!newTag) newTag = '管理员';
-                        await supabase.from('profiles').update({ is_admin: true, user_tag: newTag }).eq('user_number', u.user_number);
+                        let tag = u.user_tag || '';
+                        if (!tag) tag = '管理员';
+                        await supabase.from('profiles')
+                            .update({ is_admin: true, user_tag: tag })
+                            .eq('user_number', u.user_number);
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
                     await loadUsers();
@@ -986,12 +968,14 @@
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
                 try {
-                    const { data: users, error: fetchError } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
-                    if (fetchError) throw fetchError;
+                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
                     for (const u of users) {
-                        let newTag = u.user_tag || '';
-                        if (newTag === '管理员') newTag = null;
-                        await supabase.from('profiles').update({ is_admin: false, user_tag: newTag }).eq('user_number', u.user_number);
+                        let tag = u.user_tag || '';
+                        if (tag === '管理员') tag = null;
+                        await supabase.from('profiles')
+                            .update({ is_admin: false, user_tag: tag })
+                            .eq('user_number', u.user_number);
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
                     await loadUsers();
