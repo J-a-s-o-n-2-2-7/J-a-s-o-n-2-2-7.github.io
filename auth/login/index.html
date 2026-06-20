@@ -7,6 +7,7 @@
     <title>登录 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
+        /* 样式完全不变，省略 */
         * {
             margin: 0;
             padding: 0;
@@ -301,14 +302,35 @@
                     return;
                 }
 
-                const { error } = await sb.auth.signInWithPassword({ email, password });
+                // ★★★ 修改点：登录时获取 data（用户信息）★★★
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
                 if (error) {
-                    // 统一提示账号或密码错误
                     loginMsg.innerHTML = '<div class="message error">用户名或密码错误</div>';
                     generateCaptcha();
                     document.getElementById('captchaInput').value = '';
                 } else {
+                    // ★★★ 新增：封禁检查 ★★★
+                    try {
+                        const { data: profile, error: profileError } = await sb
+                            .from('profiles')
+                            .select('is_banned')
+                            .eq('id', data.user.id)
+                            .single();
+
+                        if (profile && profile.is_banned === true) {
+                            // 强制登出
+                            await sb.auth.signOut();
+                            loginMsg.innerHTML = '<div class="message error">账号已被封禁，请联系管理员</div>';
+                            generateCaptcha();
+                            document.getElementById('captchaInput').value = '';
+                            return;
+                        }
+                    } catch (checkErr) {
+                        // 查询失败，记录日志但放行（避免误封）
+                        console.warn('封禁检查失败，放行登录:', checkErr);
+                    }
+
                     loginMsg.innerHTML = '<div class="message success">登录成功</div>';
                     setTimeout(() => {
                         window.location.href = '/';

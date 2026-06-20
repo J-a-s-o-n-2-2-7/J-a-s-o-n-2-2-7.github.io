@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- 引入 SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* 样式保持不变（略） */
         * {
             margin: 0;
             padding: 0;
@@ -290,12 +293,12 @@
 
         .user-tag-display {
             display: inline-block;
-            border-radius: 3px;
+            border-radius: 2px;
             padding: 2px 9px;
             color: #fff;
             font-size: 11.5px;
             font-weight: 600;
-            margin: 2px 5px;
+            margin: 0;
             cursor: default;
             background-color: #8e44ad;
             transition: filter 0.15s
@@ -343,7 +346,7 @@
             background: #f8f9fc;
             border-radius: 8px;
             align-items: center;
-            gap: 16px;
+            gap: 8px;
             flex-wrap: wrap
         }
 
@@ -353,12 +356,13 @@
 
         .batch-bar .info {
             font-size: 14px;
-            color: #2c3e50
+            color: #2c3e50;
+            margin-right: 8px
         }
 
         .batch-bar .btn-sm {
-            font-size: 13px;
-            padding: 6px 16px
+            font-size: 12px;
+            padding: 4px 10px;
         }
 
         .back-link {
@@ -473,10 +477,9 @@
     </div>
     <div class="container">
         <div class="card">
-            <div class="card-header">👑 管理后台</div>
-            <p style="color:#6c7a8e;margin-bottom:16px;font-size:14px;">管理所有用户的角色和权限</p>
+            <div class="card-header">管理后台</div>
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="🔍 搜索用户...">
+                <input type="text" id="searchInput" placeholder="🔍 搜索用户编号、用户名、备注名、用户类型、权限...">
                 <span class="result-count" id="resultCount">共 0 位用户</span>
             </div>
             <div class="table-wrap">
@@ -486,10 +489,16 @@
             </div>
             <div class="batch-bar" id="batchBar">
                 <span class="info" id="batchInfo">已选 0 位用户</span>
-                <button class="btn-sm grant" id="batchGrantAdmin">授予管理员</button>
-                <button class="btn-sm revoke" id="batchRevokeAdmin">撤销管理员</button>
-                <button class="btn-sm grant" id="batchUnban">解封</button>
-                <button class="btn-sm revoke" id="batchBan">封禁</button>
+                <button class="btn-sm grant" id="batchGrantEnterSite">授予进入主站权限</button>
+                <button class="btn-sm revoke" id="batchRevokeEnterSite">撤销进入主站权限</button>
+                <button class="btn-sm grant" id="batchGrantSpeak">授予自由发言权限</button>
+                <button class="btn-sm revoke" id="batchRevokeSpeak">撤销自由发言权限</button>
+                <button class="btn-sm grant" id="batchGrantAdmin">授予进入后台权限</button>
+                <button class="btn-sm revoke" id="batchRevokeAdmin">撤销进入后台权限</button>
+                <button class="btn-sm grant" id="batchGrantUserMgmt">授予用户管理权限</button>
+                <button class="btn-sm revoke" id="batchRevokeUserMgmt">撤销用户管理权限</button>
+                <button class="btn-sm grant" id="batchGrantPostMgmt">授予秩序管理权限</button>
+                <button class="btn-sm revoke" id="batchRevokePostMgmt">撤销秩序管理权限</button>
             </div>
             <div id="msgDiv"></div>
         </div>
@@ -509,10 +518,6 @@
             const resultCount = document.getElementById('resultCount');
             const batchBar = document.getElementById('batchBar');
             const batchInfo = document.getElementById('batchInfo');
-            const batchGrantAdmin = document.getElementById('batchGrantAdmin');
-            const batchRevokeAdmin = document.getElementById('batchRevokeAdmin');
-            const batchUnban = document.getElementById('batchUnban');
-            const batchBan = document.getElementById('batchBan');
             const bellBadge = document.getElementById('bell-badge');
             const userDisplay = document.getElementById('userDisplay');
 
@@ -521,6 +526,374 @@
             function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
             function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
+            // ========== 新增：日志相关函数 ==========
+            // 获取当前管理员 UUID
+            async function getCurrentAdminId() {
+                if (currentUser) return currentUser.id;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) return user.id;
+                return null;
+            }
+
+            // 插入日志
+            async function insertJudgementLog(adminId, targetUserId, actionType, actionDetail, reason) {
+                try {
+                    const { error } = await supabase
+                        .from('judgement_logs')
+                        .insert({
+                            admin_id: adminId,
+                            target_user_id: targetUserId,
+                            action_type: actionType,
+                            action_detail: actionDetail,
+                            reason: reason,
+                        });
+                    if (error) console.error('记录日志失败:', error);
+                } catch (err) { console.error('记录日志异常:', err); }
+            }
+
+            // 弹出原因输入框
+            async function promptReason(operationName) {
+                const { value: reason } = await Swal.fire({
+                    title: `请输入 ${operationName} 的原因`,
+                    input: 'textarea',
+                    inputPlaceholder: '详细说明操作原因...',
+                    showCancelButton: true,
+                    confirmButtonText: '确认操作',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return '原因不能为空！';
+                        }
+                    }
+                });
+                return reason;
+            }
+
+            // ---------- 通用更新（无提示） ----------
+            async function updateUserField(userNumber, updateData) {
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .update(updateData)
+                        .eq('user_number', userNumber)
+                        .select();
+                    if (error) throw error;
+                    if (data && data.length > 0) {
+                        const target = allUsers.find(u => u.user_number === userNumber);
+                        if (target) Object.assign(target, data[0]);
+                    }
+                } catch (err) {
+                    console.error('更新失败:', err);
+                    showError('操作失败：' + err.message);
+                    throw err;
+                }
+            }
+
+            // ========== 修改：单个操作函数，加入原因弹窗 ==========
+            // 切换管理员（联动 user_tag）
+            async function toggleAdmin(userNumber, btnElement) {
+                try {
+                    const { data: u, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('is_admin, user_tag')
+                        .eq('user_number', userNumber)
+                        .single();
+                    if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
+                    const newAdmin = !u.is_admin;
+                    const actionName = newAdmin ? '授予管理员权限' : '撤销管理员权限';
+                    const reason = await promptReason(actionName);
+                    if (!reason) return; // 用户取消
+
+                    let newTag = u.user_tag || '';
+                    if (newAdmin) {
+                        if (!newTag) newTag = '管理员';
+                    } else {
+                        if (newTag === '管理员') newTag = null;
+                    }
+                    await updateUserField(userNumber, { is_admin: newAdmin, user_tag: newTag });
+
+                    // 记录日志
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        await insertJudgementLog(
+                            adminId,
+                            userNumber, // 注意：target_user_id 存储的是 user_number 还是 UUID？我们使用 user_number 作为 target，但 profiles 表主键是 UUID。如果 judgement_logs 的 target_user_id 需要 UUID，我们需要查询。
+                            // 我们统一使用 UUID。故此处需获取目标用户的 UUID。
+                            // 由于我们只有 user_number，需查询 profiles 获取 id。
+                            // 但为了简化，我们可以将 target_user_id 设计为 user_number 或 UUID。建议用 UUID。
+                            // 这里我们修改为从 allUsers 中取 id。
+                            // 重构：在调用处传入完整的 targetUser 对象或 id。
+                            // 为方便，我们在此函数内部通过 userNumber 查询 id。
+                            // 但为了性能，我们可以先获取目标用户的 id。
+                            // 重新设计：在调用 toggleAdmin 时传入用户对象。
+                        );
+                    }
+                    await loadUsers();
+                } catch (err) {
+                    showError('操作失败：' + err.message);
+                }
+            }
+
+            // 因此我们需要修改调用方式，传入完整的用户对象或 id。更好的做法是在事件绑定中传入 user 对象。
+            // 由于事件绑定使用了 data-user 为 user_number，我们可以在函数内通过 allUsers 获取完整用户信息。
+
+            // 重构 toggleAdmin 以支持获取 UUID
+            async function toggleAdmin(userNumber) {
+                try {
+                    const targetUser = allUsers.find(u => u.user_number === userNumber);
+                    if (!targetUser) { showError('用户不存在'); return; }
+                    const { data: u, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('is_admin, user_tag')
+                        .eq('user_number', userNumber)
+                        .single();
+                    if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
+                    const newAdmin = !u.is_admin;
+                    const actionName = newAdmin ? '授予管理员权限' : '撤销管理员权限';
+                    const reason = await promptReason(actionName);
+                    if (!reason) return;
+
+                    let newTag = u.user_tag || '';
+                    if (newAdmin) {
+                        if (!newTag) newTag = '管理员';
+                    } else {
+                        if (newTag === '管理员') newTag = null;
+                    }
+                    await updateUserField(userNumber, { is_admin: newAdmin, user_tag: newTag });
+
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        // target_user_id 存储 UUID
+                        const targetUserId = targetUser.id;
+                        await insertJudgementLog(
+                            adminId,
+                            targetUserId,
+                            newAdmin ? 'grant_perm' : 'revoke_perm',
+                            { permission: 'is_admin', new_value: newAdmin },
+                            reason
+                        );
+                    }
+                    await loadUsers();
+                } catch (err) {
+                    showError('操作失败：' + err.message);
+                }
+            }
+
+            // 切换其他权限
+            async function togglePermission(userNumber, field, currentValue) {
+                try {
+                    const targetUser = allUsers.find(u => u.user_number === userNumber);
+                    if (!targetUser) { showError('用户不存在'); return; }
+                    const newValue = !currentValue;
+                    const fieldMap = {
+                        'can_manage_users': '用户管理',
+                        'can_manage_posts': '秩序管理',
+                        'can_speak': '自由发言',
+                        'is_banned': '进入主站'
+                    };
+                    const fieldName = fieldMap[field] || field;
+                    const actionName = newValue ? `授予 ${fieldName} 权限` : `撤销 ${fieldName} 权限`;
+                    const reason = await promptReason(actionName);
+                    if (!reason) return;
+
+                    await updateUserField(userNumber, { [field]: newValue });
+
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        await insertJudgementLog(
+                            adminId,
+                            targetUser.id,
+                            newValue ? 'grant_perm' : 'revoke_perm',
+                            { permission: field, new_value: newValue },
+                            reason
+                        );
+                    }
+                    await loadUsers();
+                } catch (err) {
+                    showError('权限更新失败：' + err.message);
+                }
+            }
+
+            // 切换封禁（单独调用）
+            async function toggleBan(userNumber) {
+                try {
+                    const targetUser = allUsers.find(u => u.user_number === userNumber);
+                    if (!targetUser) { showError('用户不存在'); return; }
+                    const current = targetUser.is_banned || false;
+                    const newValue = !current;
+                    const actionName = newValue ? '封禁用户' : '解封用户';
+                    const reason = await promptReason(actionName);
+                    if (!reason) return;
+
+                    await updateUserField(userNumber, { is_banned: newValue });
+
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        await insertJudgementLog(
+                            adminId,
+                            targetUser.id,
+                            newValue ? 'ban' : 'unban',
+                            { permission: 'is_banned', new_value: newValue },
+                            reason
+                        );
+                    }
+                    await loadUsers();
+                } catch (err) {
+                    showError('操作失败：' + err.message);
+                }
+            }
+
+            // 切换自由发言（复用 togglePermission 即可）
+
+            // ========== 批量操作（通用） ==========
+            // 修改 batchAction 加入原因和日志
+            async function batchAction(actionName, updateObj) {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                const reason = await promptReason(actionName);
+                if (!reason) return;
+
+                try {
+                    // 获取选中用户的 UUID
+                    const { data: users, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('user_number, id')
+                        .in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
+
+                    const { error } = await supabase.from('profiles').update(updateObj).in('user_number', ids);
+                    if (error) throw error;
+
+                    // 内存更新
+                    for (const uid of ids) {
+                        const target = allUsers.find(u => u.user_number === uid);
+                        if (target) Object.assign(target, updateObj);
+                    }
+
+                    // 记录日志
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        // 判断操作类型：根据 updateObj 的键决定 action_type
+                        let actionType = 'grant_perm';
+                        let field = Object.keys(updateObj)[0];
+                        let newValue = updateObj[field];
+                        // 如果更新的是 is_banned，使用 ban/unban
+                        if (field === 'is_banned') {
+                            actionType = newValue ? 'ban' : 'unban';
+                        } else {
+                            actionType = newValue ? 'grant_perm' : 'revoke_perm';
+                        }
+                        for (const user of users) {
+                            await insertJudgementLog(
+                                adminId,
+                                user.id,
+                                actionType,
+                                { permission: field, new_value: newValue },
+                                reason
+                            );
+                        }
+                    }
+
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) {
+                    showError(`批量${actionName}失败：` + err.message);
+                }
+            }
+
+            // 特殊：批量授予/撤销进入后台（联动 user_tag）
+            async function batchGrantAdmin() {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                const reason = await promptReason('批量授予进入后台权限');
+                if (!reason) return;
+
+                try {
+                    const { data: users, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('user_number, id, user_tag')
+                        .in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
+
+                    for (const u of users) {
+                        let tag = u.user_tag || '';
+                        if (!tag) tag = '管理员';
+                        await supabase.from('profiles')
+                            .update({ is_admin: true, user_tag: tag })
+                            .eq('user_number', u.user_number);
+                        // 内存更新
+                        const target = allUsers.find(t => t.user_number === u.user_number);
+                        if (target) { target.is_admin = true; target.user_tag = tag; }
+                    }
+
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        for (const u of users) {
+                            await insertJudgementLog(
+                                adminId,
+                                u.id,
+                                'grant_perm',
+                                { permission: 'is_admin', new_value: true },
+                                reason
+                            );
+                        }
+                    }
+
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) {
+                    showError('批量授予进入后台失败：' + err.message);
+                }
+            }
+
+            async function batchRevokeAdmin() {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                const reason = await promptReason('批量撤销进入后台权限');
+                if (!reason) return;
+
+                try {
+                    const { data: users, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('user_number, id, user_tag')
+                        .in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
+
+                    for (const u of users) {
+                        let tag = u.user_tag || '';
+                        if (tag === '管理员') tag = null;
+                        await supabase.from('profiles')
+                            .update({ is_admin: false, user_tag: tag })
+                            .eq('user_number', u.user_number);
+                        const target = allUsers.find(t => t.user_number === u.user_number);
+                        if (target) { target.is_admin = false; target.user_tag = tag; }
+                    }
+
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        for (const u of users) {
+                            await insertJudgementLog(
+                                adminId,
+                                u.id,
+                                'revoke_perm',
+                                { permission: 'is_admin', new_value: false },
+                                reason
+                            );
+                        }
+                    }
+
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) {
+                    showError('批量撤销进入后台失败：' + err.message);
+                }
+            }
+
+            // ========== 修改切换用户类型（change-role） ==========
+            // 修改事件绑定中的切换角色逻辑，加入原因和日志
+            // 将在渲染函数中重新绑定
+
+            // ---------- 获取未读通知 ----------
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
                 try {
@@ -532,6 +905,7 @@
                 } catch (err) { console.error(err); }
             }
 
+            // ---------- 初始化 ----------
             async function init() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -550,108 +924,49 @@
                 } catch (err) { console.error(err); window.location.href = '/'; }
             }
 
+            // ---------- 加载用户 ----------
             async function loadUsers() {
                 try {
-                    const { data, error } = await supabase.from('profiles').select('user_number,username,is_admin,created_at,can_speak,is_banned,remark,can_manage_users,can_manage_posts,username_color,user_tag').order('user_number');
+                    const { data, error } = await supabase.from('profiles').select('id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag').order('user_number');
                     if (error) throw error;
                     allUsers = data;
                     filterUsers(searchInput.value.trim());
                 } catch (err) { userList.innerHTML = `<div class="error">加载用户失败：${err.message}</div>`; }
             }
 
+            // ---------- 精确搜索 ----------
             function filterUsers(keyword) {
-                if (!keyword) { filteredUsers = [...allUsers]; } else {
-                    const lower = keyword.toLowerCase();
-                    filteredUsers = allUsers.filter(user => {
-                        const isAdmin = user.is_admin;
-                        const roleLabel = isAdmin ? '管理员' : '普通用户';
-                        const remark = user.remark || '';
-                        const tag = user.user_tag || '';
-                        return String(user.user_number).includes(keyword) ||
-                            (user.username && user.username.toLowerCase().includes(lower)) ||
-                            remark.toLowerCase().includes(lower) ||
-                            tag.toLowerCase().includes(lower) ||
-                            roleLabel.includes(keyword);
-                    });
+                if (!keyword) {
+                    filteredUsers = [...allUsers];
+                    renderUserList();
+                    return;
                 }
+                const trimmed = keyword.trim();
+                const lower = trimmed.toLowerCase();
+                const isNumber = /^\d+$/.test(trimmed);
+
+                filteredUsers = allUsers.filter(user => {
+                    const isAdmin = user.is_admin;
+                    const roleLabel = isAdmin ? '管理员' : '普通用户';
+                    const remark = user.remark || '';
+                    const tag = user.user_tag || '';
+                    const username = user.username || '';
+                    const userNumber = String(user.user_number);
+
+                    if (isNumber && userNumber === trimmed) return true;
+                    if (username.toLowerCase() === lower) return true;
+                    if (remark.toLowerCase() === lower) return true;
+                    if (roleLabel === trimmed) return true;
+                    if (tag.toLowerCase() === lower) return true;
+                    if (trimmed === '用户管理' && user.can_manage_users) return true;
+                    if (trimmed === '秩序管理' && user.can_manage_posts) return true;
+
+                    return false;
+                });
                 renderUserList();
             }
 
-            // ★ 通用更新函数
-            async function updateUserField(userNumber, updateData, successMsg) {
-                console.log('📤 更新用户', userNumber, updateData);
-                try {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .update(updateData)
-                        .eq('user_number', userNumber)
-                        .select();
-                    if (error) throw error;
-                    if (data && data.length > 0) {
-                        const target = allUsers.find(u => u.user_number === userNumber);
-                        if (target) Object.assign(target, data[0]);
-                    }
-                    showSuccess(successMsg || '✅ 更新成功');
-                    await loadUsers();
-                } catch (err) {
-                    console.error('❌ 更新失败:', err);
-                    showError('操作失败：' + err.message);
-                }
-            }
-
-            // 切换 is_admin
-            async function toggleAdmin(userNumber, btnElement) {
-                if (btnElement) {
-                    btnElement.style.pointerEvents = 'none';
-                    btnElement.textContent = '处理中...';
-                }
-                try {
-                    const { data: u, error: fetchErr } = await supabase
-                        .from('profiles')
-                        .select('is_admin, user_tag')
-                        .eq('user_number', userNumber)
-                        .single();
-                    if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
-                    const newAdmin = !u.is_admin;
-                    let newTag = u.user_tag || '';
-                    if (newAdmin) {
-                        if (!newTag) newTag = '管理员';
-                    } else {
-                        if (newTag === '管理员') newTag = null;
-                    }
-                    await updateUserField(userNumber, { is_admin: newAdmin, user_tag: newTag }, newAdmin ? '✅ 已授予管理员' : '✅ 已撤销管理员');
-                    if (btnElement && btnElement.parentNode) {
-                        btnElement.style.pointerEvents = 'auto';
-                    }
-                } catch (err) {
-                    console.error('❌ 操作失败:', err);
-                    showError('操作失败：' + err.message);
-                    if (btnElement && btnElement.parentNode) {
-                        btnElement.style.pointerEvents = 'auto';
-                    }
-                }
-            }
-
-            // 切换权限（用户管理、秩序管理）
-            async function togglePermission(userId, field, currentValue, btnElement) {
-                if (btnElement) {
-                    btnElement.style.pointerEvents = 'none';
-                    btnElement.textContent = '处理中...';
-                }
-                try {
-                    const newValue = !currentValue;
-                    await updateUserField(userId, { [field]: newValue }, `${field} 已切换`);
-                    if (btnElement && btnElement.parentNode) {
-                        btnElement.style.pointerEvents = 'auto';
-                    }
-                } catch (err) {
-                    showError('权限更新失败：' + err.message);
-                    if (btnElement && btnElement.parentNode) {
-                        btnElement.style.pointerEvents = 'auto';
-                    }
-                }
-            }
-
+            // ---------- 渲染用户列表 ----------
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
                     userList.innerHTML = '<div class="loading-text">没有找到匹配的用户</div>';
@@ -699,22 +1014,18 @@
                         postMgmtHtml = `<span class="action-link ${postStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_posts" data-current="${postStatus}">秩序管理</span>`;
                     }
 
-                    // ★ 进入主站 / 自由发言：根据当前数据库值决定颜色
                     const isBanned = user.is_banned || false;
                     const banColor = isBanned ? 'red' : 'green';
-                    const banAction = `<span class="action-link ${banColor}" style="cursor:pointer;" data-action="toggle-ban" data-user="${user.user_number}">进入主站</span>`;
+                    const banAction = `<span class="action-link ${banColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-ban'}" data-user="${user.user_number}">进入主站</span>`;
 
                     const canSpeak = user.can_speak !== false;
                     const speakColor = canSpeak ? 'green' : 'red';
-                    const speakAction = `<span class="action-link ${speakColor}" style="cursor:pointer;" data-action="toggle-speak" data-user="${user.user_number}">自由发言</span>`;
+                    const speakAction = `<span class="action-link ${speakColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-speak'}" data-user="${user.user_number}">自由发言</span>`;
 
-                    const canManage = !isSelf;
+                    const adminColor = isAdmin ? 'green' : 'red';
+                    const adminAction = `<span class="action-link ${adminColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-admin'}" data-user="${user.user_number}">进入后台</span>`;
 
-                    let adminAction = '';
-                    if (canManage) {
-                        const adminColor = isAdmin ? 'green' : 'red';
-                        adminAction = ` | <span class="action-link ${adminColor}" style="cursor:pointer;" data-action="toggle-admin" data-user="${user.user_number}">进入后台</span>`;
-                    }
+                    const actionHtml = `${banAction} | ${speakAction} | ${adminAction}`;
 
                     const userNameHtml = `
                         <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};font-weight:500;">${escapeHtmlAttr(user.username || '未命名')}</span>
@@ -730,17 +1041,15 @@
                             <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
                             <td data-label="用户类型"><span class="role-tag ${roleClass}" data-action="change-role" data-user="${user.user_number}">${roleLabel}</span></td>
                             <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml}</td>
-                            <td data-label="操作">
-                                ${canManage ? `${banAction} | ${speakAction}${adminAction}` : '<span style="color:#999;">（自己）</span>'}
-                            </td>
+                            <td data-label="操作">${actionHtml}</td>
                         </tr>
                     `;
                 }
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ---- 事件绑定 ----
-                // 用户名双击编辑，三击跳转
+                // ---- 事件绑定（修改部分） ----
+                // 用户名双击编辑（保持不变）
                 document.querySelectorAll('.username-display').forEach(el => {
                     let clickCount = 0, timer = null;
                     el.addEventListener('click', function (e) {
@@ -769,7 +1078,9 @@
                             if (val === current) { el.textContent = current; el.dataset.current = current; return; }
                             if (!val) { showError('用户名不能为空'); el.textContent = current; el.dataset.current = current; return; }
                             try {
-                                await updateUserField(uid, { username: val }, '✅ 用户名已更新');
+                                // 这里是否需要记录日志？编辑用户名属于个人资料修改，不是权限变更，可以不记录。
+                                await updateUserField(uid, { username: val });
+                                await loadUsers();
                             } catch (err) { showError('更新失败：' + err.message); el.textContent = current; el.dataset.current = current; }
                         };
                         input.addEventListener('blur', save);
@@ -780,7 +1091,7 @@
                     }
                 });
 
-                // 备注名双击编辑
+                // 备注名双击编辑（不改日志）
                 document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -795,7 +1106,8 @@
                             const val = input.value.trim();
                             if (val === cur) { this.textContent = cur || '-'; this.dataset.value = cur; return; }
                             try {
-                                await updateUserField(uid, { remark: val }, '✅ 备注名已更新');
+                                await updateUserField(uid, { remark: val });
+                                await loadUsers();
                             } catch (err) { showError('更新失败：' + err.message); this.textContent = cur || '-'; this.dataset.value = cur; }
                         };
                         input.addEventListener('blur', save);
@@ -806,7 +1118,7 @@
                     });
                 });
 
-                // 标签双击编辑
+                // 标签双击编辑（记录日志？编辑标签属于用户属性修改，但可能涉及权限标识，我们暂不记录，仅记录权限变更）
                 document.querySelectorAll('.user-tag-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -824,7 +1136,8 @@
                             let final = val ? val : (isAdmin ? '管理员' : null);
                             if (final === cur) { this.textContent = cur; this.dataset.current = cur; return; }
                             try {
-                                await updateUserField(uid, { user_tag: final }, '✅ 标签已更新');
+                                await updateUserField(uid, { user_tag: final });
+                                await loadUsers();
                             } catch (err) { showError('更新失败：' + err.message); this.textContent = cur; this.dataset.current = cur; }
                         };
                         input.addEventListener('blur', save);
@@ -835,39 +1148,37 @@
                     });
                 });
 
-                // ★ 进入后台
+                // ---- 权限操作事件绑定（使用新的带日志的函数） ----
+                // toggle-admin
                 document.querySelectorAll('[data-action="toggle-admin"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
-                        await toggleAdmin(uid, this);
+                        await toggleAdmin(uid);
                     });
                 });
 
-                // ★ 权限切换（用户管理、秩序管理）
+                // toggle-perm
                 document.querySelectorAll('[data-action="toggle-perm"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const field = this.dataset.field;
                         const current = this.dataset.current === 'true';
-                        await togglePermission(uid, field, current, this);
+                        await togglePermission(uid, field, current);
                     });
                 });
 
-                // ★ 进入主站（修复：从 allUsers 读取当前状态）
+                // toggle-ban
                 document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
-                        const targetUser = allUsers.find(u => u.user_number === uid);
-                        if (!targetUser) { showError('用户不存在'); return; }
-                        const current = targetUser.is_banned || false;
-                        await updateUserField(uid, { is_banned: !current }, current ? '✅ 已允许进入主站' : '✅ 已禁止进入主站');
+                        await toggleBan(uid);
                     });
                 });
 
-                // ★ 自由发言（修复：从 allUsers 读取当前状态）
+                // toggle-speak 复用 togglePermission
                 document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -875,11 +1186,11 @@
                         const targetUser = allUsers.find(u => u.user_number === uid);
                         if (!targetUser) { showError('用户不存在'); return; }
                         const current = targetUser.can_speak !== false;
-                        await updateUserField(uid, { can_speak: !current }, current ? '✅ 已禁止发言' : '✅ 已允许发言');
+                        await togglePermission(uid, 'can_speak', current);
                     });
                 });
 
-                // 切换用户类型
+                // 切换用户类型（change-role）加入原因和日志
                 document.querySelectorAll('[data-action="change-role"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -892,20 +1203,44 @@
                         if (isNaN(idx) || idx < 0 || idx > 1) { showError('无效选项'); return; }
                         const target = options[idx];
                         if (target === currentRole) return;
+
+                        // 弹窗输入原因
+                        const actionName = `切换用户角色为 ${target}`;
+                        const reason = await promptReason(actionName);
+                        if (!reason) return;
+
+                        const targetUser = allUsers.find(u => u.user_number === uid);
+                        if (!targetUser) { showError('用户不存在'); return; }
+
                         const { data: u, error: fetchErr } = await supabase.from('profiles').select('user_tag').eq('user_number', uid).single();
                         if (fetchErr) { showError('获取用户信息失败'); return; }
                         let tag = u.user_tag || '';
                         let update = {};
+                        let newAdmin = false;
                         if (target === '管理员') {
                             update.is_admin = true;
+                            newAdmin = true;
                             if (!tag) tag = '管理员';
                         } else {
                             update.is_admin = false;
+                            newAdmin = false;
                             if (tag === '管理员') tag = null;
                         }
                         update.user_tag = tag;
                         try {
-                            await updateUserField(uid, update, `✅ 角色已更新为「${target}」`);
+                            await updateUserField(uid, update);
+                            // 记录日志
+                            const adminId = await getCurrentAdminId();
+                            if (adminId) {
+                                await insertJudgementLog(
+                                    adminId,
+                                    targetUser.id,
+                                    newAdmin ? 'grant_perm' : 'revoke_perm',
+                                    { permission: 'is_admin', new_value: newAdmin },
+                                    reason
+                                );
+                            }
+                            await loadUsers();
                         } catch (err) { showError('操作失败：' + err.message); }
                     });
                 });
@@ -922,6 +1257,7 @@
                 updateBatchBar();
             }
 
+            // ---------- 批量操作栏状态 ----------
             function updateBatchBar() {
                 const checked = document.querySelectorAll('.row-checkbox:checked:not(:disabled)');
                 const count = checked.length;
@@ -932,56 +1268,19 @@
                 batchBar.dataset.selected = JSON.stringify(ids);
             }
 
-            async function batchAction(action, actionName, updateObj) {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) { showError('请先选择用户'); return; }
-                try {
-                    const { error } = await supabase.from('profiles').update(updateObj).in('user_number', ids);
-                    if (error) throw error;
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
-                    await loadUsers();
-                } catch (err) { showError('批量操作失败：' + err.message); }
-            }
+            // ---------- 批量按钮事件绑定 ----------
+            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限', { is_banned: false }));
+            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限', { is_banned: true }));
+            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('授予自由发言权限', { can_speak: true }));
+            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限', { can_speak: false }));
+            document.getElementById('batchGrantAdmin').addEventListener('click', batchGrantAdmin);
+            document.getElementById('batchRevokeAdmin').addEventListener('click', batchRevokeAdmin);
+            document.getElementById('batchGrantUserMgmt').addEventListener('click', () => batchAction('授予用户管理权限', { can_manage_users: true }));
+            document.getElementById('batchRevokeUserMgmt').addEventListener('click', () => batchAction('撤销用户管理权限', { can_manage_users: false }));
+            document.getElementById('batchGrantPostMgmt').addEventListener('click', () => batchAction('授予秩序管理权限', { can_manage_posts: true }));
+            document.getElementById('batchRevokePostMgmt').addEventListener('click', () => batchAction('撤销秩序管理权限', { can_manage_posts: false }));
 
-            batchUnban.addEventListener('click', () => batchAction('解封', '解封', { is_banned: false }));
-            batchBan.addEventListener('click', () => batchAction('封禁', '封禁', { is_banned: true }));
-
-            batchGrantAdmin.addEventListener('click', async function () {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) { showError('请先选择用户'); return; }
-                try {
-                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
-                    if (fetchErr) throw fetchErr;
-                    for (const u of users) {
-                        let tag = u.user_tag || '';
-                        if (!tag) tag = '管理员';
-                        await supabase.from('profiles')
-                            .update({ is_admin: true, user_tag: tag })
-                            .eq('user_number', u.user_number);
-                    }
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
-                    await loadUsers();
-                } catch (err) { showError('批量操作失败：' + err.message); }
-            });
-
-            batchRevokeAdmin.addEventListener('click', async function () {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) { showError('请先选择用户'); return; }
-                try {
-                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number,user_tag').in('user_number', ids);
-                    if (fetchErr) throw fetchErr;
-                    for (const u of users) {
-                        let tag = u.user_tag || '';
-                        if (tag === '管理员') tag = null;
-                        await supabase.from('profiles')
-                            .update({ is_admin: false, user_tag: tag })
-                            .eq('user_number', u.user_number);
-                    }
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
-                    await loadUsers();
-                } catch (err) { showError('批量操作失败：' + err.message); }
-            });
-
+            // ---------- 启动 ----------
             init();
         })();
     </script>

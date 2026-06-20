@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>陶片放逐 · Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        /* ========== 完整模板样式（不变） ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
+        }
+
+        .bell-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .bell-icon:hover {
+            color: #e74c3c;
+        }
+
+        .bell-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .bell-icon sup {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+        }
+
+        .main-layout {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .nav-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 64px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 16px 0;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 150;
+        }
+
+        .nav-sidebar:hover {
+            width: 260px;
+        }
+
+        .nav-item,
+        .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover,
+        .group-title:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .group-title {
+            font-weight: 600;
+            color: #5b6e8c;
+            background: #f8f9fc;
+            border-top: 1px solid #e9ecef;
+            margin-top: 8px;
+        }
+
+        .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 8px 0;
+        }
+
+        /* ★ 布局调整：移除右侧边栏，主内容占满 */
+        .content-wrapper {
+            margin-left: 64px;
+            /* 侧边栏占位，主内容撑满 */
+            ;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #e74c3c;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== 日志卡片专用样式 ===== */
+        .log-card {
+            border-left: 4px solid #ccc;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            background: #fafbfc;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .log-card:hover {
+            background: #f0f2f5;
+        }
+
+        .log-card.ban {
+            border-left-color: #e53e3e;
+        }
+
+        .log-card.unban {
+            border-left-color: #38a169;
+        }
+
+        .log-card.grant {
+            border-left-color: #3182ce;
+        }
+
+        .log-card.revoke {
+            border-left-color: #d69e2e;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .log-action {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .log-time {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .log-users {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 6px 0 10px 0;
+        }
+
+        .log-user {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #2c3e50;
+        }
+
+        .log-user img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .log-user .uname {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .log-user .tag {
+            font-size: 0.7rem;
+            background: #e2e8f0;
+            padding: 1px 8px;
+            border-radius: 12px;
+            color: #4a5568;
+        }
+
+        .log-detail {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.92rem;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .log-reason {
+            color: #4a5568;
+            font-size: 0.95rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .log-reason strong {
+            color: #2d3748;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+        }
+
+        #load-more {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #edf2f7;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #2d3748;
+            transition: 0.2s;
+        }
+
+        #load-more:hover {
+            background: #e2e8f0;
+        }
+
+        #load-more:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                position: static;
+            }
+
+            .nav-sidebar {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .nav-sidebar:hover {
+                width: 100%;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+            }
+
+            .nav-text {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== 顶栏 ===== -->
+    <div class="topbar">
+        <div class="logo">✨ Jason227</div>
+        <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
+    </div>
+
+    <!-- ===== 主体布局 ===== -->
+    <div class="main-layout">
+        <!-- 侧边栏（完整保留） -->
+        <div class="nav-sidebar">
+            <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
+            <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
+            <div class="nav-item"><span class="nav-icon">🎓</span><span class="nav-text">网校</span></div>
+            <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">训练题单</span></div>
+            <div class="nav-item"><span class="nav-icon">🏆</span><span class="nav-text">比赛</span></div>
+            <div class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">评测记录</span></div>
+            <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-text">讨论区</span></div>
+            <div class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">文章广场</span></div>
+            <div class="group-title"><span class="nav-icon">➕</span><span class="nav-text">更多功能</span></div>
+            <div class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-text">图片上传</span></div>
+            <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">云剪贴板</span></div>
+            <div class="nav-item"><span class="nav-icon">🎨</span><span class="nav-text">主题商店</span></div>
+            <div class="nav-item"><span class="nav-icon">🏅</span><span class="nav-text">咕值排名</span></div>
+            <div class="nav-item"><span class="nav-icon">📈</span><span class="nav-text">等级分排名</span></div>
+            <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">洛谷有题</span></div>
+            <div class="nav-item"><span class="nav-icon">📩</span><span class="nav-text">工单/反馈</span></div>
+            <div class="divider"></div>
+            <div class="group-title"><span class="nav-icon">🔗</span><span class="nav-text">相关链接</span></div>
+            <div class="nav-item"><span class="nav-icon">❓</span><span class="nav-text">帮助中心</span></div>
+            <div class="nav-item"><span class="nav-icon">📧</span><span class="nav-text">联系我们</span></div>
+            <div class="nav-item"><span class="nav-icon">📜</span><span class="nav-text">社区规则</span></div>
+            <div class="nav-item" style="background:#f0f2f5;color:#e74c3c;"><span class="nav-icon">🗳️</span><span
+                    class="nav-text">陶片放逐</span></div>
+            <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
+        </div>
+
+        <!-- 内容区域（无右侧边栏） -->
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="card">
+                    <div class="card-header">🏛️ 陶片放逐 · 管理日志</div>
+                    <p style="color:#666;margin-bottom:20px;">此处公布近期涉及用户权限变更的管理日志，以提升管理流程透明度。</p>
+                    <div id="logList"></div>
+                    <button id="load-more">加载更多</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
+
+    <script>
+        // ========== 逻辑脚本（与之前完全一致） ==========
+        (function () {
+            const supabase = window.supabase.createClient(
+                'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+            );
+
+            let page = 0;
+            const PAGE_SIZE = 30;
+            let loading = false;
+            let hasMore = true;
+
+            const logList = document.getElementById('logList');
+            const loadMoreBtn = document.getElementById('load-more');
+            const authButtons = document.getElementById('authButtons');
+
+            async function fetchUsers(userIds) {
+                if (!userIds.length) return {};
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, username, avatar, user_tag, is_admin, is_banned')
+                    .in('id', userIds);
+                if (error) {
+                    console.error('获取用户信息失败:', error);
+                    return {};
+                }
+                const map = {};
+                data.forEach(u => map[u.id] = u);
+                return map;
+            }
+
+            function renderLog(log, userMap) {
+                const admin = userMap[log.admin_id] || { username: '已删除', avatar: '', user_tag: '', is_admin: false };
+                const target = userMap[log.target_user_id] || { username: '已删除', avatar: '', user_tag: '', is_admin: false, is_banned: false };
+
+                const typeMap = {
+                    'ban': { class: 'ban', icon: '🔒', label: '用户封禁' },
+                    'unban': { class: 'unban', icon: '🔓', label: '解除封禁' },
+                    'grant_perm': { class: 'grant', icon: '✅', label: '授予权限' },
+                    'revoke_perm': { class: 'revoke', icon: '❌', label: '撤销权限' },
+                };
+                const info = typeMap[log.action_type] || { class: '', icon: '📋', label: log.action_type };
+
+                let detailText = '';
+                if (log.action_detail) {
+                    const d = log.action_detail;
+                    if (log.action_type === 'grant_perm' || log.action_type === 'revoke_perm') {
+                        const permMap = {
+                            'is_admin': '进入后台',
+                            'can_manage_users': '用户管理',
+                            'can_manage_posts': '秩序管理',
+                            'can_speak': '自由发言',
+                            'is_banned': '进入主站',
+                        };
+                        const permName = permMap[d.permission] || d.permission;
+                        detailText = `${d.new_value ? '授予' : '撤销'} ${permName} 权限`;
+                    } else if (log.action_type === 'ban') {
+                        detailText = '撤销 进入主站 权限';
+                    } else if (log.action_type === 'unban') {
+                        detailText = '授予 进入主站 权限';
+                    }
+                }
+
+                const time = new Date(log.created_at).toLocaleString('zh-CN', { hour12: false });
+                const adminColor = admin.is_admin ? '#9b59b6' : '#333';
+                const targetColor = target.is_admin ? '#9b59b6' : '#333';
+
+                return `
+                    <div class="log-card ${info.class}">
+                        <div class="log-header">
+                            <div class="log-action">
+                                <span>${info.icon}</span>
+                                <span>${info.label}</span>
+                            </div>
+                            <span class="log-time">${time}</span>
+                        </div>
+                        <div class="log-users">
+                            <a href="/user/${admin.id}" class="log-user">
+                                <img src="${admin.avatar || 'https://cdn.luogu.com.cn/images/default_avatar.png'}" alt="${admin.username}">
+                                <span class="uname" style="color:${adminColor};">${admin.username}</span>
+                                ${admin.user_tag ? `<span class="tag">${admin.user_tag}</span>` : ''}
+                                ${admin.is_admin ? '<span class="tag" style="background:#805ad5;color:#fff;">管理员</span>' : ''}
+                            </a>
+                            <span style="color:#a0aec0;">→</span>
+                            <a href="/user/${target.id}" class="log-user">
+                                <img src="${target.avatar || 'https://cdn.luogu.com.cn/images/default_avatar.png'}" alt="${target.username}">
+                                <span class="uname" style="color:${targetColor};">${target.username}</span>
+                                ${target.user_tag ? `<span class="tag">${target.user_tag}</span>` : ''}
+                                ${target.is_admin ? '<span class="tag" style="background:#805ad5;color:#fff;">管理员</span>' : ''}
+                                ${target.is_banned ? '<span class="tag" style="background:#e53e3e;color:#fff;">已封禁</span>' : ''}
+                            </a>
+                        </div>
+                        ${detailText ? `<div class="log-detail">${detailText}</div>` : ''}
+                        <div class="log-reason"><strong>原因：</strong>${log.reason || '（无）'}</div>
+                    </div>
+                `;
+            }
+
+            async function loadLogs(append = false) {
+                if (loading || !hasMore) return;
+                loading = true;
+                loadMoreBtn.disabled = true;
+
+                try {
+                    const { data, error } = await supabase
+                        .from('judgement_logs')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+
+                    if (error) throw error;
+
+                    if (!data || data.length === 0) {
+                        hasMore = false;
+                        if (!append) logList.innerHTML = '<div class="empty">暂无管理日志</div>';
+                        return;
+                    }
+
+                    const userIds = new Set();
+                    data.forEach(log => {
+                        userIds.add(log.admin_id);
+                        userIds.add(log.target_user_id);
+                    });
+                    const userMap = await fetchUsers([...userIds]);
+
+                    const html = data.map(log => renderLog(log, userMap)).join('');
+                    if (append) {
+                        logList.insertAdjacentHTML('beforeend', html);
+                    } else {
+                        logList.innerHTML = html;
+                    }
+
+                    page++;
+                    hasMore = data.length === PAGE_SIZE;
+                    if (!hasMore) loadMoreBtn.style.display = 'none';
+                } catch (err) {
+                    console.error('加载日志失败:', err);
+                    if (!append) logList.innerHTML = '<div class="empty">加载失败，请刷新重试</div>';
+                } finally {
+                    loading = false;
+                    loadMoreBtn.disabled = false;
+                }
+            }
+
+            async function updateUserUI() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        const { data: profile, error } = await supabase
+                            .from('profiles')
+                            .select('username, avatar, is_admin')
+                            .eq('id', session.user.id)
+                            .single();
+                        if (error) throw error;
+                        let displayName = profile.username || session.user.email;
+                        let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
+                        if (profile.is_admin) {
+                            html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;">管理员</span>`;
+                        }
+                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                        authButtons.innerHTML = html;
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
+                    } else {
+                        authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                updateUserUI();
+                loadLogs(false);
+                loadMoreBtn.addEventListener('click', () => loadLogs(true));
+            });
+        })();
+    </script>
+</body>
+
+</html>

@@ -10,6 +10,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <!-- markdown-it -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
     <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
@@ -354,7 +355,7 @@
             background: white;
             border: 1px solid #e9ecef;
             border-radius: 16px;
-            padding: 12px 16px;
+            padding: 8px 16px;
             position: relative;
         }
 
@@ -441,71 +442,108 @@
             color: #e74c3c;
         }
 
-        /* 用户标签和角色标签 */
-        .user-tag,
-        .role-tag {
+        .user-tag-display {
             display: inline-block;
-            background: #eee;
-            border-radius: 12px;
-            padding: 0 8px;
-            font-size: 12px;
-            margin-left: 4px;
-            color: #333;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 0;
+            cursor: default;
+            background-color: #8e44ad;
+            transition: filter 0.15s;
         }
 
-        .role-tag {
-            background: #ffd700;
+        .user-tag-display:hover {
+            filter: brightness(0.9);
         }
 
-        /* Markdown 内容样式（全部保留） */
+        /* Markdown 内容样式 */
         .benben-text {
             line-height: 1.6;
-            color: #333;
             word-break: break-word;
-            white-space: pre-wrap;
+            white-space: normal;
         }
 
         .benben-text ul,
         .benben-text ol {
             margin: 0.75em 0 0.75em 1.5em;
             padding-left: 0.5em;
-            border-left: 3px solid #e74c3c;
+        }
+
+        /* 任务列表去除默认圆点及左缩进 */
+        .benben-text ul.contains-task-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-left: 0;          /* 关键：去除继承的 margin-left */
+        }
+
+        .benben-text ul.contains-task-list li.task-list-item {
+            list-style-type: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5em;
+        }
+
+        .benben-text ul.contains-task-list input[type="checkbox"] {
+            margin-top: 0.6em;       /* 微调垂直对齐 */
+            flex-shrink: 0;          /* 防止复选框被压缩 */
         }
 
         .benben-text li {
             margin-bottom: 0.5em;
             line-height: 1.6;
         }
-
-        .benben-text p {
-            margin: 0 0 0 0;
-            line-height: 1.4;
+        
+        .benben-text h1,
+        .benben-text h2 {
+            border-bottom: 1px solid #D8D8D8;
+            margin: 1em 0;
         }
 
-        .benben-text p:last-child {
-            margin-bottom: 0;
+        .benben-text h3,
+        .benben-text h4,
+        .benben-text h5,
+        .benben-text h6 {
+            margin: 1em 0;          /* 标题上下边距，可根据喜好调整 */
+        }
+
+        .benben-text p {
+            margin: 0 0 1em 0;      /* 段落底部边距，保持一致 */
+        }
+
+        .benben-text blockquote p {
+            margin: 0 0 1em 0;      /* 引用块内段落同样 */
         }
 
         .benben-text blockquote {
-            margin: 0.75em 0;
+            margin: 1em 0;          /* 引用块自身上下边距，与段落协调 */
+        }
+
+        .benben-text blockquote {
+            margin: 1em 0;
             padding: 8px 16px;
-            background: #f0f2f5;
-            border-left: 4px solid #e74c3c;
-            color: #555;
+            border-left: 4px solid #EEEEEE;
+            white-space: normal;
+        }
+
+        .benben-text blockquote blockquote {
+            margin-right: -0.01em;   /* 让内层比外层长一点点 */
         }
 
         .benben-text code {
-            background: #f4f4f4;
-            padding: 2px 5px;
+            background: #FAFAFA;
+            padding: 5px 5px;
             border-radius: 4px;
             font-size: 0.9em;
-            color: #d63369;
         }
 
+        /* 普通代码块容器 */
+        
         .benben-text pre {
             background: #FAFAFA;
-            color: #333;
-            padding: 12px;
+            padding: 12px 0;
             border-radius: 8px;
             overflow-x: auto;
             margin: 0.75em 0;
@@ -517,6 +555,216 @@
             color: inherit;
             font-size: 14px;
             white-space: pre-wrap;
+            display: block;
+        }
+
+        /* 带行号的代码块样式 */
+        .code-line {
+            display: flex;
+            align-items: stretch;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 14px;
+            padding: 0 12px;
+        }
+
+        .code-line .line-number {
+            display: inline-block;
+            min-width: 3ch;
+            text-align: right;
+            margin-right: 8px;
+            white-space: nowrap;
+            border-right: 1px solid #D3D4D5;
+            padding-right: 8px;
+            padding: 0 8px 0 0;
+            color: #9D9D9F;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            pointer-events: none;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            z-index: 1;
+        }
+
+        .code-line .code-text {
+            flex: 1;
+            display: inline;
+            white-space: pre-wrap;
+        }
+
+        /* ★ 高亮行背景打到底 */
+        .code-highlight-line {
+            background-color: #f0f0f0;
+        }
+
+        /* 代码块容器（相对定位，用于按钮定位） */
+        .code-block-wrapper {
+            position: relative;
+            margin: 0.75em 0;
+        }
+
+        /* 复制按钮 */
+        .copy-code-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;   /* 半透明背景 */
+            border: none;          /* 无可见边框，但占位 */
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, border-color 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+        }
+        .code-block-wrapper:hover .copy-code-btn {
+            opacity: 1;
+        }
+        .copy-code-btn:hover {
+            background: #DDD;
+            border-color: #ccc;   /* 悬停时显示边框 */
+        }
+        /* 移除之前的 .copy-code-btn.copied::after 样式，因为我们将直接替换内容 */
+
+        .copy-code-btn .svg-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* ===== 复制成功 Toast（右上角，弹性动画） ===== */
+        .swal2-toast-copy {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transform: scale(0.8) translateY(-20px);
+            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-width: 200px;
+            box-sizing: border-box;
+        }
+        .swal2-toast-copy.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 成功图标（对勾动画） */
+        .swal2-icon-success-copy {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        .swal2-icon-success-copy .swal2-success-ring {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: 32px;
+            height: 32px;
+            border: 4px solid rgba(165, 220, 134, 0.3);
+            border-radius: 50%;
+            box-sizing: content-box;
+        }
+        .swal2-icon-success-copy .swal2-success-fix {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 10px;
+            height: 14px;
+            background: #fff;
+            transform: rotate(-45deg);
+            z-index: 1;
+        }
+        .swal2-icon-success-copy .swal2-success-line-tip {
+            position: absolute;
+            top: 13px;
+            left: 4px;
+            width: 10px;
+            height: 4px;
+            background: #a5dc86;
+            transform: rotate(45deg);
+            border-radius: 2px;
+        }
+        .swal2-icon-success-copy .swal2-success-line-long {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 16px;
+            height: 4px;
+            background: #a5dc86;
+            transform: rotate(-45deg);
+            border-radius: 2px;
+        }
+
+        @keyframes animate-success-tip {
+            0% { width: 0; left: 1px; top: 19px; }
+            54% { width: 0; left: 1px; top: 19px; }
+            70% { width: 50px; left: -8px; top: 37px; }
+            84% { width: 17px; left: 21px; top: 48px; }
+            100% { width: 10px; left: 4px; top: 13px; }
+        }
+        @keyframes animate-success-long {
+            0% { width: 0; left: 1px; top: 19px; }
+            65% { width: 0; left: 1px; top: 19px; }
+            84% { width: 55px; left: -5px; top: 15px; }
+            100% { width: 16px; left: 10px; top: 10px; }
+        }
+
+        /* 标题 */
+        .swal2-title-copy {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .benben-text img {
+            max-width: 100%;
+            height: auto;
+            display: block;   /* 避免图片底部出现多余空白 */
+            margin: 0.5em 0;  /* 可选：上下加一点间距 */
+        }
+
+        .benben-text hr {
+            margin: 1em 0;   /* 上下间距与段落保持一致，可调整 */
+        }
+
+        .benben-text pre .code-text::-moz-selection,
+        .benben-text pre .line-number::-moz-selection {
+            background: #E5E5E6;
+            color: inherit;
+        }
+        .benben-text pre .code-text::selection,
+        .benben-text pre .line-number::selection {
+            background: #E5E5E6;
+            color: inherit;
+        }
+        .benben-text pre .code-highlight-line .code-text::-moz-selection {
+            background: #DCDCDD;
+            color: inherit;
+        }
+        .benben-text pre .code-highlight-line .code-text::selection {
+            background: #DCDCDD;
+            color: inherit;
         }
 
         .benben-text table {
@@ -527,21 +775,14 @@
 
         .benben-text th,
         .benben-text td {
-            border: 1px solid #ddd;
+            border: 1px solid #dddddd;
             padding: 8px;
             text-align: left;
         }
 
         .benben-text th {
-            background: #f0f2f5;
-        }
-
-        .benben-text strong {
-            color: #333;
-        }
-
-        .benben-text em {
-            color: #333;
+            background: #F7F7F7;   /* 自定义标题底色 */
+            font-weight: bold;
         }
 
         .benben-text .align-center {
@@ -552,53 +793,93 @@
             text-align: right;
         }
 
-        .benben-text .epigraph {
-            margin: 1em 0;
-            padding: 0.5em 1em;
-            border-left: 4px solid #e74c3c;
-            background: #f9f9f9;
-            font-style: italic;
-        }
-
-        .benben-text .epigraph cite {
+        /* 居中容器内的图片：块级化并水平居中 */
+        .benben-text .align-center img {
             display: block;
-            margin-top: 0.5em;
-            text-align: right;
-            font-style: normal;
-            color: #666;
+            margin: 0.5em auto;
         }
 
+        /* 居右容器内的图片：块级化并靠右 */
+        .benben-text .align-right img {
+            display: block;
+            margin: 0.5em 0 0.5em auto;
+        }
+
+        /* ===== 折叠框：无边框，只保留左侧彩色竖线 ===== */
         .benben-text details {
-            margin: 0.75em 0;
-            padding: 0.5em;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            margin: 1em 0;
+            padding: 8px 16px;
+            border: none;                 /* 去掉四周边框 */
+            border-left: 4px solid #cccccc; /* 只保留左侧竖线，默认灰色 */
+            background: transparent;
         }
 
+        /* 各类别左侧竖线颜色 */
+        .benben-text details.info {
+            border-left-color: #3498DB;
+        }
+        .benben-text details.success {
+            border-left-color: #52C41A;
+        }
+        .benben-text details.warning {
+            border-left-color: #FFC116;
+        }
+        .benben-text details.error {
+            border-left-color: #E74C3C;
+        }
+
+        /* ===== summary：隐藏默认三角，用伪元素在右侧显示 ===== */
         .benben-text summary {
             font-weight: bold;
             cursor: pointer;
             outline: none;
+            display: flex;
+            justify-content: space-between;  /* 标题在左，箭头在右 */
+            align-items: center;
+            list-style: none;               /* 隐藏默认三角（Firefox） */
         }
 
+        /* 隐藏默认三角（Chrome/Safari） */
+        .benben-text summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* 自定义三角形（右侧） */
+        .benben-text summary::after {
+            content: "▶";
+            font-size: 12px;
+            color: #888;
+            transition: transform 0.2s ease;
+            margin-left: 8px;
+            flex-shrink: 0;  /* 防止箭头被压缩 */
+        }
+
+        /* 展开时旋转 90° */
+        .benben-text details[open] summary::after {
+            transform: rotate(90deg);
+        }
+
+        /* 展开后 summary 下边距 */
         .benben-text details[open] summary {
             margin-bottom: 0.5em;
         }
 
-        .benben-text .cute-table table {
-            border-collapse: collapse;
-            width: 100%;
+        /* ===== 标题和三角形颜色跟随类别 ===== */
+        .benben-text details.info summary,
+        .benben-text details.info summary::after {
+            color: #3498DB;
         }
-
-        .benben-text .cute-table th,
-        .benben-text .cute-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
+        .benben-text details.success summary,
+        .benben-text details.success summary::after {
+            color: #52C41A;
         }
-
-        .benben-text iframe {
-            max-width: 100%;
+        .benben-text details.warning summary,
+        .benben-text details.warning summary::after {
+            color: #FFC116;
+        }
+        .benben-text details.error summary,
+        .benben-text details.error summary::after {
+            color: #E74C3C;
         }
 
         .benben-empty,
@@ -769,7 +1050,8 @@
             const loadingSentinel = document.getElementById('loadingSentinel');
 
             const md = window.markdownit({ html: true, linkify: true, typographer: true });
-
+            md.use(window.markdownitTaskLists);
+            
             // ---------- 辅助函数 ----------
             function escapeHtmlAttr(str) {
                 if (!str) return '';
@@ -799,110 +1081,253 @@
                 return div.textContent;
             }
 
-            // ---------- Markdown 渲染核心（完整） ----------
+            // ---------- 洛谷扩展预处理 ----------
             function preprocessLuoguSyntax(text) {
-                text = text.replace(/::::(\w+)\[([^\]]*)\]\{open\}\s*([\s\S]*?)\n:::/gm, (m, t, title, c) => `<details open><summary>${escapeHtmlAttr(title)}</summary>${c}</details>`);
-                text = text.replace(/::::(\w+)\[([^\]]*)\]\s*([\s\S]*?)\n:::/gm, (m, t, title, c) => `<details><summary>${escapeHtmlAttr(title)}</summary>${c}</details>`);
-                text = text.replace(/::::(\w+)\s*([\s\S]*?)\n:::/gm, (m, t, c) => { const titles = { info: 'ℹ️ 提示', success: '✅ 成功', warning: '⚠️ 警告', error: '❌ 错误' }; return `<details><summary>${titles[t] || t}</summary>${c}</details>`; });
-                text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '<div class="align-center">$1</div>');
-                text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, '<div class="align-right">$1</div>');
-                text = text.replace(/:::epigraph\[([^\]]*)\]\s*([\s\S]*?)\n:::/gm, (m, author, c) => `<div class="epigraph">${c}<cite>${escapeHtmlAttr(author)}</cite></div>`);
-                text = text.replace(/::cute-table\{tuack\}\s*\n([\s\S]*?)\n:::/gm, (m, table) => `<div class="cute-table tuack">${table}</div>`);
-                text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) => `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`);
+                // 1. 处理 ![](bilibili:xxx) 格式
+                text = text.replace(/!\[\]\(bilibili:([^)]+)\)/g, (match, param) => {
+                    let bvid = '';
+                    let aid = '';
+                    let extraParams = '';
+
+                    const queryIndex = param.indexOf('?');
+                    let base = param;
+                    if (queryIndex !== -1) {
+                        base = param.substring(0, queryIndex);
+                        extraParams = param.substring(queryIndex);
+                        extraParams = extraParams.replace(/^\?/, '&');
+                    }
+
+                    const lowerBase = base.toLowerCase();
+                    if (lowerBase.startsWith('bv')) {
+                        bvid = base;
+                    } else if (lowerBase.startsWith('av')) {
+                        aid = base.substring(2);
+                    } else if (/^\d+$/.test(base)) {
+                        aid = base;
+                    } else {
+                        return match;
+                    }
+
+                    let embedUrl = '//player.bilibili.com/player.html?';
+                    if (bvid) embedUrl += `bvid=${bvid}`;
+                    else if (aid) embedUrl += `aid=${aid}`;
+                    if (extraParams) embedUrl += extraParams;
+                    if (!extraParams.includes('page=')) embedUrl += '&page=1';
+
+                    return `<iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
+                });
+
+                // 2. 原有 [bilibili]BVxxx[/bilibili] 格式（保留兼容）
+                text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =>
+                    `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
+                );
+
+                // 3. align 语法
+                text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_CENTER%%$1%%ALIGN_END%%');
+                text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_RIGHT%%$1%%ALIGN_END%%');
+
                 return text;
             }
 
-            function postProcessTableMerge(html) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const tables = doc.querySelectorAll('table');
-                for (const table of tables) {
-                    const rows = Array.from(table.querySelectorAll('tr'));
-                    const occupied = new Set();
-                    for (let i = 0; i < rows.length; i++) {
-                        const cells = Array.from(rows[i].querySelectorAll('th, td'));
-                        for (let j = 0; j < cells.length; j++) {
-                            if (occupied.has(`${i},${j}`)) continue;
-                            const cell = cells[j];
-                            const text = cell.textContent.trim();
-                            if (text === '^') {
-                                let rowspan = 1, k = i - 1;
-                                while (k >= 0 && !occupied.has(`${k},${j}`)) {
-                                    const prevRow = rows[k];
-                                    const prevCells = Array.from(prevRow.querySelectorAll('th, td'));
-                                    if (j < prevCells.length && prevCells[j].textContent.trim() === '^') { k--; rowspan++; } else break;
+            function parseNestedDetails(text) {
+                const lines = text.split('\n');
+                const output = [];
+                const stack = [];
+                const roots = [];
+                let i = 0;
+
+                while (i < lines.length) {
+                    const rawLine = lines[i];
+                    const trimmed = rawLine.trim();
+
+                    // 检查是否为开始标记：以至少3个冒号开头，且冒号后跟字母数字（类型），可能有 [标题] 和 {open}
+                    let startMatch = null;
+                    if (trimmed.startsWith(':::')) {
+                        // 提取冒号数量
+                        let colonsCount = 0;
+                        while (colonsCount < trimmed.length && trimmed[colonsCount] === ':') colonsCount++;
+                        if (colonsCount >= 3) {
+                            const rest = trimmed.slice(colonsCount).trim();
+                            // 匹配类型和可能的 [标题] 和 {open}
+                            const typeMatch = rest.match(/^([a-zA-Z0-9]+)/);
+                            if (typeMatch) {
+                                const type = typeMatch[1];
+                                let title = '';
+                                let openAttr = '';
+                                let remaining = rest.slice(type.length).trim();
+                                // 检查是否有 [标题]
+                                const titleMatch = remaining.match(/^\[([^\]]*)\]/);
+                                if (titleMatch) {
+                                    title = titleMatch[1];
+                                    remaining = remaining.slice(titleMatch[0].length).trim();
                                 }
-                                if (k >= 0) {
-                                    const targetCell = Array.from(rows[k].querySelectorAll('th, td'))[j];
-                                    targetCell.setAttribute('rowspan', (parseInt(targetCell.getAttribute('rowspan') || '1') + rowspan));
-                                    cell.remove();
-                                    for (let r = i - rowspan + 1; r <= i; r++) occupied.add(`${r},${j}`);
+                                // 检查是否有 {open}
+                                if (remaining.startsWith('{open}')) {
+                                    openAttr = ' open';
                                 }
-                            } else if (text === '<') {
-                                let colspan = 1, k = j - 1;
-                                while (k >= 0 && !occupied.has(`${i},${k}`)) {
-                                    if (cells[k] && cells[k].textContent.trim() === '<') { k--; colspan++; } else break;
-                                }
-                                if (k >= 0) {
-                                    cells[k].setAttribute('colspan', (parseInt(cells[k].getAttribute('colspan') || '1') + colspan));
-                                    cell.remove();
-                                    for (let c = j - colspan + 1; c <= j; c++) occupied.add(`${i},${c}`);
+                                // 如果剩余部分为空，则视为有效开始标记
+                                if (!remaining || remaining === '{open}') {
+                                    startMatch = { colonsCount, type, title, openAttr };
                                 }
                             }
                         }
                     }
+
+                    if (startMatch) {
+                        // 只允许 info、success、warning、error 作为折叠框
+                        if (!['info', 'success', 'warning', 'error'].includes(startMatch.type)) {
+                            // 不是折叠框，当作普通行处理
+                            if (stack.length === 0) {
+                                output.push(rawLine);
+                            } else {
+                                stack[stack.length - 1].contentLines.push(rawLine);
+                            }
+                            i++;
+                            continue;
+                        }
+                        // 原有的创建节点代码...
+                        const node = {
+                            type: startMatch.type,
+                            title: startMatch.title,
+                            openAttr: startMatch.openAttr,
+                            colonsCount: startMatch.colonsCount,
+                            contentLines: [],
+                            children: []
+                        };
+                        stack.push(node);
+                        i++;
+                        continue;
+                    }
+
+                    // 检查是否为结束标记：单独一行，只包含至少3个冒号
+                    let endMatch = null;
+                    if (trimmed.startsWith(':::')) {
+                        let colonsCount = 0;
+                        while (colonsCount < trimmed.length && trimmed[colonsCount] === ':') colonsCount++;
+                        if (colonsCount >= 3 && trimmed.slice(colonsCount).trim() === '') {
+                            endMatch = { colonsCount };
+                        }
+                    }
+
+                    if (endMatch && stack.length > 0) {
+                        const top = stack[stack.length - 1];
+                        if (endMatch.colonsCount === top.colonsCount) {
+                            const node = stack.pop();
+                            if (stack.length === 0) {
+                                const idx = roots.length;
+                                roots.push(node);
+                                output.push(`%%DETAILS_ROOT_${idx}%%`);
+                            } else {
+                                stack[stack.length - 1].children.push(node);
+                            }
+                            i++;
+                            continue;
+                        }
+                    }
+
+                    // 普通行
+                    if (stack.length === 0) {
+                        output.push(rawLine);
+                    } else {
+                        stack[stack.length - 1].contentLines.push(rawLine);
+                    }
+                    i++;
                 }
-                return doc.body.innerHTML;
+
+                // 未闭合容错
+                while (stack.length > 0) {
+                    const node = stack.pop();
+                    if (stack.length === 0) {
+                        const idx = roots.length;
+                        roots.push(node);
+                        output.push(`%%DETAILS_ROOT_${idx}%%`);
+                    } else {
+                        stack[stack.length - 1].children.push(node);
+                    }
+                }
+
+                return { roots, output: output.join('\n') };
             }
 
             function renderContent(rawText, mentionMap) {
                 if (!rawText) return '';
-                rawText = rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-                // 1. 提取围栏代码块
-                const codeBlocks = [];
-                let processed = rawText.replace(/(```[\s\S]*?```)/g, (match) => {
-                    const idx = codeBlocks.length;
-                    codeBlocks.push({ type: 'fence', content: match });
-                    return `@@CODEBLOCK_${idx}@@`;
-                });
+                // 0. 解码 HTML 实体（把 &gt; 转成 >）
+                rawText = rawText
+                    .replace(/&gt;/g, '>')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .replace(/&amp;/g, '&');
 
-                // 2. 提取行内代码
+                // 解析嵌套折叠框（树形结构）
+                const { roots, output } = parseNestedDetails(rawText);
+                rawText = output;
+                // 不再使用 window，直接将 roots 作为闭包变量
+                const detailRoots = roots;  // 保存在局部
+
+                // ========== 1. 逐行提取围栏代码块（支持引用块内，保留引用前缀） ==========
+                const lines = rawText.split('\n');
+                const blocks = [];
+                let processedLines = [];
+                let inFence = false;
+                let fenceContent = [];
+                let blockIdx = 0;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    // 提取前导 > 和空格（用于保留引用层次）
+                    const prefixMatch = line.match(/^(>\s*)+/);
+                    const prefix = prefixMatch ? prefixMatch[0] : '';
+                    // 去掉前导 > 后的内容（用于判断代码块）
+                    const cleanLine = line.replace(/^(>\s?)+/, '');
+
+                    if (!inFence && cleanLine.startsWith('```')) {
+                        // 进入代码块
+                        inFence = true;
+                        fenceContent = [cleanLine];
+                        // 在代码块开始位置插入占位符，**保留前缀**，让 markdown-it 解析时仍在引用块内
+                        processedLines.push(prefix + `%%BLOCK${blockIdx}%%`);
+                        // 注意：此时 blockIdx 还未增加，等代码块结束时再增加
+                    } else if (inFence) {
+                        fenceContent.push(cleanLine);
+                        if (cleanLine.trim() === '```') {
+                            // 代码块结束
+                            inFence = false;
+                            const content = fenceContent.join('\n');
+                            blocks.push({ type: 'fence', content });
+                            blockIdx++;
+                            // 结束行不添加任何内容到 processedLines
+                        }
+                        // 代码块内部的其他行（包括空行）都不加入 processedLines
+                    } else {
+                        // 普通行：保留原样（包含可能的前导 >）
+                        processedLines.push(line);
+                    }
+                }
+                // 容错：如果代码块没有闭合，也保存
+                if (inFence && fenceContent.length > 0) {
+                    const content = fenceContent.join('\n');
+                    blocks.push({ type: 'fence', content });
+                    blockIdx++;
+                }
+                let processed = processedLines.join('\n');
+
+                // ========== 2. 提取内联代码（注意：不要破坏已提取的占位符） ==========
+                // 用正则匹配 `[^`]+`，但要避开 %%BLOCKn%% 这样的占位符
                 processed = processed.replace(/`([^`]+)`/g, (match, code) => {
-                    const idx = codeBlocks.length;
+                    // 如果匹配到的是 %%BLOCK... 则跳过（防止误伤占位符）
+                    if (/^%%BLOCK\d+%%$/.test(match)) return match;
+                    const idx = blocks.length;
                     const safeCode = code.replace(/\n/g, '&#10;');
-                    codeBlocks.push({ type: 'inline', content: safeCode });
-                    return `@@INLINE_${idx}@@`;
+                    blocks.push({ type: 'inline', content: safeCode });
+                    return `%%BLOCK${idx}%%`;
                 });
 
-                // 3. 洛谷扩展预处理
+                // ========== 3. 洛谷扩展 ==========
                 processed = preprocessLuoguSyntax(processed);
 
-                // 4. 安全换行处理
-                function safeReplaceNewline(text) {
-                    const tempPlaceholders = [];
-                    let temp = text.replace(/@@(?:CODEBLOCK|INLINE)_\d+@@/g, (match) => {
-                        tempPlaceholders.push(match);
-                        return `\x01PH${tempPlaceholders.length - 1}\x01`;
-                    });
-                    const parts = temp.split(/(\x01PH\d+\x01)/g);
-                    for (let i = 0; i < parts.length; i++) {
-                        if (!parts[i].startsWith('\x01PH')) {
-                            let p = parts[i].replace(/  \n/g, '\n\n');
-                            p = p.replace(/\n\n/g, '\x00\x00');
-                            p = p.replace(/\n/g, ' ');
-                            parts[i] = p.replace(/\x00\x00/g, '\n\n');
-                        }
-                    }
-                    let restored = parts.join('');
-                    for (let i = 0; i < tempPlaceholders.length; i++) {
-                        restored = restored.replace(`\x01PH${i}\x01`, tempPlaceholders[i]);
-                    }
-                    return restored;
-                }
-                processed = safeReplaceNewline(processed);
-
-                // 5. 处理 LaTeX
+                // ========== 4. LaTeX 渲染 ==========
                 processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
                     let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
                     try {
@@ -916,16 +1341,71 @@
                     } catch (e) { return match; }
                 });
 
-                // 6. markdown-it 渲染
                 let html = md.render(processed);
 
-                // 7. 恢复代码块
-                html = html.replace(/@@(?:CODEBLOCK|INLINE)_(\d+)@@/g, (match, idx) => {
-                    let block = codeBlocks[parseInt(idx)];
+                // 在 renderContent 内部，定义 renderDetailsNode 之前，添加 LaTeX 渲染函数
+                function renderLatex(text) {
+                    if (!text) return '';
+                    // 块级公式
+                    text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
+                        let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                        try {
+                            return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`;
+                        } catch (e) { return match; }
+                    });
+                    // 行内公式
+                    text = text.replace(/\$([^$]+?)\$/g, (match, math) => {
+                        let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                        try {
+                            return katex.renderToString(realMath, { throwOnError: false });
+                        } catch (e) { return match; }
+                    });
+                    return text;
+                }
+
+                function renderDetailsNode(node) {
+                    // 对内容进行 LaTeX 渲染
+                    let content = node.contentLines.join('\n');
+                    content = renderLatex(content);
+                    const renderedContent = md.render(content);
+                    // 对标题进行 LaTeX 渲染
+                    let title = renderLatex(node.title);
+                    const renderedTitle = md.renderInline(title);
+                    const childrenHtml = node.children.map(child => renderDetailsNode(child)).join('');
+                    return `<details class="${escapeHtmlAttr(node.type)}"${node.openAttr}><summary>${renderedTitle}</summary>${renderedContent}${childrenHtml}</details>`;
+                }
+
+                // 替换折叠框根占位符（直接使用 detailRoots 闭包）
+                html = html.replace(/%%DETAILS_ROOT_(\d+)%%/g, (match, idx) => {
+                    const node = detailRoots[parseInt(idx)];
+                    if (!node) return match;
+                    return renderDetailsNode(node);
+                });
+
+                // 处理对齐占位符
+                html = html.replace(/%%ALIGN_CENTER%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
+                    // 注意：这里 content 是原始 Markdown 文本，需要再次用 md.render 渲染
+                    const rendered = md.render(content);
+                    return `<div class="align-center">${rendered}</div>`;
+                });
+                html = html.replace(/%%ALIGN_RIGHT%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
+                    const rendered = md.render(content);
+                    return `<div class="align-right">${rendered}</div>`;
+                });
+
+                // 修复 KaTeX 公式中因中文引号导致的显示问题
+                html = html.replace(/“/g, '"').replace(/”/g, '"');
+
+                // ========== 6. 恢复所有代码块 ==========
+                html = html.replace(/%%BLOCK(\d+)%%/g, (match, idx) => {
+                    let block = blocks[parseInt(idx)];
                     if (!block) return '';
+
                     if (block.type === 'inline') {
-                        return `<code>${block.content}</code>`;
+                        return `<code>${escapeHtml(block.content)}</code>`;
                     }
+
+                    // 围栏代码块
                     const lines = block.content.split('\n');
                     const firstLine = lines[0];
                     let lang = '', showLineNumbers = false, showHighlight = false, highlightLines = null;
@@ -942,59 +1422,158 @@
                     }
                     let codeContent = lines.slice(1, -1).join('\n');
 
+                    let codeHtml = '';
                     if (!showLineNumbers && !showHighlight) {
-                        return `<pre><code class="language-${lang}">${codeContent}</code></pre>`;
+                        const codeLines = codeContent.split('\n');
+                        if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
+                        codeHtml = `<pre><code class="language-${lang}">`;
+                        for (const line of codeLines) {
+                            const lineContent = line || ' ';
+                            codeHtml += `<div class="code-line"><span class="code-text">${escapeHtml(lineContent)}</span></div>`;
+                        }
+                        codeHtml += `</code></pre>`;
+                    } else {
+                        const codeLines = codeContent.split('\n');
+                        if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
+                        const totalLines = codeLines.length;
+                        const maxDigits = String(totalLines).length;
+
+                        codeHtml = `<pre><code>`;
+                        for (let i = 0; i < totalLines; i++) {
+                            const lineNum = i + 1;
+                            const lineContent = codeLines[i] || ' ';
+                            let lineClass = '';
+                            if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
+                                lineClass = ' code-highlight-line';
+                            }
+                            codeHtml += `<div class="code-line${lineClass}">`;
+                            if (showLineNumbers) {
+                                codeHtml += `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
+                            }
+                            codeHtml += `<span class="code-text">${escapeHtml(lineContent)}</span>`;
+                            codeHtml += `</div>`;
+                        }
+                        codeHtml += `</code></pre>`;
                     }
 
-                    const codeLines = codeContent.split('\n');
-                    if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
-                    const totalLines = codeLines.length;
-                    const maxDigits = String(totalLines).length;
-
-                    let numberedHtml = `<pre><code>`;
-                    for (let i = 0; i < totalLines; i++) {
-                        const lineNum = i + 1;
-                        const lineContent = codeLines[i] || ' ';
-                        let lineClass = '';
-                        if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
-                            lineClass = ' code-highlight-line';
-                        }
-                        numberedHtml += `<div class="code-line${lineClass}">`;
-                        if (showLineNumbers) {
-                            numberedHtml += `<span class="line-number" style="display:inline-block; min-width:${maxDigits * 2}ch; text-align:right; margin-right:8px; white-space:nowrap; border-right:1px solid #ddd; padding-right:8px;">${lineNum}</span>`;
-                        }
-                        numberedHtml += `<span class="code-text">${lineContent}</span>`;
-                        numberedHtml += `</div>`;
-                    }
-                    numberedHtml += `</code></pre>`;
-                    return numberedHtml;
+                    // 用包装器包裹，并添加复制按钮
+                    return `
+        <div class="code-block-wrapper">
+            <button class="copy-code-btn" data-copy-btn title="复制代码">
+                <svg class="svg-icon" viewBox="0 0 448 512" aria-hidden="true">
+                    <path d="M192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-200.6c0-17.4-7.1-34.1-19.7-46.2L370.6 17.8C358.7 6.4 342.8 0 326.3 0L192 0zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-16-64 0 0 16-192 0 0-256 16 0 0-64-16 0z"/>
+                </svg>
+            </button>
+            ${codeHtml}
+        </div>
+    `;
                 });
 
-                // 8. @ 提及
+                // ========== 7. @提及 ==========
                 html = html.replace(/@([a-zA-Z0-9_]+)/g, (match, username) => {
                     const uid = mentionMap && mentionMap[username];
                     if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
                     return match;
                 });
 
-                // 9. 表格合并
-                html = postProcessTableMerge(html);
-
-                // 10. 清理
+                // ========== 9. 清理 ==========
                 html = html.replace(/<p><\/p>\s*$/, '').replace(/<br\s*\/?>\s*$/, '').trim();
 
-                return DOMPurify.sanitize(html);
+                // 清理多余的空段落和冒号残留
+                html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
+                
+                return DOMPurify.sanitize(html, {
+                    ADD_TAGS: ['iframe'],
+                    ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing', 'allowfullscreen', 'style']
+                });
+            }
+
+            // ---------- 复制成功 Toast（仿 SweetAlert2） ----------
+            function showCopyToast() {
+                let toast = document.querySelector('.swal2-toast-copy');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.className = 'swal2-toast-copy';
+                    toast.innerHTML = `
+            <svg class="success-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#a5dc86" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <h2 class="swal2-title-copy">Contents copied!</h2>
+        `;
+                    document.body.appendChild(toast);
+                } else {
+                    toast.classList.remove('show');
+                    void toast.offsetWidth;
+                }
+                toast.classList.add('show');
+                clearTimeout(toast._hideTimer);
+                toast._hideTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            // ---------- 复制代码块 ----------
+            window.copyCode = function (btn) {
+                const wrapper = btn.closest('.code-block-wrapper');
+                if (!wrapper) return;
+                const pre = wrapper.querySelector('pre');
+                if (!pre) return;
+
+                const codeTexts = pre.querySelectorAll('.code-text');
+                let code = '';
+                codeTexts.forEach(el => {
+                    code += el.textContent + '\n';
+                });
+                code = code.replace(/\n$/, '');
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(code).then(() => {
+                        showCopyToast();
+                        // 不再修改按钮内容
+                    }).catch(() => {
+                        fallbackCopy(code, btn);
+                    });
+                } else {
+                    fallbackCopy(code, btn);
+                }
+            };
+
+            function fallbackCopy(text, btn) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyToast();
+                    // 不再修改按钮内容
+                } catch (e) {
+                    alert('复制失败，请手动复制');
+                }
+                document.body.removeChild(textarea);
             }
 
             function renderAllBenbenTexts() {
                 document.querySelectorAll('.benben-text').forEach(el => {
-                    const rawEncoded = el.getAttribute('data-raw');
-                    const mentionMapStr = el.getAttribute('data-mention-map');
-                    if (!rawEncoded) return;
-                    let rawText = rawEncoded;
-                    let mentionMap = {};
-                    try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
-                    el.innerHTML = renderContent(rawText, mentionMap);
+                    try {
+                        const rawEncoded = el.getAttribute('data-raw');
+                        const mentionMapStr = el.getAttribute('data-mention-map');
+                        if (!rawEncoded) return;
+                        let rawText = rawEncoded;
+                        let mentionMap = {};
+                        try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
+                        el.innerHTML = renderContent(rawText, mentionMap);
+                    } catch (e) {
+                        console.error('渲染犇犇内容失败:', e);
+                        el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
+                    }
+                });
+                document.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.copy-code-btn');
+                    if (!btn) return;
+                    copyCode(btn);
                 });
             }
 
@@ -1012,8 +1591,22 @@
                     }
                 } catch (err) { console.error(err); }
             }
-            function startUnreadPolling() { if (unreadTimer) clearInterval(unreadTimer); unreadTimer = setInterval(() => { if (currentProfile && document.visibilityState === 'visible') fetchUnreadCount(); }, 30000); }
-            function stopUnreadPolling() { if (unreadTimer) { clearInterval(unreadTimer); unreadTimer = null; } }
+
+            function startUnreadPolling() {
+                if (unreadTimer) clearInterval(unreadTimer);
+                unreadTimer = setInterval(() => {
+                    if (currentProfile && document.visibilityState === 'visible') {
+                        fetchUnreadCount();
+                    }
+                }, 30000);
+            }
+
+            function stopUnreadPolling() {
+                if (unreadTimer) {
+                    clearInterval(unreadTimer);
+                    unreadTimer = null;
+                }
+            }
 
             async function loadBenbenList(reset = true) {
                 if (isLoading) return;
@@ -1060,8 +1653,14 @@
                         else { const noMoreDiv = document.createElement('div'); noMoreDiv.className = 'no-more-message'; noMoreDiv.textContent = '没有更多动态了'; benbenList.appendChild(noMoreDiv); }
                     }
                 } catch (error) {
-                    console.error(error); if (reset && benbenList && benbenList.children.length === 0) benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
-                } finally { isLoading = false; if (loadingSentinel) loadingSentinel.style.display = 'none'; }
+                    console.error(error);
+                    if (reset && benbenList && benbenList.children.length === 0) {
+                        benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
+                    }
+                } finally {
+                    isLoading = false;
+                    if (loadingSentinel) loadingSentinel.style.display = 'none';
+                }
             }
 
             async function renderBenbenList(data, reset, mentionMap = {}) {
@@ -1080,35 +1679,38 @@
                     const userTag = prof.user_tag || '';
                     const usernameColor = prof.username_color || '#333';
                     const color = isAdmin ? '#9b59b6' : usernameColor;
-                    const roleLabel = isAdmin ? '管理员' : '';
+
+                    let labelHtml = '';
+                    if (userTag) {
+                        labelHtml = `<span class="user-tag-display">${escapeHtml(userTag)}</span>`;
+                    } else if (isAdmin) {
+                        labelHtml = `<span class="user-tag-display">管理员</span>`;
+                    }
 
                     let userHtml = `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
-                    if (userTag) {
-                        userHtml += `<span class="user-tag">${escapeHtml(userTag)}</span>`;
-                    }
-                    if (roleLabel) {
-                        userHtml += `<span class="role-tag">${roleLabel}</span>`;
+                    if (labelHtml) {
+                        userHtml += labelHtml;
                     }
 
                     const benbenHtml = `
-            <div class="benben-item" data-id="${item.id}">
-                <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="/images/default-avatar.png" alt="${username}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E'"></a></div>
-                <div class="benben-content">
-                    <div class="benben-item-header">
-                        <div class="benben-user-info">
-                            ${userHtml}
-                            <span class="benben-time">${timeStr}</span>
+                        <div class="benben-item" data-id="${item.id}">
+                            <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E" alt="${username}"></a></div>
+                            <div class="benben-content">
+                                <div class="benben-item-header">
+                                    <div class="benben-user-info">
+                                        ${userHtml}
+                                        <span class="benben-time">${timeStr}</span>
+                                    </div>
+                                    <div class="benben-actions">
+                                        <button class="benben-report-btn" data-id="${item.id}">举报</button>
+                                        <button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
+                                        ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
+                                    </div>
+                                </div>
+                                <div class="benben-text" data-raw="${escapeHtmlAttr(rawContent)}" data-mention-map='${escapeHtmlAttr(mentionMapJson)}'></div>
+                            </div>
                         </div>
-                        <div class="benben-actions">
-                            <button class="benben-report-btn" data-id="${item.id}">举报</button>
-                            <button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
-                            ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
-                        </div>
-                    </div>
-                    <div class="benben-text" data-raw="${escapeHtmlAttr(rawContent)}" data-mention-map='${escapeHtmlAttr(mentionMapJson)}'></div>
-                </div>
-            </div>
-        `;
+                    `;
                     benbenList.insertAdjacentHTML('beforeend', benbenHtml);
                 }
                 document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); await deleteBenben(btn.dataset.id); }));
@@ -1156,7 +1758,8 @@
                     }
                 }
 
-                let finalContent = content.length > MAX_LENGTH ? content.substring(0, MAX_LENGTH) : content;
+                let finalContent = currentProfile.is_admin ? content : content.substring(0, MAX_LENGTH);
+                // 不再转义尖括号，由 renderContent 全局处理
                 const insertData = { user_number: currentProfile.user_number, content: finalContent, is_deleted: false };
                 if (finalReplyToId) {
                     insertData.reply_to = finalReplyToId;
@@ -1214,15 +1817,54 @@
                 }
             }
 
-            function switchMode(mode) { feedMode = mode; lastId = null; hasMore = true; currentReplyingId = null; loadBenbenList(true); document.querySelectorAll('.benben-tab').forEach(tab => { if (tab.dataset.mode === mode) tab.classList.add('active'); else tab.classList.remove('active'); }); }
-            function setupInfiniteScroll() { if (!loadingSentinel) return; const observer = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) loadBenbenList(false); }, { threshold: 0.1 }); observer.observe(loadingSentinel); }
-            async function getProfile(userId) { const { data, error } = await supabase.from('profiles').select('user_number, username, is_admin').eq('id', userId).single(); if (error) return null; return data; }
+            function switchMode(mode) {
+                feedMode = mode;
+                lastId = null;
+                hasMore = true;
+                currentReplyingId = null;
+                loadBenbenList(true);
+                document.querySelectorAll('.benben-tab').forEach(tab => {
+                    if (tab.dataset.mode === mode) tab.classList.add('active');
+                    else tab.classList.remove('active');
+                });
+            }
+
+            function setupInfiniteScroll() {
+                if (!loadingSentinel) return;
+                const observer = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) {
+                        loadBenbenList(false);
+                    }
+                }, { threshold: 0.1 });
+                observer.observe(loadingSentinel);
+            }
+
+            async function getProfile(userId) {
+                const { data, error } = await supabase.from('profiles').select('user_number, username, is_admin').eq('id', userId).single();
+                if (error) return null;
+                return data;
+            }
+
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session) {
                         currentProfile = await getProfile(session.user.id);
                         currentUser = session.user;
+
+                        if (currentProfile) {
+                            const { data: banData, error: banErr } = await supabase
+                                .from('profiles')
+                                .select('is_banned')
+                                .eq('id', session.user.id)
+                                .single();
+                            if (!banErr && banData && banData.is_banned === true) {
+                                await supabase.auth.signOut();
+                                location.reload();
+                                return;
+                            }
+                        }
+
                         let displayName = session.user.email;
                         if (currentProfile?.username) displayName = currentProfile.username;
                         let html = '';
@@ -1231,32 +1873,60 @@
                         html += `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
-                        document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
                         welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtmlAttr(displayName)}`;
                         welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
                         fortuneCard.innerHTML = `<div class="card-header">🧧 你的运势</div><div style="text-align:center"><span style="font-size:2rem;">中吉</span><p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p><p>连续打卡 <strong>228</strong> 天</p></div>`;
-                        const editor = document.getElementById('benbenEditor'); const nav = document.getElementById('benbenNav');
-                        if (editor) editor.style.display = 'block'; if (nav) nav.style.display = 'flex'; if (loadingSentinel) loadingSentinel.style.display = 'block';
-                        await fetchUnreadCount(); startUnreadPolling(); loadBenbenList(true); setupInfiniteScroll();
+                        const editor = document.getElementById('benbenEditor');
+                        const nav = document.getElementById('benbenNav');
+                        if (editor) editor.style.display = 'block';
+                        if (nav) nav.style.display = 'flex';
+                        if (loadingSentinel) loadingSentinel.style.display = 'block';
+                        await fetchUnreadCount();
+                        startUnreadPolling();
+                        loadBenbenList(true);
+                        setupInfiniteScroll();
                     } else {
-                        currentUser = null; currentProfile = null;
+                        currentUser = null;
+                        currentProfile = null;
                         authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                         welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
                         welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
                         fortuneCard.innerHTML = `<div class="card-header">📅 今日日历</div><div style="text-align:center"><span style="font-size:1.8rem;">6月14日</span><p>星期日</p><p>距 CSP-J/S 2026 第一轮还剩 100 天</p><p><a href="/auth/login">👉 登录后查看专属运势</a></p></div>`;
-                        const editor = document.getElementById('benbenEditor'); const nav = document.getElementById('benbenNav');
-                        if (editor) editor.style.display = 'none'; if (nav) nav.style.display = 'none';
+                        const editor = document.getElementById('benbenEditor');
+                        const nav = document.getElementById('benbenNav');
+                        if (editor) editor.style.display = 'none';
+                        if (nav) nav.style.display = 'none';
                         if (benbenList) { feedMode = 'all'; loadBenbenList(true); }
                         if (loadingSentinel) loadingSentinel.style.display = 'block';
                         stopUnreadPolling();
                         if (infiniteObserver) infiniteObserver.disconnect();
-                        infiniteObserver = new IntersectionObserver((entries) => { if (entries[0].isIntersecting && !isLoading && hasMore) loadBenbenList(false); }, { threshold: 0.1 });
+                        infiniteObserver = new IntersectionObserver((entries) => {
+                            if (entries[0].isIntersecting && !isLoading && hasMore) {
+                                loadBenbenList(false);
+                            }
+                        }, { threshold: 0.1 });
                         if (loadingSentinel) infiniteObserver.observe(loadingSentinel);
                     }
-                } catch (err) { console.error(err); authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`; }
+                } catch (err) {
+                    console.error(err);
+                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                }
             }
 
-            function bindBenbenEvents() { if (benbenSubmit) benbenSubmit.addEventListener('click', postBenben); document.querySelectorAll('.benben-tab').forEach(tab => { tab.addEventListener('click', () => { const mode = tab.dataset.mode; if (mode === 'all' || mode === 'my') switchMode(mode); }); }); }
+            function bindBenbenEvents() {
+                if (benbenSubmit) benbenSubmit.addEventListener('click', postBenben);
+                document.querySelectorAll('.benben-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const mode = tab.dataset.mode;
+                        if (mode === 'all' || mode === 'my') switchMode(mode);
+                    });
+                });
+            }
+
             updateUI();
             bindBenbenEvents();
         })();
