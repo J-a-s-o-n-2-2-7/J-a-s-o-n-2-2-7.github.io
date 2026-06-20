@@ -1108,7 +1108,7 @@
                         return match;
                     }
 
-                    let embedUrl = '//player.bilibili.com/player.html?';
+                    let embedUrl = 'https://player.bilibili.com/player.html?'; // 改为 https
                     if (bvid) embedUrl += `bvid=${bvid}`;
                     else if (aid) embedUrl += `aid=${aid}`;
                     if (extraParams) embedUrl += extraParams;
@@ -1117,9 +1117,9 @@
                     return `<iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
                 });
 
-                // 2. 原有 [bilibili]BVxxx[/bilibili] 格式（保留兼容）
+                // 2. 原有 [bilibili]BVxxx[/bilibili] 格式
                 text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =>
-                    `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
+                    `<iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
                 );
 
                 // 3. align 语法
@@ -1470,7 +1470,7 @@
                 });
 
                 // ========== 7. @提及 ==========
-                html = html.replace(/@([a-zA-Z0-9_]+)/g, (match, username) => {
+                html = html.replace(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g, (match, username) => {
                     const uid = mentionMap && mentionMap[username];
                     if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
                     return match;
@@ -1610,56 +1610,107 @@
 
             async function loadBenbenList(reset = true) {
                 if (isLoading) return;
-                if (reset) { hasMore = true; lastId = null; if (benbenList) benbenList.innerHTML = ''; const existing = document.querySelector('.no-more-message'); if (existing) existing.remove(); }
-                if (!hasMore) return;
+                if (reset) {
+                    hasMore = true;
+                    lastId = null;
+                    if (benbenList) benbenList.innerHTML = '';
+                    const existing = document.querySelector('.no-more-message');
+                    if (existing) existing.remove();
+                    // 重置时，显示加载提示
+                    if (loadingSentinel) {
+                        loadingSentinel.style.display = 'block';
+                        loadingSentinel.textContent = '滚动加载更多...';
+                    }
+                }
+                if (!hasMore) {
+                    if (loadingSentinel) {
+                        loadingSentinel.style.display = 'block';
+                        loadingSentinel.textContent = '没有更多动态了';
+                    }
+                    return;
+                }
                 isLoading = true;
-                if (loadingSentinel) loadingSentinel.style.display = 'block';
+                if (loadingSentinel) {
+                    loadingSentinel.style.display = 'block';
+                    loadingSentinel.textContent = '加载中...';
+                }
                 try {
-                    let query = supabase.from('benben').select(`
-                            *, 
-                            profiles:user_number (
-                                username, 
-                                is_admin,
-                                username_color,
-                                user_tag
-                            )
-                        `)
+                    let query = supabase.from('benben')
+                        .select(`
+                *, 
+                profiles:user_number (
+                    username, 
+                    is_admin,
+                    username_color,
+                    user_tag
+                )
+            `)
                         .eq('is_deleted', false)
                         .order('created_at', { ascending: false })
                         .limit(20);
                     if (lastId) query = query.lt('id', lastId);
-                    if (feedMode === 'my' && currentProfile) query = query.eq('user_number', currentProfile.user_number);
+                    if (feedMode === 'my' && currentProfile) {
+                        query = query.eq('user_number', currentProfile.user_number);
+                    }
                     const { data, error } = await query;
                     if (error) throw error;
+
+                    // 处理提及
                     const mentionSet = new Set();
                     data?.forEach(item => {
-                        const matches = item.content.match(/@([a-zA-Z0-9_]+)/g);
+                        const matches = item.content.match(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g);
                         if (matches) matches.forEach(m => mentionSet.add(m.slice(1)));
                     });
                     let mentionMap = {};
                     if (mentionSet.size > 0) {
                         const usernames = Array.from(mentionSet);
-                        const { data: userData, error: userError } = await supabase.from('profiles').select('username, user_number').in('username', usernames);
-                        if (!userError && userData) userData.forEach(u => { mentionMap[u.username] = u.user_number; });
+                        const { data: userData, error: userError } = await supabase.from('profiles')
+                            .select('username, user_number')
+                            .in('username', usernames);
+                        if (!userError && userData) {
+                            userData.forEach(u => { mentionMap[u.username] = u.user_number; });
+                        }
                     }
+
                     if (data && data.length > 0) {
                         await renderBenbenList(data, reset, mentionMap);
                         lastId = data[data.length - 1].id;
-                        if (data.length < 20) { hasMore = false; const noMoreDiv = document.createElement('div'); noMoreDiv.className = 'no-more-message'; noMoreDiv.textContent = '没有更多动态了'; benbenList.appendChild(noMoreDiv); }
-                        else { hasMore = true; }
+                        if (data.length < 20) {
+                            hasMore = false;
+                            if (loadingSentinel) {
+                                loadingSentinel.style.display = 'block';
+                                loadingSentinel.textContent = '没有更多动态了';
+                            }
+                        } else {
+                            hasMore = true;
+                            if (loadingSentinel) {
+                                loadingSentinel.style.display = 'block';
+                                loadingSentinel.textContent = '滚动加载更多...';
+                            }
+                        }
                     } else {
                         hasMore = false;
-                        if (reset) benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
-                        else { const noMoreDiv = document.createElement('div'); noMoreDiv.className = 'no-more-message'; noMoreDiv.textContent = '没有更多动态了'; benbenList.appendChild(noMoreDiv); }
+                        if (reset) {
+                            benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
+                        }
+                        if (loadingSentinel) {
+                            loadingSentinel.style.display = 'block';
+                            loadingSentinel.textContent = '没有更多动态了';
+                        }
                     }
                 } catch (error) {
                     console.error(error);
                     if (reset && benbenList && benbenList.children.length === 0) {
                         benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
                     }
+                    // 出错时也显示哨兵
+                    if (loadingSentinel) {
+                        loadingSentinel.style.display = 'block';
+                        loadingSentinel.textContent = '加载出错，请刷新';
+                    }
                 } finally {
                     isLoading = false;
-                    if (loadingSentinel) loadingSentinel.style.display = 'none';
+                    // 注意：这里不再隐藏 loadingSentinel！
                 }
             }
 
@@ -1783,26 +1834,51 @@
                         }
                     }
 
-                    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
-                    let match; const mentionedSet = new Set();
-                    while ((match = mentionRegex.exec(content)) !== null) mentionedSet.add(match[1]);
-                    if (mentionedSet.size > 0) {
-                        const usernames = Array.from(mentionedSet);
-                        const { data: userData } = await supabase.from('profiles').select('user_number, username').in('username', usernames);
-                        if (userData) {
+                    const mentionRegex = /@([\u4e00-\u9fa5a-zA-Z0-9_.\- ]+)/g;
+                    let match;
+                    const mentionCountMap = {};
+                    while ((match = mentionRegex.exec(content)) !== null) {
+                        const username = match[1];
+                        mentionCountMap[username] = (mentionCountMap[username] || 0) + 1;
+                    }
+                    const usernames = Object.keys(mentionCountMap);
+                    if (usernames.length > 0) {
+                        const { data: userData, error: userError } = await supabase
+                            .from('profiles')
+                            .select('user_number, username')
+                            .in('username', usernames);
+                        if (userError) {
+                            console.error('查询提及用户失败:', userError);
+                        } else if (userData) {
                             const notifications = [];
                             for (const user of userData) {
-                                if (user.user_number !== currentProfile.user_number) {
+                                if (user.user_number === currentProfile.user_number) continue;
+                                const count = mentionCountMap[user.username];
+                                // 管理员：按次数插入多条；普通用户：只插入一条
+                                // 这里我们强制管理员插入多条（不依赖 is_admin）
+                                const times = currentProfile.is_admin ? count : 1; // 如果 is_admin 为 true，则按 count 插入
+                                // 如果仍不生效，可临时将 times = count; 强制插入（调试用）
+                                for (let i = 0; i < times; i++) {
                                     notifications.push({
                                         user_number: user.user_number,
                                         from_user_number: currentProfile.user_number,
                                         type: 'mention',
                                         benben_id: newBenbenId,
-                                        content: '在犇犇中提到了你'
+                                        content: `在犇犇中提到了你${times > 1 ? `（第${i + 1}次）` : ''}`
                                     });
                                 }
                             }
-                            if (notifications.length > 0) await supabase.from('notifications').insert(notifications);
+                            if (notifications.length > 0) {
+                                // 逐条插入，便于调试
+                                for (const notif of notifications) {
+                                    const { error } = await supabase.from('notifications').insert(notif);
+                                    if (error) {
+                                        console.error('插入通知失败:', error);
+                                    } else {
+                                        console.log('插入通知成功:', notif);
+                                    }
+                                }
+                            }
                         }
                     }
 
