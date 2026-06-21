@@ -11,6 +11,7 @@
     <!-- markdown-it -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
     <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
@@ -1051,6 +1052,7 @@
 
             const md = window.markdownit({ html: true, linkify: true, typographer: true });
             md.use(window.markdownitTaskLists);
+            md.use(window.markdownitEmoji);
             
             // ---------- 辅助函数 ----------
             function escapeHtmlAttr(str) {
@@ -1835,50 +1837,25 @@
                     }
 
                     const mentionRegex = /@([\u4e00-\u9fa5a-zA-Z0-9_.\- ]+)/g;
-                    let match;
-                    const mentionCountMap = {};
-                    while ((match = mentionRegex.exec(content)) !== null) {
-                        const username = match[1];
-                        mentionCountMap[username] = (mentionCountMap[username] || 0) + 1;
-                    }
-                    const usernames = Object.keys(mentionCountMap);
-                    if (usernames.length > 0) {
-                        const { data: userData, error: userError } = await supabase
-                            .from('profiles')
-                            .select('user_number, username')
-                            .in('username', usernames);
-                        if (userError) {
-                            console.error('查询提及用户失败:', userError);
-                        } else if (userData) {
+                    let match; const mentionedSet = new Set();
+                    while ((match = mentionRegex.exec(content)) !== null) mentionedSet.add(match[1]);
+                    if (mentionedSet.size > 0) {
+                        const usernames = Array.from(mentionedSet);
+                        const { data: userData } = await supabase.from('profiles').select('user_number, username').in('username', usernames);
+                        if (userData) {
                             const notifications = [];
                             for (const user of userData) {
-                                if (user.user_number === currentProfile.user_number) continue;
-                                const count = mentionCountMap[user.username];
-                                // 管理员：按次数插入多条；普通用户：只插入一条
-                                // 这里我们强制管理员插入多条（不依赖 is_admin）
-                                const times = currentProfile.is_admin ? count : 1; // 如果 is_admin 为 true，则按 count 插入
-                                // 如果仍不生效，可临时将 times = count; 强制插入（调试用）
-                                for (let i = 0; i < times; i++) {
+                                if (user.user_number !== currentProfile.user_number) {
                                     notifications.push({
                                         user_number: user.user_number,
                                         from_user_number: currentProfile.user_number,
                                         type: 'mention',
                                         benben_id: newBenbenId,
-                                        content: `在犇犇中提到了你${times > 1 ? `（第${i + 1}次）` : ''}`
+                                        content: '在犇犇中提到了你'
                                     });
                                 }
                             }
-                            if (notifications.length > 0) {
-                                // 逐条插入，便于调试
-                                for (const notif of notifications) {
-                                    const { error } = await supabase.from('notifications').insert(notif);
-                                    if (error) {
-                                        console.error('插入通知失败:', error);
-                                    } else {
-                                        console.log('插入通知成功:', notif);
-                                    }
-                                }
-                            }
+                            if (notifications.length > 0) await supabase.from('notifications').insert(notifications);
                         }
                     }
 

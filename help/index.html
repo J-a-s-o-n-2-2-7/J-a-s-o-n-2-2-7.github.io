@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>帮助中心 · 文档管理</title>
+    <style>
+        /* ========== CSS 变量 & 重置 ========== */
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --primary-light: #fef9f8;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --text-muted: #b0b8c4;
+            --border: #e9ecef;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            --transition: 0.25s ease;
+            --header-height: 56px;
+            --nav-width: 64px;
+            --nav-hover-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: var(--font);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* ===== 滚动条 ===== */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c5cdd8;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8b3c2;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 8px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            text-decoration: none;
+        }
+
+        .logo .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+        }
+
+        .logo .logo-sub {
+            font-weight: 400;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .logo .logo-sub::before {
+            content: "/";
+            margin: 0 6px;
+            color: var(--text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .user-badge .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            flex-shrink: 0;
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .user-badge .avatar.admin {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .user-badge .name {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 18px;
+            border: none;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            background: #f0f2f5;
+            color: var(--text);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #e5e8ec;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #1e8449;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f0f2f5;
+        }
+
+        .btn-sm {
+            padding: 4px 14px;
+            font-size: 13px;
+        }
+
+        .btn-icon {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-light);
+            transition: background 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: #f0f2f5;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text);
+            padding: 4px;
+            line-height: 1;
+        }
+
+        /* ===== 主布局 ===== */
+        .main-layout {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        /* ===== 侧边栏 ===== */
+        .nav-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: var(--nav-width);
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 0;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 50;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .nav-sidebar:hover {
+            width: var(--nav-hover-width);
+        }
+
+        .nav-item {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: #f0f2f5;
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: #f0f2f5;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .group-title {
+            font-weight: 600;
+            color: var(--text-light);
+            background: #f8f9fc;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        /* ===== 内容区 ===== */
+        .content-wrapper {
+            margin-left: var(--nav-width);
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .main-content {
+            flex: 2;
+            min-width: 260px;
+        }
+
+        .right-sidebar {
+            width: 280px;
+            align-self: start;
+        }
+
+        /* ===== 卡片 ===== */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        .card-header {
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ===== 编辑工具栏 ===== */
+        .edit-toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 12px 18px;
+            background: #f8f9fc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .edit-toolbar .hint {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-right: auto;
+        }
+
+        .edit-toolbar .hint strong {
+            color: var(--text);
+        }
+
+        /* ===== Markdown 内容 ===== */
+        .markdown-body {
+            font-size: 16px;
+            line-height: 1.8;
+            transition: outline 0.2s;
+            outline: 2px dashed var(--primary);
+            outline-offset: 8px;
+            border-radius: 4px;
+            padding: 4px 6px;
+            min-height: 200px;
+        }
+
+        .markdown-body:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .markdown-body h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 36px 0 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            scroll-margin-top: 80px;
+            cursor: pointer;
+        }
+
+        .markdown-body h2:hover {
+            color: var(--primary);
+        }
+
+        .markdown-body h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 28px 0 10px;
+            scroll-margin-top: 80px;
+        }
+
+        .markdown-body h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 22px 0 8px;
+            scroll-margin-top: 80px;
+        }
+
+        .markdown-body h5 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 18px 0 6px;
+            scroll-margin-top: 80px;
+        }
+
+        .markdown-body p {
+            margin: 0 0 14px;
+        }
+
+        .markdown-body ul,
+        .markdown-body ol {
+            margin: 0 0 14px 24px;
+        }
+
+        .markdown-body li {
+            margin-bottom: 4px;
+        }
+
+        .markdown-body blockquote {
+            margin: 14px 0;
+            padding: 12px 20px;
+            border-left: 4px solid var(--primary);
+            background: var(--primary-light);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            color: var(--text);
+        }
+
+        .markdown-body blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        .markdown-body code {
+            background: #f0f2f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+            color: var(--primary);
+        }
+
+        .markdown-body pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 14px 0;
+        }
+
+        .markdown-body pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .markdown-body hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 28px 0;
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 15px;
+        }
+
+        .markdown-body table th,
+        .markdown-body table td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .markdown-body table th {
+            background: #f8f9fc;
+            font-weight: 600;
+        }
+
+        .markdown-body .admonition {
+            margin: 18px 0;
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid #3498db;
+            background: #eef6fc;
+        }
+
+        .markdown-body .admonition.warning {
+            border-left-color: #f39c12;
+            background: #fef9e7;
+        }
+
+        .markdown-body .admonition.danger {
+            border-left-color: var(--primary);
+            background: #fdedec;
+        }
+
+        .markdown-body .admonition.success {
+            border-left-color: #27ae60;
+            background: #eafaf1;
+        }
+
+        .markdown-body .admonition-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .markdown-body .tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 1px 10px;
+            border-radius: 12px;
+            background: #f0f2f5;
+            color: var(--primary);
+            margin-left: 6px;
+        }
+
+        .markdown-body .tag.new {
+            background: #fef9e7;
+            color: #f39c12;
+        }
+
+        .markdown-body .img-placeholder {
+            display: inline-block;
+            background: #f8f9fc;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            border: 1px dashed var(--border);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* ===== 文章列表 ===== */
+        .article-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .article-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .article-list li:hover {
+            background: var(--primary-light);
+        }
+
+        .article-list li.active {
+            background: var(--primary-light);
+            border-left: 3px solid var(--primary);
+        }
+
+        .article-list .article-title {
+            flex: 1;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .article-list .article-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .article-list .article-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .article-list .article-actions .delete-btn:hover {
+            background: #fdedec;
+            color: var(--primary);
+        }
+
+        .article-list .article-actions .edit-btn:hover {
+            background: #eef6fc;
+            color: #3498db;
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            margin-bottom: 16px;
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--text);
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transition: all 0.35s ease;
+            pointer-events: none;
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            text-align: center;
+            padding: 20px 24px;
+            color: var(--text-light);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+            background: var(--card-bg);
+            margin-top: 20px;
+            transition: background var(--transition), border var(--transition);
+        }
+
+        footer a {
+            color: var(--primary);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 900px) {
+            .main-layout {
+                position: static;
+                padding: 0 16px;
+            }
+
+            .nav-sidebar {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
+                border-radius: var(--radius);
+                max-height: none;
+                overflow-y: visible;
+            }
+
+            .nav-sidebar:hover {
+                width: 100%;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+            }
+
+            .nav-text {
+                opacity: 1;
+            }
+
+            .right-sidebar {
+                width: 100%;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .topbar {
+                padding: 8px 16px;
+            }
+
+            .logo .logo-sub {
+                display: none;
+            }
+
+            .user-badge .name {
+                display: none;
+            }
+
+            .toast {
+                white-space: normal;
+                max-width: 90vw;
+                text-align: center;
+            }
+
+            .edit-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .edit-toolbar .hint {
+                margin-right: 0;
+                margin-bottom: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 16px;
+            }
+
+            .markdown-body table {
+                font-size: 13px;
+            }
+
+            .markdown-body table th,
+            .markdown-body table td {
+                padding: 6px 8px;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 5px 12px;
+            }
+
+            .article-list li {
+                flex-wrap: wrap;
+            }
+
+            .article-list .article-actions {
+                margin-top: 4px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media print {
+
+            .topbar,
+            .nav-sidebar,
+            footer,
+            .edit-toolbar,
+            .right-sidebar,
+            .btn,
+            .hamburger,
+            .toast,
+            .article-actions {
+                display: none !important;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .markdown-body {
+                outline: none !important;
+                padding: 0 !important;
+            }
+
+            body {
+                background: #fff;
+                color: #000;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                border-radius: var(--radius-sm);
+            }
+        }
+
+        /* ===== 暗色主题 ===== */
+        [data-theme="dark"] {
+            --bg: #141e26;
+            --card-bg: #1a2630;
+            --text: #e2e8f0;
+            --text-light: #94a3b8;
+            --text-muted: #5a6a7a;
+            --border: #2d3748;
+            --primary-light: #1f2a34;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .topbar {
+            background: #1a2630;
+            border-bottom-color: #2d3748;
+        }
+
+        [data-theme="dark"] .logo .logo-sub {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .logo .logo-sub::before {
+            color: #4a5a6a;
+        }
+
+        [data-theme="dark"] .nav-sidebar {
+            background: #1a2630;
+        }
+
+        [data-theme="dark"] .nav-item {
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .nav-item:hover {
+            background: #2a3640;
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .nav-item.active {
+            background: #2a3640;
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .group-title {
+            color: #94a3b8;
+            background: #1f2a34;
+            border-top-color: #2d3748;
+        }
+
+        [data-theme="dark"] .btn {
+            background: #2a3640;
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .btn:hover {
+            background: #3a4a5a;
+        }
+
+        [data-theme="dark"] .btn-outline {
+            background: transparent;
+            border-color: #3a4a5a;
+        }
+
+        [data-theme="dark"] .btn-outline:hover {
+            background: #2a3640;
+        }
+
+        [data-theme="dark"] .btn-icon {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .btn-icon:hover {
+            background: #2a3640;
+        }
+
+        [data-theme="dark"] .edit-toolbar {
+            background: #1f2a34;
+            border-color: #2d3748;
+        }
+
+        [data-theme="dark"] .edit-toolbar .hint {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .edit-toolbar .hint strong {
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .markdown-body h2 {
+            border-bottom-color: #2d3748;
+        }
+
+        [data-theme="dark"] .markdown-body code {
+            background: #2a3640;
+            color: #e2a8b0;
+        }
+
+        [data-theme="dark"] .markdown-body pre {
+            background: #0f1724;
+            color: #d4dce8;
+        }
+
+        [data-theme="dark"] .markdown-body blockquote {
+            background: #1f2a34;
+            border-left-color: var(--primary);
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .markdown-body table th {
+            background: #1f2a34;
+        }
+
+        [data-theme="dark"] .markdown-body table th,
+        [data-theme="dark"] .markdown-body table td {
+            border-color: #2d3748;
+        }
+
+        [data-theme="dark"] .markdown-body hr {
+            border-top-color: #2d3748;
+        }
+
+        [data-theme="dark"] .markdown-body .admonition {
+            background: #1f2a34;
+        }
+
+        [data-theme="dark"] .markdown-body .admonition.warning {
+            background: #2a241a;
+        }
+
+        [data-theme="dark"] .markdown-body .admonition.danger {
+            background: #2a1a1a;
+        }
+
+        [data-theme="dark"] .markdown-body .admonition.success {
+            background: #1a2a1a;
+        }
+
+        [data-theme="dark"] .markdown-body .img-placeholder {
+            background: #1f2a34;
+            border-color: #2d3748;
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .markdown-body .tag {
+            background: #2a3640;
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .markdown-body .tag.new {
+            background: #2a241a;
+            color: #f39c12;
+        }
+
+        [data-theme="dark"] footer {
+            background: #1a2630;
+            border-top-color: #2d3748;
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] footer a {
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .toast {
+            background: #2c3e50;
+            color: #fff;
+        }
+
+        [data-theme="dark"] .user-badge {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .article-list li {
+            border-bottom-color: #2d3748;
+        }
+
+        [data-theme="dark"] .article-list li:hover {
+            background: #1f2a34;
+        }
+
+        [data-theme="dark"] .article-list li.active {
+            background: #1f2a34;
+        }
+
+        [data-theme="dark"] .article-list .article-actions .delete-btn:hover {
+            background: #2a1a1a;
+        }
+
+        [data-theme="dark"] .article-list .article-actions .edit-btn:hover {
+            background: #1a2a3a;
+        }
+
+        /* ===== 辅助 ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== 顶部导航 ===== -->
+    <header class="topbar" role="banner">
+        <div class="logo-area">
+            <button class="hamburger" id="hamburgerBtn" aria-label="导航菜单">☰</button>
+            <a href="#" class="logo" id="logoLink">
+                <span class="logo-icon">📘</span>
+                <span>帮助中心</span>
+                <span class="logo-sub">文档管理</span>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="user-badge" id="userBadge">
+                <span class="avatar admin" id="userAvatar">A</span>
+                <span class="name" id="userName">Admin</span>
+            </div>
+            <button class="btn btn-primary" id="newArticleBtn">➕ 新建文章</button>
+            <button class="btn-icon" id="themeToggle" aria-label="切换主题" title="切换浅色/暗黑模式">🌓</button>
+        </div>
+    </header>
+
+    <!-- ===== 主布局 ===== -->
+    <div class="main-layout">
+
+        <!-- ===== 侧边栏（文章列表） ===== -->
+        <nav class="nav-sidebar" id="sidebar" aria-label="文章列表" role="navigation">
+            <div class="group-title"><span class="nav-icon">📄</span><span class="nav-text">文章列表</span></div>
+            <div id="articleListContainer">
+                <!-- 由 JS 动态生成 -->
+            </div>
+            <div class="group-title" style="border-top: none; margin-top: 4px;">
+                <span class="nav-icon">➕</span>
+                <span class="nav-text" style="cursor:pointer; color:var(--primary);" id="newArticleNavBtn">新建文章</span>
+            </div>
+        </nav>
+
+        <!-- ===== 内容区 ===== -->
+        <div class="content-wrapper">
+
+            <!-- ===== 主内容 ===== -->
+            <main class="main-content" id="mainContent" role="main">
+
+                <!-- 卡片：内容标题 -->
+                <div class="card">
+                    <div
+                        style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <h1 id="pageTitle" style="font-size:26px; font-weight:700; margin:0;">📝 选择或新建一篇文章</h1>
+                            <div style="font-size:14px; color:var(--text-light); margin-top:2px;" id="pageMeta">
+                                共 <span id="totalCount">0</span> 篇文章
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:10px; flex-shrink:0;">
+                            <button class="btn btn-primary" id="editToggleBtn">✎ 编辑</button>
+                            <button class="btn btn-outline btn-sm" id="scrollTopBtn" title="回到顶部">↑ 顶部</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 编辑工具栏 -->
+                <div class="edit-toolbar hidden" id="editToolbar" role="toolbar" aria-label="编辑工具栏">
+                    <span class="hint">✏️ <strong>编辑模式已开启</strong> — 直接点击内容区域修改，修改后点击「保存」。</span>
+                    <button class="btn btn-success btn-sm" id="saveEditBtn">💾 保存</button>
+                    <button class="btn btn-outline btn-sm" id="cancelEditBtn">取消</button>
+                </div>
+
+                <!-- 卡片：Markdown 内容 -->
+                <div class="card">
+                    <div class="markdown-body" id="markdownBody" role="article" contenteditable="false">
+                        <div class="empty-state">
+                            <div class="empty-icon">📄</div>
+                            <p>请从左侧选择一篇文章，或点击「新建文章」创建。</p>
+                            <button class="btn btn-primary" id="emptyNewBtn">➕ 新建文章</button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- ===== 右侧边栏 ===== -->
+            <aside class="right-sidebar">
+                <div class="card">
+                    <div class="card-header">📢 本文目录</div>
+                    <div id="tocSidebar" style="font-size:14px; line-height:1.8;">
+                        <div class="empty-state" style="padding:20px 0; font-size:14px;">
+                            选择文章后自动生成目录
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">🔧 操作</div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn btn-primary w-full" id="newArticleBtnSidebar">➕ 新建文章</button>
+                        <button class="btn btn-danger w-full hidden" id="deleteArticleBtn">🗑️ 删除当前文章</button>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer role="contentinfo">
+        <p>© 2026 帮助中心 · 文档管理系统 · 数据存储在本地 <span id="storageStatus">✅</span></p>
+    </footer>
+
+    <!-- ===== Toast ===== -->
+    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+    <script>
+        // ================================================================
+        //  核心数据 ——— 此处已清空所有预置示例，您可自行编写内容
+        // ================================================================
+
+        const STORAGE_KEY = 'help_articles_data';
+        const SELECTED_KEY = 'help_selected_article';
+
+        // 默认数据为空数组，您新建文章后会自动保存
+        const DEFAULT_ARTICLES = [];
+
+        // ================================================================
+        //  数据管理
+        // ================================================================
+
+        function loadArticles() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (Array.isArray(parsed)) {
+                        return parsed;
+                    }
+                } catch (e) { /* ignore */ }
+            }
+            // 首次使用，写入默认数据（空数组）
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_ARTICLES));
+            return DEFAULT_ARTICLES;
+        }
+
+        function saveArticles(articles) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+        }
+
+        function getSelectedId() {
+            return localStorage.getItem(SELECTED_KEY) || null;
+        }
+
+        function setSelectedId(id) {
+            if (id) {
+                localStorage.setItem(SELECTED_KEY, id);
+            } else {
+                localStorage.removeItem(SELECTED_KEY);
+            }
+        }
+
+        // ================================================================
+        //  状态
+        // ================================================================
+
+        let articles = loadArticles();
+        let currentArticleId = getSelectedId();
+        let isEditing = false;
+        let savedContent = '';
+
+        // ================================================================
+        //  DOM 引用
+        // ================================================================
+
+        const $ = id => document.getElementById(id);
+        const articleListContainer = $('articleListContainer');
+        const markdownBody = $('markdownBody');
+        const editToolbar = $('editToolbar');
+        const editToggleBtn = $('editToggleBtn');
+        const saveEditBtn = $('saveEditBtn');
+        const cancelEditBtn = $('cancelEditBtn');
+        const deleteArticleBtn = $('deleteArticleBtn');
+        const newArticleBtn = $('newArticleBtn');
+        const newArticleBtnSidebar = $('newArticleBtnSidebar');
+        const newArticleNavBtn = $('newArticleNavBtn');
+        const emptyNewBtn = $('emptyNewBtn');
+        const tocSidebar = $('tocSidebar');
+        const pageTitle = $('pageTitle');
+        const totalCount = $('totalCount');
+        const toast = $('toast');
+        const themeToggle = $('themeToggle');
+        const hamburgerBtn = $('hamburgerBtn');
+        const sidebar = $('sidebar');
+        const scrollTopBtn = $('scrollTopBtn');
+
+        // ================================================================
+        //  Toast 提示
+        // ================================================================
+
+        let toastTimer = null;
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2800);
+        }
+
+        // ================================================================
+        //  渲染函数
+        // ================================================================
+
+        function renderArticleList() {
+            let html = '';
+            articles.forEach(article => {
+                const active = article.id === currentArticleId ? 'active' : '';
+                html += `<li class="${active}" data-id="${article.id}">
+                    <span class="article-title">${escapeHtml(article.title)}</span>
+                    <span class="article-actions">
+                        <button class="edit-btn" data-id="${article.id}" title="编辑标题">✏️</button>
+                        <button class="delete-btn" data-id="${article.id}" title="删除">🗑️</button>
+                    </span>
+                </li>`;
+            });
+            if (articles.length === 0) {
+                html = `<div class="empty-state" style="padding:20px 12px;">
+                    <p style="font-size:14px;">暂无文章，点击「新建文章」创建。</p>
+                </div>`;
+            }
+            articleListContainer.innerHTML = `<ul class="article-list">${html}</ul>`;
+
+            // 绑定事件
+            document.querySelectorAll('.article-list li').forEach(li => {
+                li.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
+                    const id = li.dataset.id;
+                    selectArticle(id);
+                });
+            });
+
+            document.querySelectorAll('.article-list .delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    deleteArticle(id);
+                });
+            });
+
+            document.querySelectorAll('.article-list .edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    editArticleTitle(id);
+                });
+            });
+
+            totalCount.textContent = articles.length;
+        }
+
+        function renderArticleContent() {
+            if (!currentArticleId) {
+                markdownBody.innerHTML = `<div class="empty-state">
+                    <div class="empty-icon">📄</div>
+                    <p>请从左侧选择一篇文章，或点击「新建文章」创建。</p>
+                    <button class="btn btn-primary" id="emptyNewBtn2">➕ 新建文章</button>
+                </div>`;
+                const emptyBtn = markdownBody.querySelector('#emptyNewBtn2');
+                if (emptyBtn) emptyBtn.addEventListener('click', createNewArticle);
+                pageTitle.textContent = '📝 选择或新建一篇文章';
+                deleteArticleBtn.classList.add('hidden');
+                tocSidebar.innerHTML = `<div class="empty-state" style="padding:20px 0; font-size:14px;">选择文章后自动生成目录</div>`;
+                return;
+            }
+
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article) {
+                currentArticleId = null;
+                setSelectedId(null);
+                renderArticleContent();
+                renderArticleList();
+                return;
+            }
+
+            pageTitle.textContent = `📄 ${escapeHtml(article.title)}`;
+            markdownBody.innerHTML = article.content;
+            deleteArticleBtn.classList.remove('hidden');
+
+            generateTOC(article.content);
+        }
+
+        function generateTOC(htmlContent) {
+            const div = document.createElement('div');
+            div.innerHTML = htmlContent;
+            const h2s = div.querySelectorAll('h2');
+            if (h2s.length === 0) {
+                tocSidebar.innerHTML = `<div style="color:var(--text-light); font-size:14px; padding:8px 0;">暂无二级标题</div>`;
+                return;
+            }
+            let html = '<ul style="list-style:none; padding:0; margin:0;">';
+            h2s.forEach(h2 => {
+                const id = h2.id || h2.textContent.trim().replace(/\s+/g, '-').toLowerCase();
+                html += `<li style="margin-bottom:6px;"><a href="#${id}" style="color:var(--text); text-decoration:none; font-size:14px; transition:color 0.2s;" data-target="${id}">${h2.textContent.trim()}</a></li>`;
+            });
+            html += '</ul>';
+            tocSidebar.innerHTML = html;
+
+            tocSidebar.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = link.dataset.target;
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const offset = 80;
+                        const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ================================================================
+        //  核心操作
+        // ================================================================
+
+        function selectArticle(id) {
+            if (isEditing) {
+                if (!confirm('当前正在编辑，是否放弃修改？')) return;
+                exitEditMode(false);
+            }
+            currentArticleId = id;
+            setSelectedId(id);
+            renderArticleList();
+            renderArticleContent();
+            updateEditButtonState();
+            showToast(`已选择：${articles.find(a => a.id === id)?.title || ''}`);
+        }
+
+        function createNewArticle() {
+            if (isEditing) {
+                if (!confirm('当前正在编辑，是否放弃修改？')) return;
+                exitEditMode(false);
+            }
+            const titles = articles.map(a => a.title);
+            let baseTitle = '新文章';
+            let counter = 1;
+            while (titles.includes(baseTitle + (counter > 1 ? ` (${counter})` : ''))) {
+                counter++;
+            }
+            const title = baseTitle + (counter > 1 ? ` (${counter})` : '');
+            const newArticle = {
+                id: 'article-' + Date.now(),
+                title: title,
+                content: `<h2>欢迎</h2><p>这是您的全新文章。点击「编辑」开始编写内容。</p>`
+            };
+            articles.push(newArticle);
+            saveArticles(articles);
+            currentArticleId = newArticle.id;
+            setSelectedId(newArticle.id);
+            renderArticleList();
+            renderArticleContent();
+            updateEditButtonState();
+            showToast(`✅ 已创建「${title}」`);
+            enterEditMode();
+        }
+
+        function deleteArticle(id) {
+            if (id === currentArticleId && isEditing) {
+                if (!confirm('当前文章正在编辑，是否放弃并删除？')) return;
+                exitEditMode(false);
+            }
+            const article = articles.find(a => a.id === id);
+            if (!article) return;
+            if (!confirm(`确定要删除「${article.title}」吗？此操作不可撤销！`)) return;
+            articles = articles.filter(a => a.id !== id);
+            saveArticles(articles);
+            if (currentArticleId === id) {
+                currentArticleId = null;
+                setSelectedId(null);
+                renderArticleContent();
+            }
+            renderArticleList();
+            updateEditButtonState();
+            showToast(`🗑️ 已删除「${article.title}」`);
+        }
+
+        function editArticleTitle(id) {
+            const article = articles.find(a => a.id === id);
+            if (!article) return;
+            const newTitle = prompt('请输入新标题：', article.title);
+            if (newTitle === null || newTitle.trim() === '') return;
+            const trimmed = newTitle.trim();
+            if (articles.some(a => a.id !== id && a.title === trimmed)) {
+                showToast('⚠️ 标题已存在，请使用其他名称');
+                return;
+            }
+            article.title = trimmed;
+            saveArticles(articles);
+            renderArticleList();
+            if (currentArticleId === id) {
+                pageTitle.textContent = `📄 ${escapeHtml(trimmed)}`;
+            }
+            showToast(`✅ 标题已更新为「${trimmed}」`);
+        }
+
+        // ================================================================
+        //  编辑模式
+        // ================================================================
+
+        function enterEditMode() {
+            if (!currentArticleId) {
+                showToast('⚠️ 请先选择一篇文章');
+                return;
+            }
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article) return;
+            savedContent = article.content;
+            markdownBody.contentEditable = 'true';
+            markdownBody.focus();
+            isEditing = true;
+            editToolbar.classList.remove('hidden');
+            editToggleBtn.textContent = '✎ 编辑中...';
+            editToggleBtn.style.background = '#f39c12';
+            showToast('📝 编辑模式已开启');
+        }
+
+        function exitEditMode(save = false) {
+            if (!isEditing) return;
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article) {
+                isEditing = false;
+                editToolbar.classList.add('hidden');
+                editToggleBtn.textContent = '✎ 编辑';
+                editToggleBtn.style.background = '';
+                return;
+            }
+            if (save) {
+                const newContent = markdownBody.innerHTML;
+                article.content = newContent;
+                saveArticles(articles);
+                generateTOC(newContent);
+                showToast('✅ 已保存');
+            } else {
+                markdownBody.innerHTML = savedContent;
+                showToast('↩️ 已取消编辑');
+            }
+            markdownBody.contentEditable = 'false';
+            isEditing = false;
+            editToolbar.classList.add('hidden');
+            editToggleBtn.textContent = '✎ 编辑';
+            editToggleBtn.style.background = '';
+        }
+
+        function updateEditButtonState() {
+            if (currentArticleId) {
+                editToggleBtn.textContent = isEditing ? '✎ 编辑中...' : '✎ 编辑';
+                editToggleBtn.style.background = isEditing ? '#f39c12' : '';
+            } else {
+                editToggleBtn.textContent = '✎ 编辑';
+                editToggleBtn.style.background = '';
+            }
+        }
+
+        // ================================================================
+        //  主题切换
+        // ================================================================
+
+        let darkMode = false;
+
+        function toggleTheme() {
+            darkMode = !darkMode;
+            document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+            themeToggle.textContent = darkMode ? '☀️' : '🌓';
+            showToast(darkMode ? '🌙 暗黑模式' : '☀️ 明亮模式');
+            try {
+                localStorage.setItem('theme-preference', darkMode ? 'dark' : 'light');
+            } catch (_) { /* ignore */ }
+        }
+
+        function loadThemePreference() {
+            try {
+                const saved = localStorage.getItem('theme-preference');
+                if (saved === 'dark') {
+                    darkMode = true;
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.textContent = '☀️';
+                } else if (saved === 'light') {
+                    darkMode = false;
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    themeToggle.textContent = '🌓';
+                }
+            } catch (_) { /* ignore */ }
+        }
+
+        // ================================================================
+        //  移动端侧边栏
+        // ================================================================
+
+        let sidebarOpen = false;
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            sidebar.classList.toggle('open', sidebarOpen);
+            hamburgerBtn.setAttribute('aria-expanded', String(sidebarOpen));
+        }
+
+        function closeSidebar() {
+            if (sidebarOpen) {
+                sidebarOpen = false;
+                sidebar.classList.remove('open');
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        // ================================================================
+        //  初始化
+        // ================================================================
+
+        function init() {
+            loadThemePreference();
+
+            if (currentArticleId && !articles.some(a => a.id === currentArticleId)) {
+                currentArticleId = null;
+                setSelectedId(null);
+            }
+
+            renderArticleList();
+            renderArticleContent();
+            updateEditButtonState();
+
+            editToggleBtn.addEventListener('click', () => {
+                if (isEditing) {
+                    exitEditMode(false);
+                } else {
+                    enterEditMode();
+                }
+            });
+
+            saveEditBtn.addEventListener('click', () => {
+                exitEditMode(true);
+            });
+
+            cancelEditBtn.addEventListener('click', () => {
+                exitEditMode(false);
+            });
+
+            deleteArticleBtn.addEventListener('click', () => {
+                if (currentArticleId) deleteArticle(currentArticleId);
+            });
+
+            [newArticleBtn, newArticleBtnSidebar, newArticleNavBtn, emptyNewBtn].forEach(btn => {
+                if (btn) btn.addEventListener('click', createNewArticle);
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if (isEditing) {
+                        exitEditMode(true);
+                    } else {
+                        showToast('💡 请先点击「编辑」进入编辑模式');
+                    }
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                    e.preventDefault();
+                    if (isEditing) {
+                        exitEditMode(false);
+                    } else {
+                        enterEditMode();
+                    }
+                }
+                if (e.key === 'Escape' && isEditing) {
+                    exitEditMode(false);
+                }
+            });
+
+            themeToggle.addEventListener('click', toggleTheme);
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            hamburgerBtn.addEventListener('click', toggleSidebar);
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 900) closeSidebar();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 900 && sidebarOpen) {
+                    if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                        closeSidebar();
+                    }
+                }
+            });
+
+            showToast('📚 欢迎使用文档管理系统');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+
+</body>
+
+</html>

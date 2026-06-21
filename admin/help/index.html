@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助文档管理</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 10px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #e74c3c;
+            cursor: pointer
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 5px 18px;
+            font-size: 13px;
+            cursor: pointer
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #2c3e50
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px 24px;
+            margin-bottom: 20px
+        }
+
+        .card-header {
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-left: 3px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: #fff
+        }
+
+        .btn-primary:hover {
+            background: #c0392b
+        }
+
+        .btn-sm {
+            padding: 3px 10px;
+            font-size: 12px
+        }
+
+        .btn-sm.grant {
+            background: #2ECC71;
+            color: #fff
+        }
+
+        .btn-sm.revoke {
+            background: #E74C3C;
+            color: #fff
+        }
+
+        .btn-sm.batch {
+            background: #3498DB;
+            color: #fff
+        }
+
+        .btn-sm.batch:hover {
+            background: #2176ae
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 160px;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            transition: border .2s
+        }
+
+        .search-bar input:focus {
+            border-color: #e74c3c
+        }
+
+        .search-bar select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
+            cursor: pointer
+        }
+
+        .search-bar select:focus {
+            border-color: #e74c3c
+        }
+
+        .search-bar .result-count {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            position: relative
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle
+        }
+
+        th {
+            background: #f8f9fc;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2
+        }
+
+        th:first-child,
+        td:first-child {
+            padding-left: 6px
+        }
+
+        /* 拖拽手柄 */
+        .drag-handle {
+            cursor: grab;
+            color: #bbb;
+            font-size: 16px;
+            user-select: none;
+            text-align: center;
+            width: 28px;
+            transition: color 0.2s
+        }
+
+        .drag-handle:hover {
+            color: #2c3e50
+        }
+
+        .drag-handle:active {
+            cursor: grabbing
+        }
+
+        /* 拖拽状态 */
+        tr.dragging {
+            opacity: 0.35;
+            background: #f0f2f5
+        }
+
+        tr.drag-over {
+            border-bottom: 2px solid #e74c3c
+        }
+
+        tr.drag-over td {
+            border-bottom: none
+        }
+
+        .check-col {
+            width: 34px;
+            text-align: center
+        }
+
+        .check-col input {
+            cursor: pointer;
+            width: 15px;
+            height: 15px
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 10px;
+            font-size: 11.5px;
+            font-weight: 500
+        }
+
+        .status-badge.published {
+            background: #eafaf1;
+            color: #27ae60
+        }
+
+        .status-badge.draft {
+            background: #f5f5f5;
+            color: #999
+        }
+
+        .col-actions {
+            white-space: nowrap
+        }
+
+        .col-actions .action-icons {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .action-link {
+            font-size: 12.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            text-decoration: none
+        }
+
+        .action-link.primary {
+            color: #3498db;
+            font-weight: 500
+        }
+
+        .action-link.primary:hover {
+            background: #eef6fc
+        }
+
+        .action-link.red {
+            color: #E74C3C;
+            font-weight: 500
+        }
+
+        .action-link.red:hover {
+            background: #fdedec
+        }
+
+        .title-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500
+        }
+
+        .title-link:hover {
+            color: #e74c3c;
+            text-decoration: underline
+        }
+
+        .batch-bar {
+            display: none;
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: #f8f9fc;
+            border-radius: 6px;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap
+        }
+
+        .batch-bar.show {
+            display: flex
+        }
+
+        .batch-bar .info {
+            font-size: 13px;
+            color: #2c3e50;
+            margin-right: 6px
+        }
+
+        .message {
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534
+        }
+
+        .loading-text {
+            color: #999;
+            text-align: center;
+            padding: 40px
+        }
+
+        .empty-text {
+            color: #999;
+            text-align: center;
+            padding: 30px;
+            font-size: 13px
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 6px;
+            color: #e74c3c;
+            text-decoration: none;
+            font-size: 13px
+        }
+
+        .back-link:hover {
+            text-decoration: underline
+        }
+
+        @media (max-width: 700px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block
+            }
+
+            thead tr {
+                display: none
+            }
+
+            tr {
+                border: 1px solid #eee;
+                margin-bottom: 8px;
+                padding: 8px
+            }
+
+            td {
+                border: none;
+                padding: 4px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #333;
+                margin-right: 10px;
+                flex-shrink: 0
+            }
+
+            td.check-col {
+                display: flex;
+                justify-content: flex-start
+            }
+
+            td.check-col::before {
+                content: '';
+                display: none
+            }
+
+            .drag-handle {
+                width: 20px;
+                font-size: 14px
+            }
+
+            .batch-bar {
+                flex-direction: column;
+                align-items: stretch
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: stretch
+            }
+
+            .col-actions .action-icons {
+                flex-wrap: wrap
+            }
+
+            .container {
+                padding: 0 10px
+            }
+
+            .card {
+                padding: 14px 16px
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 6px 12px
+            }
+
+            .logo {
+                font-size: 1.1rem
+            }
+
+            .auth-btn {
+                padding: 3px 12px;
+                font-size: 12px
+            }
+
+            .search-bar input {
+                min-width: 120px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="logo" onclick="window.location.href='/'">✨ 帮助中心</div>
+        <div class="auth-buttons" id="authButtons">
+            <span class="user-email" id="userDisplay">加载中...</span>
+            <button id="logoutBtn" class="auth-btn logout">登出</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <span>📚 帮助文档</span>
+                <button class="btn btn-primary" id="newHelpBtn">➕ 新建</button>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 搜索标题...">
+                <select id="statusFilter">
+                    <option value="">全部状态</option>
+                    <option value="true">已发布</option>
+                    <option value="false">草稿</option>
+                </select>
+                <span class="result-count" id="resultCount">共 0 条</span>
+            </div>
+
+            <div class="table-wrap" id="tableWrap">
+                <div id="helpList">
+                    <div class="loading-text">加载帮助列表...</div>
+                </div>
+            </div>
+
+            <div class="batch-bar" id="batchBar">
+                <span class="info" id="batchInfo">已选 0 条</span>
+                <button class="btn-sm grant" id="batchPublish">发布</button>
+                <button class="btn-sm revoke" id="batchUnpublish">草稿</button>
+                <button class="btn-sm batch" id="batchDelete" style="background:#E74C3C;color:#fff;">🗑️ 删除</button>
+            </div>
+
+            <div id="msgDiv"></div>
+        </div>
+        <a href="/" class="back-link">← 返回首页</a>
+    </div>
+
+    <script>
+        (function () {
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            let currentUser = null;
+            let allHelps = [];
+            let filteredHelps = [];
+            let selectedIds = new Set();
+            let isEditing = false;
+
+            // 拖拽状态
+            let dragData = null;
+
+            // DOM
+            const userDisplay = document.getElementById('userDisplay');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const helpList = document.getElementById('helpList');
+            const msgDiv = document.getElementById('msgDiv');
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const resultCount = document.getElementById('resultCount');
+            const batchBar = document.getElementById('batchBar');
+            const batchInfo = document.getElementById('batchInfo');
+            const tableWrap = document.getElementById('tableWrap');
+
+            const newHelpBtn = document.getElementById('newHelpBtn');
+
+            function escapeHtml(s) {
+                if (!s) return '';
+                const d = document.createElement('div');
+                d.textContent = s;
+                return d.innerHTML;
+            }
+
+            function formatTime(iso) {
+                if (!iso) return '-';
+                try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; }
+            }
+
+            function showError(t) {
+                msgDiv.innerHTML = `<div class="message error">${t}</div>`;
+                setTimeout(() => msgDiv.innerHTML = '', 4000);
+            }
+
+            function showSuccess(t) {
+                msgDiv.innerHTML = `<div class="message success">${t}</div>`;
+                setTimeout(() => msgDiv.innerHTML = '', 3000);
+            }
+
+            // ===== 数据操作 =====
+            async function loadHelps() {
+                try {
+                    const { data, error } = await supabase
+                        .from('help')
+                        .select('*')
+                        .order('sort_order', { ascending: false });
+                    if (error) throw error;
+                    allHelps = data || [];
+                    // 确保所有项都有 sort_order
+                    let needUpdate = false;
+                    allHelps.forEach((h, i) => {
+                        if (h.sort_order === undefined || h.sort_order === null) {
+                            h.sort_order = (allHelps.length - i) * 10;
+                            needUpdate = true;
+                        }
+                    });
+                    if (needUpdate) {
+                        for (const h of allHelps) {
+                            await supabase.from('help').update({ sort_order: h.sort_order }).eq('id', h.id);
+                        }
+                    }
+                    applyFilters();
+                } catch (err) {
+                    helpList.innerHTML = `<div class="error">加载失败：${err.message}</div>`;
+                }
+            }
+
+            async function createHelp(data) {
+                const { data: r, error } = await supabase.from('help').insert([data]).select().single();
+                if (error) throw error;
+                return r;
+            }
+
+            async function updateHelp(id, data) {
+                const { data: r, error } = await supabase.from('help').update(data).eq('id', id).select().single();
+                if (error) throw error;
+                return r;
+            }
+
+            async function deleteHelp(id) {
+                const { error } = await supabase.from('help').delete().eq('id', id);
+                if (error) throw error;
+            }
+
+            async function batchDeleteHelps(ids) {
+                const { error } = await supabase.from('help').delete().in('id', ids);
+                if (error) throw error;
+            }
+
+            async function batchUpdateHelps(ids, data) {
+                const { error } = await supabase.from('help').update(data).in('id', ids);
+                if (error) throw error;
+            }
+
+            // ===== 过滤 & 渲染 =====
+            function applyFilters() {
+                const keyword = searchInput.value.trim().toLowerCase();
+                const status = statusFilter.value;
+
+                filteredHelps = allHelps.filter(h => {
+                    if (keyword && !h.title.toLowerCase().includes(keyword)) return false;
+                    if (status !== '') {
+                        const isPub = status === 'true';
+                        if (h.is_published !== isPub) return false;
+                    }
+                    return true;
+                });
+                renderHelpList();
+            }
+
+            function renderHelpList() {
+                if (!filteredHelps || filteredHelps.length === 0) {
+                    helpList.innerHTML = `<div class="empty-text">📭 暂无帮助，点击「新建」创建</div>`;
+                    resultCount.textContent = '共 0 条';
+                    batchBar.classList.remove('show');
+                    return;
+                }
+
+                resultCount.textContent = `共 ${filteredHelps.length} 条`;
+
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:28px;"></th>
+                                <th class="check-col"><input type="checkbox" id="selectAll"></th>
+                                <th>标题</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="helpBody">
+                `;
+
+                for (const h of filteredHelps) {
+                    const checked = selectedIds.has(h.id) ? 'checked' : '';
+                    const statusText = h.is_published ? '已发布' : '草稿';
+                    const statusCls = h.is_published ? 'published' : 'draft';
+
+                    html += `
+                        <tr data-id="${h.id}" draggable="true">
+                            <td class="drag-handle" title="拖动排序">⠿</td>
+                            <td class="check-col"><input type="checkbox" class="row-checkbox" data-id="${h.id}" ${checked} /></td>
+                            <td data-label="标题"><a href="#" class="title-link" data-id="${h.id}">${escapeHtml(h.title)}</a></td>
+                            <td data-label="状态"><span class="status-badge ${statusCls}">${statusText}</span></td>
+                            <td data-label="创建时间">${formatTime(h.created_at)}</td>
+                            <td data-label="操作">
+                                <a href="/help/${h.id}/edit" class="action-link primary">编辑</a>
+                                <button class="action-link red" data-action="delete" data-id="${h.id}">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                html += `</tbody></table>`;
+                helpList.innerHTML = html;
+
+                bindEvents();
+                bindDragEvents();
+                updateBatchBar();
+                updateSelectAll();
+            }
+
+            // ===== 拖拽事件 =====
+            function bindDragEvents() {
+                const tbody = document.getElementById('helpBody');
+                if (!tbody) return;
+
+                // 克隆以清理旧监听器
+                const newTbody = tbody.cloneNode(true);
+                tbody.parentNode.replaceChild(newTbody, tbody);
+
+                let dragSourceRow = null;
+                let dragSourceId = null;
+                let dragSourceIndex = -1;
+
+                const rows = newTbody.querySelectorAll('tr');
+
+                rows.forEach((row, idx) => {
+                    row.addEventListener('dragstart', function (e) {
+                        dragSourceRow = this;
+                        dragSourceId = parseInt(this.dataset.id);
+                        dragSourceIndex = idx;
+                        this.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', String(dragSourceId));
+                        dragData = { id: dragSourceId, idx: dragSourceIndex, row: this };
+                    });
+
+                    row.addEventListener('dragend', function () {
+                        this.classList.remove('dragging');
+                        document.querySelectorAll('#helpBody tr').forEach(r => r.classList.remove('drag-over'));
+                        dragSourceRow = null;
+                        dragSourceId = null;
+                        dragSourceIndex = -1;
+                        dragData = null;
+                    });
+
+                    row.addEventListener('dragover', function (e) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        document.querySelectorAll('#helpBody tr').forEach(r => r.classList.remove('drag-over'));
+                        const targetId = parseInt(this.dataset.id);
+                        if (dragSourceId && dragSourceId !== targetId) {
+                            this.classList.add('drag-over');
+                        }
+                    });
+
+                    row.addEventListener('dragleave', function () {
+                        this.classList.remove('drag-over');
+                    });
+
+                    row.addEventListener('drop', async function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.classList.remove('drag-over');
+
+                        const targetId = parseInt(this.dataset.id);
+                        const sourceId = dragSourceId;
+
+                        if (!sourceId || sourceId === targetId || dragSourceIndex === -1) return;
+
+                        const currentRows = document.querySelectorAll('#helpBody tr');
+                        const targetIndex = Array.from(currentRows).indexOf(this);
+
+                        if (dragSourceIndex === targetIndex) return;
+
+                        const sourceEl = currentRows[dragSourceIndex];
+                        if (!sourceEl) return;
+
+                        if (dragSourceIndex < targetIndex) {
+                            this.parentNode.insertBefore(sourceEl, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(sourceEl, this);
+                        }
+
+                        const newRows = document.querySelectorAll('#helpBody tr');
+                        const newOrder = [];
+                        newRows.forEach(el => {
+                            const id = parseInt(el.dataset.id);
+                            const found = allHelps.find(h => h.id === id);
+                            if (found) newOrder.push(found);
+                        });
+
+                        const base = allHelps.length * 10 + 10;
+                        const updates = newOrder.map((item, idx) => ({
+                            id: item.id,
+                            sort_order: base - idx * 10
+                        }));
+
+                        try {
+                            for (const u of updates) {
+                                await supabase.from('help').update({ sort_order: u.sort_order }).eq('id', u.id);
+                                const h = allHelps.find(a => a.id === u.id);
+                                if (h) h.sort_order = u.sort_order;
+                            }
+                            allHelps.sort((a, b) => (b.sort_order || 0) - (a.sort_order || 0));
+                            applyFilters();
+                            showSuccess('✅ 排序已更新');
+                        } catch (err) {
+                            showError('排序保存失败：' + err.message);
+                            await loadHelps();
+                        }
+
+                        dragSourceRow = null;
+                        dragSourceId = null;
+                        dragSourceIndex = -1;
+                        dragData = null;
+                    });
+                });
+
+                // 全局阻止默认拖拽行为（防止拖出页面）
+                document.addEventListener('dragover', function (e) {
+                    const target = e.target.closest('.table-wrap');
+                    if (!target) {
+                        e.preventDefault();
+                    }
+                });
+
+                document.addEventListener('drop', function (e) {
+                    const target = e.target.closest('.table-wrap');
+                    if (!target) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // ===== 表格事件 =====
+            function bindEvents() {
+                // 行复选框
+                document.querySelectorAll('.row-checkbox').forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        const id = parseInt(this.dataset.id);
+                        if (this.checked) selectedIds.add(id);
+                        else selectedIds.delete(id);
+                        updateBatchBar();
+                        updateSelectAll();
+                    });
+                });
+
+                // 全选
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) {
+                    selectAll.addEventListener('change', function () {
+                        document.querySelectorAll('.row-checkbox').forEach(cb => {
+                            cb.checked = this.checked;
+                            const id = parseInt(cb.dataset.id);
+                            if (this.checked) selectedIds.add(id);
+                            else selectedIds.delete(id);
+                        });
+                        updateBatchBar();
+                    });
+                }
+
+                // 编辑链接已改为 <a href="/help/{id}/edit">，无需 JS 绑定
+
+                // 删除
+                document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const id = parseInt(this.dataset.id);
+                        confirmDelete(id);
+                    });
+                });
+
+                // 标题点击查看
+                document.querySelectorAll('.title-link').forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const id = parseInt(this.dataset.id);
+                        const h = allHelps.find(a => a.id === id);
+                        if (h) {
+                            // 跳转到查看页面或编辑页面
+                            window.location.href = '/help/' + id;
+                        }
+                    });
+                });
+            }
+
+            function updateBatchBar() {
+                const count = selectedIds.size;
+                if (count === 0) { batchBar.classList.remove('show'); return; }
+                batchBar.classList.add('show');
+                batchInfo.textContent = `已选 ${count} 条`;
+            }
+
+            function updateSelectAll() {
+                const all = document.querySelectorAll('.row-checkbox');
+                const checked = document.querySelectorAll('.row-checkbox:checked');
+                const sa = document.getElementById('selectAll');
+                if (!sa || all.length === 0) return;
+                sa.checked = checked.length === all.length && all.length > 0;
+                sa.indeterminate = checked.length > 0 && checked.length < all.length;
+            }
+
+            // ===== 批量操作 =====
+            async function batchAction(actionName, updateData, successMsg) {
+                const ids = Array.from(selectedIds);
+                if (ids.length === 0) { showError('请先选择'); return; }
+                const r = await Swal.fire({
+                    title: `确定${actionName}选中的 ${ids.length} 条吗？`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                });
+                if (!r.isConfirmed) return;
+
+                try {
+                    await batchUpdateHelps(ids, updateData);
+                    for (const id of ids) {
+                        const h = allHelps.find(a => a.id === id);
+                        if (h) Object.assign(h, updateData);
+                    }
+                    selectedIds.clear();
+                    applyFilters();
+                    showSuccess(`✅ ${successMsg || actionName}成功`);
+                } catch (err) {
+                    showError(`批量操作失败：${err.message}`);
+                }
+            }
+
+            // ===== 删除确认 =====
+            async function confirmDelete(id) {
+                const h = allHelps.find(a => a.id === id);
+                if (!h) return;
+                const r = await Swal.fire({
+                    title: `确定删除「${h.title}」？`,
+                    text: '此操作不可撤销！',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '删除',
+                    cancelButtonText: '取消',
+                    confirmButtonColor: '#e74c3c'
+                });
+                if (!r.isConfirmed) return;
+
+                try {
+                    await deleteHelp(id);
+                    allHelps = allHelps.filter(a => a.id !== id);
+                    selectedIds.delete(id);
+                    applyFilters();
+                    showSuccess(`🗑️ 已删除「${h.title}」`);
+                } catch (err) {
+                    showError(`删除失败：${err.message}`);
+                }
+            }
+
+            // ===== 新建帮助（跳转到新建页面） =====
+            function createNewHelp() {
+                window.location.href = '/help/new';
+            }
+
+            // ===== 保存 =====
+            async function saveHelp(e) {
+                e.preventDefault();
+                // 此函数不再使用，因为编辑已改为独立页面
+                showError('请使用 /help/{id}/edit 页面进行编辑');
+            }
+
+            // ===== 认证 =====
+            async function initAuth() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) { window.location.href = '/login'; return; }
+                    currentUser = session.user;
+                    const { data: profile, error } = await supabase
+                        .from('profiles')
+                        .select('user_number, username')
+                        .eq('id', currentUser.id)
+                        .single();
+                    if (error || !profile) { window.location.href = '/'; return; }
+                    userDisplay.textContent = profile.username || currentUser.email;
+
+                    logoutBtn.addEventListener('click', async () => {
+                        await supabase.auth.signOut();
+                        window.location.href = '/';
+                    });
+                    await loadHelps();
+                } catch (err) {
+                    console.error(err);
+                    window.location.href = '/';
+                }
+            }
+
+            // ===== 批量事件 =====
+            document.getElementById('batchPublish').addEventListener('click', () => batchAction('发布', { is_published: true },
+                '发布成功'));
+            document.getElementById('batchUnpublish').addEventListener('click', () => batchAction('存为草稿', { is_published: false },
+                '已存草稿'));
+            document.getElementById('batchDelete').addEventListener('click', async () => {
+                const ids = Array.from(selectedIds);
+                if (ids.length === 0) { showError('请先选择'); return; }
+                const r = await Swal.fire({
+                    title: `确定删除 ${ids.length} 条？`,
+                    text: '不可撤销！',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '删除',
+                    cancelButtonText: '取消',
+                    confirmButtonColor: '#e74c3c'
+                });
+                if (!r.isConfirmed) return;
+                try {
+                    await batchDeleteHelps(ids);
+                    allHelps = allHelps.filter(a => !ids.includes(a.id));
+                    selectedIds.clear();
+                    applyFilters();
+                    showSuccess(`🗑️ 已删除 ${ids.length} 条`);
+                } catch (err) { showError(`批量删除失败：${err.message}`); }
+            });
+
+            // ===== 搜索/筛选 =====
+            searchInput.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+
+            // ===== 新建事件 =====
+            newHelpBtn.addEventListener('click', createNewHelp);
+
+            // ===== 快捷键 =====
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                    e.preventDefault();
+                    createNewHelp();
+                }
+            });
+
+            // ===== 启动 =====
+            initAuth();
+
+        })();
+    </script>
+
+</body>
+
+</html>
