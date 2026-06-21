@@ -101,7 +101,8 @@
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.2s
+            transition: background 0.2s;
+            text-decoration: none
         }
 
         .btn-primary {
@@ -214,7 +215,6 @@
             padding-left: 6px
         }
 
-        /* 拖拽手柄 */
         .drag-handle {
             cursor: grab;
             color: #bbb;
@@ -233,7 +233,6 @@
             cursor: grabbing
         }
 
-        /* 拖拽状态 */
         tr.dragging {
             opacity: 0.35;
             background: #f0f2f5
@@ -514,7 +513,7 @@
 
             <div class="table-wrap" id="tableWrap">
                 <div id="helpList">
-                    <div class="loading-text">加载帮助列表...</div>
+                    <div class="loading-text" id="loadingText">⏳ 加载帮助列表...</div>
                 </div>
             </div>
 
@@ -532,6 +531,7 @@
 
     <script>
         (function () {
+            // ===== Supabase 配置 =====
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -540,15 +540,12 @@
             let allHelps = [];
             let filteredHelps = [];
             let selectedIds = new Set();
-            let isEditing = false;
-
-            // 拖拽状态
-            let dragData = null;
 
             // DOM
             const userDisplay = document.getElementById('userDisplay');
             const logoutBtn = document.getElementById('logoutBtn');
             const helpList = document.getElementById('helpList');
+            const loadingText = document.getElementById('loadingText');
             const msgDiv = document.getElementById('msgDiv');
             const searchInput = document.getElementById('searchInput');
             const statusFilter = document.getElementById('statusFilter');
@@ -557,8 +554,7 @@
             const batchInfo = document.getElementById('batchInfo');
             const tableWrap = document.getElementById('tableWrap');
 
-            const newHelpBtn = document.getElementById('newHelpBtn');
-
+            // ===== 工具函数 =====
             function escapeHtml(s) {
                 if (!s) return '';
                 const d = document.createElement('div');
@@ -573,7 +569,7 @@
 
             function showError(t) {
                 msgDiv.innerHTML = `<div class="message error">${t}</div>`;
-                setTimeout(() => msgDiv.innerHTML = '', 4000);
+                setTimeout(() => msgDiv.innerHTML = '', 5000);
             }
 
             function showSuccess(t) {
@@ -584,12 +580,21 @@
             // ===== 数据操作 =====
             async function loadHelps() {
                 try {
+                    loadingText.textContent = '⏳ 加载帮助列表...';
+
                     const { data, error } = await supabase
                         .from('help')
                         .select('*')
                         .order('sort_order', { ascending: false });
-                    if (error) throw error;
+
+                    if (error) {
+                        console.error('Supabase 查询错误:', error);
+                        loadingText.textContent = '❌ 加载失败：' + error.message;
+                        return;
+                    }
+
                     allHelps = data || [];
+
                     // 确保所有项都有 sort_order
                     let needUpdate = false;
                     allHelps.forEach((h, i) => {
@@ -598,27 +603,19 @@
                             needUpdate = true;
                         }
                     });
-                    if (needUpdate) {
+
+                    if (needUpdate && allHelps.length > 0) {
                         for (const h of allHelps) {
                             await supabase.from('help').update({ sort_order: h.sort_order }).eq('id', h.id);
                         }
                     }
+
                     applyFilters();
+
                 } catch (err) {
-                    helpList.innerHTML = `<div class="error">加载失败：${err.message}</div>`;
+                    console.error('加载异常:', err);
+                    loadingText.textContent = '❌ 加载异常：' + err.message;
                 }
-            }
-
-            async function createHelp(data) {
-                const { data: r, error } = await supabase.from('help').insert([data]).select().single();
-                if (error) throw error;
-                return r;
-            }
-
-            async function updateHelp(id, data) {
-                const { data: r, error } = await supabase.from('help').update(data).eq('id', id).select().single();
-                if (error) throw error;
-                return r;
             }
 
             async function deleteHelp(id) {
@@ -649,16 +646,26 @@
                     }
                     return true;
                 });
+
                 renderHelpList();
             }
 
             function renderHelpList() {
+                const loadingEl = document.getElementById('loadingText');
+
                 if (!filteredHelps || filteredHelps.length === 0) {
-                    helpList.innerHTML = `<div class="empty-text">📭 暂无帮助，点击「新建」创建</div>`;
+                    if (allHelps.length === 0 && loadingEl) {
+                        loadingEl.textContent = '📭 暂无帮助，点击「新建」创建';
+                    } else {
+                        helpList.innerHTML = `<div class="empty-text">📭 没有匹配的帮助文档</div>`;
+                    }
                     resultCount.textContent = '共 0 条';
                     batchBar.classList.remove('show');
                     return;
                 }
+
+                // 隐藏加载提示
+                if (loadingEl) loadingEl.style.display = 'none';
 
                 resultCount.textContent = `共 ${filteredHelps.length} 条`;
 
@@ -711,11 +718,9 @@
                 const tbody = document.getElementById('helpBody');
                 if (!tbody) return;
 
-                // 克隆以清理旧监听器
                 const newTbody = tbody.cloneNode(true);
                 tbody.parentNode.replaceChild(newTbody, tbody);
 
-                let dragSourceRow = null;
                 let dragSourceId = null;
                 let dragSourceIndex = -1;
 
@@ -723,22 +728,18 @@
 
                 rows.forEach((row, idx) => {
                     row.addEventListener('dragstart', function (e) {
-                        dragSourceRow = this;
                         dragSourceId = parseInt(this.dataset.id);
                         dragSourceIndex = idx;
                         this.classList.add('dragging');
                         e.dataTransfer.effectAllowed = 'move';
                         e.dataTransfer.setData('text/plain', String(dragSourceId));
-                        dragData = { id: dragSourceId, idx: dragSourceIndex, row: this };
                     });
 
                     row.addEventListener('dragend', function () {
                         this.classList.remove('dragging');
                         document.querySelectorAll('#helpBody tr').forEach(r => r.classList.remove('drag-over'));
-                        dragSourceRow = null;
                         dragSourceId = null;
                         dragSourceIndex = -1;
-                        dragData = null;
                     });
 
                     row.addEventListener('dragover', function (e) {
@@ -807,32 +808,24 @@
                             await loadHelps();
                         }
 
-                        dragSourceRow = null;
                         dragSourceId = null;
                         dragSourceIndex = -1;
-                        dragData = null;
                     });
                 });
 
-                // 全局阻止默认拖拽行为（防止拖出页面）
                 document.addEventListener('dragover', function (e) {
                     const target = e.target.closest('.table-wrap');
-                    if (!target) {
-                        e.preventDefault();
-                    }
+                    if (!target) e.preventDefault();
                 });
 
                 document.addEventListener('drop', function (e) {
                     const target = e.target.closest('.table-wrap');
-                    if (!target) {
-                        e.preventDefault();
-                    }
+                    if (!target) e.preventDefault();
                 });
             }
 
             // ===== 表格事件 =====
             function bindEvents() {
-                // 行复选框
                 document.querySelectorAll('.row-checkbox').forEach(cb => {
                     cb.addEventListener('change', function () {
                         const id = parseInt(this.dataset.id);
@@ -843,7 +836,6 @@
                     });
                 });
 
-                // 全选
                 const selectAll = document.getElementById('selectAll');
                 if (selectAll) {
                     selectAll.addEventListener('change', function () {
@@ -857,9 +849,6 @@
                     });
                 }
 
-                // 编辑链接已改为 <a href="/help/{id}/edit">，无需 JS 绑定
-
-                // 删除
                 document.querySelectorAll('[data-action="delete"]').forEach(btn => {
                     btn.addEventListener('click', function () {
                         const id = parseInt(this.dataset.id);
@@ -867,16 +856,11 @@
                     });
                 });
 
-                // 标题点击查看
                 document.querySelectorAll('.title-link').forEach(link => {
                     link.addEventListener('click', function (e) {
                         e.preventDefault();
                         const id = parseInt(this.dataset.id);
-                        const h = allHelps.find(a => a.id === id);
-                        if (h) {
-                            // 跳转到查看页面或编辑页面
-                            window.location.href = '/help/' + id;
-                        }
+                        window.location.href = '/admin/help/' + id;
                     });
                 });
             }
@@ -950,40 +934,45 @@
                 }
             }
 
-            // ===== 新建帮助（跳转到新建页面） =====
-            function createNewHelp() {
-                window.location.href = '/help/new';
-            }
-
-            // ===== 保存 =====
-            async function saveHelp(e) {
-                e.preventDefault();
-                // 此函数不再使用，因为编辑已改为独立页面
-                showError('请使用 /help/{id}/edit 页面进行编辑');
-            }
-
             // ===== 认证 =====
             async function initAuth() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) { window.location.href = '/login'; return; }
+
+                    if (!session) {
+                        // 未登录，显示登录提示
+                        userDisplay.textContent = '未登录';
+                        document.getElementById('logoutBtn').style.display = 'none';
+                        helpList.innerHTML = `<div class="empty-text">🔒 请先 <a href="/login" style="color:#e74c3c;">登录</a> 后查看</div>`;
+                        loadingText.textContent = '🔒 请先登录';
+                        return;
+                    }
+
                     currentUser = session.user;
+
                     const { data: profile, error } = await supabase
                         .from('profiles')
                         .select('user_number, username')
                         .eq('id', currentUser.id)
                         .single();
-                    if (error || !profile) { window.location.href = '/'; return; }
-                    userDisplay.textContent = profile.username || currentUser.email;
+
+                    if (error || !profile) {
+                        userDisplay.textContent = currentUser.email || '用户';
+                    } else {
+                        userDisplay.textContent = profile.username || currentUser.email;
+                    }
 
                     logoutBtn.addEventListener('click', async () => {
                         await supabase.auth.signOut();
                         window.location.href = '/';
                     });
+
                     await loadHelps();
+
                 } catch (err) {
-                    console.error(err);
-                    window.location.href = '/';
+                    console.error('认证异常:', err);
+                    userDisplay.textContent = '认证失败';
+                    helpList.innerHTML = `<div class="error">认证失败：${err.message}</div>`;
                 }
             }
 
@@ -1017,17 +1006,6 @@
             // ===== 搜索/筛选 =====
             searchInput.addEventListener('input', applyFilters);
             statusFilter.addEventListener('change', applyFilters);
-
-            // ===== 新建事件 =====
-            newHelpBtn.addEventListener('click', createNewHelp);
-
-            // ===== 快捷键 =====
-            document.addEventListener('keydown', function (e) {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                    e.preventDefault();
-                    createNewHelp();
-                }
-            });
 
             // ===== 启动 =====
             initAuth();
