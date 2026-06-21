@@ -12,6 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
     <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
@@ -1053,6 +1055,8 @@
             const md = window.markdownit({ html: true, linkify: true, typographer: true });
             md.use(window.markdownitTaskLists);
             md.use(window.markdownitEmoji);
+            md.use(window.markdownitFootnote);
+            md.use(window.markdownitDeflist);
             
             // ---------- 辅助函数 ----------
             function escapeHtmlAttr(str) {
@@ -1343,6 +1347,27 @@
                     } catch (e) { return match; }
                 });
 
+                // 删除线：~~text~~ -> <del>text</del>
+                processed = processed.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+
+                // 高亮标记：==text== -> <mark>text</mark>
+                processed = processed.replace(/==([^=]+)==/g, '<mark>$1</mark>');
+
+                // 插入标记：++text++ -> <ins>text</ins>
+                processed = processed.replace(/\+\+([^+]+)\+\+/g, '<ins>$1</ins>');
+
+                // 小号文本：--text-- -> <small>text</small>
+                processed = processed.replace(/--([^-]+)--/g, '<small>$1</small>');
+
+                // 上标：^text^ -> <sup>text</sup>
+                processed = processed.replace(/\^([^^]+)\^/g, '<sup>$1</sup>');
+
+                // 下标：~text~ -> <sub>text</sub>
+                processed = processed.replace(/~([^~]+)~/g, '<sub>$1</sub>');
+
+                // 键盘按键：[[key]] -> <kbd>key</kbd>
+                processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
+
                 let html = md.render(processed);
 
                 // 在 renderContent 内部，定义 renderDetailsNode 之前，添加 LaTeX 渲染函数
@@ -1485,8 +1510,8 @@
                 html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
                 
                 return DOMPurify.sanitize(html, {
-                    ADD_TAGS: ['iframe'],
-                    ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing', 'allowfullscreen', 'style']
+                    ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del'],
+                    ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing', 'allowfullscreen', 'style', 'id', 'class', 'href']
                 });
             }
 

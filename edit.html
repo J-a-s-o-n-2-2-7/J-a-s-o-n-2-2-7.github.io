@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑帮助文档</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 30px 32px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #edf2f7;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #1e8449;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #bdc3c7;
+            color: #2c3e50;
+        }
+
+        .btn-outline:hover {
+            background: #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.2s;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #e74c3c;
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .markdown-editor {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .markdown-editor textarea {
+            width: 100%;
+            min-height: 380px;
+            padding: 12px;
+            border: none;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+        }
+
+        .markdown-editor textarea:focus {
+            background: #fafbfc;
+        }
+
+        .markdown-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fc;
+            border-bottom: 1px solid #edf2f7;
+            flex-wrap: wrap;
+        }
+
+        .markdown-toolbar .btn-sm {
+            padding: 2px 10px;
+            font-size: 12px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .markdown-toolbar .btn-sm:hover {
+            background: #eef2f7;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.published {
+            background: #eafaf1;
+            color: #27ae60;
+        }
+
+        .status-badge.draft {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .message {
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 18px;
+            color: #e74c3c;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .shortcut-hint {
+            font-size: 12px;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: flex-start;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .markdown-editor textarea {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="pageTitle">📝 编辑文档</h1>
+            <div class="header-actions">
+                <span id="statusDisplay" class="status-badge draft">草稿</span>
+                <button class="btn btn-success" id="saveBtn">💾 保存</button>
+                <button class="btn btn-danger" id="deleteBtn" style="display:none;">🗑️ 删除</button>
+            </div>
+        </div>
+
+        <!-- 表单 -->
+        <div class="form-group">
+            <label>标题 *</label>
+            <input type="text" id="titleInput" placeholder="输入标题..." />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>状态</label>
+                <select id="statusSelect">
+                    <option value="true">已发布</option>
+                    <option value="false" selected>草稿</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>排序序号</label>
+                <input type="number" id="sortOrderInput" placeholder="数值越大越靠前" step="1" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>内容（Markdown） <span class="shortcut-hint">Ctrl+S 保存</span></label>
+            <div class="markdown-editor">
+                <div class="markdown-toolbar">
+                    <button class="btn-sm" data-action="bold">B</button>
+                    <button class="btn-sm" data-action="italic">I</button>
+                    <button class="btn-sm" data-action="link">🔗</button>
+                    <button class="btn-sm" data-action="code">
+                        <>
+                    </button>
+                    <button class="btn-sm" data-action="h1">H1</button>
+                    <button class="btn-sm" data-action="h2">H2</button>
+                    <button class="btn-sm" data-action="h3">H3</button>
+                    <button class="btn-sm" data-action="ul">• 列表</button>
+                    <button class="btn-sm" data-action="ol">1. 列表</button>
+                </div>
+                <textarea id="contentTextarea" placeholder="使用 Markdown 编写内容..."></textarea>
+            </div>
+        </div>
+
+        <div id="msgDiv"></div>
+
+        <a href="/admin/help" class="back-link">← 返回列表</a>
+    </div>
+
+    <script>
+        (function () {
+            // ===== Supabase 配置（与 index.html 保持一致） =====
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // DOM
+            const pageTitle = document.getElementById('pageTitle');
+            const titleInput = document.getElementById('titleInput');
+            const statusSelect = document.getElementById('statusSelect');
+            const sortOrderInput = document.getElementById('sortOrderInput');
+            const contentTextarea = document.getElementById('contentTextarea');
+            const saveBtn = document.getElementById('saveBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            const statusDisplay = document.getElementById('statusDisplay');
+            const msgDiv = document.getElementById('msgDiv');
+
+            // 路由解析
+            const path = window.location.pathname;
+            let isNew = false;
+            let docId = null;
+
+            if (path === '/admin/help/new') {
+                isNew = true;
+                pageTitle.textContent = '✨ 新建文档';
+                deleteBtn.style.display = 'none';
+            } else {
+                const match = path.match(/^\/admin\/help\/(\d+)\/edit$/);
+                if (match) {
+                    docId = parseInt(match[1]);
+                    pageTitle.textContent = `✏️ 编辑文档 #${docId}`;
+                    deleteBtn.style.display = 'inline-flex';
+                } else {
+                    // 非法路径，跳转回列表
+                    window.location.href = '/admin/help';
+                    return;
+                }
+            }
+
+            // ===== 工具 =====
+            function showError(msg) {
+                msgDiv.innerHTML = `<div class="message error">${msg}</div>`;
+                setTimeout(() => msgDiv.innerHTML = '', 5000);
+            }
+            function showSuccess(msg) {
+                msgDiv.innerHTML = `<div class="message success">${msg}</div>`;
+                setTimeout(() => msgDiv.innerHTML = '', 3000);
+            }
+
+            function updateStatusBadge(published) {
+                if (published) {
+                    statusDisplay.textContent = '已发布';
+                    statusDisplay.className = 'status-badge published';
+                } else {
+                    statusDisplay.textContent = '草稿';
+                    statusDisplay.className = 'status-badge draft';
+                }
+            }
+
+            // ===== 加载已有文档（编辑模式） =====
+            async function loadDocument(id) {
+                try {
+                    const { data, error } = await supabase
+                        .from('help')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+
+                    if (error) throw error;
+                    if (!data) {
+                        showError('文档不存在');
+                        return;
+                    }
+
+                    titleInput.value = data.title || '';
+                    statusSelect.value = data.is_published ? 'true' : 'false';
+                    sortOrderInput.value = data.sort_order !== null && data.sort_order !== undefined ? data.sort_order : 0;
+                    contentTextarea.value = data.content || '';
+                    updateStatusBadge(data.is_published);
+                } catch (err) {
+                    showError('加载文档失败：' + err.message);
+                    console.error(err);
+                }
+            }
+
+            // ===== 保存 =====
+            async function saveDocument() {
+                const title = titleInput.value.trim();
+                if (!title) {
+                    showError('标题不能为空');
+                    titleInput.focus();
+                    return;
+                }
+
+                const isPublished = statusSelect.value === 'true';
+                const sortOrder = parseInt(sortOrderInput.value) || 0;
+                const content = contentTextarea.value;
+
+                const payload = {
+                    title,
+                    content,
+                    is_published: isPublished,
+                    sort_order: sortOrder,
+                    updated_at: new Date().toISOString(),
+                };
+
+                try {
+                    if (isNew) {
+                        // 新建
+                        const { data, error } = await supabase
+                            .from('help')
+                            .insert([{
+                                ...payload,
+                                created_at: new Date().toISOString(),
+                            }])
+                            .select()
+                            .single();
+
+                        if (error) throw error;
+                        showSuccess('✅ 文档创建成功！');
+                        // 切换到编辑模式（更新URL）
+                        const newId = data.id;
+                        window.history.replaceState({}, '', `/admin/help/${newId}/edit`);
+                        isNew = false;
+                        docId = newId;
+                        pageTitle.textContent = `✏️ 编辑文档 #${newId}`;
+                        deleteBtn.style.display = 'inline-flex';
+                        // 更新状态显示
+                        updateStatusBadge(isPublished);
+                    } else {
+                        // 更新
+                        const { error } = await supabase
+                            .from('help')
+                            .update(payload)
+                            .eq('id', docId);
+
+                        if (error) throw error;
+                        showSuccess('✅ 保存成功！');
+                        updateStatusBadge(isPublished);
+                    }
+                } catch (err) {
+                    showError('保存失败：' + err.message);
+                    console.error(err);
+                }
+            }
+
+            // ===== 删除 =====
+            async function deleteDocument() {
+                if (!docId) return;
+                const result = await Swal.fire({
+                    title: '确定删除此文档？',
+                    text: '此操作不可撤销！',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '删除',
+                    cancelButtonText: '取消',
+                    confirmButtonColor: '#e74c3c'
+                });
+                if (!result.isConfirmed) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('help')
+                        .delete()
+                        .eq('id', docId);
+                    if (error) throw error;
+                    showSuccess('🗑️ 已删除');
+                    // 跳转列表
+                    setTimeout(() => window.location.href = '/admin/help', 800);
+                } catch (err) {
+                    showError('删除失败：' + err.message);
+                }
+            }
+
+            // ===== Markdown 工具栏 =====
+            function insertText(text, before, after) {
+                const ta = contentTextarea;
+                const start = ta.selectionStart;
+                const end = ta.selectionEnd;
+                const selected = ta.value.substring(start, end);
+                const newText = before + selected + after;
+                ta.value = ta.value.substring(0, start) + newText + ta.value.substring(end);
+                const newPos = start + before.length + selected.length;
+                ta.selectionStart = ta.selectionEnd = newPos;
+                ta.focus();
+            }
+
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const action = this.dataset.action;
+                    switch (action) {
+                        case 'bold': insertText('**', '**'); break;
+                        case 'italic': insertText('*', '*'); break;
+                        case 'link': insertText('[', '](url)'); break;
+                        case 'code': insertText('`', '`'); break;
+                        case 'h1': insertText('# ', ''); break;
+                        case 'h2': insertText('## ', ''); break;
+                        case 'h3': insertText('### ', ''); break;
+                        case 'ul': insertText('- ', ''); break;
+                        case 'ol': insertText('1. ', ''); break;
+                    }
+                });
+            });
+
+            // ===== 键盘快捷键 =====
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    saveDocument();
+                }
+            });
+
+            // ===== 监听状态变化显示徽章 =====
+            statusSelect.addEventListener('change', function () {
+                updateStatusBadge(this.value === 'true');
+            });
+
+            // ===== 绑定事件 =====
+            saveBtn.addEventListener('click', saveDocument);
+            deleteBtn.addEventListener('click', deleteDocument);
+
+            // ===== 初始化 =====
+            if (isNew) {
+                // 新建模式：设置默认值
+                sortOrderInput.value = 0;
+                statusSelect.value = 'false';
+                updateStatusBadge(false);
+            } else if (docId) {
+                loadDocument(docId);
+            }
+        })();
+    </script>
+</body>
+
+</html>
