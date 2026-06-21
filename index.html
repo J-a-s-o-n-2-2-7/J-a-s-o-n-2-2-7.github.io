@@ -14,6 +14,9 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <style>
@@ -242,6 +245,39 @@
             color: #2c3e50;
         }
 
+        #back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #back-to-top:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            #back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
         footer {
             text-align: center;
             padding: 24px;
@@ -454,8 +490,8 @@
             font-weight: 600;
             margin: 0;
             cursor: default;
-            background-color: #8e44ad;
             transition: filter 0.15s;
+            /* background-color 由内联 style 动态设置 */
         }
 
         .user-tag-display:hover {
@@ -469,6 +505,106 @@
             white-space: normal;
         }
 
+        /* 解决锚点跳转被顶部栏遮挡 */
+        html {
+            scroll-behavior: smooth;
+            /* 可选：平滑滚动 */
+        }
+
+        .benben-text h1,
+        .benben-text h2,
+        .benben-text h3,
+        .benben-text h4,
+        .benben-text h5,
+        .benben-text h6,
+        .benben-text .footnote-ref,
+        .benben-text .footnotes li,
+        .benben-text .footnote-backref {
+            scroll-margin-top: 60px;
+        }
+
+        /* ===== 管理组提示（模仿目标样式） ===== */
+        .benben-text blockquote.admin-public-comment {
+            margin: 1em 0;
+            padding: 8px 16px;
+            border-left: 4px solid #e74c3c;
+            background: #fef9f9;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .benben-text blockquote.admin-public-comment>p {
+            color: #e74c3c;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .benben-text blockquote.admin-public-comment .lfe-marked {
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .benben-text blockquote.admin-public-comment .lfe-marked p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 内容中的代码背景微调 */
+        .benben-text blockquote.admin-public-comment .lfe-marked code {
+            background: rgba(231, 76, 60, 0.06);
+        }
+
+        /* 签名区块 */
+        .benben-text .signature-block {
+            border-left: 4px solid #e74c3c;
+            padding-left: 16px;
+            margin: 0.75em 0;
+            font-style: italic;
+        }
+
+        .benben-text .signature-name {
+            text-align: right;
+            color: #e74c3c;
+            font-weight: bold;
+            font-style: normal;
+            margin-top: 4px;
+        }
+
+        .benben-text .mermaid {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 0.75em 0;
+            overflow-x: auto;
+        }
+
+        .benben-text .toc {
+            margin: 1em 0;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .benben-text .toc ul {
+            list-style: none;
+            padding-left: 1.5em;
+            margin: 0.3em 0;
+        }
+
+        .benben-text .toc li {
+            margin: 0.2em 0;
+        }
+
+        .benben-text .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .benben-text .toc a:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+
         .benben-text ul,
         .benben-text ol {
             margin: 0.75em 0 0.75em 1.5em;
@@ -479,7 +615,8 @@
         .benben-text ul.contains-task-list {
             list-style-type: none;
             padding-left: 0;
-            margin-left: 0;          /* 关键：去除继承的 margin-left */
+            margin-left: 0;
+            /* 关键：去除继承的 margin-left */
         }
 
         .benben-text ul.contains-task-list li.task-list-item {
@@ -490,15 +627,43 @@
         }
 
         .benben-text ul.contains-task-list input[type="checkbox"] {
-            margin-top: 0.6em;       /* 微调垂直对齐 */
-            flex-shrink: 0;          /* 防止复选框被压缩 */
+            margin-top: 0.6em;
+            /* 微调垂直对齐 */
+            flex-shrink: 0;
+            /* 防止复选框被压缩 */
+        }
+
+        .benben-text dl {
+            margin: 0.75em 0;
+            padding-left: 0.5em;
+        }
+
+        .benben-text dt {
+            font-weight: bold;
+            margin-top: 0.5em;
+        }
+
+        .benben-text dd {
+            margin-left: 1.5em;
+            color: #555;
+        }
+
+        .benben-text kbd {
+            display: inline-block;
+            padding: 2px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f7f7f7;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+            font-size: 0.9em;
+            font-family: inherit;
         }
 
         .benben-text li {
             margin-bottom: 0.5em;
             line-height: 1.6;
         }
-        
+
         .benben-text h1,
         .benben-text h2 {
             border-bottom: 1px solid #D8D8D8;
@@ -509,19 +674,23 @@
         .benben-text h4,
         .benben-text h5,
         .benben-text h6 {
-            margin: 1em 0;          /* 标题上下边距，可根据喜好调整 */
+            margin: 1em 0;
+            /* 标题上下边距，可根据喜好调整 */
         }
 
         .benben-text p {
-            margin: 0 0 1em 0;      /* 段落底部边距，保持一致 */
+            margin: 0 0 1em 0;
+            /* 段落底部边距，保持一致 */
         }
 
         .benben-text blockquote p {
-            margin: 0 0 1em 0;      /* 引用块内段落同样 */
+            margin: 0 0 1em 0;
+            /* 引用块内段落同样 */
         }
 
         .benben-text blockquote {
-            margin: 1em 0;          /* 引用块自身上下边距，与段落协调 */
+            margin: 1em 0;
+            /* 引用块自身上下边距，与段落协调 */
         }
 
         .benben-text blockquote {
@@ -532,7 +701,8 @@
         }
 
         .benben-text blockquote blockquote {
-            margin-right: -0.01em;   /* 让内层比外层长一点点 */
+            margin-right: -0.01em;
+            /* 让内层比外层长一点点 */
         }
 
         .benben-text code {
@@ -543,7 +713,7 @@
         }
 
         /* 普通代码块容器 */
-        
+
         .benben-text pre {
             background: #FAFAFA;
             padding: 12px 0;
@@ -607,13 +777,29 @@
             margin: 0.75em 0;
         }
 
+        .code-filename {
+            font-size: 13px;
+            color: #555;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid #e8e8e8;
+            border-bottom: none;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+            margin-top: 0.75em;
+            margin-bottom: -1px;
+        }
+
         /* 复制按钮 */
         .copy-code-btn {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: none;   /* 半透明背景 */
-            border: none;          /* 无可见边框，但占位 */
+            background: none;
+            /* 半透明背景 */
+            border: none;
+            /* 无可见边框，但占位 */
             border-radius: 4px;
             padding: 4px 8px;
             font-size: 13px;
@@ -626,13 +812,17 @@
             gap: 4px;
             z-index: 10;
         }
+
         .code-block-wrapper:hover .copy-code-btn {
             opacity: 1;
         }
+
         .copy-code-btn:hover {
             background: #DDD;
-            border-color: #ccc;   /* 悬停时显示边框 */
+            border-color: #ccc;
+            /* 悬停时显示边框 */
         }
+
         /* 移除之前的 .copy-code-btn.copied::after 样式，因为我们将直接替换内容 */
 
         .copy-code-btn .svg-icon {
@@ -657,12 +847,13 @@
             opacity: 0;
             transform: scale(0.8) translateY(-20px);
             transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             min-width: 200px;
             box-sizing: border-box;
         }
+
         .swal2-toast-copy.show {
             opacity: 1;
             transform: scale(1) translateY(0);
@@ -676,6 +867,7 @@
             height: 28px;
             flex-shrink: 0;
         }
+
         .swal2-icon-success-copy .swal2-success-ring {
             position: absolute;
             top: -2px;
@@ -686,6 +878,7 @@
             border-radius: 50%;
             box-sizing: content-box;
         }
+
         .swal2-icon-success-copy .swal2-success-fix {
             position: absolute;
             top: 8px;
@@ -696,6 +889,7 @@
             transform: rotate(-45deg);
             z-index: 1;
         }
+
         .swal2-icon-success-copy .swal2-success-line-tip {
             position: absolute;
             top: 13px;
@@ -706,6 +900,7 @@
             transform: rotate(45deg);
             border-radius: 2px;
         }
+
         .swal2-icon-success-copy .swal2-success-line-long {
             position: absolute;
             top: 10px;
@@ -718,17 +913,61 @@
         }
 
         @keyframes animate-success-tip {
-            0% { width: 0; left: 1px; top: 19px; }
-            54% { width: 0; left: 1px; top: 19px; }
-            70% { width: 50px; left: -8px; top: 37px; }
-            84% { width: 17px; left: 21px; top: 48px; }
-            100% { width: 10px; left: 4px; top: 13px; }
+            0% {
+                width: 0;
+                left: 1px;
+                top: 19px;
+            }
+
+            54% {
+                width: 0;
+                left: 1px;
+                top: 19px;
+            }
+
+            70% {
+                width: 50px;
+                left: -8px;
+                top: 37px;
+            }
+
+            84% {
+                width: 17px;
+                left: 21px;
+                top: 48px;
+            }
+
+            100% {
+                width: 10px;
+                left: 4px;
+                top: 13px;
+            }
         }
+
         @keyframes animate-success-long {
-            0% { width: 0; left: 1px; top: 19px; }
-            65% { width: 0; left: 1px; top: 19px; }
-            84% { width: 55px; left: -5px; top: 15px; }
-            100% { width: 16px; left: 10px; top: 10px; }
+            0% {
+                width: 0;
+                left: 1px;
+                top: 19px;
+            }
+
+            65% {
+                width: 0;
+                left: 1px;
+                top: 19px;
+            }
+
+            84% {
+                width: 55px;
+                left: -5px;
+                top: 15px;
+            }
+
+            100% {
+                width: 16px;
+                left: 10px;
+                top: 10px;
+            }
         }
 
         /* 标题 */
@@ -743,12 +982,15 @@
         .benben-text img {
             max-width: 100%;
             height: auto;
-            display: block;   /* 避免图片底部出现多余空白 */
-            margin: 0.5em 0;  /* 可选：上下加一点间距 */
+            display: block;
+            /* 避免图片底部出现多余空白 */
+            margin: 0.5em 0;
+            /* 可选：上下加一点间距 */
         }
 
         .benben-text hr {
-            margin: 1em 0;   /* 上下间距与段落保持一致，可调整 */
+            margin: 1em 0;
+            /* 上下间距与段落保持一致，可调整 */
         }
 
         .benben-text pre .code-text::-moz-selection,
@@ -756,15 +998,18 @@
             background: #E5E5E6;
             color: inherit;
         }
+
         .benben-text pre .code-text::selection,
         .benben-text pre .line-number::selection {
             background: #E5E5E6;
             color: inherit;
         }
+
         .benben-text pre .code-highlight-line .code-text::-moz-selection {
             background: #DCDCDD;
             color: inherit;
         }
+
         .benben-text pre .code-highlight-line .code-text::selection {
             background: #DCDCDD;
             color: inherit;
@@ -784,7 +1029,8 @@
         }
 
         .benben-text th {
-            background: #F7F7F7;   /* 自定义标题底色 */
+            background: #F7F7F7;
+            /* 自定义标题底色 */
             font-weight: bold;
         }
 
@@ -812,8 +1058,10 @@
         .benben-text details {
             margin: 1em 0;
             padding: 8px 16px;
-            border: none;                 /* 去掉四周边框 */
-            border-left: 4px solid #cccccc; /* 只保留左侧竖线，默认灰色 */
+            border: none;
+            /* 去掉四周边框 */
+            border-left: 4px solid #cccccc;
+            /* 只保留左侧竖线，默认灰色 */
             background: transparent;
         }
 
@@ -821,12 +1069,15 @@
         .benben-text details.info {
             border-left-color: #3498DB;
         }
+
         .benben-text details.success {
             border-left-color: #52C41A;
         }
+
         .benben-text details.warning {
             border-left-color: #FFC116;
         }
+
         .benben-text details.error {
             border-left-color: #E74C3C;
         }
@@ -837,9 +1088,11 @@
             cursor: pointer;
             outline: none;
             display: flex;
-            justify-content: space-between;  /* 标题在左，箭头在右 */
+            justify-content: space-between;
+            /* 标题在左，箭头在右 */
             align-items: center;
-            list-style: none;               /* 隐藏默认三角（Firefox） */
+            list-style: none;
+            /* 隐藏默认三角（Firefox） */
         }
 
         /* 隐藏默认三角（Chrome/Safari） */
@@ -854,7 +1107,8 @@
             color: #888;
             transition: transform 0.2s ease;
             margin-left: 8px;
-            flex-shrink: 0;  /* 防止箭头被压缩 */
+            flex-shrink: 0;
+            /* 防止箭头被压缩 */
         }
 
         /* 展开时旋转 90° */
@@ -872,14 +1126,17 @@
         .benben-text details.info summary::after {
             color: #3498DB;
         }
+
         .benben-text details.success summary,
         .benben-text details.success summary::after {
             color: #52C41A;
         }
+
         .benben-text details.warning summary,
         .benben-text details.warning summary::after {
             color: #FFC116;
         }
+
         .benben-text details.error summary,
         .benben-text details.error summary::after {
             color: #E74C3C;
@@ -1019,6 +1276,8 @@
             </div>
         </div>
     </div>
+    <button id="back-to-top" title="回到顶部"
+        style="display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s;">↑</button>
     <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
 
     <script>
@@ -1057,7 +1316,8 @@
             md.use(window.markdownitEmoji);
             md.use(window.markdownitFootnote);
             md.use(window.markdownitDeflist);
-            
+            md.use(window.markdownitAbbr);
+
             // ---------- 辅助函数 ----------
             function escapeHtmlAttr(str) {
                 if (!str) return '';
@@ -1089,7 +1349,7 @@
 
             // ---------- 洛谷扩展预处理 ----------
             function preprocessLuoguSyntax(text) {
-                // 1. 处理 ![](bilibili:xxx) 格式
+                // 1. 处理 Bilibili 简写：![](bilibili:xxx)
                 text = text.replace(/!\[\]\(bilibili:([^)]+)\)/g, (match, param) => {
                     let bvid = '';
                     let aid = '';
@@ -1114,7 +1374,7 @@
                         return match;
                     }
 
-                    let embedUrl = 'https://player.bilibili.com/player.html?'; // 改为 https
+                    let embedUrl = 'https://player.bilibili.com/player.html?';
                     if (bvid) embedUrl += `bvid=${bvid}`;
                     else if (aid) embedUrl += `aid=${aid}`;
                     if (extraParams) embedUrl += extraParams;
@@ -1123,12 +1383,18 @@
                     return `<iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
                 });
 
-                // 2. 原有 [bilibili]BVxxx[/bilibili] 格式
+                // 2. 通用嵌入：用户自行提供完整 iframe URL
+                // 用法：![](embed:https://player.xxx.com/embed/xxxxx)
+                text = text.replace(/!\[\]\(embed:([^)]+)\)/g, (match, url) => {
+                    return `<iframe src="${url}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
+                });
+
+                // 3. 保留原有的 [bilibili]BVxxx[/bilibili] 格式（向后兼容）
                 text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =>
                     `<iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
                 );
 
-                // 3. align 语法
+                // 4. align 语法
                 text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_CENTER%%$1%%ALIGN_END%%');
                 text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_RIGHT%%$1%%ALIGN_END%%');
 
@@ -1255,7 +1521,7 @@
                 return { roots, output: output.join('\n') };
             }
 
-            function renderContent(rawText, mentionMap) {
+            function renderContent(rawText, mentionMap, hasSpecialPrivilege = false, username = '用户') {
                 if (!rawText) return '';
 
                 // 0. 解码 HTML 实体（把 &gt; 转成 >）
@@ -1271,6 +1537,14 @@
                 rawText = output;
                 // 不再使用 window，直接将 roots 作为闭包变量
                 const detailRoots = roots;  // 保存在局部
+
+                // 先提取 Mermaid 代码块，避免被普通代码块占用
+                const mermaidBlocks = [];
+                rawText = rawText.replace(/```mermaid\s*([\s\S]*?)```/g, (match, code) => {
+                    const idx = mermaidBlocks.length;
+                    mermaidBlocks.push(code.trim());
+                    return `%%MERMAID_${idx}%%`;
+                });
 
                 // ========== 1. 逐行提取围栏代码块（支持引用块内，保留引用前缀） ==========
                 const lines = rawText.split('\n');
@@ -1301,7 +1575,23 @@
                             // 代码块结束
                             inFence = false;
                             const content = fenceContent.join('\n');
-                            blocks.push({ type: 'fence', content });
+                            // 解析语言和文件名
+                            const firstLine = fenceContent[0] || '';
+                            let lang = '';
+                            let filename = '';
+                            if (firstLine.startsWith('```')) {
+                                const params = firstLine.slice(3).trim();
+                                const parts = params.split(/\s+/);
+                                const firstPart = parts[0] || '';
+                                if (firstPart.includes(':')) {
+                                    const [langPart, ...fileParts] = firstPart.split(':');
+                                    lang = langPart;
+                                    filename = fileParts.join(':');
+                                } else {
+                                    lang = firstPart;
+                                }
+                            }
+                            blocks.push({ type: 'fence', content, filename, lang });
                             blockIdx++;
                             // 结束行不添加任何内容到 processedLines
                         }
@@ -1314,7 +1604,23 @@
                 // 容错：如果代码块没有闭合，也保存
                 if (inFence && fenceContent.length > 0) {
                     const content = fenceContent.join('\n');
-                    blocks.push({ type: 'fence', content });
+                    // 解析语言和文件名
+                    const firstLine = fenceContent[0] || '';
+                    let lang = '';
+                    let filename = '';
+                    if (firstLine.startsWith('```')) {
+                        const params = firstLine.slice(3).trim();
+                        const parts = params.split(/\s+/);
+                        const firstPart = parts[0] || '';
+                        if (firstPart.includes(':')) {
+                            const [langPart, ...fileParts] = firstPart.split(':');
+                            lang = langPart;
+                            filename = fileParts.join(':');
+                        } else {
+                            lang = firstPart;
+                        }
+                    }
+                    blocks.push({ type: 'fence', content, filename, lang });
                     blockIdx++;
                 }
                 let processed = processedLines.join('\n');
@@ -1347,6 +1653,12 @@
                     } catch (e) { return match; }
                 });
 
+                // 图片尺寸控制：![alt](url =300x200)
+                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x(\d*)\)/g, (match, alt, url, width, height) => {
+                    const style = `width:${width}px;${height ? ` height:${height}px;` : ''}`;
+                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="${style}">`;
+                });
+
                 // 删除线：~~text~~ -> <del>text</del>
                 processed = processed.replace(/~~([^~]+)~~/g, '<del>$1</del>');
 
@@ -1356,19 +1668,145 @@
                 // 插入标记：++text++ -> <ins>text</ins>
                 processed = processed.replace(/\+\+([^+]+)\+\+/g, '<ins>$1</ins>');
 
-                // 小号文本：--text-- -> <small>text</small>
-                processed = processed.replace(/--([^-]+)--/g, '<small>$1</small>');
+                // 小号文本：--text-- -> <small>text</small>（只匹配前后非 '-' 或 ':'）
+                processed = processed.replace(/(?<![:\-])--([^-]+)--(?![:\-])/g, '<small>$1</small>');
 
-                // 上标：^text^ -> <sup>text</sup>
-                processed = processed.replace(/\^([^^]+)\^/g, '<sup>$1</sup>');
+                // 上标：^text^ -> <sup>text</sup>（避免匹配 [^1] 等脚注标记）
+                processed = processed.replace(/(?<![\[\^])\^([^^]+)\^(?![\]])/g, '<sup>$1</sup>');
 
                 // 下标：~text~ -> <sub>text</sub>
                 processed = processed.replace(/~([^~]+)~/g, '<sub>$1</sub>');
 
+                // 先保护 [[TOC]] 不被键盘按键正则捕获
+                processed = processed.replace(/\[\[TOC\]\]/g, '%%TOC_PLACEHOLDER%%');
                 // 键盘按键：[[key]] -> <kbd>key</kbd>
                 processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
+                // 恢复 [[TOC]]
+                processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, '[[TOC]]');
+
+                // 只指定宽度
+                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x\)/g, (match, alt, url, width) => {
+                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="width:${width}px; height:auto;">`;
+                });
+                // 只指定高度
+                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*x(\d+)\)/g, (match, alt, url, height) => {
+                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="height:${height}px; width:auto;">`;
+                });
+
+                // ===== 专属语法（仅当 hasSpecialPrivilege = true） =====
+                if (hasSpecialPrivilege) {
+                    // 1. 管理员公告 [admin]内容[/admin]
+                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
+                        return `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`;
+                    });
+                    // 2. 彩虹文字 {rainbow}文字{rainbow}（从红色平滑渐变到紫色）
+                    processed = processed.replace(/\{rainbow\}([\s\S]*?)\{rainbow\}/g, (match, content) => {
+                        const chars = content.split('');
+                        const len = chars.length;
+                        if (len === 0) return '';
+
+                        const startHue = 0;
+                        const endHue = 300;
+
+                        let result = '';
+                        for (let i = 0; i < len; i++) {
+                            const hue = startHue + (endHue - startHue) * (i / (len - 1));
+                            result += `<span style="color:hsl(${hue}, 100%, 50%);">${chars[i]}</span>`;
+                        }
+                        return `<span style="font-weight:bold;">${result}</span>`;
+                    });
+                    // 3. 签名 [sign]内容[/sign]
+                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) => {
+                        return `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`;
+                    });
+                }
 
                 let html = md.render(processed);
+
+                // 生成目录
+                function generateTOC(htmlText) {
+                    // 提取所有标题标签及其 id（如果没有id，自动生成）
+                    const headerRegex = /<h([1-6])(?:\s+id="([^"]*)")?>(.*?)<\/h\1>/g;
+                    const tocItems = [];
+                    let match;
+                    let idCounter = 0;
+                    // 为了给标题添加 id，我们同时修改 htmlText
+                    let modifiedHtml = htmlText;
+                    let offset = 0;
+                    // 先收集标题信息，并给没有id的标题添加id
+                    const headerMatches = [];
+                    let tempMatch;
+                    while ((tempMatch = headerRegex.exec(htmlText)) !== null) {
+                        const level = parseInt(tempMatch[1]);
+                        const id = tempMatch[2] || `toc-${idCounter++}`;
+                        const text = tempMatch[3];
+                        headerMatches.push({ level, id, text, startIndex: tempMatch.index, endIndex: tempMatch.index + tempMatch[0].length });
+                    }
+                    // 给标题添加id（如果原本没有）
+                    let newHtml = htmlText;
+                    let idxShift = 0;
+                    for (const item of headerMatches) {
+                        if (!item.id.startsWith('toc-')) continue; // 已有id的不改动
+                        // 插入 id 属性
+                        const oldTag = htmlText.substring(item.startIndex, item.endIndex);
+                        // 在 h1-h6 标签内插入 id
+                        const newTag = oldTag.replace(/<h([1-6])>/, `<h$1 id="${item.id}">`);
+                        newHtml = newHtml.replace(oldTag, newTag);
+                    }
+                    // 重新解析标题（因为可能插入了id，重新获取）
+                    const finalHeaderRegex = /<h([1-6])(?:\s+id="([^"]*)")?>(.*?)<\/h\1>/g;
+                    const finalMatches = [];
+                    let m;
+                    while ((m = finalHeaderRegex.exec(newHtml)) !== null) {
+                        const level = parseInt(m[1]);
+                        const id = m[2] || `toc-${idCounter++}`;
+                        const text = m[3];
+                        finalMatches.push({ level, id, text });
+                    }
+                    if (finalMatches.length === 0) return newHtml; // 没有标题，不生成目录
+
+                    // 生成目录 HTML
+                    let tocHtml = '<div class="toc"><ul>';
+                    let currentLevel = 0;
+                    const stack = [];
+                    for (let i = 0; i < finalMatches.length; i++) {
+                        const item = finalMatches[i];
+                        const level = item.level;
+                        const id = item.id;
+                        const text = item.text;
+                        if (level > currentLevel) {
+                            for (let j = 0; j < level - currentLevel; j++) {
+                                tocHtml += '<ul>';
+                            }
+                        } else if (level < currentLevel) {
+                            for (let j = 0; j < currentLevel - level; j++) {
+                                tocHtml += '</ul>';
+                            }
+                        }
+                        tocHtml += `<li><a href="#${id}">${text}</a></li>`;
+                        currentLevel = level;
+                    }
+                    while (currentLevel > 1) {
+                        tocHtml += '</ul>';
+                        currentLevel--;
+                    }
+                    tocHtml += '</ul></div>';
+
+                    // 替换 [[TOC]] 为生成的目录
+                    newHtml = newHtml.replace(/\[\[TOC\]\]/g, tocHtml);
+                    return newHtml;
+                }
+
+                // 在 md.render 之后调用
+                html = generateTOC(html);
+
+                // 恢复 Mermaid 图表
+                html = html.replace(/%%MERMAID_(\d+)%%/g, (match, idx) => {
+                    const code = mermaidBlocks[parseInt(idx)];
+                    if (!code) return match;
+                    // 用 div 包裹，让 mermaid 渲染
+                    return `<div class="mermaid">${code}</div>`;
+                });
 
                 // 在 renderContent 内部，定义 renderDetailsNode 之前，添加 LaTeX 渲染函数
                 function renderLatex(text) {
@@ -1449,6 +1887,11 @@
                     }
                     let codeContent = lines.slice(1, -1).join('\n');
 
+                    let titleHtml = '';
+                    if (block.filename) {
+                        titleHtml = `<div class="code-filename">${escapeHtml(block.filename)}</div>`;
+                    }
+
                     let codeHtml = '';
                     if (!showLineNumbers && !showHighlight) {
                         const codeLines = codeContent.split('\n');
@@ -1485,6 +1928,7 @@
 
                     // 用包装器包裹，并添加复制按钮
                     return `
+            ${titleHtml}
         <div class="code-block-wrapper">
             <button class="copy-code-btn" data-copy-btn title="复制代码">
                 <svg class="svg-icon" viewBox="0 0 448 512" aria-hidden="true">
@@ -1508,9 +1952,9 @@
 
                 // 清理多余的空段落和冒号残留
                 html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
-                
+
                 return DOMPurify.sanitize(html, {
-                    ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del'],
+                    ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del', 'div'],
                     ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing', 'allowfullscreen', 'style', 'id', 'class', 'href']
                 });
             }
@@ -1582,6 +2026,9 @@
                 document.body.removeChild(textarea);
             }
 
+            // ================================================================
+            // ★★★ 核心修改：renderAllBenbenTexts 中颜色逻辑已内联到 renderBenbenList ★★★
+            // ================================================================
             function renderAllBenbenTexts() {
                 document.querySelectorAll('.benben-text').forEach(el => {
                     try {
@@ -1591,18 +2038,71 @@
                         let rawText = rawEncoded;
                         let mentionMap = {};
                         try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
-                        el.innerHTML = renderContent(rawText, mentionMap);
+                        el.innerHTML = renderContent(rawText, mentionMap, currentProfile?.special_privilege || false, currentProfile?.username || '用户');
                     } catch (e) {
                         console.error('渲染犇犇内容失败:', e);
                         el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
                     }
                 });
+
+                // 渲染 Mermaid 图表（使用 setTimeout 确保 DOM 已更新）
+                if (typeof mermaid !== 'undefined') {
+                    mermaid.initialize({
+                        theme: 'default',
+                        themeVariables: {
+                            background: '#ffffff',
+                            primaryColor: '#e74c3c',
+                            primaryTextColor: '#333',
+                            primaryBorderColor: '#ccc',
+                            lineColor: '#666',
+                            secondaryColor: '#f0f2f5',
+                            tertiaryColor: '#f9f9f9'
+                        },
+                        startOnLoad: false  // 禁止自动加载，手动控制
+                    });
+                    // 使用 setTimeout 延迟执行，确保 DOM 已更新
+                    setTimeout(() => {
+                        mermaid.run({
+                            nodes: document.querySelectorAll('.mermaid')
+                        }).catch(err => {
+                            console.warn('Mermaid 渲染失败:', err);
+                        });
+                    }, 50);
+                }
+
+                // 在 renderAllBenbenTexts 中添加
                 document.addEventListener('click', function (e) {
-                    const btn = e.target.closest('.copy-code-btn');
-                    if (!btn) return;
-                    copyCode(btn);
+                    const link = e.target.closest('.footnote-backref, a[href^="#fn"]');
+                    if (link) {
+                        e.preventDefault();
+                        const targetId = link.getAttribute('href');
+                        const target = document.querySelector(targetId);
+                        if (target) {
+                            const topbarHeight = document.querySelector('.topbar').offsetHeight || 80;
+                            const targetRect = target.getBoundingClientRect();
+                            const scrollTop = window.pageYOffset + targetRect.top - topbarHeight - 10; // 多减10px留白
+                            window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                        }
+                    }
                 });
             }
+
+            // 回到顶部按钮控制
+            const backToTopBtn = document.getElementById('back-to-top');
+
+            // 监听滚动事件
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            // 点击回到顶部
+            backToTopBtn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
 
             // ---------- 业务函数 ----------
             async function fetchUnreadCount() {
@@ -1741,6 +2241,9 @@
                 }
             }
 
+            // ================================================================
+            // ★★★ 修改 renderBenbenList：颜色逻辑调整 ★★★
+            // ================================================================
             async function renderBenbenList(data, reset, mentionMap = {}) {
                 if (!benbenList) return;
                 if (reset) benbenList.innerHTML = '';
@@ -1755,16 +2258,20 @@
                     const prof = item.profiles || {};
                     const isAdmin = prof.is_admin || false;
                     const userTag = prof.user_tag || '';
-                    const usernameColor = prof.username_color || '#333';
-                    const color = isAdmin ? '#9b59b6' : usernameColor;
+                    // ★★★ 核心改动：直接使用 username_color，若为空则根据 isAdmin 给默认值 ★★★
+                    const color = prof.username_color || (isAdmin ? '#9b59b6' : '#333');
 
+                    // 生成用户标签（如果有自定义标签或管理员身份）
                     let labelHtml = '';
                     if (userTag) {
-                        labelHtml = `<span class="user-tag-display">${escapeHtml(userTag)}</span>`;
+                        // 自定义标签，背景色跟随 color
+                        labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
                     } else if (isAdmin) {
-                        labelHtml = `<span class="user-tag-display">管理员</span>`;
+                        // 管理员身份且无自定义标签，显示“管理员”标签，背景色同样跟随
+                        labelHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
                     }
 
+                    // 用户名颜色直接使用 color
                     let userHtml = `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
                     if (labelHtml) {
                         userHtml += labelHtml;
@@ -1918,7 +2425,11 @@
             }
 
             async function getProfile(userId) {
-                const { data, error } = await supabase.from('profiles').select('user_number, username, is_admin').eq('id', userId).single();
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('user_number, username, is_admin, special_privilege')  // 增加 special_privilege
+                    .eq('id', userId)
+                    .single();
                 if (error) return null;
                 return data;
             }
