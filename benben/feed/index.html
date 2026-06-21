@@ -38,7 +38,7 @@
     </script>
 
     <style>
-        /* ========== 基础样式（与主页完全一致） ========== */
+        /* ========== 基础样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -51,6 +51,7 @@
             line-height: 1.5;
         }
 
+        /* ========== 顶部栏 (z-index 高于侧边栏) ========== */
         .topbar {
             display: flex;
             justify-content: space-between;
@@ -60,7 +61,8 @@
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
+            /* 高于侧边栏 */
         }
 
         .logo {
@@ -138,28 +140,50 @@
             line-height: 1;
         }
 
+        /* ========== 主布局 ========== */
         .main-layout {
             max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
+            /* 顶部无 margin，因为侧边栏 fixed */
             position: relative;
+            min-height: 100vh;
         }
 
+        /* ========== 侧边栏：固定、无圆角、完整撑开、可滚动 ========== */
         .nav-sidebar {
-            position: absolute;
-            left: 0;
+            position: fixed;
             top: 0;
+            left: 0;
+            height: 100vh;
             width: 64px;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-radius: 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
             padding: 16px 0;
             transition: width 0.3s ease;
-            overflow: hidden;
+            overflow-y: auto;          /* 关键：允许垂直滚动 */
+            overflow-x: hidden;        /* 避免水平滚动破坏布局 */
             white-space: nowrap;
             z-index: 150;
         }
 
+        /* 滚动条美化（适用于 Chrome/Safari/Edge） */
+        .nav-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .nav-sidebar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+        .nav-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        /* 当鼠标悬停展开时，滚动条仍然可用（宽度变化不影响滚动功能） */
         .nav-sidebar:hover {
             width: 260px;
         }
@@ -186,6 +210,7 @@
             width: 24px;
             text-align: center;
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         .nav-text {
@@ -216,11 +241,14 @@
             margin: 8px 0;
         }
 
+        /* ========== 内容区域：左边距留出侧边栏空间 ========== */
         .content-wrapper {
             margin-left: 64px;
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
+            padding-top: 20px;
+            /* 与顶部栏保持间距 */
         }
 
         .main-content {
@@ -312,7 +340,7 @@
             text-decoration: underline;
         }
 
-        /* ========== 犇犇样式（与主页完全一致） ========== */
+        /* ========== 犇犇样式 ========== */
         .benben-item {
             display: flex;
             gap: 12px;
@@ -446,7 +474,7 @@
             filter: brightness(0.9);
         }
 
-        /* ========== Markdown 内容样式（与主页一致） ========== */
+        /* ========== Markdown 内容样式 ========== */
         .benben-text {
             line-height: 1.6;
             word-break: break-word;
@@ -930,7 +958,7 @@
             color: #E74C3C;
         }
 
-        /* ========== 详情页特有：回复列表 ========== */
+        /* ========== 回复列表 ========== */
         .reply-section {
             margin-top: 20px;
             border-top: 1px solid #e9ecef;
@@ -944,7 +972,6 @@
             margin-bottom: 14px;
         }
 
-        /* 回复项：与主页犇犇风格一致，但更紧凑 */
         .reply-item {
             display: flex;
             gap: 12px;
@@ -1024,30 +1051,55 @@
 
         /* ========== 响应式 ========== */
         @media (max-width: 900px) {
-            .main-layout {
-                position: static;
-            }
 
+            /* 侧边栏在移动端变为相对定位，随页面滚动 */
             .nav-sidebar {
                 position: relative;
+                top: auto;
+                left: auto;
+                height: auto;
                 width: 100%;
+                border-radius: 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
                 margin-bottom: 20px;
+                padding: 12px 0;
+                transition: none;
+                overflow: visible;
+                white-space: normal;
             }
 
             .nav-sidebar:hover {
                 width: 100%;
             }
 
-            .content-wrapper {
-                margin-left: 0;
-            }
-
             .nav-text {
                 opacity: 1;
             }
 
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 0;
+            }
+
             .right-sidebar {
                 width: 100%;
+            }
+
+            /* 导航项在移动端水平排列更紧凑 */
+            .nav-item,
+            .group-title {
+                padding: 8px 14px;
+                font-size: 13px;
+                gap: 8px;
+            }
+
+            .nav-icon {
+                font-size: 16px;
+                width: 20px;
+            }
+
+            .group-title {
+                margin-top: 4px;
             }
         }
 
@@ -1132,9 +1184,7 @@
                 background: #ddd;
                 border-color: #ccc;
             }
-        }
 
-        @media (max-width: 400px) {
             .auth-buttons .auth-btn {
                 padding: 4px 14px;
                 font-size: 12px;
@@ -1142,6 +1192,66 @@
 
             .user-email {
                 font-size: 12px;
+            }
+
+            /* 移动端侧边栏菜单两列布局 */
+            .nav-sidebar {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 8px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 6px 10px;
+                font-size: 12px;
+                border-radius: 6px;
+                background: #f8f9fc;
+            }
+
+            .nav-item:hover,
+            .group-title:hover {
+                background: #f0f2f5;
+            }
+
+            .group-title {
+                grid-column: 1 / -1;
+                background: #e9ecef;
+                margin-top: 0;
+                border-top: none;
+            }
+
+            .divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-buttons .auth-btn {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .user-email {
+                font-size: 11px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 6px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .nav-icon {
+                font-size: 14px;
+                width: 18px;
             }
         }
     </style>
@@ -1159,7 +1269,7 @@
 
     <!-- ========== 主布局 ========== -->
     <div class="main-layout">
-        <!-- 导航侧边栏 -->
+        <!-- 导航侧边栏 (fixed, 无圆角, 完整撑开) -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -1189,7 +1299,6 @@
         <!-- 内容区域 -->
         <div class="content-wrapper">
             <div class="main-content">
-                <!-- 详情卡片 -->
                 <div class="card" id="detailCard">
                     <div id="benbenDetailContent">
                         <div class="empty-message">⏳ 加载中...</div>
@@ -1213,7 +1322,7 @@
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ================================================================
-            // 2. markdown-it 配置（与主页完全一致）
+            // 2. markdown-it 配置
             // ================================================================
             const md = window.markdownit({
                 html: true,
@@ -1251,7 +1360,7 @@
             }
 
             // ================================================================
-            // 4. 洛谷扩展预处理（与主页完全一致）
+            // 4. 洛谷扩展预处理
             // ================================================================
             function preprocessLuoguSyntax(text) {
                 text = text.replace(/!\[\]\(bilibili:([^)]+)\)/g, function (match, param) {
@@ -1295,7 +1404,7 @@
             }
 
             // ================================================================
-            // 5. 嵌套折叠框解析（与主页完全一致）
+            // 5. 嵌套折叠框解析
             // ================================================================
             function parseNestedDetails(text) {
                 const lines = text.split('\n');
@@ -1398,7 +1507,7 @@
             }
 
             // ================================================================
-            // 6. 核心渲染函数 renderContent（与主页完全一致）
+            // 6. 核心渲染函数 renderContent
             // ================================================================
             function renderContent(rawText, mentionMap, hasSpecialPrivilege, username) {
                 if (!rawText) return '';
@@ -1761,7 +1870,7 @@
             }
 
             // ================================================================
-            // 7. 复制功能（与主页完全一致）
+            // 7. 复制功能
             // ================================================================
             function showCopyToast() {
                 var toast = document.querySelector('.swal2-toast-copy');
@@ -1887,7 +1996,6 @@
                 return map;
             }
 
-            // 未读消息计数
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
                 try {
@@ -1911,7 +2019,7 @@
             }
 
             // ================================================================
-            // 9. 核心：渲染详情（使用与主页一致的风格）
+            // 9. 核心：加载详情
             // ================================================================
             async function loadBenbenDetail() {
                 var id = getBenbenId();
@@ -1991,7 +2099,7 @@
             }
 
             // ================================================================
-            // 10. 渲染详情（使用与主页一致的 HTML 结构和样式）
+            // 10. 渲染详情
             // ================================================================
             function renderBenbenDetail(benben, replies, mentionMap) {
                 var username = benben.profiles?.username || '用户';
@@ -2005,7 +2113,6 @@
                 var userTag = prof.user_tag || '';
                 var color = prof.username_color || (isAdmin ? '#9b59b6' : '#333');
 
-                // 标签
                 var labelHtml = '';
                 if (userTag) {
                     labelHtml = '<span class="user-tag-display" style="background-color: ' + color + ';">' + escapeHtml(
@@ -2014,10 +2121,8 @@
                     labelHtml = '<span class="user-tag-display" style="background-color: ' + color + ';">管理员</span>';
                 }
 
-                // 主犇犇内容
                 var contentHtml = renderContent(benben.content, mentionMap, hasSpecial, currentUsername);
 
-                // 构建主犇犇 HTML（与主页 .benben-item 结构一致）
                 var mainHtml =
                     '<div class="benben-item">' +
                     '<div class="benben-avatar">' +
@@ -2048,7 +2153,6 @@
                     '</div>' +
                     '</div>';
 
-                // ---- 回复列表 ----
                 var repliesHtml = '';
                 if (replies.length > 0) {
                     var replyItems = replies.map(function (reply) {
@@ -2101,7 +2205,6 @@
                 var fullHtml = mainHtml + repliesHtml;
                 detailContainer.innerHTML = fullHtml;
 
-                // 绑定删除事件
                 document.querySelectorAll('.benben-delete').forEach(function (btn) {
                     btn.addEventListener('click', function (e) {
                         e.stopPropagation();
@@ -2112,14 +2215,12 @@
                     });
                 });
 
-                // 绑定举报事件
                 document.querySelectorAll('.benben-report-btn').forEach(function (btn) {
                     btn.addEventListener('click', function () {
                         alert('举报功能暂未开放，请联系管理员。');
                     });
                 });
 
-                // 重新渲染 Mermaid
                 if (typeof mermaid !== 'undefined') {
                     setTimeout(function () {
                         mermaid.run({
@@ -2141,7 +2242,6 @@
                         .update({ is_deleted: true })
                         .eq('id', id);
                     if (error) throw error;
-                    // 刷新页面或重新加载
                     loadBenbenDetail();
                 } catch (error) {
                     console.error(error);
@@ -2150,7 +2250,7 @@
             }
 
             // ================================================================
-            // 12. 更新顶部栏（含铃铛）
+            // 12. 更新顶部栏
             // ================================================================
             function updateTopbarAndBell() {
                 var authButtons = document.getElementById('authButtons');
