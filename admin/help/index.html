@@ -499,7 +499,7 @@
         <div class="card">
             <div class="card-header">
                 <span>📚 帮助文档</span>
-                <button class="btn btn-primary" id="newHelpBtn">➕ 新建</button>
+                <a href="/admin/help/new" class="btn btn-primary">➕ 新建</a>
             </div>
 
             <div class="search-bar">
@@ -690,7 +690,7 @@
                             <td data-label="状态"><span class="status-badge ${statusCls}">${statusText}</span></td>
                             <td data-label="创建时间">${formatTime(h.created_at)}</td>
                             <td data-label="操作">
-                                <a href="/help/${h.id}/edit" class="action-link primary">编辑</a>
+                                <a href="/admin/help/${h.id}/edit" class="action-link primary">编辑</a>
                                 <button class="action-link red" data-action="delete" data-id="${h.id}">删除</button>
                             </td>
                         </tr>

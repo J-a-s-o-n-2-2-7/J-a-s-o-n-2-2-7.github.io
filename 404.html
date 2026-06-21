@@ -39,7 +39,6 @@
             // 1. 犇犇永久链接：/benben/feed/数字
             var benbenMatch = path.match(/^\/benben\/feed\/(\d+)/);
             if (benbenMatch) {
-                // 不重定向，直接加载页面内容并替换，保持 URL
                 fetch('/benben/feed/index.html')
                     .then(function (response) {
                         if (!response.ok) throw new Error('无法加载犇犇详情页');
@@ -49,11 +48,7 @@
                         document.open();
                         document.write(html);
                         document.close();
-                        // 替换历史记录，保持当前 URL
                         history.replaceState({}, '', path);
-                        // 重要：页面加载后需要让其中的脚本能够从 path 获取 ID
-                        // 可以通过自定义事件或全局变量触发重新初始化
-                        // 但最简单的方式是在 index.html 中监听 DOMContentLoaded 时从 path 读取
                     })
                     .catch(function (error) {
                         console.error(error);
@@ -84,7 +79,71 @@
                 return;
             }
 
-            // 3. 其他路径显示 404
+            // ===== 新增：帮助文档路由（管理后台） =====
+
+            // 3. 编辑帮助文档：/admin/help/数字/edit
+            var helpEditMatch = path.match(/^\/admin\/help\/(\d+)\/edit$/);
+            if (helpEditMatch) {
+                var helpId = helpEditMatch[1];
+                fetch('/edit.html')
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('无法加载编辑页');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', '/admin/help/' + helpId + '/edit');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载编辑页，请稍后再试。</p>';
+                    });
+                return;
+            }
+
+            // 4. 新建帮助文档：/admin/help/new
+            if (path === '/admin/help/new') {
+                fetch('/edit.html')
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('无法加载编辑页');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', '/admin/help/new');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载编辑页，请稍后再试。</p>';
+                    });
+                return;
+            }
+
+            // 5. 帮助列表：/admin/help
+            if (path === '/admin/help') {
+                fetch('/index.html')
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('无法加载列表页');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', '/admin/help');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载列表页，请稍后再试。</p>';
+                    });
+                return;
+            }
+
+            // 6. 其他路径显示 404
             document.body.innerHTML = `
                 <h1>404 - 页面未找到</h1>
                 <p>您访问的页面不存在，请检查网址。</p>
