@@ -7,18 +7,27 @@
     <title>Jason227 · 算法竞赛社区</title>
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
+    </script>
     <!-- markdown-it -->
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
+    </script>
     <!-- Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
     <!-- DOMPurify -->
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
+    </script>
     <style>
         /* ========== 基础样式 ========== */
         * {
@@ -42,7 +51,8 @@
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
+            /* 高于侧边栏 */
         }
 
         .logo {
@@ -120,26 +130,53 @@
             line-height: 1;
         }
 
+        /* ========== 主布局 ========== */
         .main-layout {
             max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
             position: relative;
+            min-height: 100vh;
         }
 
+        /* ========== 侧边栏：固定、无圆角、完整撑开、可滚动 ========== */
         .nav-sidebar {
-            position: absolute;
-            left: 0;
+            position: fixed;
             top: 0;
+            left: 0;
+            height: 100vh;
             width: 64px;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-radius: 0;
+            /* 无圆角 */
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
             padding: 16px 0;
             transition: width 0.3s ease;
-            overflow: hidden;
+            overflow-y: auto;
+            /* 允许垂直滚动 */
+            overflow-x: hidden;
+            /* 避免水平滚动破坏布局 */
             white-space: nowrap;
             z-index: 150;
+            /* 低于 topbar 的 200 */
+        }
+
+        /* 滚动条美化（适用于 Chrome/Safari/Edge） */
+        .nav-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
         }
 
         .nav-sidebar:hover {
@@ -168,6 +205,7 @@
             width: 24px;
             text-align: center;
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         .nav-text {
@@ -198,11 +236,13 @@
             margin: 8px 0;
         }
 
+        /* ========== 内容区域：左边距留出侧边栏空间 ========== */
         .content-wrapper {
             margin-left: 64px;
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
+            padding-top: 20px;
         }
 
         .main-content {
@@ -1157,40 +1197,210 @@
             font-size: 13px;
         }
 
+        /* ========== 响应式：移动端侧边栏变为相对定位 ========== */
         @media (max-width: 900px) {
             .main-layout {
                 position: static;
+                padding: 0 16px 16px 16px;
             }
 
             .nav-sidebar {
                 position: relative;
+                top: auto;
+                left: auto;
+                height: auto;
                 width: 100%;
+                border-radius: 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
                 margin-bottom: 20px;
+                padding: 12px 0;
+                transition: none;
+                overflow: visible;
+                white-space: normal;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
             }
 
             .nav-sidebar:hover {
                 width: 100%;
             }
 
-            .content-wrapper {
-                margin-left: 0;
-            }
-
             .nav-text {
                 opacity: 1;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 0;
             }
 
             .right-sidebar {
                 width: 100%;
             }
 
+            /* 导航项在移动端更紧凑 */
+            .nav-item,
+            .group-title {
+                padding: 8px 14px;
+                font-size: 13px;
+                gap: 8px;
+                border-radius: 6px;
+                background: #f8f9fc;
+            }
+
+            .nav-item:hover,
+            .group-title:hover {
+                background: #f0f2f5;
+            }
+
+            .nav-icon {
+                font-size: 16px;
+                width: 20px;
+            }
+
+            .group-title {
+                grid-column: 1 / -1;
+                background: #e9ecef;
+                margin-top: 0;
+                border-top: none;
+            }
+
+            .divider {
+                display: none;
+            }
+
             .benben-item-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            /* 滚动条在移动端不显示（内容自适应） */
+            .nav-sidebar::-webkit-scrollbar {
+                width: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                padding: 16px 18px;
+            }
+
+            .benben-item {
+                gap: 10px;
+            }
+
+            .benben-avatar {
+                width: 32px;
+                margin-top: 6px;
+            }
+
+            .benben-avatar img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .benben-content {
+                padding: 6px 12px;
+            }
+
+            .benben-item-header {
+                padding: 4px 10px;
+                margin: -10px -12px 10px -12px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .benben-user-info {
+                gap: 6px;
+            }
+
+            .benben-actions {
+                gap: 8px;
+            }
+
+            .benben-text {
+                font-size: 14px;
+            }
+
+            .copy-code-btn {
+                opacity: 1;
+                background: rgba(255, 255, 255, 0.9);
+                border: 1px solid #d1d5db;
+            }
+
+            .copy-code-btn:hover {
+                background: #ddd;
+                border-color: #ccc;
+            }
+
+            .auth-buttons .auth-btn {
+                padding: 4px 14px;
+                font-size: 12px;
+            }
+
+            .user-email {
+                font-size: 12px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 8px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .nav-icon {
+                font-size: 14px;
+                width: 18px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-buttons .auth-btn {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .user-email {
+                font-size: 11px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 6px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .nav-icon {
+                font-size: 12px;
+                width: 16px;
+            }
         }
     </style>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
 </head>
 
 <body>
@@ -1200,6 +1410,7 @@
     </div>
 
     <div class="main-layout">
+        <!-- 侧边栏：固定、无圆角、可滚动（移动端变为相对定位） -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -1509,7 +1720,7 @@
                 const { roots, output } = parseNestedDetails(rawText);
                 rawText = output;
                 // 不再使用 window，直接将 roots 作为闭包变量
-                const detailRoots = roots;  // 保存在局部
+                const detailRoots = roots; // 保存在局部
 
                 // 先提取 Mermaid 代码块，避免被普通代码块占用
                 const mermaidBlocks = [];
@@ -1713,7 +1924,10 @@
                         const level = parseInt(tempMatch[1]);
                         const id = tempMatch[2] || `toc-${idCounter++}`;
                         const text = tempMatch[3];
-                        headerMatches.push({ level, id, text, startIndex: tempMatch.index, endIndex: tempMatch.index + tempMatch[0].length });
+                        headerMatches.push({
+                            level, id, text, startIndex: tempMatch.index, endIndex: tempMatch.index +
+                                tempMatch[0].length
+                        });
                     }
                     // 给标题添加id（如果原本没有）
                     let newHtml = htmlText;
@@ -1846,7 +2060,10 @@
                     // 围栏代码块
                     const lines = block.content.split('\n');
                     const firstLine = lines[0];
-                    let lang = '', showLineNumbers = false, showHighlight = false, highlightLines = null;
+                    let lang = '',
+                        showLineNumbers = false,
+                        showHighlight = false,
+                        highlightLines = null;
                     if (firstLine.startsWith('```')) {
                         const params = firstLine.slice(3).trim();
                         const parts = params.split(/\s+/);
@@ -1872,7 +2089,8 @@
                         codeHtml = `<pre><code class="language-${lang}">`;
                         for (const line of codeLines) {
                             const lineContent = line || ' ';
-                            codeHtml += `<div class="code-line"><span class="code-text">${escapeHtml(lineContent)}</span></div>`;
+                            codeHtml +=
+                                `<div class="code-line"><span class="code-text">${escapeHtml(lineContent)}</span></div>`;
                         }
                         codeHtml += `</code></pre>`;
                     } else {
@@ -1886,12 +2104,14 @@
                             const lineNum = i + 1;
                             const lineContent = codeLines[i] || ' ';
                             let lineClass = '';
-                            if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines.end) {
+                            if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <=
+                                highlightLines.end) {
                                 lineClass = ' code-highlight-line';
                             }
                             codeHtml += `<div class="code-line${lineClass}">`;
                             if (showLineNumbers) {
-                                codeHtml += `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
+                                codeHtml +=
+                                    `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
                             }
                             codeHtml += `<span class="code-text">${escapeHtml(lineContent)}</span>`;
                             codeHtml += `</div>`;
@@ -1916,7 +2136,8 @@
                 // ========== 7. @提及 ==========
                 html = html.replace(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g, (match, username) => {
                     const uid = mentionMap && mentionMap[username];
-                    if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
+                    if (uid)
+                        return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
                     return match;
                 });
 
@@ -1927,8 +2148,12 @@
                 html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
 
                 return DOMPurify.sanitize(html, {
-                    ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del', 'div'],
-                    ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing', 'allowfullscreen', 'style', 'id', 'class', 'href']
+                    ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del',
+                        'div'
+                    ],
+                    ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing',
+                        'allowfullscreen', 'style', 'id', 'class', 'href'
+                    ]
                 });
             }
 
@@ -2011,7 +2236,8 @@
                         let rawText = rawEncoded;
                         let mentionMap = {};
                         try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
-                        el.innerHTML = renderContent(rawText, mentionMap, currentProfile?.special_privilege || false, currentProfile?.username || '用户');
+                        el.innerHTML = renderContent(rawText, mentionMap, currentProfile?.special_privilege ||
+                            false, currentProfile?.username || '用户');
                     } catch (e) {
                         console.error('渲染犇犇内容失败:', e);
                         el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
@@ -2031,7 +2257,7 @@
                             secondaryColor: '#f0f2f5',
                             tertiaryColor: '#f9f9f9'
                         },
-                        startOnLoad: false  // 禁止自动加载，手动控制
+                        startOnLoad: false // 禁止自动加载，手动控制
                     });
                     // 使用 setTimeout 延迟执行，确保 DOM 已更新
                     setTimeout(() => {
@@ -2081,12 +2307,17 @@
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
                 try {
-                    const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_number', currentProfile.user_number).eq('read', false);
+                    const { count, error } = await supabase.from('notifications').select('*', {
+                        count: 'exact',
+                        head: true
+                    }).eq('user_number', currentProfile.user_number).eq('read', false);
                     if (!error && count !== null) {
                         const badge = document.getElementById('bell-badge');
                         if (badge) {
-                            if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.style.display = 'inline-flex'; }
-                            else { badge.style.display = 'none'; }
+                            if (count > 0) {
+                                badge.textContent = count > 99 ? '99+' : count;
+                                badge.style.display = 'inline-flex';
+                            } else { badge.style.display = 'none'; }
                         }
                     }
                 } catch (err) { console.error(err); }
@@ -2238,14 +2469,17 @@
                     let labelHtml = '';
                     if (userTag) {
                         // 自定义标签，背景色跟随 color
-                        labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
+                        labelHtml =
+                            `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
                     } else if (isAdmin) {
                         // 管理员身份且无自定义标签，显示“管理员”标签，背景色同样跟随
-                        labelHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
+                        labelHtml =
+                            `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
                     }
 
                     // 用户名颜色直接使用 color
-                    let userHtml = `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
+                    let userHtml =
+                        `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
                     if (labelHtml) {
                         userHtml += labelHtml;
                     }
@@ -2271,7 +2505,11 @@
                     `;
                     benbenList.insertAdjacentHTML('beforeend', benbenHtml);
                 }
-                document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); await deleteBenben(btn.dataset.id); }));
+                document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => {
+                    e
+                        .stopPropagation();
+                    await deleteBenben(btn.dataset.id);
+                }));
                 document.querySelectorAll('.benben-reply-btn').forEach(btn => btn.addEventListener('click', () => {
                     const replyToId = btn.dataset.replytoId;
                     const username = btn.dataset.username;
@@ -2287,7 +2525,8 @@
                         benbenContent.setSelectionRange(0, 0);
                     }
                 }));
-                document.querySelectorAll('.benben-report-btn').forEach(btn => btn.addEventListener('click', () => alert('举报功能暂未开放，请联系管理员。')));
+                document.querySelectorAll('.benben-report-btn').forEach(btn => btn.addEventListener('click', () =>
+                    alert('举报功能暂未开放，请联系管理员。')));
                 renderAllBenbenTexts();
             }
 
@@ -2296,7 +2535,10 @@
                     const { error } = await supabase.from('benben').update({ is_deleted: true }).eq('id', id);
                     if (error) throw error;
                     loadBenbenList(true);
-                } catch (error) { console.error(error); alert('删除失败：' + error.message); }
+                } catch (error) {
+                    console.error(error);
+                    alert('删除失败：' + error.message);
+                }
             }
 
             async function postBenben() {
@@ -2318,18 +2560,23 @@
 
                 let finalContent = currentProfile.is_admin ? content : content.substring(0, MAX_LENGTH);
                 // 不再转义尖括号，由 renderContent 全局处理
-                const insertData = { user_number: currentProfile.user_number, content: finalContent, is_deleted: false };
+                const insertData = {
+                    user_number: currentProfile.user_number, content: finalContent,
+                    is_deleted: false
+                };
                 if (finalReplyToId) {
                     insertData.reply_to = finalReplyToId;
                 }
 
                 try {
-                    const { data: newBenben, error: insertError } = await supabase.from('benben').insert(insertData).select().single();
+                    const { data: newBenben, error: insertError } = await supabase.from('benben').insert(insertData)
+                        .select().single();
                     if (insertError) throw insertError;
                     const newBenbenId = newBenben.id;
 
                     if (finalReplyToId) {
-                        const { data: originalBenben } = await supabase.from('benben').select('user_number').eq('id', finalReplyToId).single();
+                        const { data: originalBenben } = await supabase.from('benben').select('user_number').eq('id',
+                            finalReplyToId).single();
                         if (originalBenben && originalBenben.user_number !== currentProfile.user_number) {
                             await supabase.from('notifications').insert({
                                 user_number: originalBenben.user_number,
@@ -2342,11 +2589,13 @@
                     }
 
                     const mentionRegex = /@([\u4e00-\u9fa5a-zA-Z0-9_.\- ]+)/g;
-                    let match; const mentionedSet = new Set();
+                    let match;
+                    const mentionedSet = new Set();
                     while ((match = mentionRegex.exec(content)) !== null) mentionedSet.add(match[1]);
                     if (mentionedSet.size > 0) {
                         const usernames = Array.from(mentionedSet);
-                        const { data: userData } = await supabase.from('profiles').select('user_number, username').in('username', usernames);
+                        const { data: userData } = await supabase.from('profiles').select('user_number, username')
+                            .in('username', usernames);
                         if (userData) {
                             const notifications = [];
                             for (const user of userData) {
@@ -2360,7 +2609,8 @@
                                     });
                                 }
                             }
-                            if (notifications.length > 0) await supabase.from('notifications').insert(notifications);
+                            if (notifications.length > 0) await supabase.from('notifications').insert(
+                                notifications);
                         }
                     }
 
@@ -2400,7 +2650,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege')  // 增加 special_privilege
+                    .select('user_number, username, is_admin, special_privilege') // 增加 special_privilege
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2410,7 +2660,7 @@
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
-                    const benbenModule = document.getElementById('benbenModule');   // ★★★ 获取模块容器
+                    const benbenModule = document.getElementById('benbenModule'); // ★★★ 获取模块容器
 
                     if (session) {
                         // ======== 已登录 ========
@@ -2436,9 +2686,11 @@
                         let displayName = session.user.email;
                         if (currentProfile?.username) displayName = currentProfile.username;
                         let html = '';
-                        if (currentProfile?.user_number) html += `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
+                        if (currentProfile?.user_number) html +=
+                            `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
                         else html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
-                        html += `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
+                        html +=
+                            `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
@@ -2447,7 +2699,8 @@
                         });
                         welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtmlAttr(displayName)}`;
                         welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
-                        fortuneCard.innerHTML = `<div class="card-header">🧧 你的运势</div><div style="text-align:center"><span style="font-size:2rem;">中吉</span><p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p><p>连续打卡 <strong>228</strong> 天</p></div>`;
+                        fortuneCard.innerHTML =
+                            `<div class="card-header">🧧 你的运势</div><div style="text-align:center"><span style="font-size:2rem;">中吉</span><p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p><p>连续打卡 <strong>228</strong> 天</p></div>`;
 
                         // ★★★ 已登录：显示编辑器、导航、加载哨兵，并加载数据
                         const editor = document.getElementById('benbenEditor');
@@ -2468,10 +2721,12 @@
 
                         currentUser = null;
                         currentProfile = null;
-                        authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                        authButtons.innerHTML =
+                            `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                         welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
                         welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
-                        fortuneCard.innerHTML = `<div class="card-header">📅 今日日历</div><div style="text-align:center"><span style="font-size:1.8rem;">6月14日</span><p>星期日</p><p>距 CSP-J/S 2026 第一轮还剩 100 天</p><p><a href="/auth/login">👉 登录后查看专属运势</a></p></div>`;
+                        fortuneCard.innerHTML =
+                            `<div class="card-header">📅 今日日历</div><div style="text-align:center"><span style="font-size:1.8rem;">6月14日</span><p>星期日</p><p>距 CSP-J/S 2026 第一轮还剩 100 天</p><p><a href="/auth/login">👉 登录后查看专属运势</a></p></div>`;
 
                         // ★★★ 未登录：不加载犇犇列表，不设置无限滚动（模块已隐藏）
                         // 原有代码中的 loadBenbenList(true) 和 setupInfiniteScroll 已被移除
@@ -2480,7 +2735,8 @@
                     }
                 } catch (err) {
                     console.error(err);
-                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    authButtons.innerHTML =
+                        `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                     // ★★★ 出错时也隐藏犇犇模块，避免显示异常内容
                     const benbenModule = document.getElementById('benbenModule');
                     if (benbenModule) benbenModule.style.display = 'none';

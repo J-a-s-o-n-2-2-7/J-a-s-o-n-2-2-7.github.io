@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>陶片放逐 · Jason227</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
     <style>
-        /* ========== 完整模板样式（不变） ========== */
+        /* ===== 全局重置 & 洛谷风格变量（取自第二个页面） ===== */
         * {
             margin: 0;
             padding: 0;
@@ -18,8 +19,10 @@
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
+            color: #2c3e50;
         }
 
+        /* ===== 顶部导航（与第二个页面一致） ===== */
         .topbar {
             display: flex;
             justify-content: space-between;
@@ -29,7 +32,8 @@
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
+            /* 高于侧边栏 */
         }
 
         .logo {
@@ -54,10 +58,19 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #c0392b;
         }
 
         .auth-btn.logout {
             background: #7f8c8d;
+        }
+
+        .auth-btn.logout:hover {
+            background: #5a6268;
         }
 
         .user-email {
@@ -107,26 +120,48 @@
             line-height: 1;
         }
 
+        /* ===== 主布局（与第二个页面一致） ===== */
         .main-layout {
             max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
             position: relative;
+            min-height: 100vh;
         }
 
+        /* ===== 侧边栏：固定、无圆角、完整撑开、可滚动（与第二个页面一致） ===== */
         .nav-sidebar {
-            position: absolute;
-            left: 0;
+            position: fixed;
             top: 0;
+            left: 0;
+            height: 100vh;
             width: 64px;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-radius: 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
             padding: 16px 0;
             transition: width 0.3s ease;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             white-space: nowrap;
             z-index: 150;
+        }
+
+        .nav-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
         }
 
         .nav-sidebar:hover {
@@ -155,6 +190,7 @@
             width: 24px;
             text-align: center;
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         .nav-text {
@@ -185,15 +221,13 @@
             margin: 8px 0;
         }
 
-        /* ★ 布局调整：移除右侧边栏，主内容占满 */
+        /* ===== 内容区域：左边距留出侧边栏空间（与第二个页面一致） ===== */
         .content-wrapper {
             margin-left: 64px;
-            /* 侧边栏占位，主内容撑满 */
-            ;
+            padding-top: 20px;
         }
 
         .main-content {
-            width: 100%;
             max-width: 100%;
         }
 
@@ -203,6 +237,11 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             padding: 20px 24px;
             margin-bottom: 24px;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
 
         .card-header {
@@ -213,34 +252,32 @@
             margin-bottom: 20px;
         }
 
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: #7f8c8d;
-            font-size: 13px;
+        .card-desc {
+            color: #5b6e8c;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #edf2f7;
         }
 
-        a {
-            text-decoration: none;
-            color: #e74c3c;
+        /* ===== 日志卡片样式（源自第一个页面，但调整风格） ===== */
+        .log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* ===== 日志卡片专用样式 ===== */
         .log-card {
-            border-left: 4px solid #ccc;
-            padding: 16px 20px;
-            margin-bottom: 16px;
             background: #fafbfc;
             border-radius: 8px;
-            transition: background 0.2s;
+            padding: 16px 20px;
+            border-left: 4px solid #ccc;
+            transition: background 0.2s, transform 0.2s;
         }
 
         .log-card:hover {
             background: #f0f2f5;
+            transform: translateX(2px);
         }
 
         .log-card.ban {
@@ -259,31 +296,75 @@
             border-left-color: #d69e2e;
         }
 
-        .log-header {
+        .log-card.cheat {
+            border-left-color: #d1af60;
+        }
+
+        .log-card.manager {
+            border-left-color: #9d3dcf;
+        }
+
+        .log-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 6px;
+            gap: 6px 12px;
+            margin-bottom: 8px;
         }
 
         .log-action {
-            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        .log-action .tag {
+            font-size: 0.65rem;
+            padding: 1px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.8;
+        }
+
+        .tag-ban {
+            background: #e53e3e;
+        }
+
+        .tag-unban {
+            background: #38a169;
+        }
+
+        .tag-grant {
+            background: #3182ce;
+        }
+
+        .tag-revoke {
+            background: #d69e2e;
+        }
+
+        .tag-cheat {
+            background: #d1af60;
+            color: #5a3e00;
+        }
+
+        .tag-manager {
+            background: #9d3dcf;
         }
 
         .log-time {
+            font-size: 0.78rem;
             color: #999;
-            font-size: 0.85rem;
+            white-space: nowrap;
         }
 
         .log-users {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             margin: 6px 0 10px 0;
         }
@@ -292,72 +373,123 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            text-decoration: none;
+            font-size: 0.9rem;
             color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .log-user:hover {
+            color: #e74c3c;
         }
 
         .log-user img {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             object-fit: cover;
+            border: 1px solid #e2e8f0;
         }
 
         .log-user .uname {
             font-weight: 500;
-            font-size: 0.95rem;
         }
 
-        .log-user .tag {
-            font-size: 0.7rem;
+        .log-user .utag {
+            font-size: 0.6rem;
+            padding: 0 8px;
+            border-radius: 10px;
             background: #e2e8f0;
-            padding: 1px 8px;
-            border-radius: 12px;
             color: #4a5568;
+            line-height: 1.8;
+        }
+
+        .log-user .utag.admin {
+            background: #805ad5;
+            color: #fff;
+        }
+
+        .log-user .utag.banned {
+            background: #e53e3e;
+            color: #fff;
+        }
+
+        .log-arrow {
+            color: #a0aec0;
         }
 
         .log-detail {
             background: #edf2f7;
-            padding: 6px 12px;
+            padding: 4px 14px;
             border-radius: 6px;
-            font-size: 0.92rem;
-            color: #2d3748;
+            font-size: 0.85rem;
+            color: #4a5568;
+            display: inline-block;
             margin-bottom: 6px;
         }
 
+        .log-detail .highlight {
+            font-weight: 500;
+        }
+
+        .log-detail .highlight.success {
+            color: #38a169;
+        }
+
+        .log-detail .highlight.danger {
+            color: #e53e3e;
+        }
+
         .log-reason {
+            font-size: 0.88rem;
             color: #4a5568;
-            font-size: 0.95rem;
             border-top: 1px solid #e2e8f0;
             padding-top: 8px;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .log-reason strong {
             color: #2d3748;
         }
 
-        .empty {
+        .empty-state {
             text-align: center;
-            padding: 40px 0;
+            padding: 60px 20px;
             color: #999;
         }
 
-        #load-more {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: #edf2f7;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            color: #2d3748;
-            transition: 0.2s;
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
         }
 
-        #load-more:hover {
-            background: #e2e8f0;
+        /* ===== 加载更多按钮（与第二个页面风格协调） ===== */
+        .load-more-wrap {
+            text-align: center;
+            padding: 12px 0 4px;
+        }
+
+        #load-more {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 40px;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #load-more:hover:not(:disabled) {
+            background: #e74c3c;
+            border-color: #e74c3c;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
         }
 
         #load-more:disabled {
@@ -365,34 +497,194 @@
             cursor: not-allowed;
         }
 
+        #load-more .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #e74c3c;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        #load-more.loading .spinner {
+            display: inline-block;
+        }
+
+        #load-more.loading .text {
+            opacity: 0.6;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== Footer（与第二个页面一致） ===== */
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        footer a {
+            color: #7f8c8d;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+
+        /* ===== 响应式（与第二个页面一致） ===== */
         @media (max-width: 900px) {
             .main-layout {
-                position: static;
+                padding: 0 16px 16px 16px;
             }
 
             .nav-sidebar {
                 position: relative;
+                top: auto;
+                left: auto;
+                height: auto;
                 width: 100%;
+                border-radius: 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
                 margin-bottom: 20px;
+                padding: 12px 0;
+                transition: none;
+                overflow: visible;
+                white-space: normal;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
             }
 
             .nav-sidebar:hover {
                 width: 100%;
             }
 
-            .content-wrapper {
-                margin-left: 0;
-            }
-
             .nav-text {
                 opacity: 1;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 0;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 8px 14px;
+                font-size: 13px;
+                gap: 8px;
+                border-radius: 6px;
+                background: #f8f9fc;
+            }
+
+            .nav-item:hover,
+            .group-title:hover {
+                background: #f0f2f5;
+            }
+
+            .nav-icon {
+                font-size: 16px;
+                width: 20px;
+            }
+
+            .group-title {
+                grid-column: 1 / -1;
+                background: #e9ecef;
+                margin-top: 0;
+                border-top: none;
+            }
+
+            .divider {
+                display: none;
+            }
+
+            .nav-sidebar::-webkit-scrollbar {
+                width: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                padding: 16px 18px;
+            }
+
+            .auth-buttons .auth-btn {
+                padding: 4px 14px;
+                font-size: 12px;
+            }
+
+            .user-email {
+                font-size: 12px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 8px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .nav-icon {
+                font-size: 14px;
+                width: 18px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-buttons .auth-btn {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .user-email {
+                font-size: 11px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 6px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .nav-icon {
+                font-size: 12px;
+                width: 16px;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- ===== 顶栏 ===== -->
+    <!-- ===== 顶部导航 ===== -->
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
         <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
@@ -400,7 +692,7 @@
 
     <!-- ===== 主体布局 ===== -->
     <div class="main-layout">
-        <!-- 侧边栏（完整保留） -->
+        <!-- 侧边栏 -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -428,14 +720,19 @@
             <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
         </div>
 
-        <!-- 内容区域（无右侧边栏） -->
+        <!-- 内容区域 -->
         <div class="content-wrapper">
             <div class="main-content">
                 <div class="card">
                     <div class="card-header">🏛️ 陶片放逐 · 管理日志</div>
-                    <p style="color:#666;margin-bottom:20px;">此处公布近期涉及用户权限变更的管理日志，以提升管理流程透明度。</p>
-                    <div id="logList"></div>
-                    <button id="load-more">加载更多</button>
+                    <div class="card-desc">此处公布近期涉及用户权限变更的管理日志，以提升管理流程透明度，以及引起部分用户警示。</div>
+                    <div id="logList" class="log-list"></div>
+                    <div class="load-more-wrap">
+                        <button id="load-more">
+                            <span class="spinner"></span>
+                            <span class="text">加载更多</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -444,7 +741,9 @@
     <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
 
     <script>
-        // ========== 逻辑脚本（与之前完全一致） ==========
+        // ============================================================
+        //  核心逻辑（与原始陶片放逐页面一致，仅 UI 渲染适配）
+        // ============================================================
         (function () {
             const supabase = window.supabase.createClient(
                 'https://nosikdfacxkuaxfrmoqn.supabase.co',
@@ -460,6 +759,7 @@
             const loadMoreBtn = document.getElementById('load-more');
             const authButtons = document.getElementById('authButtons');
 
+            // ---------- 获取用户信息 ----------
             async function fetchUsers(userIds) {
                 if (!userIds.length) return {};
                 const { data, error } = await supabase
@@ -475,17 +775,29 @@
                 return map;
             }
 
+            // ---------- 渲染单条日志 ----------
             function renderLog(log, userMap) {
                 const admin = userMap[log.admin_id] || { username: '已删除', avatar: '', user_tag: '', is_admin: false };
-                const target = userMap[log.target_user_id] || { username: '已删除', avatar: '', user_tag: '', is_admin: false, is_banned: false };
+                const target = userMap[log.target_user_id] || {
+                    username: '已删除', avatar: '', user_tag: '', is_admin: false,
+                    is_banned: false
+                };
 
                 const typeMap = {
-                    'ban': { class: 'ban', icon: '🔒', label: '用户封禁' },
-                    'unban': { class: 'unban', icon: '🔓', label: '解除封禁' },
-                    'grant_perm': { class: 'grant', icon: '✅', label: '授予权限' },
-                    'revoke_perm': { class: 'revoke', icon: '❌', label: '撤销权限' },
+                    'ban': { class: 'ban', icon: '🔒', label: '用户封禁', tag: 'tag-ban' },
+                    'unban': { class: 'unban', icon: '🔓', label: '解除封禁', tag: 'tag-unban' },
+                    'grant_perm': { class: 'grant', icon: '✅', label: '授予权限', tag: 'tag-grant' },
+                    'revoke_perm': { class: 'revoke', icon: '❌', label: '撤销权限', tag: 'tag-revoke' },
                 };
-                const info = typeMap[log.action_type] || { class: '', icon: '📋', label: log.action_type };
+                // 扩展类型（与第一个页面保持一致）
+                const extraMap = {
+                    'cheat': { class: 'cheat', icon: '⚠️', label: '作弊惩罚', tag: 'tag-cheat' },
+                    'manager_rotate': { class: 'manager', icon: '🔄', label: '管理轮换', tag: 'tag-manager' },
+                };
+                let info = typeMap[log.action_type] || extraMap[log.action_type] || {
+                    class: '', icon: '📋', label: log
+                        .action_type, tag: ''
+                };
 
                 let detailText = '';
                 if (log.action_detail) {
@@ -499,41 +811,58 @@
                             'is_banned': '进入主站',
                         };
                         const permName = permMap[d.permission] || d.permission;
-                        detailText = `${d.new_value ? '授予' : '撤销'} ${permName} 权限`;
+                        const actionWord = d.new_value ? '授予' : '撤销';
+                        const cls = d.new_value ? 'success' : 'danger';
+                        detailText =
+                            `<span class="highlight ${cls}">${actionWord}</span> ${permName} 权限`;
                     } else if (log.action_type === 'ban') {
-                        detailText = '撤销 进入主站 权限';
+                        detailText = `<span class="highlight danger">撤销</span> 进入主站 权限`;
                     } else if (log.action_type === 'unban') {
-                        detailText = '授予 进入主站 权限';
+                        detailText = `<span class="highlight success">授予</span> 进入主站 权限`;
+                    } else if (log.action_type === 'cheat') {
+                        detailText = `学术不端惩罚`;
+                    } else if (log.action_type === 'manager_rotate') {
+                        detailText = `管理志愿者轮换`;
                     }
                 }
 
                 const time = new Date(log.created_at).toLocaleString('zh-CN', { hour12: false });
-                const adminColor = admin.is_admin ? '#9b59b6' : '#333';
-                const targetColor = target.is_admin ? '#9b59b6' : '#333';
+                const adminColor = admin.is_admin ? '#9b59b6' : '#2c3e50';
+                const targetColor = target.is_admin ? '#9b59b6' : '#2c3e50';
+
+                // 用户标签
+                const adminTag = admin.is_admin ? `<span class="utag admin">管理员</span>` : '';
+                const targetAdminTag = target.is_admin ? `<span class="utag admin">管理员</span>` : '';
+                const targetBannedTag = target.is_banned ? `<span class="utag banned">已封禁</span>` : '';
+                const targetTag = target.user_tag ? `<span class="utag">${target.user_tag}</span>` : '';
+                const adminTagUser = admin.user_tag ? `<span class="utag">${admin.user_tag}</span>` : '';
+
+                const avatarFallback = 'https://cdn.luogu.com.cn/images/default_avatar.png';
 
                 return `
                     <div class="log-card ${info.class}">
-                        <div class="log-header">
+                        <div class="log-meta">
                             <div class="log-action">
                                 <span>${info.icon}</span>
                                 <span>${info.label}</span>
+                                ${info.tag ? `<span class="tag ${info.tag}">${info.label}</span>` : ''}
                             </div>
                             <span class="log-time">${time}</span>
                         </div>
                         <div class="log-users">
                             <a href="/user/${admin.id}" class="log-user">
-                                <img src="${admin.avatar || 'https://cdn.luogu.com.cn/images/default_avatar.png'}" alt="${admin.username}">
+                                <img src="${admin.avatar || avatarFallback}" alt="${admin.username}">
                                 <span class="uname" style="color:${adminColor};">${admin.username}</span>
-                                ${admin.user_tag ? `<span class="tag">${admin.user_tag}</span>` : ''}
-                                ${admin.is_admin ? '<span class="tag" style="background:#805ad5;color:#fff;">管理员</span>' : ''}
+                                ${adminTagUser}
+                                ${adminTag}
                             </a>
-                            <span style="color:#a0aec0;">→</span>
+                            <span class="log-arrow">→</span>
                             <a href="/user/${target.id}" class="log-user">
-                                <img src="${target.avatar || 'https://cdn.luogu.com.cn/images/default_avatar.png'}" alt="${target.username}">
+                                <img src="${target.avatar || avatarFallback}" alt="${target.username}">
                                 <span class="uname" style="color:${targetColor};">${target.username}</span>
-                                ${target.user_tag ? `<span class="tag">${target.user_tag}</span>` : ''}
-                                ${target.is_admin ? '<span class="tag" style="background:#805ad5;color:#fff;">管理员</span>' : ''}
-                                ${target.is_banned ? '<span class="tag" style="background:#e53e3e;color:#fff;">已封禁</span>' : ''}
+                                ${targetTag}
+                                ${targetAdminTag}
+                                ${targetBannedTag}
                             </a>
                         </div>
                         ${detailText ? `<div class="log-detail">${detailText}</div>` : ''}
@@ -542,10 +871,12 @@
                 `;
             }
 
+            // ---------- 加载日志 ----------
             async function loadLogs(append = false) {
                 if (loading || !hasMore) return;
                 loading = true;
                 loadMoreBtn.disabled = true;
+                loadMoreBtn.classList.add('loading');
 
                 try {
                     const { data, error } = await supabase
@@ -558,7 +889,15 @@
 
                     if (!data || data.length === 0) {
                         hasMore = false;
-                        if (!append) logList.innerHTML = '<div class="empty">暂无管理日志</div>';
+                        if (!append) {
+                            logList.innerHTML = `
+                                <div class="empty-state">
+                                    <div class="icon">📭</div>
+                                    <p>暂无管理日志</p>
+                                </div>
+                            `;
+                        }
+                        loadMoreBtn.style.display = 'none';
                         return;
                     }
 
@@ -578,17 +917,30 @@
 
                     page++;
                     hasMore = data.length === PAGE_SIZE;
-                    if (!hasMore) loadMoreBtn.style.display = 'none';
+                    if (!hasMore) {
+                        loadMoreBtn.style.display = 'none';
+                    } else {
+                        loadMoreBtn.style.display = 'inline-flex';
+                    }
                 } catch (err) {
                     console.error('加载日志失败:', err);
-                    if (!append) logList.innerHTML = '<div class="empty">加载失败，请刷新重试</div>';
+                    if (!append) {
+                        logList.innerHTML = `
+                            <div class="empty-state">
+                                <div class="icon">⚠️</div>
+                                <p>加载失败，请刷新重试</p>
+                            </div>
+                        `;
+                    }
                 } finally {
                     loading = false;
                     loadMoreBtn.disabled = false;
+                    loadMoreBtn.classList.remove('loading');
                 }
             }
 
-            async function updateUserUI() {
+            // ---------- 用户认证 UI ----------
+            async function updateAuthUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session) {
@@ -598,10 +950,12 @@
                             .eq('id', session.user.id)
                             .single();
                         if (error) throw error;
+
                         let displayName = profile.username || session.user.email;
                         let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
                         if (profile.is_admin) {
-                            html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;">管理员</span>`;
+                            html +=
+                                `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;">管理员</span>`;
                         }
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
@@ -610,16 +964,19 @@
                             location.reload();
                         });
                     } else {
-                        authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                        authButtons.innerHTML =
+                            `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                     }
                 } catch (err) {
                     console.error(err);
-                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    authButtons.innerHTML =
+                        `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                 }
             }
 
+            // ---------- 初始化 ----------
             document.addEventListener('DOMContentLoaded', () => {
-                updateUserUI();
+                updateAuthUI();
                 loadLogs(false);
                 loadMoreBtn.addEventListener('click', () => loadLogs(true));
             });

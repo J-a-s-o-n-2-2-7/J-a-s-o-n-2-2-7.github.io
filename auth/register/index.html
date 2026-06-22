@@ -498,7 +498,11 @@
                 const verifyResp = await fetch(EDGE_VERIFY_CODE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, code })
+                    body: JSON.stringify({
+                        email,
+                        code,
+                        type: 'register'   // 新增这一行
+                    })
                 });
                 const verifyResult = await verifyResp.json();
                 if (!verifyResp.ok) {
