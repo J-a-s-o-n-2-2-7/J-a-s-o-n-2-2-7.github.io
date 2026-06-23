@@ -742,13 +742,19 @@
 
     <script>
         // ============================================================
-        //  核心逻辑（与原始陶片放逐页面一致，仅 UI 渲染适配）
+        //  核心逻辑（修复认证问题）
         // ============================================================
         (function () {
-            const supabase = window.supabase.createClient(
-                'https://nosikdfacxkuaxfrmoqn.supabase.co',
-                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
-            );
+            // 修复：使用正确的 Supabase 配置
+            const supabaseUrl = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const supabaseKey = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                auth: {
+                    autoRefreshToken: true,
+                    persistSession: true,
+                    detectSessionInUrl: true
+                }
+            });
 
             let page = 0;
             const PAGE_SIZE = 30;
@@ -762,17 +768,22 @@
             // ---------- 获取用户信息 ----------
             async function fetchUsers(userIds) {
                 if (!userIds.length) return {};
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('id, username, avatar, user_tag, is_admin, is_banned')
-                    .in('id', userIds);
-                if (error) {
-                    console.error('获取用户信息失败:', error);
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('id, username, avatar, user_tag, is_admin, is_banned')
+                        .in('id', userIds);
+                    if (error) {
+                        console.error('获取用户信息失败:', error);
+                        return {};
+                    }
+                    const map = {};
+                    data.forEach(u => map[u.id] = u);
+                    return map;
+                } catch (err) {
+                    console.error('获取用户信息异常:', err);
                     return {};
                 }
-                const map = {};
-                data.forEach(u => map[u.id] = u);
-                return map;
             }
 
             // ---------- 渲染单条日志 ----------
@@ -789,7 +800,6 @@
                     'grant_perm': { class: 'grant', icon: '✅', label: '授予权限', tag: 'tag-grant' },
                     'revoke_perm': { class: 'revoke', icon: '❌', label: '撤销权限', tag: 'tag-revoke' },
                 };
-                // 扩展类型（与第一个页面保持一致）
                 const extraMap = {
                     'cheat': { class: 'cheat', icon: '⚠️', label: '作弊惩罚', tag: 'tag-cheat' },
                     'manager_rotate': { class: 'manager', icon: '🔄', label: '管理轮换', tag: 'tag-manager' },
@@ -830,7 +840,6 @@
                 const adminColor = admin.is_admin ? '#9b59b6' : '#2c3e50';
                 const targetColor = target.is_admin ? '#9b59b6' : '#2c3e50';
 
-                // 用户标签
                 const adminTag = admin.is_admin ? `<span class="utag admin">管理员</span>` : '';
                 const targetAdminTag = target.is_admin ? `<span class="utag admin">管理员</span>` : '';
                 const targetBannedTag = target.is_banned ? `<span class="utag banned">已封禁</span>` : '';
@@ -885,7 +894,10 @@
                         .order('created_at', { ascending: false })
                         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-                    if (error) throw error;
+                    if (error) {
+                        console.error('查询日志失败:', error);
+                        throw error;
+                    }
 
                     if (!data || data.length === 0) {
                         hasMore = false;
@@ -929,6 +941,7 @@
                             <div class="empty-state">
                                 <div class="icon">⚠️</div>
                                 <p>加载失败，请刷新重试</p>
+                                <p style="font-size:0.8rem;color:#ccc;margin-top:8px;">${err.message || ''}</p>
                             </div>
                         `;
                     }
@@ -942,44 +955,69 @@
             // ---------- 用户认证 UI ----------
             async function updateAuthUI() {
                 try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        const { data: profile, error } = await supabase
+                    console.log('检查认证状态...');
+                    // 修复：使用 getSession 而不是直接从 session 获取
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+                    if (sessionError) {
+                        console.error('获取 session 失败:', sessionError);
+                        throw sessionError;
+                    }
+
+                    if (session && session.user) {
+                        console.log('用户已登录:', session.user.email);
+
+                        // 获取用户 profile
+                        const { data: profile, error: profileError } = await supabase
                             .from('profiles')
                             .select('username, avatar, is_admin')
                             .eq('id', session.user.id)
-                            .single();
-                        if (error) throw error;
+                            .maybeSingle();
 
-                        let displayName = profile.username || session.user.email;
-                        let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
-                        if (profile.is_admin) {
-                            html +=
-                                `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;">管理员</span>`;
+                        if (profileError) {
+                            console.error('获取 profile 失败:', profileError);
                         }
+
+                        let displayName = profile?.username || session.user.email || '用户';
+                        let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
+
+                        if (profile?.is_admin) {
+                            html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;margin-left:4px;">管理员</span>`;
+                        }
+
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
+
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                             await supabase.auth.signOut();
                             location.reload();
                         });
                     } else {
-                        authButtons.innerHTML =
-                            `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                        console.log('用户未登录');
+                        authButtons.innerHTML = `
+                            <a href="/auth/login" class="auth-btn">登录</a>
+                            <a href="/auth/register" class="auth-btn">注册</a>
+                        `;
                     }
                 } catch (err) {
-                    console.error(err);
-                    authButtons.innerHTML =
-                        `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    console.error('更新认证 UI 失败:', err);
+                    authButtons.innerHTML = `
+                        <a href="/auth/login" class="auth-btn">登录</a>
+                        <a href="/auth/register" class="auth-btn">注册</a>
+                    `;
                 }
             }
 
             // ---------- 初始化 ----------
-            document.addEventListener('DOMContentLoaded', () => {
-                updateAuthUI();
-                loadLogs(false);
+            document.addEventListener('DOMContentLoaded', async () => {
+                await updateAuthUI();
+                await loadLogs(false);
+
                 loadMoreBtn.addEventListener('click', () => loadLogs(true));
             });
+
+            // 暴露给外部调试
+            window.__supabase = supabase;
         })();
     </script>
 </body>

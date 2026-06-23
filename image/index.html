@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>📸 图床 · Jason227</title>
+
+    <!-- ===== 字体与图标（Font Awesome 免费版） ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .logo a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #c0392b;
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+
+        .auth-btn.logout:hover {
+            background: #5d6d7e;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        /* ===== 卡片 ===== */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 24px 28px;
+            margin-bottom: 28px;
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header i {
+            color: #e74c3c;
+        }
+
+        /* ===== 上传区域 ===== */
+        .upload-zone {
+            border: 2px dashed #dce1e8;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background 0.3s;
+            background: #fafbfc;
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #e74c3c;
+            background: #fef5f5;
+        }
+
+        .upload-zone .icon {
+            font-size: 48px;
+            color: #b0b8c4;
+            margin-bottom: 12px;
+        }
+
+        .upload-zone .text {
+            font-size: 16px;
+            color: #4a5568;
+        }
+
+        .upload-zone .hint {
+            font-size: 13px;
+            color: #a0aec0;
+            margin-top: 6px;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-zone .file-list {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .upload-zone .file-tag {
+            background: #edf2f7;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 13px;
+            color: #2d3748;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upload-zone .file-tag i {
+            color: #e74c3c;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* ===== 上传进度条 ===== */
+        .upload-progress {
+            margin-top: 16px;
+            display: none;
+        }
+
+        .upload-progress .bar-track {
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .upload-progress .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #e74c3c, #f39c12);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .upload-progress .status {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ===== 图片网格 ===== */
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .grid-header .count {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .grid-header .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .grid-header .actions button {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #4a5568;
+            transition: all 0.2s;
+        }
+
+        .grid-header .actions button:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .grid-header .actions button.danger:hover {
+            background: #fff5f5;
+            border-color: #fc8181;
+            color: #e53e3e;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .image-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            background: white;
+            border: 1px solid #edf2f7;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .image-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .image-card .preview {
+            aspect-ratio: 1 / 1;
+            background: #f7fafc;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-card .preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .image-card .preview img:hover {
+            transform: scale(1.04);
+        }
+
+        .image-card .preview .placeholder {
+            color: #a0aec0;
+            font-size: 32px;
+        }
+
+        .image-card .info {
+            padding: 10px 14px 12px;
+        }
+
+        .image-card .info .name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #2d3748;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .image-card .info .meta {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 2px;
+        }
+
+        .image-card .actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .image-card .actions button {
+            flex: 1;
+            min-width: 44px;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: #f7fafc;
+            color: #4a5568;
+        }
+
+        .image-card .actions button:hover {
+            background: #edf2f7;
+        }
+
+        .image-card .actions button.copy:hover {
+            background: #ebf8ff;
+            color: #2b6cb0;
+        }
+
+        .image-card .actions button.del:hover {
+            background: #fff5f5;
+            color: #e53e3e;
+        }
+
+        .image-card .actions button i {
+            font-size: 13px;
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            margin-bottom: 16px;
+            display: block;
+            color: #cbd5e0;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        /* ===== 加载更多 ===== */
+        .load-more-wrap {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+
+        .load-more-wrap button {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            padding: 8px 32px;
+            font-size: 14px;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .load-more-wrap button:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .load-more-wrap button:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        /* ===== 预览弹窗 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-overlay .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-overlay .modal-content img {
+            display: block;
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-overlay .modal-footer {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .modal-overlay .modal-footer .name {
+            font-size: 14px;
+            color: #2d3748;
+            word-break: break-all;
+        }
+
+        .modal-overlay .modal-footer .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-overlay .modal-footer .actions button {
+            border: none;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            background: #f7fafc;
+            color: #4a5568;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-overlay .modal-footer .actions button:hover {
+            background: #edf2f7;
+        }
+
+        .modal-overlay .modal-footer .actions button.copy:hover {
+            background: #ebf8ff;
+            color: #2b6cb0;
+        }
+
+        .modal-overlay .modal-footer .actions button.del:hover {
+            background: #fff5f5;
+            color: #e53e3e;
+        }
+
+        .modal-overlay .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            font-size: 24px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+
+        .modal-overlay .close-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a202c;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast.success {
+            background: #276749;
+        }
+
+        .toast.error {
+            background: #9b2c2c;
+        }
+
+        .toast i {
+            font-size: 18px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 10px 16px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .container {
+                padding: 16px 12px 40px;
+            }
+
+            .card {
+                padding: 18px 16px;
+            }
+
+            .upload-zone {
+                padding: 28px 16px;
+            }
+
+            .upload-zone .icon {
+                font-size: 36px;
+            }
+
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 12px;
+            }
+
+            .modal-overlay .modal-content {
+                max-width: 98vw;
+                border-radius: 12px;
+            }
+
+            .modal-overlay .modal-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .modal-overlay .modal-footer .actions {
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .image-card .info .name {
+                font-size: 12px;
+            }
+
+            .image-card .actions button {
+                font-size: 11px;
+                padding: 3px 6px;
+                min-width: 32px;
+            }
+
+            .auth-btn {
+                font-size: 12px;
+                padding: 4px 14px;
+            }
+
+            .user-email {
+                font-size: 12px;
+            }
+        }
+
+        /* ===== 工具类 ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mt-16 {
+            margin-top: 16px;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== 滚动条美化 ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b0b8c4;
+        }
+
+        /* ===== 登录提示横幅 ===== */
+        .login-banner {
+            background: #fff8f0;
+            border: 1px solid #fde8d0;
+            border-radius: 12px;
+            padding: 20px 24px;
+            text-align: center;
+            color: #8b6b4d;
+        }
+
+        .login-banner a {
+            color: #e74c3c;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-banner a:hover {
+            text-decoration: underline;
+        }
+
+        .login-banner i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 8px;
+            color: #f5a623;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== 顶部导航 ===== -->
+    <div class="topbar">
+        <div class="logo">
+            <a href="/"><i class="fas fa-cloud-upload-alt" style="color:#e74c3c;"></i> 图床</a>
+        </div>
+        <div class="auth-buttons" id="authButtons">
+            <span style="font-size:14px; color:#aaa;"><i class="fas fa-spinner fa-pulse"></i> 加载中...</span>
+        </div>
+    </div>
+
+    <!-- ===== 主容器 ===== -->
+    <div class="container">
+
+        <!-- ===== 上传卡片 ===== -->
+        <div class="card" id="uploadCard">
+            <div class="card-header">
+                <i class="fas fa-upload"></i> 上传图片
+                <span style="font-size:13px; font-weight:400; color:#a0aec0; margin-left:8px;">
+                    支持 JPG / PNG / WebP / GIF，最大 10MB
+                </span>
+            </div>
+
+            <!-- 未登录提示 -->
+            <div id="loginBanner" class="login-banner hidden">
+                <i class="fas fa-lock"></i>
+                请 <a href="#" id="loginLink">登录</a> 后使用图床功能
+            </div>
+
+            <!-- 上传区域 -->
+            <div id="uploadZone" class="upload-zone">
+                <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <div class="text"><strong>点击或拖拽</strong> 选择图片</div>
+                <div class="hint">支持多文件上传</div>
+                <input type="file" id="fileInput" multiple accept="image/*" />
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <!-- 进度条 -->
+            <div class="upload-progress" id="uploadProgress">
+                <div class="bar-track">
+                    <div class="bar-fill" id="progressFill"></div>
+                </div>
+                <div class="status">
+                    <span id="progressText">准备上传...</span>
+                    <span id="progressCount">0 / 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 图片管理卡片 ===== -->
+        <div class="card" id="galleryCard">
+            <div class="card-header">
+                <i class="fas fa-images"></i> 我的图库
+            </div>
+
+            <div class="grid-header">
+                <span class="count" id="imageCount">共 0 张图片</span>
+                <div class="actions">
+                    <button id="refreshBtn" title="刷新"><i class="fas fa-sync-alt"></i> 刷新</button>
+                </div>
+            </div>
+
+            <!-- 图片网格 -->
+            <div id="imageGrid" class="image-grid">
+                <!-- 由 JS 动态渲染 -->
+            </div>
+
+            <!-- 加载更多 -->
+            <div class="load-more-wrap" id="loadMoreWrap">
+                <button id="loadMoreBtn" disabled>加载更多</button>
+            </div>
+        </div>
+
+        <footer style="text-align:center; padding:20px 0 10px; color:#a0aec0; font-size:13px;">
+            © 2026 Jason227 · 基于 Supabase Storage
+            <span style="margin:0 8px;">·</span>
+            <a href="#" style="color:#a0aec0; text-decoration:none;" onclick="location.reload();return false;">
+                <i class="fas fa-redo-alt"></i> 刷新
+            </a>
+        </footer>
+    </div>
+
+    <!-- ===== 预览弹窗 ===== -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-content">
+            <button class="close-btn" id="modalCloseBtn">&times;</button>
+            <img id="modalImg" src="" alt="预览" />
+            <div class="modal-footer">
+                <span class="name" id="modalName">文件名</span>
+                <div class="actions">
+                    <button class="copy" id="modalCopyBtn"><i class="fas fa-link"></i> 复制链接</button>
+                    <button class="del" id="modalDelBtn"><i class="fas fa-trash-alt"></i> 删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">操作成功</span>
+    </div>
+
+    <!-- ===== Supabase SDK ===== -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ================================================================
+            //  配置
+            // ================================================================
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const BUCKET_NAME = 'images'; // 存储桶名称
+            const PAGE_SIZE = 24; // 每页加载数量
+
+            // ================================================================
+            //  客户端
+            // ================================================================
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // ================================================================
+            //  状态
+            // ================================================================
+            let currentUser = null;
+            let currentProfile = null;
+            let images = [];
+            let page = 0;
+            let hasMore = true;
+            let isLoading = false;
+            let uploadQueue = [];
+            let isUploading = false;
+
+            // ================================================================
+            //  DOM 引用
+            // ================================================================
+            const authButtons = document.getElementById('authButtons');
+            const loginBanner = document.getElementById('loginBanner');
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressCount = document.getElementById('progressCount');
+            const imageGrid = document.getElementById('imageGrid');
+            const imageCount = document.getElementById('imageCount');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const loginLink = document.getElementById('loginLink');
+
+            // 预览弹窗
+            const modal = document.getElementById('previewModal');
+            const modalImg = document.getElementById('modalImg');
+            const modalName = document.getElementById('modalName');
+            const modalCopyBtn = document.getElementById('modalCopyBtn');
+            const modalDelBtn = document.getElementById('modalDelBtn');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+            // Toast
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            let toastTimer = null;
+
+            // ================================================================
+            //  工具函数
+            // ================================================================
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+
+            function formatTime(iso) {
+                try {
+                    const d = new Date(iso);
+                    return d.toLocaleString('zh-CN', { hour12: false });
+                } catch (_) { return iso; }
+            }
+
+            function getFileExtension(filename) {
+                const i = filename.lastIndexOf('.');
+                return i > 0 ? filename.slice(i + 1).toLowerCase() : '';
+            }
+
+            function isImageType(ext) {
+                return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico', 'tiff'].includes(ext);
+            }
+
+            function getPublicUrl(path) {
+                const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path);
+                return data?.publicUrl || null;
+            }
+
+            function showToast(msg, type = 'success') {
+                toast.className = 'toast';
+                toastMsg.textContent = msg;
+                const icon = toast.querySelector('i');
+                if (type === 'success') {
+                    toast.classList.add('success');
+                    icon.className = 'fas fa-check-circle';
+                } else if (type === 'error') {
+                    toast.classList.add('error');
+                    icon.className = 'fas fa-exclamation-circle';
+                } else {
+                    icon.className = 'fas fa-info-circle';
+                }
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            // ================================================================
+            //  认证
+            // ================================================================
+            async function getProfile(userId) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('user_number, username, is_admin, special_privilege')
+                    .eq('id', userId)
+                    .single();
+                if (error) return null;
+                return data;
+            }
+
+            async function updateAuthUI() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+
+                    if (session) {
+                        currentUser = session.user;
+                        currentProfile = await getProfile(session.user.id);
+
+                        // 检查是否被封禁
+                        if (currentProfile) {
+                            const { data: banData, error: banErr } = await supabase
+                                .from('profiles')
+                                .select('is_banned')
+                                .eq('id', session.user.id)
+                                .single();
+                            if (!banErr && banData && banData.is_banned === true) {
+                                await supabase.auth.signOut();
+                                location.reload();
+                                return;
+                            }
+                        }
+
+                        let displayName = session.user.email;
+                        if (currentProfile?.username) displayName = currentProfile.username;
+                        let html = '';
+                        if (currentProfile?.user_number) {
+                            html +=
+                                `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtml(displayName)}</a>`;
+                        } else {
+                            html += `<span class="user-email">${escapeHtml(displayName)}</span>`;
+                        }
+                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                        authButtons.innerHTML = html;
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
+
+                        // 隐藏登录提示，显示上传
+                        loginBanner.classList.add('hidden');
+                        uploadZone.style.display = 'block';
+
+                        // 加载图片
+                        await loadImages(true);
+
+                    } else {
+                        // 未登录
+                        currentUser = null;
+                        currentProfile = null;
+                        authButtons.innerHTML =
+                            `<a href="#" class="auth-btn" id="loginBtn">登录</a><a href="#" class="auth-btn" id="registerBtn">注册</a>`;
+                        document.getElementById('loginBtn')?.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            supabase.auth.signInWithOAuth({ provider: 'github' });
+                        });
+                        document.getElementById('registerBtn')?.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            supabase.auth.signInWithOAuth({ provider: 'github' });
+                        });
+
+                        loginBanner.classList.remove('hidden');
+                        uploadZone.style.display = 'none';
+                        imageGrid.innerHTML = `
+                            <div class="empty-state" style="grid-column:1/-1;">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <p>请登录后查看您的图片</p>
+                            </div>
+                        `;
+                        imageCount.textContent = '请登录';
+                        loadMoreBtn.disabled = true;
+                        images = [];
+                        hasMore = false;
+                        page = 0;
+                    }
+                } catch (err) {
+                    console.error('认证更新失败:', err);
+                    authButtons.innerHTML =
+                        `<a href="#" class="auth-btn" id="loginBtn">登录</a><a href="#" class="auth-btn" id="registerBtn">注册</a>`;
+                    document.getElementById('loginBtn')?.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        supabase.auth.signInWithOAuth({ provider: 'github' });
+                    });
+                    document.getElementById('registerBtn')?.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        supabase.auth.signInWithOAuth({ provider: 'github' });
+                    });
+                }
+            }
+
+            // ================================================================
+            //  图片 CRUD
+            // ================================================================
+            // 获取当前用户的图片路径前缀
+            function getUserPrefix() {
+                if (!currentUser) return '';
+                return `user_${currentUser.id}/`;
+            }
+
+            // 加载图片列表
+            async function loadImages(reset = true) {
+                if (!currentUser) return;
+                if (isLoading) return;
+                if (reset) {
+                    page = 0;
+                    hasMore = true;
+                    images = [];
+                }
+                if (!hasMore) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.textContent = '没有更多了';
+                    return;
+                }
+
+                isLoading = true;
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = '加载中...';
+
+                try {
+                    const prefix = getUserPrefix();
+                    // 列出文件
+                    const { data: files, error } = await supabase.storage
+                        .from(BUCKET_NAME)
+                        .list(prefix, {
+                            limit: PAGE_SIZE,
+                            offset: page * PAGE_SIZE,
+                            sortBy: { column: 'created_at', order: 'desc' },
+                        });
+
+                    if (error) {
+                        // 如果 bucket 不存在，尝试创建
+                        if (error.message && error.message.includes('bucket not found')) {
+                            await createBucket();
+                            // 重新尝试
+                            const { data: retryData, error: retryErr } = await supabase.storage
+                                .from(BUCKET_NAME)
+                                .list(prefix, {
+                                    limit: PAGE_SIZE,
+                                    offset: page * PAGE_SIZE,
+                                    sortBy: { column: 'created_at', order: 'desc' },
+                                });
+                            if (retryErr) throw retryErr;
+                            if (retryData) {
+                                processFileList(retryData);
+                                return;
+                            }
+                        }
+                        throw error;
+                    }
+
+                    processFileList(files);
+
+                } catch (err) {
+                    console.error('加载图片失败:', err);
+                    showToast('加载图片失败: ' + (err.message || '未知错误'), 'error');
+                    if (reset) {
+                        imageGrid.innerHTML = `
+                            <div class="empty-state" style="grid-column:1/-1;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>加载失败，请 <a href="#" onclick="location.reload();return false;" style="color:#e74c3c;">刷新</a> 重试</p>
+                            </div>
+                        `;
+                    }
+                } finally {
+                    isLoading = false;
+                    if (hasMore) {
+                        loadMoreBtn.disabled = false;
+                        loadMoreBtn.textContent = '加载更多';
+                    } else {
+                        loadMoreBtn.disabled = true;
+                        loadMoreBtn.textContent = '没有更多了';
+                    }
+                }
+            }
+
+            function processFileList(files) {
+                if (!files || files.length === 0) {
+                    hasMore = false;
+                    if (page === 0) {
+                        imageGrid.innerHTML = `
+                            <div class="empty-state" style="grid-column:1/-1;">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>还没有图片，上传一张吧！</p>
+                            </div>
+                        `;
+                        imageCount.textContent = '共 0 张图片';
+                    }
+                    return;
+                }
+
+                // 过滤出图片文件（根据扩展名）
+                const imageFiles = files.filter(f =>
+                    f.name && f.metadata && isImageType(getFileExtension(f.name))
+                );
+
+                if (imageFiles.length === 0) {
+                    if (page === 0) {
+                        imageGrid.innerHTML = `
+                            <div class="empty-state" style="grid-column:1/-1;">
+                                <i class="fas fa-image"></i>
+                                <p>暂无可识别的图片文件</p>
+                            </div>
+                        `;
+                        imageCount.textContent = '共 0 张图片';
+                    }
+                    hasMore = false;
+                    return;
+                }
+
+                // 构造图片对象
+                const newImages = imageFiles.map(f => {
+                    const path = f.name;
+                    const url = getPublicUrl(path);
+                    return {
+                        id: f.id || path,
+                        name: f.name,
+                        path: path,
+                        url: url,
+                        size: f.metadata?.size || 0,
+                        created_at: f.created_at || f.updated_at || new Date().toISOString(),
+                    };
+                });
+
+                if (page === 0) {
+                    images = newImages;
+                } else {
+                    images = images.concat(newImages);
+                }
+
+                // 判断是否还有更多
+                if (imageFiles.length < PAGE_SIZE) {
+                    hasMore = false;
+                } else {
+                    hasMore = true;
+                    page++;
+                }
+
+                renderImages();
+
+                if (hasMore && images.length > 0) {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = '加载更多';
+                } else {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.textContent = '没有更多了';
+                }
+            }
+
+            // 渲染图片网格
+            function renderImages() {
+                if (images.length === 0) {
+                    imageGrid.innerHTML = `
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>还没有图片，上传一张吧！</p>
+                        </div>
+                    `;
+                    imageCount.textContent = '共 0 张图片';
+                    return;
+                }
+
+                let html = '';
+                for (const img of images) {
+                    const name = escapeHtml(img.name);
+                    const sizeStr = formatFileSize(img.size);
+                    const timeStr = formatTime(img.created_at);
+                    const url = img.url || '#';
+                    const safeUrl = escapeHtml(url);
+
+                    html += `
+                        <div class="image-card" data-path="${escapeHtml(img.path)}">
+                            <div class="preview" data-path="${escapeHtml(img.path)}">
+                                <img src="${safeUrl}" alt="${name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                                <div class="placeholder" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; background:#f7fafc;">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            </div>
+                            <div class="info">
+                                <div class="name" title="${name}">${name}</div>
+                                <div class="meta">${sizeStr} · ${timeStr}</div>
+                                <div class="actions">
+                                    <button class="copy" data-path="${escapeHtml(img.path)}" title="复制链接"><i class="fas fa-link"></i> 复制</button>
+                                    <button class="del" data-path="${escapeHtml(img.path)}" title="删除"><i class="fas fa-trash-alt"></i> 删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                imageGrid.innerHTML = html;
+                imageCount.textContent = `共 ${images.length} 张图片`;
+
+                // 绑定事件：点击预览
+                document.querySelectorAll('.image-card .preview').forEach(el => {
+                    el.addEventListener('click', function () {
+                        const path = this.dataset.path;
+                        const img = images.find(i => i.path === path);
+                        if (img) openPreview(img);
+                    });
+                });
+
+                // 绑定事件：复制
+                document.querySelectorAll('.image-card .copy').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const path = this.dataset.path;
+                        const img = images.find(i => i.path === path);
+                        if (img) copyImageLink(img);
+                    });
+                });
+
+                // 绑定事件：删除
+                document.querySelectorAll('.image-card .del').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const path = this.dataset.path;
+                        const img = images.find(i => i.path === path);
+                        if (img) deleteImage(img);
+                    });
+                });
+            }
+
+            // ================================================================
+            //  上传
+            // ================================================================
+            async function uploadFiles(files) {
+                if (!currentUser) {
+                    showToast('请先登录', 'error');
+                    return;
+                }
+                if (!files || files.length === 0) return;
+
+                const validFiles = Array.from(files).filter(f => {
+                    const ext = getFileExtension(f.name);
+                    if (!isImageType(ext)) {
+                        showToast(`跳过非图片文件: ${f.name}`, 'error');
+                        return false;
+                    }
+                    if (f.size > 10 * 1024 * 1024) {
+                        showToast(`文件过大: ${f.name} (最大10MB)`, 'error');
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (validFiles.length === 0) return;
+
+                // 显示进度条
+                uploadProgress.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = '准备上传...';
+                progressCount.textContent = `0 / ${validFiles.length}`;
+
+                let completed = 0;
+                const total = validFiles.length;
+
+                for (let i = 0; i < validFiles.length; i++) {
+                    const file = validFiles[i];
+                    const ext = getFileExtension(file.name);
+                    const timestamp = Date.now();
+                    const random = Math.random().toString(36).slice(2, 8);
+                    const safeName = file.name.replace(/\.[^.]+$/, '');
+                    const cleanName = safeName.replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 60);
+                    const fileName = `${cleanName}_${timestamp}_${random}.${ext}`;
+                    const path = `${getUserPrefix()}${fileName}`;
+
+                    try {
+                        progressText.textContent = `上传中: ${file.name}`;
+                        progressCount.textContent = `${i + 1} / ${total}`;
+
+                        const { data, error } = await supabase.storage
+                            .from(BUCKET_NAME)
+                            .upload(path, file, {
+                                cacheControl: '3600',
+                                upsert: false,
+                            });
+
+                        if (error) {
+                            if (error.message && error.message.includes('bucket not found')) {
+                                await createBucket();
+                                // 重试一次
+                                const { data: retryData, error: retryErr } = await supabase.storage
+                                    .from(BUCKET_NAME)
+                                    .upload(path, file, {
+                                        cacheControl: '3600',
+                                        upsert: false,
+                                    });
+                                if (retryErr) throw retryErr;
+                            } else {
+                                throw error;
+                            }
+                        }
+
+                        completed++;
+                        const pct = Math.round((completed / total) * 100);
+                        progressFill.style.width = pct + '%';
+
+                    } catch (err) {
+                        console.error('上传失败:', err);
+                        showToast(`上传失败: ${file.name} - ${err.message || '未知错误'}`, 'error');
+                    }
+                }
+
+                // 完成
+                progressText.textContent = '上传完成！';
+                progressCount.textContent = `${completed} / ${total}`;
+                progressFill.style.width = '100%';
+
+                if (completed > 0) {
+                    showToast(`成功上传 ${completed} 张图片！`, 'success');
+                    // 清空文件列表
+                    fileList.innerHTML = '';
+                    // 重置文件输入
+                    fileInput.value = '';
+                    // 重新加载图片列表
+                    await loadImages(true);
+                }
+
+                // 延迟隐藏进度条
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                    progressFill.style.width = '0%';
+                }, 3000);
+            }
+
+            // ================================================================
+            //  创建 Bucket
+            // ================================================================
+            async function createBucket() {
+                try {
+                    const { data, error } = await supabase.storage.createBucket(BUCKET_NAME, {
+                        public: true,
+                        fileSizeLimit: 10485760, // 10MB
+                        allowedMimeTypes: ['image/*'],
+                    });
+                    if (error) {
+                        // 如果已存在，忽略
+                        if (error.message && error.message.includes('already exists')) {
+                            return true;
+                        }
+                        throw error;
+                    }
+                    // 设置 RLS 策略（通过 SQL 方式需要用户手动执行，这里仅提示）
+                    console.log('Bucket 创建成功，请确保 RLS 策略已配置。');
+                    return true;
+                } catch (err) {
+                    console.error('创建 Bucket 失败:', err);
+                    showToast('存储桶创建失败，请联系管理员', 'error');
+                    return false;
+                }
+            }
+
+            // ================================================================
+            //  删除图片
+            // ================================================================
+            async function deleteImage(img) {
+                if (!currentUser) return;
+                if (!img) return;
+
+                if (!confirm(`确定要删除 "${img.name}" 吗？`)) return;
+
+                try {
+                    const { error } = await supabase.storage
+                        .from(BUCKET_NAME)
+                        .remove([img.path]);
+
+                    if (error) {
+                        if (error.message && error.message.includes('bucket not found')) {
+                            await createBucket();
+                            showToast('存储桶未就绪，请重试', 'error');
+                            return;
+                        }
+                        throw error;
+                    }
+
+                    // 从列表中移除
+                    const idx = images.findIndex(i => i.path === img.path);
+                    if (idx !== -1) images.splice(idx, 1);
+
+                    renderImages();
+                    showToast(`已删除: ${img.name}`, 'success');
+
+                    // 如果当前预览的是这张图，关闭弹窗
+                    if (modal.classList.contains('active')) {
+                        const modalPath = modalImg.dataset.path;
+                        if (modalPath === img.path) {
+                            closeModal();
+                        }
+                    }
+
+                } catch (err) {
+                    console.error('删除失败:', err);
+                    showToast('删除失败: ' + (err.message || '未知错误'), 'error');
+                }
+            }
+
+            // ================================================================
+            //  复制链接
+            // ================================================================
+            function copyImageLink(img) {
+                if (!img || !img.url) {
+                    showToast('图片链接无效', 'error');
+                    return;
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(img.url).then(() => {
+                        showToast('链接已复制！', 'success');
+                    }).catch(() => {
+                        fallbackCopy(img.url);
+                    });
+                } else {
+                    fallbackCopy(img.url);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('链接已复制！', 'success');
+                } catch (_) {
+                    showToast('复制失败，请手动复制', 'error');
+                }
+                document.body.removeChild(ta);
+            }
+
+            // ================================================================
+            //  预览弹窗
+            // ================================================================
+            function openPreview(img) {
+                if (!img) return;
+                modalImg.src = img.url;
+                modalImg.dataset.path = img.path;
+                modalName.textContent = img.name;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // 模态框事件
+            modalCloseBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) closeModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
+
+            // 模态框复制
+            modalCopyBtn.addEventListener('click', function () {
+                const path = modalImg.dataset.path;
+                const img = images.find(i => i.path === path);
+                if (img) copyImageLink(img);
+            });
+
+            // 模态框删除
+            modalDelBtn.addEventListener('click', function () {
+                const path = modalImg.dataset.path;
+                const img = images.find(i => i.path === path);
+                if (img) {
+                    deleteImage(img);
+                    // 关闭弹窗在 deleteImage 中处理
+                }
+            });
+
+            // ================================================================
+            //  事件绑定
+            // ================================================================
+
+            // 文件选择
+            fileInput.addEventListener('change', function (e) {
+                if (this.files && this.files.length > 0) {
+                    // 显示文件标签
+                    fileList.innerHTML = '';
+                    for (const f of this.files) {
+                        const tag = document.createElement('span');
+                        tag.className = 'file-tag';
+                        tag.innerHTML =
+                            `<i class="fas fa-file-image"></i> ${escapeHtml(f.name)} (${formatFileSize(f.size)}) <i class="fas fa-times" data-remove></i>`;
+                        fileList.appendChild(tag);
+                    }
+                    // 绑定移除按钮
+                    fileList.querySelectorAll('[data-remove]').forEach(el => {
+                        el.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            this.closest('.file-tag')?.remove();
+                            // 不能直接从 input 移除，只能清空重新构建
+                            // 简化处理：清空 input
+                            fileInput.value = '';
+                            fileList.innerHTML = '';
+                        });
+                    });
+                    // 自动上传
+                    uploadFiles(this.files);
+                }
+            });
+
+            // 拖拽上传
+            uploadZone.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            uploadZone.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            uploadZone.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    // 通过 input 触发 change 事件
+                    const dt = new DataTransfer();
+                    for (const f of files) dt.items.add(f);
+                    fileInput.files = dt.files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // 点击上传区域触发文件选择
+            uploadZone.addEventListener('click', function (e) {
+                if (e.target.tagName !== 'INPUT' && !e.target.closest('.file-tag')) {
+                    fileInput.click();
+                }
+            });
+
+            // 加载更多
+            loadMoreBtn.addEventListener('click', function () {
+                if (!isLoading && hasMore) {
+                    loadImages(false);
+                }
+            });
+
+            // 刷新
+            refreshBtn.addEventListener('click', function () {
+                loadImages(true);
+            });
+
+            // 登录链接
+            loginLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                supabase.auth.signInWithOAuth({ provider: 'github' });
+            });
+
+            // ================================================================
+            //  初始化
+            // ================================================================
+
+            // 监听认证状态变化
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                    updateAuthUI();
+                } else if (event === 'SIGNED_OUT') {
+                    updateAuthUI();
+                }
+            });
+
+            // 启动
+            updateAuthUI();
+
+            // 暴露方法供调试
+            window.__imageHost = {
+                supabase,
+                loadImages,
+                uploadFiles,
+                deleteImage,
+                copyImageLink,
+                images: () => images,
+            };
+
+            console.log('📸 图床已加载，使用 __imageHost 调试');
+
+        })();
+    </script>
+
+</body>
+
+</html>
