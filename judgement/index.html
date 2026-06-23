@@ -958,7 +958,7 @@
                     console.log('检查认证状态...');
                     // 修复：使用 getSession 而不是直接从 session 获取
                     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
+                    
                     if (sessionError) {
                         console.error('获取 session 失败:', sessionError);
                         throw sessionError;
@@ -966,7 +966,7 @@
 
                     if (session && session.user) {
                         console.log('用户已登录:', session.user.email);
-
+                        
                         // 获取用户 profile
                         const { data: profile, error: profileError } = await supabase
                             .from('profiles')
@@ -980,14 +980,14 @@
 
                         let displayName = profile?.username || session.user.email || '用户';
                         let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
-
+                        
                         if (profile?.is_admin) {
                             html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;margin-left:4px;">管理员</span>`;
                         }
-
+                        
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
-
+                        
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                             await supabase.auth.signOut();
                             location.reload();
@@ -1012,7 +1012,7 @@
             document.addEventListener('DOMContentLoaded', async () => {
                 await updateAuthUI();
                 await loadLogs(false);
-
+                
                 loadMoreBtn.addEventListener('click', () => loadLogs(true));
             });
 
