@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
     <style>
-        /* ===== 全局重置 & 洛谷风格变量（取自第二个页面） ===== */
         * {
             margin: 0;
             padding: 0;
@@ -22,7 +21,6 @@
             color: #2c3e50;
         }
 
-        /* ===== 顶部导航（与第二个页面一致） ===== */
         .topbar {
             display: flex;
             justify-content: space-between;
@@ -33,7 +31,6 @@
             position: sticky;
             top: 0;
             z-index: 200;
-            /* 高于侧边栏 */
         }
 
         .logo {
@@ -83,44 +80,6 @@
             text-decoration: underline;
         }
 
-        .bell-icon {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            color: #666;
-            transition: color 0.2s;
-        }
-
-        .bell-icon:hover {
-            color: #e74c3c;
-        }
-
-        .bell-icon svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .bell-icon sup {
-            position: absolute;
-            top: -8px;
-            right: -12px;
-            background-color: #e74c3c;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            min-width: 16px;
-            height: 16px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-            line-height: 1;
-        }
-
-        /* ===== 主布局（与第二个页面一致） ===== */
         .main-layout {
             max-width: 1400px;
             margin: 0 auto;
@@ -129,7 +88,6 @@
             min-height: 100vh;
         }
 
-        /* ===== 侧边栏：固定、无圆角、完整撑开、可滚动（与第二个页面一致） ===== */
         .nav-sidebar {
             position: fixed;
             top: 0;
@@ -221,7 +179,6 @@
             margin: 8px 0;
         }
 
-        /* ===== 内容区域：左边距留出侧边栏空间（与第二个页面一致） ===== */
         .content-wrapper {
             margin-left: 64px;
             padding-top: 20px;
@@ -260,7 +217,6 @@
             border-bottom: 1px solid #edf2f7;
         }
 
-        /* ===== 日志卡片样式（源自第一个页面，但调整风格） ===== */
         .log-list {
             display: flex;
             flex-direction: column;
@@ -463,7 +419,6 @@
             opacity: 0.5;
         }
 
-        /* ===== 加载更多按钮（与第二个页面风格协调） ===== */
         .load-more-wrap {
             text-align: center;
             padding: 12px 0 4px;
@@ -521,7 +476,6 @@
             }
         }
 
-        /* ===== Footer（与第二个页面一致） ===== */
         footer {
             text-align: center;
             padding: 24px;
@@ -539,7 +493,6 @@
             text-decoration: underline;
         }
 
-        /* ===== 响应式（与第二个页面一致） ===== */
         @media (max-width: 900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
@@ -684,15 +637,12 @@
 </head>
 
 <body>
-    <!-- ===== 顶部导航 ===== -->
     <div class="topbar">
         <div class="logo">✨ Jason227</div>
         <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
     </div>
 
-    <!-- ===== 主体布局 ===== -->
     <div class="main-layout">
-        <!-- 侧边栏 -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -720,7 +670,6 @@
             <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
         </div>
 
-        <!-- 内容区域 -->
         <div class="content-wrapper">
             <div class="main-content">
                 <div class="card">
@@ -741,46 +690,96 @@
     <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
 
     <script>
-        // ============================================================
-        //  核心逻辑（与原始陶片放逐页面一致，仅 UI 渲染适配）
-        // ============================================================
         (function () {
-            const supabase = window.supabase.createClient(
-                'https://nosikdfacxkuaxfrmoqn.supabase.co',
-                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
-            );
+            const supabaseUrl = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const supabaseKey = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
             let page = 0;
             const PAGE_SIZE = 30;
             let loading = false;
             let hasMore = true;
+            let userCache = {};
 
             const logList = document.getElementById('logList');
             const loadMoreBtn = document.getElementById('load-more');
             const authButtons = document.getElementById('authButtons');
 
-            // ---------- 获取用户信息 ----------
+            // ---------- 从 profiles 表获取用户信息 ----------
             async function fetchUsers(userIds) {
-                if (!userIds.length) return {};
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('id, username, avatar, user_tag, is_admin, is_banned')
-                    .in('id', userIds);
-                if (error) {
-                    console.error('获取用户信息失败:', error);
-                    return {};
+                if (!userIds || userIds.length === 0) return {};
+                
+                const uniqueIds = [...new Set(userIds.filter(id => id))];
+                
+                // 先从缓存取
+                const result = {};
+                const needFetch = [];
+                uniqueIds.forEach(id => {
+                    if (userCache[id]) {
+                        result[id] = userCache[id];
+                    } else {
+                        needFetch.push(id);
+                    }
+                });
+
+                if (needFetch.length === 0) return result;
+
+                try {
+                    // 直接用 in 查询
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('id, username, avatar, user_tag, is_admin, is_banned')
+                        .in('id', needFetch);
+
+                    if (error) {
+                        console.error('查询用户失败:', error);
+                        // 尝试逐个查询
+                        for (const id of needFetch) {
+                            try {
+                                const { data: single } = await supabase
+                                    .from('profiles')
+                                    .select('id, username, avatar, user_tag, is_admin, is_banned')
+                                    .eq('id', id)
+                                    .single();
+                                if (single) {
+                                    userCache[id] = single;
+                                    result[id] = single;
+                                }
+                            } catch (e) {
+                                console.warn('单个用户查询失败:', id, e.message);
+                            }
+                        }
+                        return result;
+                    }
+
+                    if (data) {
+                        data.forEach(u => {
+                            userCache[u.id] = u;
+                            result[u.id] = u;
+                        });
+                    }
+                    return result;
+                } catch (err) {
+                    console.error('获取用户信息异常:', err);
+                    return result;
                 }
-                const map = {};
-                data.forEach(u => map[u.id] = u);
-                return map;
             }
 
             // ---------- 渲染单条日志 ----------
             function renderLog(log, userMap) {
-                const admin = userMap[log.admin_id] || { username: '已删除', avatar: '', user_tag: '', is_admin: false };
-                const target = userMap[log.target_user_id] || {
-                    username: '已删除', avatar: '', user_tag: '', is_admin: false,
-                    is_banned: false
+                // 获取用户信息
+                const admin = userMap[log.admin_id] || { 
+                    username: '已删除', 
+                    avatar: '', 
+                    user_tag: '', 
+                    is_admin: false 
+                };
+                const target = userMap[log.target_user_id] || { 
+                    username: '已删除', 
+                    avatar: '', 
+                    user_tag: '', 
+                    is_admin: false,
+                    is_banned: false 
                 };
 
                 const typeMap = {
@@ -788,16 +787,10 @@
                     'unban': { class: 'unban', icon: '🔓', label: '解除封禁', tag: 'tag-unban' },
                     'grant_perm': { class: 'grant', icon: '✅', label: '授予权限', tag: 'tag-grant' },
                     'revoke_perm': { class: 'revoke', icon: '❌', label: '撤销权限', tag: 'tag-revoke' },
-                };
-                // 扩展类型（与第一个页面保持一致）
-                const extraMap = {
                     'cheat': { class: 'cheat', icon: '⚠️', label: '作弊惩罚', tag: 'tag-cheat' },
                     'manager_rotate': { class: 'manager', icon: '🔄', label: '管理轮换', tag: 'tag-manager' },
                 };
-                let info = typeMap[log.action_type] || extraMap[log.action_type] || {
-                    class: '', icon: '📋', label: log
-                        .action_type, tag: ''
-                };
+                let info = typeMap[log.action_type] || { class: '', icon: '📋', label: log.action_type || '未知操作', tag: '' };
 
                 let detailText = '';
                 if (log.action_detail) {
@@ -809,12 +802,12 @@
                             'can_manage_posts': '秩序管理',
                             'can_speak': '自由发言',
                             'is_banned': '进入主站',
+                            'special_privilege': '特殊权限',
                         };
-                        const permName = permMap[d.permission] || d.permission;
+                        const permName = permMap[d.permission] || d.permission || '未知权限';
                         const actionWord = d.new_value ? '授予' : '撤销';
                         const cls = d.new_value ? 'success' : 'danger';
-                        detailText =
-                            `<span class="highlight ${cls}">${actionWord}</span> ${permName} 权限`;
+                        detailText = `<span class="highlight ${cls}">${actionWord}</span> ${permName} 权限`;
                     } else if (log.action_type === 'ban') {
                         detailText = `<span class="highlight danger">撤销</span> 进入主站 权限`;
                     } else if (log.action_type === 'unban') {
@@ -826,18 +819,17 @@
                     }
                 }
 
-                const time = new Date(log.created_at).toLocaleString('zh-CN', { hour12: false });
+                const time = log.created_at ? new Date(log.created_at).toLocaleString('zh-CN', { hour12: false }) : '未知时间';
                 const adminColor = admin.is_admin ? '#9b59b6' : '#2c3e50';
                 const targetColor = target.is_admin ? '#9b59b6' : '#2c3e50';
 
-                // 用户标签
                 const adminTag = admin.is_admin ? `<span class="utag admin">管理员</span>` : '';
                 const targetAdminTag = target.is_admin ? `<span class="utag admin">管理员</span>` : '';
                 const targetBannedTag = target.is_banned ? `<span class="utag banned">已封禁</span>` : '';
                 const targetTag = target.user_tag ? `<span class="utag">${target.user_tag}</span>` : '';
                 const adminTagUser = admin.user_tag ? `<span class="utag">${admin.user_tag}</span>` : '';
 
-                const avatarFallback = 'https://cdn.luogu.com.cn/images/default_avatar.png';
+                const avatarFallback = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"%3E%3Ccircle cx="13" cy="13" r="13" fill="%23e2e8f0"/%3E%3Ctext x="13" y="17" text-anchor="middle" font-size="12" fill="%23666"%3E👤%3C/text%3E%3C/svg%3E';
 
                 return `
                     <div class="log-card ${info.class}">
@@ -850,15 +842,15 @@
                             <span class="log-time">${time}</span>
                         </div>
                         <div class="log-users">
-                            <a href="/user/${admin.id}" class="log-user">
-                                <img src="${admin.avatar || avatarFallback}" alt="${admin.username}">
+                            <a href="/user/${log.admin_id || ''}" class="log-user">
+                                <img src="${admin.avatar || avatarFallback}" alt="${admin.username}" onerror="this.src='${avatarFallback}'">
                                 <span class="uname" style="color:${adminColor};">${admin.username}</span>
                                 ${adminTagUser}
                                 ${adminTag}
                             </a>
                             <span class="log-arrow">→</span>
-                            <a href="/user/${target.id}" class="log-user">
-                                <img src="${target.avatar || avatarFallback}" alt="${target.username}">
+                            <a href="/user/${log.target_user_id || ''}" class="log-user">
+                                <img src="${target.avatar || avatarFallback}" alt="${target.username}" onerror="this.src='${avatarFallback}'">
                                 <span class="uname" style="color:${targetColor};">${target.username}</span>
                                 ${targetTag}
                                 ${targetAdminTag}
@@ -879,15 +871,19 @@
                 loadMoreBtn.classList.add('loading');
 
                 try {
-                    const { data, error } = await supabase
+                    // 先获取日志
+                    const { data: logs, error: logError } = await supabase
                         .from('judgement_logs')
                         .select('*')
                         .order('created_at', { ascending: false })
                         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-                    if (error) throw error;
+                    if (logError) {
+                        console.error('查询日志失败:', logError);
+                        throw logError;
+                    }
 
-                    if (!data || data.length === 0) {
+                    if (!logs || logs.length === 0) {
                         hasMore = false;
                         if (!append) {
                             logList.innerHTML = `
@@ -901,14 +897,20 @@
                         return;
                     }
 
-                    const userIds = new Set();
-                    data.forEach(log => {
-                        userIds.add(log.admin_id);
-                        userIds.add(log.target_user_id);
+                    // 收集所有用户 ID
+                    const userIds = [];
+                    logs.forEach(log => {
+                        if (log.admin_id) userIds.push(log.admin_id);
+                        if (log.target_user_id) userIds.push(log.target_user_id);
                     });
-                    const userMap = await fetchUsers([...userIds]);
+                    
+                    const uniqueUserIds = [...new Set(userIds)];
+                    
+                    // 获取用户信息
+                    const userMap = await fetchUsers(uniqueUserIds);
 
-                    const html = data.map(log => renderLog(log, userMap)).join('');
+                    // 渲染
+                    const html = logs.map(log => renderLog(log, userMap)).join('');
                     if (append) {
                         logList.insertAdjacentHTML('beforeend', html);
                     } else {
@@ -916,19 +918,20 @@
                     }
 
                     page++;
-                    hasMore = data.length === PAGE_SIZE;
+                    hasMore = logs.length === PAGE_SIZE;
                     if (!hasMore) {
                         loadMoreBtn.style.display = 'none';
                     } else {
                         loadMoreBtn.style.display = 'inline-flex';
                     }
                 } catch (err) {
-                    console.error('加载日志失败:', err);
+                    console.error('加载失败:', err);
                     if (!append) {
                         logList.innerHTML = `
                             <div class="empty-state">
                                 <div class="icon">⚠️</div>
                                 <p>加载失败，请刷新重试</p>
+                                <p style="font-size:0.8rem;color:#ccc;margin-top:8px;">${err.message || ''}</p>
                             </div>
                         `;
                     }
@@ -943,41 +946,48 @@
             async function updateAuthUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        const { data: profile, error } = await supabase
+
+                    if (session && session.user) {
+                        const { data: profile } = await supabase
                             .from('profiles')
                             .select('username, avatar, is_admin')
                             .eq('id', session.user.id)
-                            .single();
-                        if (error) throw error;
+                            .maybeSingle();
 
-                        let displayName = profile.username || session.user.email;
+                        let displayName = profile?.username || session.user.email || '用户';
                         let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
-                        if (profile.is_admin) {
-                            html +=
-                                `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;">管理员</span>`;
+                        
+                        if (profile?.is_admin) {
+                            html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;margin-left:4px;">管理员</span>`;
                         }
+                        
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
+                        
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                             await supabase.auth.signOut();
                             location.reload();
                         });
                     } else {
-                        authButtons.innerHTML =
-                            `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                        authButtons.innerHTML = `
+                            <a href="/auth/login" class="auth-btn">登录</a>
+                            <a href="/auth/register" class="auth-btn">注册</a>
+                        `;
                     }
                 } catch (err) {
-                    console.error(err);
-                    authButtons.innerHTML =
-                        `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    console.error('认证失败:', err);
+                    authButtons.innerHTML = `
+                        <a href="/auth/login" class="auth-btn">登录</a>
+                        <a href="/auth/register" class="auth-btn">注册</a>
+                    `;
                 }
             }
 
             // ---------- 初始化 ----------
-            document.addEventListener('DOMContentLoaded', () => {
-                updateAuthUI();
-                loadLogs(false);
+            document.addEventListener('DOMContentLoaded', async () => {
+                await updateAuthUI();
+                await loadLogs(false);
+                
                 loadMoreBtn.addEventListener('click', () => loadLogs(true));
             });
         })();
