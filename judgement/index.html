@@ -708,9 +708,9 @@
             // ---------- 从 profiles 表获取用户信息 ----------
             async function fetchUsers(userIds) {
                 if (!userIds || userIds.length === 0) return {};
-                
+
                 const uniqueIds = [...new Set(userIds.filter(id => id))];
-                
+
                 // 先从缓存取
                 const result = {};
                 const needFetch = [];
@@ -728,7 +728,7 @@
                     // 直接用 in 查询
                     const { data, error } = await supabase
                         .from('profiles')
-                        .select('id, username, avatar, user_tag, is_admin, is_banned')
+                        .select('id, username, avatar_url, user_tag, is_admin, is_banned')
                         .in('id', needFetch);
 
                     if (error) {
@@ -738,7 +738,7 @@
                             try {
                                 const { data: single } = await supabase
                                     .from('profiles')
-                                    .select('id, username, avatar, user_tag, is_admin, is_banned')
+                                    .select('id, username, avatar_url, user_tag, is_admin, is_banned')
                                     .eq('id', id)
                                     .single();
                                 if (single) {
@@ -768,18 +768,18 @@
             // ---------- 渲染单条日志 ----------
             function renderLog(log, userMap) {
                 // 获取用户信息
-                const admin = userMap[log.admin_id] || { 
-                    username: '已删除', 
-                    avatar: '', 
-                    user_tag: '', 
-                    is_admin: false 
+                const admin = userMap[log.admin_id] || {
+                    username: '已删除',
+                    avatar_url: '',
+                    user_tag: '',
+                    is_admin: false
                 };
-                const target = userMap[log.target_user_id] || { 
-                    username: '已删除', 
-                    avatar: '', 
-                    user_tag: '', 
+                const target = userMap[log.target_user_id] || {
+                    username: '已删除',
+                    avatar_url: '',
+                    user_tag: '',
                     is_admin: false,
-                    is_banned: false 
+                    is_banned: false
                 };
 
                 const typeMap = {
@@ -823,13 +823,15 @@
                 const adminColor = admin.is_admin ? '#9b59b6' : '#2c3e50';
                 const targetColor = target.is_admin ? '#9b59b6' : '#2c3e50';
 
-                const adminTag = admin.is_admin ? `<span class="utag admin">管理员</span>` : '';
-                const targetAdminTag = target.is_admin ? `<span class="utag admin">管理员</span>` : '';
                 const targetBannedTag = target.is_banned ? `<span class="utag banned">已封禁</span>` : '';
-                const targetTag = target.user_tag ? `<span class="utag">${target.user_tag}</span>` : '';
-                const adminTagUser = admin.user_tag ? `<span class="utag">${admin.user_tag}</span>` : '';
+                const targetTag = target.user_tag ? `<span class="utag" style="background:${targetColor};color:#fff;">${target.user_tag}</span>` : '';
+                const adminTagUser = admin.user_tag ? `<span class="utag" style="background:${adminColor};color:#fff;">${admin.user_tag}</span>` : '';
 
-                const avatarFallback = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"%3E%3Ccircle cx="13" cy="13" r="13" fill="%23e2e8f0"/%3E%3Ctext x="13" y="17" text-anchor="middle" font-size="12" fill="%23666"%3E👤%3C/text%3E%3C/svg%3E';
+                // 默认头像：红色圆 + 用户名首字母（与首页/犇犇页一致）
+                function letterAvatar(name) {
+                    const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                    return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E' + ch + '%3C/text%3E%3C/svg%3E';
+                }
 
                 return `
                     <div class="log-card ${info.class}">
@@ -843,17 +845,15 @@
                         </div>
                         <div class="log-users">
                             <a href="/user/${log.admin_id || ''}" class="log-user">
-                                <img src="${admin.avatar || avatarFallback}" alt="${admin.username}" onerror="this.src='${avatarFallback}'">
+                                <img src="${admin.avatar_url || letterAvatar(admin.username)}" alt="${admin.username}" onerror="this.onerror=null;this.src='${letterAvatar(admin.username)}'">
                                 <span class="uname" style="color:${adminColor};">${admin.username}</span>
                                 ${adminTagUser}
-                                ${adminTag}
                             </a>
                             <span class="log-arrow">→</span>
                             <a href="/user/${log.target_user_id || ''}" class="log-user">
-                                <img src="${target.avatar || avatarFallback}" alt="${target.username}" onerror="this.src='${avatarFallback}'">
+                                <img src="${target.avatar_url || letterAvatar(target.username)}" alt="${target.username}" onerror="this.onerror=null;this.src='${letterAvatar(target.username)}'">
                                 <span class="uname" style="color:${targetColor};">${target.username}</span>
                                 ${targetTag}
-                                ${targetAdminTag}
                                 ${targetBannedTag}
                             </a>
                         </div>
@@ -903,9 +903,9 @@
                         if (log.admin_id) userIds.push(log.admin_id);
                         if (log.target_user_id) userIds.push(log.target_user_id);
                     });
-                    
+
                     const uniqueUserIds = [...new Set(userIds)];
-                    
+
                     // 获取用户信息
                     const userMap = await fetchUsers(uniqueUserIds);
 
@@ -950,20 +950,20 @@
                     if (session && session.user) {
                         const { data: profile } = await supabase
                             .from('profiles')
-                            .select('username, avatar, is_admin')
+                            .select('username, avatar_url, is_admin')
                             .eq('id', session.user.id)
                             .maybeSingle();
 
                         let displayName = profile?.username || session.user.email || '用户';
                         let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
-                        
+
                         if (profile?.is_admin) {
                             html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;margin-left:4px;">管理员</span>`;
                         }
-                        
+
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
-                        
+
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                             await supabase.auth.signOut();
                             location.reload();
@@ -987,7 +987,7 @@
             document.addEventListener('DOMContentLoaded', async () => {
                 await updateAuthUI();
                 await loadLogs(false);
-                
+
                 loadMoreBtn.addEventListener('click', () => loadLogs(true));
             });
         })();
