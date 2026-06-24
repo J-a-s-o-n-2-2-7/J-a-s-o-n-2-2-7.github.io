@@ -2225,19 +2225,22 @@
             }
 
             // ================================================================
-            // ★★★ 核心修改：renderAllBenbenTexts 中颜色逻辑已内联到 renderBenbenList ★★★
+            // ★★★ 核心修改：renderAllBenbenTexts 中 color 逻辑已内联到 renderBenbenList ★★★
             // ================================================================
             function renderAllBenbenTexts() {
                 document.querySelectorAll('.benben-text').forEach(el => {
                     try {
                         const rawEncoded = el.getAttribute('data-raw');
                         const mentionMapStr = el.getAttribute('data-mention-map');
+                        // ★★★ 新增：读取发布者的专属权限和用户名 ★★★
+                        const specialPrivilege = el.getAttribute('data-special-privilege') === 'true';
+                        const username = el.getAttribute('data-username') || '用户';
                         if (!rawEncoded) return;
                         let rawText = rawEncoded;
                         let mentionMap = {};
                         try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
-                        el.innerHTML = renderContent(rawText, mentionMap, currentProfile?.special_privilege ||
-                            false, currentProfile?.username || '用户');
+                        // ★★★ 使用发布者的权限和用户名渲染 ★★★
+                        el.innerHTML = renderContent(rawText, mentionMap, specialPrivilege, username);
                     } catch (e) {
                         console.error('渲染犇犇内容失败:', e);
                         el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
@@ -2269,7 +2272,7 @@
                     }, 50);
                 }
 
-                // 在 renderAllBenbenTexts 中添加
+                // 脚注跳转平滑滚动
                 document.addEventListener('click', function (e) {
                     const link = e.target.closest('.footnote-backref, a[href^="#fn"]');
                     if (link) {
@@ -2366,6 +2369,7 @@
                     loadingSentinel.textContent = '加载中...';
                 }
                 try {
+                    // ★★★ 修改：增加 special_privilege 字段 ★★★
                     let query = supabase.from('benben')
                         .select(`
                 *, 
@@ -2373,7 +2377,8 @@
                     username, 
                     is_admin,
                     username_color,
-                    user_tag
+                    user_tag,
+                    special_privilege
                 )
             `)
                         .eq('is_deleted', false)
@@ -2446,7 +2451,7 @@
             }
 
             // ================================================================
-            // ★★★ 修改 renderBenbenList：颜色逻辑调整 ★★★
+            // ★★★ 修改 renderBenbenList：添加 data-special-privilege 和 data-username ★★★
             // ================================================================
             async function renderBenbenList(data, reset, mentionMap = {}) {
                 if (!benbenList) return;
@@ -2484,6 +2489,10 @@
                         userHtml += labelHtml;
                     }
 
+                    // ★★★ 获取发布者的 special_privilege 和 username（用于签名） ★★★
+                    const specialPrivilege = prof.special_privilege || false;
+                    const ownerUsername = prof.username || '用户';
+
                     const benbenHtml = `
                         <div class="benben-item" data-id="${item.id}">
                             <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E" alt="${username}"></a></div>
@@ -2499,7 +2508,13 @@
                                         ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
                                     </div>
                                 </div>
-                                <div class="benben-text" data-raw="${escapeHtmlAttr(rawContent)}" data-mention-map='${escapeHtmlAttr(mentionMapJson)}'></div>
+                                <!-- ★★★ 新增 data-special-privilege 和 data-username ★★★ -->
+                                <div class="benben-text" 
+                                     data-raw="${escapeHtmlAttr(rawContent)}" 
+                                     data-mention-map='${escapeHtmlAttr(mentionMapJson)}'
+                                     data-special-privilege="${specialPrivilege}"
+                                     data-username="${escapeHtmlAttr(ownerUsername)}">
+                                </div>
                             </div>
                         </div>
                     `;
