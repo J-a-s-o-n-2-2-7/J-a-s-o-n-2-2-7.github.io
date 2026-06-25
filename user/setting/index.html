@@ -208,6 +208,7 @@
     </div>
 
     <script>
+        (function () {
         const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -277,6 +278,7 @@
 
         document.getElementById('updateProfileBtn').addEventListener('click', updateProfile);
         loadUserData();
+        })();
     </script>
 </body>
 
