@@ -1506,10 +1506,10 @@
             function escapeHtmlAttr(str) {
                 if (!str) return '';
                 return str.replace(/[&<>"]/g, function (m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    if (m === '"') return '&quot;';
+                    if (m === '&') return '&';
+                    if (m === '<') return '<';
+                    if (m === '>') return '>';
+                    if (m === '"') return '"';
                     return m;
                 });
             }
@@ -1517,9 +1517,9 @@
             function escapeHtml(str) {
                 if (!str) return '';
                 return str.replace(/[&<>]/g, function (m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
+                    if (m === '&') return '&';
+                    if (m === '<') return '<';
+                    if (m === '>') return '>';
                     return m;
                 });
             }
@@ -1552,35 +1552,47 @@
                         bvid = base;
                     } else if (lowerBase.startsWith('av')) {
                         aid = base.substring(2);
-                    } else if (/^\d+$/.test(base)) {
+                    } else if (/^\d+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">/</mi><mi mathvariant="normal">.</mi><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi><mo stretchy="false">(</mo><mi>b</mi><mi>a</mi><mi>s</mi><mi>e</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mrow><mi>a</mi><mi>i</mi><mi>d</mi><mo>=</mo><mi>b</mi><mi>a</mi><mi>s</mi><mi>e</mi><mo separator="true">;</mo></mrow><mi>e</mi><mi>l</mi><mi>s</mi><mi>e</mi><mrow><mi>r</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>r</mi><mi>n</mi><mi>m</mi><mi>a</mi><mi>t</mi><mi>c</mi><mi>h</mi><mo separator="true">;</mo></mrow><mi>l</mi><mi>e</mi><mi>t</mi><mi>e</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>d</mi><mi>U</mi><mi>r</mi><mi>l</mi><msup><mo>=</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>h</mi><mi>t</mi><mi>t</mi><mi>p</mi><mi>s</mi><mo>:</mo><mi mathvariant="normal">/</mi><mi mathvariant="normal">/</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>y</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>b</mi><mi>i</mi><mi>l</mi><mi>i</mi><mi>b</mi><mi>i</mi><mi>l</mi><mi>i</mi><mi mathvariant="normal">.</mi><mi>c</mi><mi>o</mi><mi>m</mi><mi mathvariant="normal">/</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>y</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>h</mi><mi>t</mi><mi>m</mi><mi>l</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">;</mo><mi>i</mi><mi>f</mi><mo stretchy="false">(</mo><mi>b</mi><mi>v</mi><mi>i</mi><mi>d</mi><mo stretchy="false">)</mo><mi>e</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>d</mi><mi>U</mi><mi>r</mi><mi>l</mi><mo>+</mo><mo>=</mo><mi mathvariant="normal">‘</mi><mi>b</mi><mi>v</mi><mi>i</mi><mi>d</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">/.test(base)) {
                         aid = base;
                     } else {
                         return match;
                     }
 
-                    let embedUrl = 'https://player.bilibili.com/player.html?';
-                    if (bvid) embedUrl += `bvid=${bvid}`;
-                    else if (aid) embedUrl += `aid=${aid}`;
-                    if (extraParams) embedUrl += extraParams;
-                    if (!extraParams.includes('page=')) embedUrl += '&page=1';
+                    let embedUrl = &#x27;https://player.bilibili.com/player.html?&#x27;;
+                    if (bvid) embedUrl += `bvid=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/.</span><span class="mord mathnormal">t</span><span class="mord mathnormal">es</span><span class="mord mathnormal">t</span><span class="mopen">(</span><span class="mord mathnormal">ba</span><span class="mord mathnormal">se</span><span class="mclose">))</span><span class="mord"><span class="mord mathnormal">ai</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">ba</span><span class="mord mathnormal">se</span><span class="mpunct">;</span></span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal">re</span><span class="mord mathnormal">t</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">nma</span><span class="mord mathnormal">t</span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mpunct">;</span></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">mb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">=</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">h</span><span class="mord mathnormal">ttp</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">//</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.02778em;">yer</span><span class="mord">.</span><span class="mord mathnormal">bi</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ibi</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">i</span><span class="mord">.</span><span class="mord mathnormal">co</span><span class="mord mathnormal">m</span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.02778em;">yer</span><span class="mord">.</span><span class="mord mathnormal">h</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord mathnormal">b</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mclose">)</span><span class="mord mathnormal">e</span><span class="mord mathnormal">mb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord">+</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">‘</span><span class="mord mathnormal">b</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span></span></span></span>{bvid}`;
+                    else if (aid) embedUrl += `aid=<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;&amp;&#x27; at position 140: …) embedUrl += &#x27;&amp;̲page=1&#x27;;
 
-                    return `<iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
+     …" style="color:#cc0000">{aid}`;
+                    if (extraParams) embedUrl += extraParams;
+                    if (!extraParams.includes(&#x27;page=&#x27;)) embedUrl += &#x27;&amp;page=1&#x27;;
+
+                    return `&lt;iframe src=&quot;</span>{embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
                 });
 
                 // 2. 通用嵌入：用户自行提供完整 iframe URL
                 // 用法：![](embed:https://player.xxx.com/embed/xxxxx)
                 text = text.replace(/!\[\]\(embed:([^)]+)\)/g, (match, url) => {
-                    return `<iframe src="${url}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
+                    return `<iframe src="<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 153: …               }̲);
+
+           …" style="color:#cc0000">{url}&quot; scrolling=&quot;no&quot; border=&quot;0&quot; frameborder=&quot;no&quot; framespacing=&quot;0&quot; allowfullscreen=&quot;true&quot; style=&quot;width:100%; height:360px;&quot;&gt;&lt;/iframe&gt;`;
                 });
 
                 // 3. 保留原有的 [bilibili]BVxxx[/bilibili] 格式（向后兼容）
-                text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =>
-                    `<iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
+                text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =&gt;
+                    `&lt;iframe src=&quot;https://player.bilibili.com/player.html?bvid=</span>{bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
                 );
 
                 // 4. align 语法
-                text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_CENTER%%$1%%ALIGN_END%%');
-                text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_RIGHT%%$1%%ALIGN_END%%');
+                text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi&gt;e&lt;/mi&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mi mathvariant="normal">.</mi><mi>r</mi><mi>e</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi mathvariant="normal">/</mi><mo>:</mo><mo>:</mo><mo>:</mo><mi>a</mi><mi>l</mi><mi>i</mi><mi>g</mi><mi>n</mi><mo stretchy="false">{</mo><mi>r</mi><mi>i</mi><mi>g</mi><mi>h</mi><mi>t</mi><mo stretchy="false">}</mo><mstyle mathcolor="#cc0000"><mtext>\s</mtext></mstyle><mo>∗</mo><mo stretchy="false">(</mo><mo stretchy="false">[</mo><mstyle mathcolor="#cc0000"><mtext>\s</mtext></mstyle><mi mathvariant="normal">§</mi><mo stretchy="false">]</mo><mo>∗</mo><mo stretchy="false">?</mo><mo stretchy="false">)</mo><mstyle mathcolor="#cc0000"><mtext>\n</mtext></mstyle><mo>:</mo><mo>:</mo><mo>:</mo><mi mathvariant="normal">/</mi><mi>g</mi><mi>m</mi><msup><mo separator="true">,</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">1
+
+
+&#x27;);
+                text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, &#x27;
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mord">.</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ce</span><span class="mopen">(</span><span class="mord">/</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:::</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">h</span><span class="mord mathnormal">t</span><span class="mclose">}</span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\s</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">([</span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\s</span></span><span class="mord">§</span><span class="mclose">]</span><span class="mord">∗</span><span class="mclose">?)</span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\n</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:::</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">m</span><span class="mpunct"><span class="mpunct">,</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span>1
+
+
+');
 
                 return text;
             }
@@ -1672,7 +1684,8 @@
                             if (stack.length === 0) {
                                 const idx = roots.length;
                                 roots.push(node);
-                                output.push(`%%DETAILS_ROOT_${idx}%%`);
+                                output.push(`%%DETAILS_ROOT_<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 40: …               }̲ else {
+       …" style="color:#cc0000">{idx}%%`);
                             } else {
                                 stack[stack.length - 1].children.push(node);
                             }
@@ -1691,12 +1704,12 @@
                 }
 
                 // 未闭合容错
-                while (stack.length > 0) {
+                while (stack.length &gt; 0) {
                     const node = stack.pop();
                     if (stack.length === 0) {
                         const idx = roots.length;
                         roots.push(node);
-                        output.push(`%%DETAILS_ROOT_${idx}%%`);
+                        output.push(`%%DETAILS_ROOT_</span>{idx}%%`);
                     } else {
                         stack[stack.length - 1].children.push(node);
                     }
@@ -1708,13 +1721,13 @@
             function renderContent(rawText, mentionMap, hasSpecialPrivilege = false, username = '用户') {
                 if (!rawText) return '';
 
-                // 0. 解码 HTML 实体（把 &gt; 转成 >）
+                // 0. 解码 HTML 实体（把 > 转成 >）
                 rawText = rawText
-                    .replace(/&gt;/g, '>')
-                    .replace(/&lt;/g, '<')
-                    .replace(/&quot;/g, '"')
-                    .replace(/&#39;/g, "'")
-                    .replace(/&amp;/g, '&');
+                    .replace(/>/g, '>')
+                    .replace(/</g, '<')
+                    .replace(/"/g, '"')
+                    .replace(/'/g, "'")
+                    .replace(/&/g, '&');
 
                 // 解析嵌套折叠框（树形结构）
                 const { roots, output } = parseNestedDetails(rawText);
@@ -1727,31 +1740,33 @@
                 rawText = rawText.replace(/```mermaid\s*([\s\S]*?)```/g, (match, code) => {
                     const idx = mermaidBlocks.length;
                     mermaidBlocks.push(code.trim());
-                    return `%%MERMAID_${idx}%%`;
+                    return `%%MERMAID_<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 27: …               }̲);
+
+           …" style="color:#cc0000">{idx}%%`;
                 });
 
                 // ========== 1. 逐行提取围栏代码块（支持引用块内，保留引用前缀） ==========
-                const lines = rawText.split('\n');
+                const lines = rawText.split(&#x27;\n&#x27;);
                 const blocks = [];
                 let processedLines = [];
                 let inFence = false;
                 let fenceContent = [];
                 let blockIdx = 0;
 
-                for (let i = 0; i < lines.length; i++) {
+                for (let i = 0; i &lt; lines.length; i++) {
                     const line = lines[i];
-                    // 提取前导 > 和空格（用于保留引用层次）
-                    const prefixMatch = line.match(/^(>\s*)+/);
-                    const prefix = prefixMatch ? prefixMatch[0] : '';
-                    // 去掉前导 > 后的内容（用于判断代码块）
-                    const cleanLine = line.replace(/^(>\s?)+/, '');
+                    // 提取前导 &gt; 和空格（用于保留引用层次）
+                    const prefixMatch = line.match(/^(&gt;\s*)+/);
+                    const prefix = prefixMatch ? prefixMatch[0] : &#x27;&#x27;;
+                    // 去掉前导 &gt; 后的内容（用于判断代码块）
+                    const cleanLine = line.replace(/^(&gt;\s?)+/, &#x27;&#x27;);
 
-                    if (!inFence && cleanLine.startsWith('```')) {
+                    if (!inFence &amp;&amp; cleanLine.startsWith(&#x27;```&#x27;)) {
                         // 进入代码块
                         inFence = true;
                         fenceContent = [cleanLine];
                         // 在代码块开始位置插入占位符，**保留前缀**，让 markdown-it 解析时仍在引用块内
-                        processedLines.push(prefix + `%%BLOCK${blockIdx}%%`);
+                        processedLines.push(prefix + `%%BLOCK</span>{blockIdx}%%`);
                         // 注意：此时 blockIdx 还未增加，等代码块结束时再增加
                     } else if (inFence) {
                         fenceContent.push(cleanLine);
@@ -1813,25 +1828,26 @@
                 // 用正则匹配 `[^`]+`，但要避开 %%BLOCKn%% 这样的占位符
                 processed = processed.replace(/`([^`]+)`/g, (match, code) => {
                     // 如果匹配到的是 %%BLOCK... 则跳过（防止误伤占位符）
-                    if (/^%%BLOCK\d+%%$/.test(match)) return match;
+                    if (/^%%BLOCK\d+%%<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;&amp;&#x27; at position 135: …eplace(/\n/g, &#x27;&amp;̲#10;&#x27;);
+       …" style="color:#cc0000">/.test(match)) return match;
                     const idx = blocks.length;
-                    const safeCode = code.replace(/\n/g, '&#10;');
-                    blocks.push({ type: 'inline', content: safeCode });
-                    return `%%BLOCK${idx}%%`;
+                    const safeCode = code.replace(/\n/g, &#x27;&amp;#10;&#x27;);
+                    blocks.push({ type: &#x27;inline&#x27;, content: safeCode });
+                    return `%%BLOCK</span>{idx}%%`;
                 });
 
                 // ========== 3. 洛谷扩展 ==========
                 processed = preprocessLuoguSyntax(processed);
 
                 // ========== 4. LaTeX 渲染 ==========
-                processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
-                    let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                processed = processed.replace(/\<span class="katex-error" title="ParseError: KaTeX parse error: Unexpected character: &#x27;\&#x27; at position 1: \̲" style="color:#cc0000">\</span>([\s\S]+?)\<span class="katex-error" title="ParseError: KaTeX parse error: Unexpected character: &#x27;\&#x27; at position 1: \̲" style="color:#cc0000">\</span>/g, (match, math) => {
+                    let realMath = math.replace(/</g, '<').replace(/>/g, '>');
                     try {
-                        return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`;
+                        return `<div style="text-align:center;margin:8px 0;"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 106: …               }̲ catch (e) { re…" style="color:#cc0000">{katex.renderToString(realMath, { displayMode: true, throwOnError: false })}&lt;/div&gt;`;
                     } catch (e) { return match; }
                 });
-                processed = processed.replace(/\$([^$]+?)\$/g, (match, math) => {
-                    let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                processed = processed.replace(/\</span>([^<span class="katex-error" title="ParseError: KaTeX parse error: Unexpected character: &#x27;\&#x27; at position 5: ]+?)\̲" style="color:#cc0000">]+?)\</span>/g, (match, math) => {
+                    let realMath = math.replace(/</g, '<').replace(/>/g, '>');
                     try {
                         return katex.renderToString(realMath, { throwOnError: false });
                     } catch (e) { return match; }
@@ -1839,49 +1855,52 @@
 
                 // 图片尺寸控制：![alt](url =300x200)
                 processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x(\d*)\)/g, (match, alt, url, width, height) => {
-                    const style = `width:${width}px;${height ? ` height:${height}px;` : ''}`;
-                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="${style}">`;
+                    const style = `width:<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>w</mi><mi>i</mi><mi>d</mi><mi>t</mi><mi>h</mi></mrow><mi>p</mi><mi>x</mi><mo separator="true">;</mo></mrow><annotation encoding="application/x-tex">{width}px;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span></span><span class="mord mathnormal">p</span><span class="mord mathnormal">x</span><span class="mpunct">;</span></span></span></span>{height ? ` height:<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 18: …eight}px;` : &#x27;&#x27;}̲`;
+            …" style="color:#cc0000">{height}px;` : &#x27;&#x27;}`;
+                    return `&lt;img alt=&quot;</span>{escapeHtmlAttr(alt)}" src="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>u</mi><mi>r</mi><mi>l</mi><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(url)}&quot; style=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mclose">)</span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{style}">`;
                 });
 
                 // 删除线：~~text~~ -> <del>text</del>
-                processed = processed.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+                processed = processed.replace(/~~([^~]+)~~/g, '<del><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>d</mi><mi>e</mi><mi>l</mi><msup><mo>&gt;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo><mo separator="true">;</mo><mi mathvariant="normal">/</mi><mi mathvariant="normal">/</mi><mtext>高亮标记：</mtext><mo>=</mo><mo>=</mo><mi>t</mi><mi>e</mi><mi>x</mi><mi>t</mi><mo>=</mo><mo>=</mo><mo>−</mo><mo>&gt;</mo><mo>&lt;</mo><mi>m</mi><mi>a</mi><mi>r</mi><mi>k</mi><mo>&gt;</mo><mi>t</mi><mi>e</mi><mi>x</mi><mi>t</mi><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>m</mi><mi>a</mi><mi>r</mi><mi>k</mi><mo>&gt;</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>e</mi><mi>d</mi><mo>=</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>e</mi><mi>d</mi><mi mathvariant="normal">.</mi><mi>r</mi><mi>e</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi mathvariant="normal">/</mi><mo>=</mo><mo>=</mo><mo stretchy="false">(</mo><msup><mo stretchy="false">[</mo><mo>=</mo></msup><mo stretchy="false">]</mo><mo>+</mo><mo stretchy="false">)</mo><mo>=</mo><mo>=</mo><mi mathvariant="normal">/</mi><mi>g</mi><msup><mo separator="true">,</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>&lt;</mo><mi>m</mi><mi>a</mi><mi>r</mi><mi>k</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">1&lt;/del&gt;&#x27;);
 
-                // 高亮标记：==text== -> <mark>text</mark>
-                processed = processed.replace(/==([^=]+)==/g, '<mark>$1</mark>');
+                // 高亮标记：==text== -&gt; &lt;mark&gt;text&lt;/mark&gt;
+                processed = processed.replace(/==([^=]+)==/g, &#x27;&lt;mark&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6835em;vertical-align:-0.0391em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">&gt;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mclose">)</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">//</span><span class="mord cjk_fallback">高亮标记：</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">==</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">==</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6542em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">rocesse</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">rocesse</span><span class="mord mathnormal">d</span><span class="mord">.</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ce</span><span class="mopen">(</span><span class="mord">/</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">==</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mopen"><span class="mopen">[</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6198em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mrel mtight">=</span></span></span></span></span></span></span></span><span class="mclose">]</span><span class="mord">+</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">==</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mpunct"><span class="mpunct">,</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>1</mark>');
 
                 // 插入标记：++text++ -> <ins>text</ins>
-                processed = processed.replace(/\+\+([^+]+)\+\+/g, '<ins>$1</ins>');
+                processed = processed.replace(/\+\+([^+]+)\+\+/g, '<ins><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>i</mi><mi>n</mi><mi>s</mi><msup><mo>&gt;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo><mo separator="true">;</mo><mi mathvariant="normal">/</mi><mi mathvariant="normal">/</mi><mtext>小号文本：</mtext><mo>−</mo><mo>−</mo><mi>t</mi><mi>e</mi><mi>x</mi><mi>t</mi><mo>−</mo><mo>−</mo><mo>−</mo><mo>&gt;</mo><mo>&lt;</mo><mi>s</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>l</mi><mo>&gt;</mo><mi>t</mi><mi>e</mi><mi>x</mi><mi>t</mi><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>l</mi><mo>&gt;</mo><mtext>（只匹配前后</mtext><msup><mtext>非</mtext><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>−</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mtext>或</mtext><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mtext>）</mtext><mi>p</mi><mi>r</mi><mi>o</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>e</mi><mi>d</mi><mo>=</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>e</mi><mi>d</mi><mi mathvariant="normal">.</mi><mi>r</mi><mi>e</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><mo stretchy="false">?</mo><mo>&lt;</mo><mo stretchy="false">!</mo><mo stretchy="false">[</mo><mo>:</mo><mstyle mathcolor="#cc0000"><mtext>\-</mtext></mstyle><mo stretchy="false">]</mo><mo stretchy="false">)</mo><mo>−</mo><mo>−</mo><mo stretchy="false">(</mo><msup><mo stretchy="false">[</mo><mo>−</mo></msup><mo stretchy="false">]</mo><mo>+</mo><mo stretchy="false">)</mo><mo>−</mo><mo>−</mo><mo stretchy="false">(</mo><mo stretchy="false">?</mo><mo stretchy="false">!</mo><mo stretchy="false">[</mo><mo>:</mo><mstyle mathcolor="#cc0000"><mtext>\-</mtext></mstyle><mo stretchy="false">]</mo><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mi>g</mi><msup><mo separator="true">,</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>&lt;</mo><mi>s</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>l</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">1&lt;/ins&gt;&#x27;);
 
-                // 小号文本：--text-- -> <small>text</small>（只匹配前后非 '-' 或 ':'）
-                processed = processed.replace(/(?<![:\-])--([^-]+)--(?![:\-])/g, '<small>$1</small>');
+                // 小号文本：--text-- -&gt; &lt;small&gt;text&lt;/small&gt;（只匹配前后非 &#x27;-&#x27; 或 &#x27;:&#x27;）
+                processed = processed.replace(/(?&lt;![:\-])--([^-]+)--(?![:\-])/g, &#x27;&lt;small&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6835em;vertical-align:-0.0391em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">in</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">&gt;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mclose">)</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">//</span><span class="mord cjk_fallback">小号文本：</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6984em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">−</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.01968em;">ll</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6542em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.01968em;">ll</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8352em;vertical-align:-0.0833em;"></span><span class="mord cjk_fallback">（只匹配前后</span><span class="mord"><span class="mord cjk_fallback">非</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin"><span class="mbin">−</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7519em;"></span><span class="mord"><span class="mord cjk_fallback">或</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord cjk_fallback">）</span><span class="mord mathnormal">p</span><span class="mord mathnormal">rocesse</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">rocesse</span><span class="mord mathnormal">d</span><span class="mord">.</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ce</span><span class="mopen">(</span><span class="mord">/</span><span class="mopen">(</span><span class="mclose">?</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mclose">!</span><span class="mopen">[</span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\-</span></span><span class="mclose">])</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.0213em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mopen">(</span><span class="mopen"><span class="mopen">[</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7713em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mclose">]</span><span class="mord">+</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mopen">(</span><span class="mclose">?!</span><span class="mopen">[</span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\-</span></span><span class="mclose">])</span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mpunct"><span class="mpunct">,</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.01968em;">ll</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>1</small>');
 
                 // 上标：^text^ -> <sup>text</sup>（避免匹配 [^1] 等脚注标记）
-                processed = processed.replace(/(?<![\[\^])\^([^^]+)\^(?![\]])/g, '<sup>$1</sup>');
+                processed = processed.replace(/(?<![\[\^])\^([^^]+)\^(?![\]])/g, '<sup><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>u</mi><mi>p</mi><msup><mo>&gt;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo><mo separator="true">;</mo><mi mathvariant="normal">/</mi><mi mathvariant="normal">/</mi><mtext>下标： </mtext><mi>t</mi><mi>e</mi><mi>x</mi><mi>t</mi><mtext> </mtext><mo>−</mo><mo>&gt;</mo><mo>&lt;</mo><mi>s</mi><mi>u</mi><mi>b</mi><mo>&gt;</mo><mi>t</mi><mi>e</mi><mi>x</mi><mi>t</mi><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>u</mi><mi>b</mi><mo>&gt;</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>e</mi><mi>d</mi><mo>=</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>e</mi><mi>d</mi><mi mathvariant="normal">.</mi><mi>r</mi><mi>e</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi mathvariant="normal">/</mi><mtext> </mtext><mo stretchy="false">(</mo><msup><mo stretchy="false">[</mo><mtext> </mtext></msup><mo stretchy="false">]</mo><mo>+</mo><mo stretchy="false">)</mo><mtext> </mtext><mi mathvariant="normal">/</mi><mi>g</mi><msup><mo separator="true">,</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>&lt;</mo><mi>s</mi><mi>u</mi><mi>b</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">1&lt;/sup&gt;&#x27;);
 
-                // 下标：~text~ -> <sub>text</sub>
-                processed = processed.replace(/~([^~]+)~/g, '<sub>$1</sub>');
+                // 下标：~text~ -&gt; &lt;sub&gt;text&lt;/sub&gt;
+                processed = processed.replace(/~([^~]+)~/g, &#x27;&lt;sub&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6835em;vertical-align:-0.0391em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">&gt;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mclose">)</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">//</span><span class="mord cjk_fallback">下标：</span><span class="mspace nobreak"> </span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace nobreak"> </span><span class="mord">−</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6542em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">rocesse</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">rocesse</span><span class="mord mathnormal">d</span><span class="mord">.</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ce</span><span class="mopen">(</span><span class="mord">/</span><span class="mspace nobreak"> </span><span class="mopen">(</span><span class="mopen"><span class="mopen">[</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.363em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mspace nobreak mtight"><span class="mtight"> </span></span></span></span></span></span></span></span></span><span class="mclose">]</span><span class="mord">+</span><span class="mclose">)</span><span class="mspace nobreak"> </span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mpunct"><span class="mpunct">,</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>1</sub>');
 
                 // 先保护 [[TOC]] 不被键盘按键正则捕获
                 processed = processed.replace(/\[\[TOC\]\]/g, '%%TOC_PLACEHOLDER%%');
                 // 键盘按键：[[key]] -> <kbd>key</kbd>
-                processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
+                processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd><span class="katex-error" title="ParseError: KaTeX parse error: Got function &#x27;\]&#x27; with no arguments as superscript at position 203: …replace(/!\[([^\̲]̲]*)\]\(([^)]+?)…" style="color:#cc0000">1&lt;/kbd&gt;&#x27;);
                 // 恢复 [[TOC]]
-                processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, '[[TOC]]');
+                processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, &#x27;[[TOC]]&#x27;);
 
                 // 只指定宽度
-                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x\)/g, (match, alt, url, width) => {
-                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="width:${width}px; height:auto;">`;
+                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x\)/g, (match, alt, url, width) =&gt; {
+                    return `&lt;img alt=&quot;</span>{escapeHtmlAttr(alt)}" src="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>u</mi><mi>r</mi><mi>l</mi><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>w</mi><mi>i</mi><mi>d</mi><mi>t</mi><mi>h</mi><mo>:</mo></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(url)}&quot; style=&quot;width:</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mclose">)</span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span></span></span></span>{width}px; height:auto;">`;
                 });
                 // 只指定高度
                 processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*x(\d+)\)/g, (match, alt, url, height) => {
-                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="height:${height}px; width:auto;">`;
+                    return `<img alt="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>a</mi><mi>l</mi><mi>t</mi><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>r</mi><mi>c</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(alt)}&quot; src=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mord mathnormal">lt</span><span class="mclose">)</span></span><span class="mord">&quot;</span><span class="mord mathnormal">src</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{escapeHtmlAttr(url)}" style="height:<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 45: …               }̲);
+
+           …" style="color:#cc0000">{height}px; width:auto;&quot;&gt;`;
                 });
 
                 // ===== 专属语法（仅当 hasSpecialPrivilege = true） =====
                 if (hasSpecialPrivilege) {
                     // 1. 管理员公告 [admin]内容[/admin]
-                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
-                        return `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`;
+                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) =&gt; {
+                        return `&lt;blockquote class=&quot;admin-public-comment&quot;&gt;&lt;p&gt;管理组提示：&lt;/p&gt;&lt;div class=&quot;lfe-marked-wrap&quot;&gt;&lt;div class=&quot;lfe-marked&quot;&gt;</span>{content}</div></div></blockquote>`;
                     });
                     // 2. 彩虹文字 {rainbow}文字{rainbow}（从红色平滑渐变到紫色）
                     processed = processed.replace(/\{rainbow\}([\s\S]*?)\{rainbow\}/g, (match, content) => {
@@ -1895,13 +1914,15 @@
                         let result = '';
                         for (let i = 0; i < len; i++) {
                             const hue = startHue + (endHue - startHue) * (i / (len - 1));
-                            result += `<span style="color:hsl(${hue}, 100%, 50%);">${chars[i]}</span>`;
+                            result += `<span style="color:hsl(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>h</mi><mi>u</mi><mi>e</mi></mrow><mo separator="true">,</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">{hue}, 100%, 50%);&quot;&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">h</span><span class="mord mathnormal">u</span><span class="mord mathnormal">e</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">100</span></span></span></span>{chars[i]}</span>`;
                         }
-                        return `<span style="font-weight:bold;">${result}</span>`;
+                        return `<span style="font-weight:bold;"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 39: …               }̲);
+            …" style="color:#cc0000">{result}&lt;/span&gt;`;
                     });
                     // 3. 签名 [sign]内容[/sign]
-                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) => {
-                        return `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`;
+                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) =&gt; {
+                        return `&lt;div class=&quot;signature-block&quot;&gt;</span>{content}<div class="signature-name">—— ✨ Jason227 高贵的用户：<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 62: …               }̲);
+            …" style="color:#cc0000">{escapeHtmlAttr(username)}&lt;/div&gt;&lt;/div&gt;`;
                     });
                 }
 
@@ -1910,7 +1931,7 @@
                 // 生成目录
                 function generateTOC(htmlText) {
                     // 提取所有标题标签及其 id（如果没有id，自动生成）
-                    const headerRegex = /<h([1-6])(?:\s+id="([^"]*)")?>(.*?)<\/h\1>/g;
+                    const headerRegex = /&lt;h([1-6])(?:\s+id=&quot;([^&quot;]*)&quot;)?&gt;(.*?)&lt;\/h\1&gt;/g;
                     const tocItems = [];
                     let match;
                     let idCounter = 0;
@@ -1922,7 +1943,7 @@
                     let tempMatch;
                     while ((tempMatch = headerRegex.exec(htmlText)) !== null) {
                         const level = parseInt(tempMatch[1]);
-                        const id = tempMatch[2] || `toc-${idCounter++}`;
+                        const id = tempMatch[2] || `toc-</span>{idCounter++}`;
                         const text = tempMatch[3];
                         headerMatches.push({
                             level, id, text, startIndex: tempMatch.index, endIndex: tempMatch.index +
@@ -1937,7 +1958,7 @@
                         // 插入 id 属性
                         const oldTag = htmlText.substring(item.startIndex, item.endIndex);
                         // 在 h1-h6 标签内插入 id
-                        const newTag = oldTag.replace(/<h([1-6])>/, `<h$1 id="${item.id}">`);
+                        const newTag = oldTag.replace(/<h([1-6])>/, `<h<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>i</mi><mi>d</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">1 id=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">1</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{item.id}">`);
                         newHtml = newHtml.replace(oldTag, newTag);
                     }
                     // 重新解析标题（因为可能插入了id，重新获取）
@@ -1946,38 +1967,40 @@
                     let m;
                     while ((m = finalHeaderRegex.exec(newHtml)) !== null) {
                         const level = parseInt(m[1]);
-                        const id = m[2] || `toc-${idCounter++}`;
+                        const id = m[2] || `toc-<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 144: …               }̲
+              …" style="color:#cc0000">{idCounter++}`;
                         const text = m[3];
                         finalMatches.push({ level, id, text });
                     }
                     if (finalMatches.length === 0) return newHtml; // 没有标题，不生成目录
 
                     // 生成目录 HTML
-                    let tocHtml = '<div class="toc"><ul>';
+                    let tocHtml = &#x27;&lt;div class=&quot;toc&quot;&gt;&lt;ul&gt;&#x27;;
                     let currentLevel = 0;
                     const stack = [];
-                    for (let i = 0; i < finalMatches.length; i++) {
+                    for (let i = 0; i &lt; finalMatches.length; i++) {
                         const item = finalMatches[i];
                         const level = item.level;
                         const id = item.id;
                         const text = item.text;
-                        if (level > currentLevel) {
-                            for (let j = 0; j < level - currentLevel; j++) {
-                                tocHtml += '<ul>';
+                        if (level &gt; currentLevel) {
+                            for (let j = 0; j &lt; level - currentLevel; j++) {
+                                tocHtml += &#x27;&lt;ul&gt;&#x27;;
                             }
-                        } else if (level < currentLevel) {
-                            for (let j = 0; j < currentLevel - level; j++) {
-                                tocHtml += '</ul>';
+                        } else if (level &lt; currentLevel) {
+                            for (let j = 0; j &lt; currentLevel - level; j++) {
+                                tocHtml += &#x27;&lt;/ul&gt;&#x27;;
                             }
                         }
-                        tocHtml += `<li><a href="#${id}">${text}</a></li>`;
+                        tocHtml += `&lt;li&gt;&lt;a href=&quot;#</span>{id}"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 85: …               }̲
+              …" style="color:#cc0000">{text}&lt;/a&gt;&lt;/li&gt;`;
                         currentLevel = level;
                     }
-                    while (currentLevel > 1) {
-                        tocHtml += '</ul>';
+                    while (currentLevel &gt; 1) {
+                        tocHtml += &#x27;&lt;/ul&gt;&#x27;;
                         currentLevel--;
                     }
-                    tocHtml += '</ul></div>';
+                    tocHtml += &#x27;&lt;/ul&gt;&lt;/div&gt;&#x27;;
 
                     // 替换 [[TOC]] 为生成的目录
                     newHtml = newHtml.replace(/\[\[TOC\]\]/g, tocHtml);
@@ -1988,26 +2011,26 @@
                 html = generateTOC(html);
 
                 // 恢复 Mermaid 图表
-                html = html.replace(/%%MERMAID_(\d+)%%/g, (match, idx) => {
+                html = html.replace(/%%MERMAID_(\d+)%%/g, (match, idx) =&gt; {
                     const code = mermaidBlocks[parseInt(idx)];
                     if (!code) return match;
                     // 用 div 包裹，让 mermaid 渲染
-                    return `<div class="mermaid">${code}</div>`;
+                    return `&lt;div class=&quot;mermaid&quot;&gt;</span>{code}</div>`;
                 });
 
                 // 在 renderContent 内部，定义 renderDetailsNode 之前，添加 LaTeX 渲染函数
                 function renderLatex(text) {
                     if (!text) return '';
                     // 块级公式
-                    text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
-                        let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                    text = text.replace(/\<span class="katex-error" title="ParseError: KaTeX parse error: Unexpected character: &#x27;\&#x27; at position 1: \̲" style="color:#cc0000">\</span>([\s\S]+?)\<span class="katex-error" title="ParseError: KaTeX parse error: Unexpected character: &#x27;\&#x27; at position 1: \̲" style="color:#cc0000">\</span>/g, (match, math) => {
+                        let realMath = math.replace(/</g, '<').replace(/>/g, '>');
                         try {
-                            return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`;
+                            return `<div style="text-align:center;margin:8px 0;"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 110: …               }̲ catch (e) { re…" style="color:#cc0000">{katex.renderToString(realMath, { displayMode: true, throwOnError: false })}&lt;/div&gt;`;
                         } catch (e) { return match; }
                     });
                     // 行内公式
-                    text = text.replace(/\$([^$]+?)\$/g, (match, math) => {
-                        let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                    text = text.replace(/\</span>([^<span class="katex-error" title="ParseError: KaTeX parse error: Unexpected character: &#x27;\&#x27; at position 5: ]+?)\̲" style="color:#cc0000">]+?)\</span>/g, (match, math) => {
+                        let realMath = math.replace(/</g, '<').replace(/>/g, '>');
                         try {
                             return katex.renderToString(realMath, { throwOnError: false });
                         } catch (e) { return match; }
@@ -2024,37 +2047,49 @@
                     let title = renderLatex(node.title);
                     const renderedTitle = md.renderInline(title);
                     const childrenHtml = node.children.map(child => renderDetailsNode(child)).join('');
-                    return `<details class="${escapeHtmlAttr(node.type)}"${node.openAttr}><summary>${renderedTitle}</summary>${renderedContent}${childrenHtml}</details>`;
+                    return `<details class="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>n</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi mathvariant="normal">.</mi><mi>t</mi><mi>y</mi><mi>p</mi><mi>e</mi><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(node.type)}&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord">.</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal">p</span><span class="mord mathnormal">e</span><span class="mclose">)</span></span><span class="mord">&quot;</span></span></span></span>{node.openAttr}><summary><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>r</mi><mi>e</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>r</mi><mi>e</mi><mi>d</mi><mi>T</mi><mi>i</mi><mi>t</mi><mi>l</mi><mi>e</mi></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>u</mi><mi>m</mi><mi>m</mi><mi>a</mi><mi>r</mi><mi>y</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{renderedTitle}&lt;/summary&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord mathnormal">re</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span><span class="mord mathnormal">ere</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">tl</span><span class="mord mathnormal">e</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">mma</span><span class="mord mathnormal" style="margin-right:0.03588em;">ry</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{renderedContent}<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 44: …               }̲
+
+             …" style="color:#cc0000">{childrenHtml}&lt;/details&gt;`;
                 }
 
                 // 替换折叠框根占位符（直接使用 detailRoots 闭包）
-                html = html.replace(/%%DETAILS_ROOT_(\d+)%%/g, (match, idx) => {
+                html = html.replace(/%%DETAILS_ROOT_(\d+)%%/g, (match, idx) =&gt; {
                     const node = detailRoots[parseInt(idx)];
                     if (!node) return match;
                     return renderDetailsNode(node);
                 });
 
                 // 处理对齐占位符
-                html = html.replace(/%%ALIGN_CENTER%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
+                html = html.replace(/
+([\s\S]*?)
+
+
+/g, (match, content) =&gt; {
                     // 注意：这里 content 是原始 Markdown 文本，需要再次用 md.render 渲染
                     const rendered = md.render(content);
-                    return `<div class="align-center">${rendered}</div>`;
+                    return `&lt;div class=&quot;align-center&quot;&gt;</span>{rendered}</div>`;
                 });
-                html = html.replace(/%%ALIGN_RIGHT%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
+                html = html.replace(/
+([\s\S]*?)
+
+
+/g, (match, content) => {
                     const rendered = md.render(content);
-                    return `<div class="align-right">${rendered}</div>`;
+                    return `<div class="align-right"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 36: …               }̲);
+
+           …" style="color:#cc0000">{rendered}&lt;/div&gt;`;
                 });
 
                 // 修复 KaTeX 公式中因中文引号导致的显示问题
-                html = html.replace(/“/g, '"').replace(/”/g, '"');
+                html = html.replace(/"/g, &#x27;&quot;&#x27;).replace(/"/g, &#x27;&quot;&#x27;);
 
                 // ========== 6. 恢复所有代码块 ==========
-                html = html.replace(/%%BLOCK(\d+)%%/g, (match, idx) => {
+                html = html.replace(/%%BLOCK(\d+)%%/g, (match, idx) =&gt; {
                     let block = blocks[parseInt(idx)];
-                    if (!block) return '';
+                    if (!block) return &#x27;&#x27;;
 
-                    if (block.type === 'inline') {
-                        return `<code>${escapeHtml(block.content)}</code>`;
+                    if (block.type === &#x27;inline&#x27;) {
+                        return `&lt;code&gt;</span>{escapeHtml(block.content)}</code>`;
                     }
 
                     // 围栏代码块
@@ -2079,73 +2114,81 @@
 
                     let titleHtml = '';
                     if (block.filename) {
-                        titleHtml = `<div class="code-filename">${escapeHtml(block.filename)}</div>`;
+                        titleHtml = `<div class="code-filename"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 58: …               }̲
+
+             …" style="color:#cc0000">{escapeHtml(block.filename)}&lt;/div&gt;`;
                     }
 
-                    let codeHtml = '';
-                    if (!showLineNumbers && !showHighlight) {
-                        const codeLines = codeContent.split('\n');
-                        if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
-                        codeHtml = `<pre><code class="language-${lang}">`;
+                    let codeHtml = &#x27;&#x27;;
+                    if (!showLineNumbers &amp;&amp; !showHighlight) {
+                        const codeLines = codeContent.split(&#x27;\n&#x27;);
+                        if (codeLines.length &gt; 0 &amp;&amp; codeLines[codeLines.length - 1] === &#x27;&#x27;) codeLines.pop();
+                        codeHtml = `&lt;pre&gt;&lt;code class=&quot;language-</span>{lang}">`;
                         for (const line of codeLines) {
                             const lineContent = line || ' ';
                             codeHtml +=
-                                `<div class="code-line"><span class="code-text">${escapeHtml(lineContent)}</span></div>`;
+                                `<div class="code-line"><span class="code-text"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 66: …               }̲
+              …" style="color:#cc0000">{escapeHtml(lineContent)}&lt;/span&gt;&lt;/div&gt;`;
                         }
-                        codeHtml += `</code></pre>`;
+                        codeHtml += `&lt;/code&gt;&lt;/pre&gt;`;
                     } else {
-                        const codeLines = codeContent.split('\n');
-                        if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
+                        const codeLines = codeContent.split(&#x27;\n&#x27;);
+                        if (codeLines.length &gt; 0 &amp;&amp; codeLines[codeLines.length - 1] === &#x27;&#x27;) codeLines.pop();
                         const totalLines = codeLines.length;
                         const maxDigits = String(totalLines).length;
 
-                        codeHtml = `<pre><code>`;
-                        for (let i = 0; i < totalLines; i++) {
+                        codeHtml = `&lt;pre&gt;&lt;code&gt;`;
+                        for (let i = 0; i &lt; totalLines; i++) {
                             const lineNum = i + 1;
-                            const lineContent = codeLines[i] || ' ';
-                            let lineClass = '';
-                            if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <=
+                            const lineContent = codeLines[i] || &#x27; &#x27;;
+                            let lineClass = &#x27;&#x27;;
+                            if (showHighlight &amp;&amp; highlightLines &amp;&amp; lineNum &gt;= highlightLines.start &amp;&amp; lineNum &lt;=
                                 highlightLines.end) {
-                                lineClass = ' code-highlight-line';
+                                lineClass = &#x27; code-highlight-line&#x27;;
                             }
-                            codeHtml += `<div class="code-line${lineClass}">`;
+                            codeHtml += `&lt;div class=&quot;code-line</span>{lineClass}">`;
                             if (showLineNumbers) {
                                 codeHtml +=
-                                    `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
+                                    `<span class="line-number" style="min-width:<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>m</mi><mi>a</mi><mi>x</mi><mi>D</mi><mi>i</mi><mi>g</mi><mi>i</mi><mi>t</mi><mi>s</mi><mo>+</mo><mn>1</mn></mrow><mi>c</mi><mi>h</mi><mo separator="true">;</mo><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{maxDigits + 1}ch;&quot;&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">ma</span><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{lineNum}</span>`;
                             }
-                            codeHtml += `<span class="code-text">${escapeHtml(lineContent)}</span>`;
-                            codeHtml += `</div>`;
+                            codeHtml += `<span class="code-text"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 110: …               }̲
+              …" style="color:#cc0000">{escapeHtml(lineContent)}&lt;/span&gt;`;
+                            codeHtml += `&lt;/div&gt;`;
                         }
-                        codeHtml += `</code></pre>`;
+                        codeHtml += `&lt;/code&gt;&lt;/pre&gt;`;
                     }
 
                     // 用包装器包裹，并添加复制按钮
                     return `
-            ${titleHtml}
+            </span>{titleHtml}
         <div class="code-block-wrapper">
             <button class="copy-code-btn" data-copy-btn title="复制代码">
                 <svg class="svg-icon" viewBox="0 0 448 512" aria-hidden="true">
                     <path d="M192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-200.6c0-17.4-7.1-34.1-19.7-46.2L370.6 17.8C358.7 6.4 342.8 0 326.3 0L192 0zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-16-64 0 0 16-192 0 0-256 16 0 0-64-16 0z"/>
                 </svg>
             </button>
-            ${codeHtml}
-        </div>
+            <span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 50: …               }̲);
+
+           …" style="color:#cc0000">{codeHtml}
+        &lt;/div&gt;
     `;
                 });
 
                 // ========== 7. @提及 ==========
-                html = html.replace(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g, (match, username) => {
-                    const uid = mentionMap && mentionMap[username];
+                html = html.replace(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g, (match, username) =&gt; {
+                    const uid = mentionMap &amp;&amp; mentionMap[username];
                     if (uid)
-                        return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
+                        return `@&lt;a href=&quot;/user/</span>{uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 84: …               }̲);
+
+           …" style="color:#cc0000">{escapeHtmlAttr(username)}&lt;/a&gt;`;
                     return match;
                 });
 
                 // ========== 9. 清理 ==========
-                html = html.replace(/<p><\/p>\s*$/, '').replace(/<br\s*\/?>\s*$/, '').trim();
+                html = html.replace(/&lt;p&gt;&lt;\/p&gt;\s*</span>/, '').replace(/<br\s*\/?>\s*<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">/</mi><msup><mo separator="true">,</mo><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi><mi>t</mi><mi>r</mi><mi>i</mi><mi>m</mi><mo stretchy="false">(</mo><mo stretchy="false">)</mo><mo separator="true">;</mo><mi mathvariant="normal">/</mi><mi mathvariant="normal">/</mi><mtext>清理多余的空段落和冒号残留</mtext><mi>h</mi><mi>t</mi><mi>m</mi><mi>l</mi><mo>=</mo><mi>h</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi mathvariant="normal">.</mi><mi>r</mi><mi>e</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi mathvariant="normal">/</mi><mo>&lt;</mo><mi>p</mi><mo>&gt;</mo><mstyle mathcolor="#cc0000"><mtext>\s</mtext></mstyle><mo>∗</mo><mo>&lt;</mo><mstyle mathcolor="#cc0000"><mtext>\/</mtext></mstyle><mi>p</mi><mo>&gt;</mo><mi mathvariant="normal">/</mi><mi>g</mi><msup><mo separator="true">,</mo><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi><mi>r</mi><mi>e</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi mathvariant="normal">/</mi><mo>:</mo><mstyle mathcolor="#cc0000"><mtext>\s</mtext></mstyle><mo>∗</mo></mrow><annotation encoding="application/x-tex">/, &#x27;&#x27;).trim();
 
                 // 清理多余的空段落和冒号残留
-                html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
+                html = html.replace(/&lt;p&gt;\s*&lt;\/p&gt;/g, &#x27;&#x27;).replace(/:\s*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mpunct"><span class="mpunct">,</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mclose">)</span><span class="mord">.</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">im</span><span class="mopen">(</span><span class="mclose">)</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">//</span><span class="mord cjk_fallback">清理多余的空段落和冒号残留</span><span class="mord mathnormal">h</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord">.</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ce</span><span class="mopen">(</span><span class="mord">/</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\s</span></span><span class="mord">∗</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\/</span></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mpunct"><span class="mpunct">,</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mclose">)</span><span class="mord">.</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ce</span><span class="mopen">(</span><span class="mord">/</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text" style="color:#cc0000;"><span class="mord" style="color:#cc0000;">\s</span></span><span class="mord">∗</span></span></span></span>/gm, '');
 
                 return DOMPurify.sanitize(html, {
                     ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del',
@@ -2193,13 +2236,13 @@
                 codeTexts.forEach(el => {
                     code += el.textContent + '\n';
                 });
-                code = code.replace(/\n$/, '');
+                code = code.replace(/\n<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;&amp;&#x27; at position 50: …ator.clipboard &amp;̲&amp; navigator.cli…" style="color:#cc0000">/, &#x27;&#x27;);
 
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(code).then(() => {
+                if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(code).then(() =&gt; {
                         showCopyToast();
                         // 不再修改按钮内容
-                    }).catch(() => {
+                    }).catch(() =&gt; {
                         fallbackCopy(code, btn);
                     });
                 } else {
@@ -2208,18 +2251,18 @@
             };
 
             function fallbackCopy(text, btn) {
-                const textarea = document.createElement('textarea');
+                const textarea = document.createElement(&#x27;textarea&#x27;);
                 textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.left = '-9999px';
+                textarea.style.position = &#x27;fixed&#x27;;
+                textarea.style.left = &#x27;-9999px&#x27;;
                 document.body.appendChild(textarea);
                 textarea.select();
                 try {
-                    document.execCommand('copy');
+                    document.execCommand(&#x27;copy&#x27;);
                     showCopyToast();
                     // 不再修改按钮内容
                 } catch (e) {
-                    alert('复制失败，请手动复制');
+                    alert(&#x27;复制失败，请手动复制&#x27;);
                 }
                 document.body.removeChild(textarea);
             }
@@ -2228,99 +2271,99 @@
             // ★★★ 核心修改：renderAllBenbenTexts 中 color 逻辑已内联到 renderBenbenList ★★★
             // ================================================================
             function renderAllBenbenTexts() {
-                document.querySelectorAll('.benben-text').forEach(el => {
+                document.querySelectorAll(&#x27;.benben-text&#x27;).forEach(el =&gt; {
                     try {
-                        const rawEncoded = el.getAttribute('data-raw');
-                        const mentionMapStr = el.getAttribute('data-mention-map');
+                        const rawEncoded = el.getAttribute(&#x27;data-raw&#x27;);
+                        const mentionMapStr = el.getAttribute(&#x27;data-mention-map&#x27;);
                         // ★★★ 新增：读取发布者的专属权限和用户名 ★★★
-                        const specialPrivilege = el.getAttribute('data-special-privilege') === 'true';
-                        const username = el.getAttribute('data-username') || '用户';
+                        const specialPrivilege = el.getAttribute(&#x27;data-special-privilege&#x27;) === &#x27;true&#x27;;
+                        const username = el.getAttribute(&#x27;data-username&#x27;) || &#x27;用户&#x27;;
                         if (!rawEncoded) return;
                         let rawText = rawEncoded;
                         let mentionMap = {};
-                        try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
+                        try { mentionMap = JSON.parse(mentionMapStr || &#x27;{}&#x27;); } catch (e) { }
                         // ★★★ 使用发布者的权限和用户名渲染 ★★★
                         el.innerHTML = renderContent(rawText, mentionMap, specialPrivilege, username);
                     } catch (e) {
-                        console.error('渲染犇犇内容失败:', e);
-                        el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
+                        console.error(&#x27;渲染犇犇内容失败:&#x27;, e);
+                        el.innerHTML = &#x27;&lt;p style=&quot;color:red;&quot;&gt;内容渲染失败&lt;/p&gt;&#x27;;
                     }
                 });
 
                 // 渲染 Mermaid 图表（使用 setTimeout 确保 DOM 已更新）
-                if (typeof mermaid !== 'undefined') {
+                if (typeof mermaid !== &#x27;undefined&#x27;) {
                     mermaid.initialize({
-                        theme: 'default',
+                        theme: &#x27;default&#x27;,
                         themeVariables: {
-                            background: '#ffffff',
-                            primaryColor: '#e74c3c',
-                            primaryTextColor: '#333',
-                            primaryBorderColor: '#ccc',
-                            lineColor: '#666',
-                            secondaryColor: '#f0f2f5',
-                            tertiaryColor: '#f9f9f9'
+                            background: &#x27;#ffffff&#x27;,
+                            primaryColor: &#x27;#e74c3c&#x27;,
+                            primaryTextColor: &#x27;#333&#x27;,
+                            primaryBorderColor: &#x27;#ccc&#x27;,
+                            lineColor: &#x27;#666&#x27;,
+                            secondaryColor: &#x27;#f0f2f5&#x27;,
+                            tertiaryColor: &#x27;#f9f9f9&#x27;
                         },
                         startOnLoad: false // 禁止自动加载，手动控制
                     });
                     // 使用 setTimeout 延迟执行，确保 DOM 已更新
-                    setTimeout(() => {
+                    setTimeout(() =&gt; {
                         mermaid.run({
-                            nodes: document.querySelectorAll('.mermaid')
-                        }).catch(err => {
-                            console.warn('Mermaid 渲染失败:', err);
+                            nodes: document.querySelectorAll(&#x27;.mermaid&#x27;)
+                        }).catch(err =&gt; {
+                            console.warn(&#x27;Mermaid 渲染失败:&#x27;, err);
                         });
                     }, 50);
                 }
 
                 // 脚注跳转平滑滚动
-                document.addEventListener('click', function (e) {
-                    const link = e.target.closest('.footnote-backref, a[href^="#fn"]');
+                document.addEventListener(&#x27;click&#x27;, function (e) {
+                    const link = e.target.closest(&#x27;.footnote-backref, a[href^=&quot;#fn&quot;]&#x27;);
                     if (link) {
                         e.preventDefault();
-                        const targetId = link.getAttribute('href');
+                        const targetId = link.getAttribute(&#x27;href&#x27;);
                         const target = document.querySelector(targetId);
                         if (target) {
-                            const topbarHeight = document.querySelector('.topbar').offsetHeight || 80;
+                            const topbarHeight = document.querySelector(&#x27;.topbar&#x27;).offsetHeight || 80;
                             const targetRect = target.getBoundingClientRect();
                             const scrollTop = window.pageYOffset + targetRect.top - topbarHeight - 10; // 多减10px留白
-                            window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                            window.scrollTo({ top: scrollTop, behavior: &#x27;smooth&#x27; });
                         }
                     }
                 });
             }
 
             // 回到顶部按钮控制
-            const backToTopBtn = document.getElementById('back-to-top');
+            const backToTopBtn = document.getElementById(&#x27;back-to-top&#x27;);
 
             // 监听滚动事件
-            window.addEventListener('scroll', function () {
-                if (window.pageYOffset > 300) {
-                    backToTopBtn.style.display = 'block';
+            window.addEventListener(&#x27;scroll&#x27;, function () {
+                if (window.pageYOffset &gt; 300) {
+                    backToTopBtn.style.display = &#x27;block&#x27;;
                 } else {
-                    backToTopBtn.style.display = 'none';
+                    backToTopBtn.style.display = &#x27;none&#x27;;
                 }
             });
 
             // 点击回到顶部
-            backToTopBtn.addEventListener('click', function () {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            backToTopBtn.addEventListener(&#x27;click&#x27;, function () {
+                window.scrollTo({ top: 0, behavior: &#x27;smooth&#x27; });
             });
 
             // ---------- 业务函数 ----------
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
                 try {
-                    const { count, error } = await supabase.from('notifications').select('*', {
-                        count: 'exact',
+                    const { count, error } = await supabase.from(&#x27;notifications&#x27;).select(&#x27;*&#x27;, {
+                        count: &#x27;exact&#x27;,
                         head: true
-                    }).eq('user_number', currentProfile.user_number).eq('read', false);
-                    if (!error && count !== null) {
-                        const badge = document.getElementById('bell-badge');
+                    }).eq(&#x27;user_number&#x27;, currentProfile.user_number).eq(&#x27;read&#x27;, false);
+                    if (!error &amp;&amp; count !== null) {
+                        const badge = document.getElementById(&#x27;bell-badge&#x27;);
                         if (badge) {
-                            if (count > 0) {
-                                badge.textContent = count > 99 ? '99+' : count;
-                                badge.style.display = 'inline-flex';
-                            } else { badge.style.display = 'none'; }
+                            if (count &gt; 0) {
+                                badge.textContent = count &gt; 99 ? &#x27;99+&#x27; : count;
+                                badge.style.display = &#x27;inline-flex&#x27;;
+                            } else { badge.style.display = &#x27;none&#x27;; }
                         }
                     }
                 } catch (err) { console.error(err); }
@@ -2328,8 +2371,8 @@
 
             function startUnreadPolling() {
                 if (unreadTimer) clearInterval(unreadTimer);
-                unreadTimer = setInterval(() => {
-                    if (currentProfile && document.visibilityState === 'visible') {
+                unreadTimer = setInterval(() =&gt; {
+                    if (currentProfile &amp;&amp; document.visibilityState === &#x27;visible&#x27;) {
                         fetchUnreadCount();
                     }
                 }, 30000);
@@ -2347,30 +2390,30 @@
                 if (reset) {
                     hasMore = true;
                     lastId = null;
-                    if (benbenList) benbenList.innerHTML = '';
-                    const existing = document.querySelector('.no-more-message');
+                    if (benbenList) benbenList.innerHTML = &#x27;&#x27;;
+                    const existing = document.querySelector(&#x27;.no-more-message&#x27;);
                     if (existing) existing.remove();
                     // 重置时，显示加载提示
                     if (loadingSentinel) {
-                        loadingSentinel.style.display = 'block';
-                        loadingSentinel.textContent = '滚动加载更多...';
+                        loadingSentinel.style.display = &#x27;block&#x27;;
+                        loadingSentinel.textContent = &#x27;滚动加载更多...&#x27;;
                     }
                 }
                 if (!hasMore) {
                     if (loadingSentinel) {
-                        loadingSentinel.style.display = 'block';
-                        loadingSentinel.textContent = '没有更多动态了';
+                        loadingSentinel.style.display = &#x27;block&#x27;;
+                        loadingSentinel.textContent = &#x27;没有更多动态了&#x27;;
                     }
                     return;
                 }
                 isLoading = true;
                 if (loadingSentinel) {
-                    loadingSentinel.style.display = 'block';
-                    loadingSentinel.textContent = '加载中...';
+                    loadingSentinel.style.display = &#x27;block&#x27;;
+                    loadingSentinel.textContent = &#x27;加载中...&#x27;;
                 }
                 try {
                     // ★★★ 修改：增加 special_privilege 字段 ★★★
-                    let query = supabase.from('benben')
+                    let query = supabase.from(&#x27;benben&#x27;)
                         .select(`
                 *, 
                 profiles:user_number (
@@ -2381,68 +2424,68 @@
                     special_privilege
                 )
             `)
-                        .eq('is_deleted', false)
-                        .order('created_at', { ascending: false })
+                        .eq(&#x27;is_deleted&#x27;, false)
+                        .order(&#x27;created_at&#x27;, { ascending: false })
                         .limit(20);
-                    if (lastId) query = query.lt('id', lastId);
-                    if (feedMode === 'my' && currentProfile) {
-                        query = query.eq('user_number', currentProfile.user_number);
+                    if (lastId) query = query.lt(&#x27;id&#x27;, lastId);
+                    if (feedMode === &#x27;my&#x27; &amp;&amp; currentProfile) {
+                        query = query.eq(&#x27;user_number&#x27;, currentProfile.user_number);
                     }
                     const { data, error } = await query;
                     if (error) throw error;
 
                     // 处理提及
                     const mentionSet = new Set();
-                    data?.forEach(item => {
+                    data?.forEach(item =&gt; {
                         const matches = item.content.match(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g);
-                        if (matches) matches.forEach(m => mentionSet.add(m.slice(1)));
+                        if (matches) matches.forEach(m =&gt; mentionSet.add(m.slice(1)));
                     });
                     let mentionMap = {};
-                    if (mentionSet.size > 0) {
+                    if (mentionSet.size &gt; 0) {
                         const usernames = Array.from(mentionSet);
-                        const { data: userData, error: userError } = await supabase.from('profiles')
-                            .select('username, user_number')
-                            .in('username', usernames);
-                        if (!userError && userData) {
-                            userData.forEach(u => { mentionMap[u.username] = u.user_number; });
+                        const { data: userData, error: userError } = await supabase.from(&#x27;profiles&#x27;)
+                            .select(&#x27;username, user_number&#x27;)
+                            .in(&#x27;username&#x27;, usernames);
+                        if (!userError &amp;&amp; userData) {
+                            userData.forEach(u =&gt; { mentionMap[u.username] = u.user_number; });
                         }
                     }
 
-                    if (data && data.length > 0) {
+                    if (data &amp;&amp; data.length &gt; 0) {
                         await renderBenbenList(data, reset, mentionMap);
                         lastId = data[data.length - 1].id;
-                        if (data.length < 20) {
+                        if (data.length &lt; 20) {
                             hasMore = false;
                             if (loadingSentinel) {
-                                loadingSentinel.style.display = 'block';
-                                loadingSentinel.textContent = '没有更多动态了';
+                                loadingSentinel.style.display = &#x27;block&#x27;;
+                                loadingSentinel.textContent = &#x27;没有更多动态了&#x27;;
                             }
                         } else {
                             hasMore = true;
                             if (loadingSentinel) {
-                                loadingSentinel.style.display = 'block';
-                                loadingSentinel.textContent = '滚动加载更多...';
+                                loadingSentinel.style.display = &#x27;block&#x27;;
+                                loadingSentinel.textContent = &#x27;滚动加载更多...&#x27;;
                             }
                         }
                     } else {
                         hasMore = false;
                         if (reset) {
-                            benbenList.innerHTML = '<div class="benben-empty">没有更多动态了</div>';
+                            benbenList.innerHTML = &#x27;&lt;div class=&quot;benben-empty&quot;&gt;没有更多动态了&lt;/div&gt;&#x27;;
                         }
                         if (loadingSentinel) {
-                            loadingSentinel.style.display = 'block';
-                            loadingSentinel.textContent = '没有更多动态了';
+                            loadingSentinel.style.display = &#x27;block&#x27;;
+                            loadingSentinel.textContent = &#x27;没有更多动态了&#x27;;
                         }
                     }
                 } catch (error) {
                     console.error(error);
-                    if (reset && benbenList && benbenList.children.length === 0) {
-                        benbenList.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
+                    if (reset &amp;&amp; benbenList &amp;&amp; benbenList.children.length === 0) {
+                        benbenList.innerHTML = &#x27;&lt;div class=&quot;benben-empty&quot;&gt;加载失败，请刷新重试&lt;/div&gt;&#x27;;
                     }
                     // 出错时也显示哨兵
                     if (loadingSentinel) {
-                        loadingSentinel.style.display = 'block';
-                        loadingSentinel.textContent = '加载出错，请刷新';
+                        loadingSentinel.style.display = &#x27;block&#x27;;
+                        loadingSentinel.textContent = &#x27;加载出错，请刷新&#x27;;
                     }
                 } finally {
                     isLoading = false;
@@ -2455,116 +2498,120 @@
             // ================================================================
             async function renderBenbenList(data, reset, mentionMap = {}) {
                 if (!benbenList) return;
-                if (reset) benbenList.innerHTML = '';
+                if (reset) benbenList.innerHTML = &#x27;&#x27;;
                 const mentionMapJson = JSON.stringify(mentionMap);
                 for (const item of data) {
-                    const isOwner = currentProfile && currentProfile.user_number === item.user_number;
+                    const isOwner = currentProfile &amp;&amp; currentProfile.user_number === item.user_number;
                     const fullContentEncoded = encodeURIComponent(item.content);
-                    const username = escapeHtmlAttr(item.profiles?.username || '用户');
-                    const timeStr = new Date(item.created_at).toLocaleString('zh-CN');
+                    const username = escapeHtmlAttr(item.profiles?.username || &#x27;用户&#x27;);
+                    const timeStr = new Date(item.created_at).toLocaleString(&#x27;zh-CN&#x27;);
                     const rawContent = item.content;
 
                     const prof = item.profiles || {};
                     const isAdmin = prof.is_admin || false;
-                    const userTag = prof.user_tag || '';
+                    const userTag = prof.user_tag || &#x27;&#x27;;
                     // ★★★ 核心改动：直接使用 username_color，若为空则根据 isAdmin 给默认值 ★★★
-                    const color = prof.username_color || (isAdmin ? '#9b59b6' : '#333');
+                    const color = prof.username_color || (isAdmin ? &#x27;#9b59b6&#x27; : &#x27;#333&#x27;);
 
                     // 生成用户标签（如果有自定义标签或管理员身份）
-                    let labelHtml = '';
+                    let labelHtml = &#x27;&#x27;;
                     if (userTag) {
                         // 自定义标签，背景色跟随 color
                         labelHtml =
-                            `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
+                            `&lt;span class=&quot;user-tag-display&quot; style=&quot;background-color: </span>{color};"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 52: …               }̲ else if (isAdm…" style="color:#cc0000">{escapeHtml(userTag)}&lt;/span&gt;`;
                     } else if (isAdmin) {
-                        // 管理员身份且无自定义标签，显示“管理员”标签，背景色同样跟随
+                        // 管理员身份且无自定义标签，显示"管理员"标签，背景色同样跟随
                         labelHtml =
-                            `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
+                            `&lt;span class=&quot;user-tag-display&quot; style=&quot;background-color: </span>{color};">管理员</span>`;
                     }
 
                     // 用户名颜色直接使用 color
                     let userHtml =
-                        `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
+                        `<a href="/user/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>t</mi><mi>e</mi><mi>m</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>r</mi><mo>:</mo></mrow><annotation encoding="application/x-tex">{item.user_number}&quot; class=&quot;benben-username&quot; style=&quot;color: </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">co</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span></span></span></span>{color};"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>a</mi><mo>&gt;</mo><mi mathvariant="normal">‘</mi><mo separator="true">;</mo><mi>i</mi><mi>f</mi><mo stretchy="false">(</mo><mi>l</mi><mi>a</mi><mi>b</mi><mi>e</mi><mi>l</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mo stretchy="false">)</mo><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mo>+</mo><mo>=</mo><mi>l</mi><mi>a</mi><mi>b</mi><mi>e</mi><mi>l</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mo separator="true">;</mo></mrow><mi mathvariant="normal">/</mi><mi mathvariant="normal">/</mi><mtext>★★★获取发布者的</mtext><mi>s</mi><mi>p</mi><mi>e</mi><mi>c</mi><mi>i</mi><mi>a</mi><msub><mi>l</mi><mi>p</mi></msub><mi>r</mi><mi>i</mi><mi>v</mi><mi>i</mi><mi>l</mi><mi>e</mi><mi>g</mi><mi>e</mi><mtext>和</mtext><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mtext>（用于签名）★★★</mtext><mi>c</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>s</mi><mi>p</mi><mi>e</mi><mi>c</mi><mi>i</mi><mi>a</mi><mi>l</mi><mi>P</mi><mi>r</mi><mi>i</mi><mi>v</mi><mi>i</mi><mi>l</mi><mi>e</mi><mi>g</mi><mi>e</mi><mo>=</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>p</mi><mi>e</mi><mi>c</mi><mi>i</mi><mi>a</mi><msub><mi>l</mi><mi>p</mi></msub><mi>r</mi><mi>i</mi><mi>v</mi><mi>i</mi><mi>l</mi><mi>e</mi><mi>g</mi><mi>e</mi><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><mi>f</mi><mi>a</mi><mi>l</mi><mi>s</mi><mi>e</mi><mo separator="true">;</mo><mi>c</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>o</mi><mi>w</mi><mi>n</mi><mi>e</mi><mi>r</mi><mi>U</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mo>=</mo><mi>p</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mi mathvariant="normal">∣</mi><msup><mi mathvariant="normal">∣</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mtext>用</mtext><msup><mtext>户</mtext><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">;</mo><mi>c</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mo>=</mo><mi mathvariant="normal">‘</mi><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>i</mi><mi>t</mi><mi>e</mi><mi>m</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>i</mi><mi>d</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{username}&lt;/a&gt;`;
                     if (labelHtml) {
                         userHtml += labelHtml;
                     }
 
                     // ★★★ 获取发布者的 special_privilege 和 username（用于签名） ★★★
                     const specialPrivilege = prof.special_privilege || false;
-                    const ownerUsername = prof.username || '用户';
+                    const ownerUsername = prof.username || &#x27;用户&#x27;;
 
                     const benbenHtml = `
-                        <div class="benben-item" data-id="${item.id}">
-                            <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E" alt="${username}"></a></div>
-                            <div class="benben-content">
-                                <div class="benben-item-header">
-                                    <div class="benben-user-info">
-                                        ${userHtml}
-                                        <span class="benben-time">${timeStr}</span>
-                                    </div>
-                                    <div class="benben-actions">
-                                        <button class="benben-report-btn" data-id="${item.id}">举报</button>
-                                        <button class="benben-reply-btn" data-replyto-id="${item.id}" data-username="${username}" data-fullcontent="${fullContentEncoded}">回复</button>
-                                        ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
-                                    </div>
-                                </div>
-                                <!-- ★★★ 新增 data-special-privilege 和 data-username ★★★ -->
-                                <div class="benben-text" 
-                                     data-raw="${escapeHtmlAttr(rawContent)}" 
-                                     data-mention-map='${escapeHtmlAttr(mentionMapJson)}'
-                                     data-special-privilege="${specialPrivilege}"
-                                     data-username="${escapeHtmlAttr(ownerUsername)}">
-                                </div>
-                            </div>
-                        </div>
+                        &lt;div class=&quot;benben-item&quot; data-id=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord">‘</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ab</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mclose">)</span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.08125em;">serH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord">+</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ab</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mpunct">;</span></span><span class="mord">//★★★</span><span class="mord cjk_fallback">获取发布者的</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">ec</span><span class="mord mathnormal">ia</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0197em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord cjk_fallback">和</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mord cjk_fallback">（用于签名）</span><span class="mord">★★★</span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">ec</span><span class="mord mathnormal">ia</span><span class="mord mathnormal" style="margin-right:0.13889em;">lP</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">ro</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">ec</span><span class="mord mathnormal">ia</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0197em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord">∣∣</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">se</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">ro</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mord">∣</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord cjk_fallback">用</span><span class="mord"><span class="mord cjk_fallback">户</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord">‘</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{item.id}">
+                            <div class="benben-avatar"><a href="/user/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>t</mi><mi>e</mi><mi>m</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mo>&lt;</mo><mi>i</mi><mi>m</mi><mi>g</mi><mi>s</mi><mi>r</mi><mi>c</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>:</mo><mi>i</mi><mi>m</mi><mi>a</mi><mi>g</mi><mi>e</mi><mi mathvariant="normal">/</mi><mi>s</mi><mi>v</mi><mi>g</mi><mo>+</mo><mi>x</mi><mi>m</mi><mi>l</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">{item.user_number}&quot;&gt;&lt;img src=&quot;data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">im</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">src</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">ima</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.03588em;">vg</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">x</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mpunct">,</span></span></span></span>{(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E" alt="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi></mrow><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>a</mi><mo>&gt;</mo><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>o</mi><mi>n</mi><mi>t</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>i</mi><mi>t</mi><mi>e</mi><mi>m</mi><mo>−</mo><mi>h</mi><mi>e</mi><mi>a</mi><mi>d</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>−</mo><mi>i</mi><mi>n</mi><mi>f</mi><mi>o</mi><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{username}&quot;&gt;&lt;/a&gt;&lt;/div&gt;
+                            &lt;div class=&quot;benben-content&quot;&gt;
+                                &lt;div class=&quot;benben-item-header&quot;&gt;
+                                    &lt;div class=&quot;benben-user-info&quot;&gt;
+                                        </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span></span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7429em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">in</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">o</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{userHtml}
+                                        <span class="benben-time"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>t</mi><mi>i</mi><mi>m</mi><mi>e</mi><mi>S</mi><mi>t</mi><mi>r</mi></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mo>&lt;</mo><mi>b</mi><mi>u</mi><mi>t</mi><mi>t</mi><mi>o</mi><mi>n</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>e</mi><mi>n</mi><mi>b</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>r</mi><mi>e</mi><mi>p</mi><mi>o</mi><mi>r</mi><mi>t</mi><mo>−</mo><mi>b</mi><mi>t</mi><mi>n</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>i</mi><mi>d</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{timeStr}&lt;/span&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class=&quot;benben-actions&quot;&gt;
+                                        &lt;button class=&quot;benben-report-btn&quot; data-id=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="mord mathnormal">im</span><span class="mord mathnormal">e</span><span class="mord mathnormal">St</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mord mathnormal">u</span><span class="mord mathnormal">tt</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">b</span><span class="mord mathnormal">e</span><span class="mord mathnormal">nb</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">re</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">b</span><span class="mord mathnormal">t</span><span class="mord mathnormal">n</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{item.id}">举报</button>
+                                        <button class="benben-reply-btn" data-replyto-id="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>t</mi><mi>e</mi><mi>m</mi><mi mathvariant="normal">.</mi><mi>i</mi><mi>d</mi></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{item.id}&quot; data-username=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">m</span><span class="mord">.</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{username}" data-fullcontent="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>f</mi><mi>u</mi><mi>l</mi><mi>l</mi><mi>C</mi><mi>o</mi><mi>n</mi><mi>t</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>E</mi><mi>n</mi><mi>c</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>d</mi></mrow><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mtext>回复</mtext><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>b</mi><mi>u</mi><mi>t</mi><mi>t</mi><mi>o</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{fullContentEncoded}&quot;&gt;回复&lt;/button&gt;
+                                        </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.07153em;">llC</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.05764em;">tE</span><span class="mord mathnormal">n</span><span class="mord mathnormal">co</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span></span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord cjk_fallback">回复</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">b</span><span class="mord mathnormal">u</span><span class="mord mathnormal">tt</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{isOwner ? `<button class="benben-delete" data-id="<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 29: …&lt;/button&gt;` : &#x27;&#x27;}̲
+              …" style="color:#cc0000">{item.id}&quot;&gt;删除&lt;/button&gt;` : &#x27;&#x27;}
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                &lt;!-- ★★★ 新增 data-special-privilege 和 data-username ★★★ --&gt;
+                                &lt;div class=&quot;benben-text&quot; 
+                                     data-raw=&quot;</span>{escapeHtmlAttr(rawContent)}" 
+                                     data-mention-map='<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>m</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>M</mi><mi>a</mi><mi>p</mi><mi>J</mi><mi>s</mi><mi>o</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>c</mi><mi>i</mi><mi>a</mi><mi>l</mi><mo>−</mo><mi>p</mi><mi>r</mi><mi>i</mi><mi>v</mi><mi>i</mi><mi>l</mi><mi>e</mi><mi>g</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(mentionMapJson)}&#x27;
+                                     data-special-privilege=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1418em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal">so</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8918em;"><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">ec</span><span class="mord mathnormal">ia</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{specialPrivilege}"
+                                     data-username="<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 255: …               }̲
+              …" style="color:#cc0000">{escapeHtmlAttr(ownerUsername)}&quot;&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
                     `;
-                    benbenList.insertAdjacentHTML('beforeend', benbenHtml);
+                    benbenList.insertAdjacentHTML(&#x27;beforeend&#x27;, benbenHtml);
                 }
-                document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => {
+                document.querySelectorAll(&#x27;.benben-delete&#x27;).forEach(btn =&gt; btn.addEventListener(&#x27;click&#x27;, async (e) =&gt; {
                     e
                         .stopPropagation();
                     await deleteBenben(btn.dataset.id);
                 }));
-                document.querySelectorAll('.benben-reply-btn').forEach(btn => btn.addEventListener('click', () => {
+                document.querySelectorAll(&#x27;.benben-reply-btn&#x27;).forEach(btn =&gt; btn.addEventListener(&#x27;click&#x27;, () =&gt; {
                     const replyToId = btn.dataset.replytoId;
                     const username = btn.dataset.username;
                     const fullContent = decodeURIComponent(btn.dataset.fullcontent)
-                        .replace(/&lt;/g, '<')
-                        .replace(/&gt;/g, '>');
+                        .replace(/&lt;/g, &#x27;&lt;&#x27;)
+                        .replace(/&gt;/g, &#x27;&gt;&#x27;);
                     currentReplyingId = replyToId;
                     currentReplyUsername = username;
-                    const replyText = ` || @${username} : ${fullContent}`;
+                    const replyText = ` || @</span>{username} : <span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 263: …               }̲));
+           …" style="color:#cc0000">{fullContent}`;
                     if (benbenContent) {
                         benbenContent.value = replyText;
                         benbenContent.focus();
                         benbenContent.setSelectionRange(0, 0);
                     }
                 }));
-                document.querySelectorAll('.benben-report-btn').forEach(btn => btn.addEventListener('click', () =>
-                    alert('举报功能暂未开放，请联系管理员。')));
+                document.querySelectorAll(&#x27;.benben-report-btn&#x27;).forEach(btn =&gt; btn.addEventListener(&#x27;click&#x27;, () =&gt;
+                    alert(&#x27;举报功能暂未开放，请联系管理员。&#x27;)));
                 renderAllBenbenTexts();
             }
 
             async function deleteBenben(id) {
                 try {
-                    const { error } = await supabase.from('benben').update({ is_deleted: true }).eq('id', id);
+                    const { error } = await supabase.from(&#x27;benben&#x27;).update({ is_deleted: true }).eq(&#x27;id&#x27;, id);
                     if (error) throw error;
                     loadBenbenList(true);
                 } catch (error) {
                     console.error(error);
-                    alert('删除失败：' + error.message);
+                    alert(&#x27;删除失败：&#x27; + error.message);
                 }
             }
 
             async function postBenben() {
                 let content = benbenContent?.value.trim();
-                if (!content) { alert('内容不能为空'); return; }
-                if (!currentProfile) { window.location.href = '/auth/login'; return; }
+                if (!content) { alert(&#x27;内容不能为空&#x27;); return; }
+                if (!currentProfile) { window.location.href = &#x27;/auth/login&#x27;; return; }
+                if (currentProfile.can_speak === false) { alert(&#x27;你已被禁止发言，无法发布犇犇&#x27;); return; }
 
                 let finalReplyToId = null;
-                if (currentReplyingId && currentReplyUsername) {
+                if (currentReplyingId &amp;&amp; currentReplyUsername) {
                     const trimmed = content.trimStart();
-                    const prefix = `|| @${currentReplyUsername} :`;
+                    const prefix = `|| @</span>{currentReplyUsername} :`;
                     if (trimmed.startsWith(prefix)) {
                         finalReplyToId = currentReplyingId;
                     } else {
@@ -2665,7 +2712,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege') // 增加 special_privilege
+                    .select('user_number, username, is_admin, special_privilege, can_speak') // 增加 special_privilege, can_speak
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2702,17 +2749,17 @@
                         if (currentProfile?.username) displayName = currentProfile.username;
                         let html = '';
                         if (currentProfile?.user_number) html +=
-                            `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
-                        else html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
+                            `<a href="/user/<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>c</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>P</mi><mi>r</mi><mi>o</mi><mi>f</mi><mi>i</mi><mi>l</mi><mi>e</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>−</mo><mi>e</mi><mi>m</mi><mi>a</mi><mi>i</mi><mi>l</mi><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{currentProfile.user_number}&quot; class=&quot;user-email&quot;&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal">rre</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.13889em;">tP</span><span class="mord mathnormal">ro</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">e</span><span class="mord mathnormal">mai</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{escapeHtmlAttr(displayName)}</a>`;
+                        else html += `<span class="user-email"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;#&#x27; at position 161: …&quot; style=&quot;color:#̲666;&quot;&gt;&lt;svg clas…" style="color:#cc0000">{escapeHtmlAttr(displayName)}&lt;/span&gt;`;
                         html +=
-                            `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
-                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                            `&lt;a href=&quot;/user/notification&quot; class=&quot;bell-icon&quot; style=&quot;color:#666;&quot;&gt;&lt;svg class=&quot;svg-inline--fa fa-bell&quot; viewBox=&quot;0 0 448 512&quot; width=&quot;20&quot; height=&quot;20&quot;&gt;&lt;path fill=&quot;currentColor&quot; d=&quot;M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;sup id=&quot;bell-badge&quot; style=&quot;background-color:#e74c3c; display:none;&quot;&gt;0&lt;/sup&gt;&lt;/a&gt;`;
+                        html += `&lt;button id=&quot;logoutBtn&quot; class=&quot;auth-btn logout&quot;&gt;登出&lt;/button&gt;`;
                         authButtons.innerHTML = html;
-                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                        document.getElementById(&#x27;logoutBtn&#x27;)?.addEventListener(&#x27;click&#x27;, async () =&gt; {
                             await supabase.auth.signOut();
                             location.reload();
                         });
-                        welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtmlAttr(displayName)}`;
+                        welcomeTitle.innerHTML = `👋 欢迎回来，</span>{escapeHtmlAttr(displayName)}`;
                         welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
                         fortuneCard.innerHTML =
                             `<div class="card-header">🧧 你的运势</div><div style="text-align:center"><span style="font-size:2rem;">中吉</span><p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p><p>连续打卡 <strong>228</strong> 天</p></div>`;
@@ -2723,6 +2770,12 @@
                         if (editor) editor.style.display = 'block';
                         if (nav) nav.style.display = 'flex';
                         if (loadingSentinel) loadingSentinel.style.display = 'block';
+
+                        // 自由发言权限被撤销：禁用输入框与发射按钮
+                        if (currentProfile && currentProfile.can_speak === false) {
+                            if (benbenContent) { benbenContent.disabled = true; benbenContent.placeholder = '你已被禁止发言'; }
+                            if (benbenSubmit) { benbenSubmit.disabled = true; benbenSubmit.textContent = '禁止发言'; }
+                        }
 
                         await fetchUnreadCount();
                         startUnreadPolling();
