@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
     <style>
+        /* ========== 基础样式（完全与主页一致） ========== */
         * {
             margin: 0;
             padding: 0;
@@ -37,6 +38,12 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: #e74c3c;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            color: #c0392b;
         }
 
         .auth-buttons {
@@ -80,6 +87,7 @@
             text-decoration: underline;
         }
 
+        /* ========== 主布局 ========== */
         .main-layout {
             max-width: 1400px;
             margin: 0 auto;
@@ -88,6 +96,7 @@
             min-height: 100vh;
         }
 
+        /* ========== 侧边栏（与主页完全一致） ========== */
         .nav-sidebar {
             position: fixed;
             top: 0;
@@ -179,6 +188,12 @@
             margin: 8px 0;
         }
 
+        .nav-item.active {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        /* ========== 内容区域 ========== */
         .content-wrapper {
             margin-left: 64px;
             padding-top: 20px;
@@ -188,17 +203,13 @@
             max-width: 100%;
         }
 
+        /* ========== 卡片（无悬停特效） ========== */
         .card {
             background: white;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             padding: 20px 24px;
             margin-bottom: 24px;
-            transition: box-shadow 0.2s;
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
 
         .card-header {
@@ -209,14 +220,7 @@
             margin-bottom: 20px;
         }
 
-        .card-desc {
-            color: #5b6e8c;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #edf2f7;
-        }
-
+        /* ========== 日志列表（无左侧色条，无悬停） ========== */
         .log-list {
             display: flex;
             flex-direction: column;
@@ -227,37 +231,13 @@
             background: #fafbfc;
             border-radius: 8px;
             padding: 16px 20px;
-            border-left: 4px solid #ccc;
-            transition: background 0.2s, transform 0.2s;
+            border-left: none;
+            transition: none;
         }
 
         .log-card:hover {
-            background: #f0f2f5;
-            transform: translateX(2px);
-        }
-
-        .log-card.ban {
-            border-left-color: #e53e3e;
-        }
-
-        .log-card.unban {
-            border-left-color: #38a169;
-        }
-
-        .log-card.grant {
-            border-left-color: #3182ce;
-        }
-
-        .log-card.revoke {
-            border-left-color: #d69e2e;
-        }
-
-        .log-card.cheat {
-            border-left-color: #d1af60;
-        }
-
-        .log-card.manager {
-            border-left-color: #9d3dcf;
+            background: #fafbfc;
+            transform: none;
         }
 
         .log-meta {
@@ -272,43 +252,15 @@
         .log-action {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-weight: 600;
-            font-size: 0.92rem;
+            font-size: 0.95rem;
         }
 
-        .log-action .tag {
-            font-size: 0.65rem;
-            padding: 1px 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            color: #fff;
-            line-height: 1.8;
-        }
-
-        .tag-ban {
-            background: #e53e3e;
-        }
-
-        .tag-unban {
-            background: #38a169;
-        }
-
-        .tag-grant {
-            background: #3182ce;
-        }
-
-        .tag-revoke {
-            background: #d69e2e;
-        }
-
-        .tag-cheat {
-            background: #d1af60;
-            color: #5a3e00;
-        }
-
-        .tag-manager {
-            background: #9d3dcf;
+        .log-action .log-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
 
         .log-time {
@@ -344,33 +296,35 @@
             border-radius: 50%;
             object-fit: cover;
             border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+            background: #e74c3c;
         }
 
         .log-user .uname {
             font-weight: 500;
         }
 
-        .log-user .utag {
-            font-size: 0.6rem;
-            padding: 0 8px;
-            border-radius: 10px;
-            background: #e2e8f0;
-            color: #4a5568;
-            line-height: 1.8;
+        /* 主页同款标签样式 */
+        .user-tag-display {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 0;
+            cursor: default;
+            transition: filter 0.15s;
         }
 
-        .log-user .utag.admin {
-            background: #805ad5;
-            color: #fff;
-        }
-
-        .log-user .utag.banned {
-            background: #e53e3e;
-            color: #fff;
+        .user-tag-display:hover {
+            filter: brightness(0.9);
         }
 
         .log-arrow {
             color: #a0aec0;
+            font-weight: 300;
+            margin: 0 2px;
         }
 
         .log-detail {
@@ -476,6 +430,31 @@
             }
         }
 
+        /* ========== 回到顶部 ========== */
+        #back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #back-to-top:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        /* ========== 页脚 ========== */
         footer {
             text-align: center;
             padding: 24px;
@@ -493,6 +472,7 @@
             text-decoration: underline;
         }
 
+        /* ========== 响应式（与主页完全一致） ========== */
         @media (max-width: 900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
@@ -604,6 +584,14 @@
                 font-size: 14px;
                 width: 18px;
             }
+
+            #back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
         }
 
         @media (max-width: 400px) {
@@ -637,12 +625,17 @@
 </head>
 
 <body>
+    <!-- ===== 顶栏 ===== -->
     <div class="topbar">
-        <div class="logo">✨ Jason227</div>
-        <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
+        <a href="/" class="logo">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons">
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
+        </div>
     </div>
 
+    <!-- ===== 主布局 ===== -->
     <div class="main-layout">
+        <!-- 侧边栏 -->
         <div class="nav-sidebar">
             <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
             <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
@@ -665,16 +658,16 @@
             <div class="nav-item"><span class="nav-icon">❓</span><span class="nav-text">帮助中心</span></div>
             <div class="nav-item"><span class="nav-icon">📧</span><span class="nav-text">联系我们</span></div>
             <div class="nav-item"><span class="nav-icon">📜</span><span class="nav-text">社区规则</span></div>
-            <div class="nav-item" style="background:#f0f2f5;color:#e74c3c;"><span class="nav-icon">🗳️</span><span
-                    class="nav-text">陶片放逐</span></div>
+            <div class="nav-item active"><span class="nav-icon">🗳️</span><span class="nav-text">陶片放逐</span></div>
             <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
         </div>
 
+        <!-- 内容区域 -->
         <div class="content-wrapper">
             <div class="main-content">
+                <!-- 陶片放逐 · 管理日志卡片 -->
                 <div class="card">
-                    <div class="card-header">🏛️ 陶片放逐 · 管理日志</div>
-                    <div class="card-desc">此处公布近期涉及用户权限变更的管理日志，以提升管理流程透明度，以及引起部分用户警示。</div>
+                    <div class="card-header">陶片放逐</div>
                     <div id="logList" class="log-list"></div>
                     <div class="load-more-wrap">
                         <button id="load-more">
@@ -687,14 +680,23 @@
         </div>
     </div>
 
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" title="回到顶部">↑</button>
+
     <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
 
     <script>
         (function () {
+            // ================================================================
+            // 1. Supabase 初始化
+            // ================================================================
             const supabaseUrl = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
             const supabaseKey = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+            // ================================================================
+            // 2. 状态与 DOM 引用
+            // ================================================================
             let page = 0;
             const PAGE_SIZE = 30;
             let loading = false;
@@ -705,16 +707,65 @@
             const loadMoreBtn = document.getElementById('load-more');
             const authButtons = document.getElementById('authButtons');
 
-            // ---------- 从 profiles 表获取用户信息 ----------
+            // ================================================================
+            // 3. 工具函数
+            // ================================================================
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function escapeHtmlAttr(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E' +
+                    ch + '%3C/text%3E%3C/svg%3E';
+            }
+
+            function formatTime(iso) {
+                if (!iso) return '未知时间';
+                try {
+                    const d = new Date(iso);
+                    const pad = n => String(n).padStart(2, '0');
+                    const year = d.getFullYear();
+                    const month = pad(d.getMonth() + 1);
+                    const day = pad(d.getDate());
+                    const hours = pad(d.getHours());
+                    const minutes = pad(d.getMinutes());
+                    const seconds = pad(d.getSeconds());
+                    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                } catch {
+                    return '未知时间';
+                }
+            }
+
+            // ================================================================
+            // 4. 获取用户信息（带缓存）
+            // ================================================================
             async function fetchUsers(userIds) {
                 if (!userIds || userIds.length === 0) return {};
 
-                const uniqueIds = [...new Set(userIds.filter(id => id))];
-
-                // 先从缓存取
+                const unique = [...new Set(userIds.filter(Boolean))];
                 const result = {};
                 const needFetch = [];
-                uniqueIds.forEach(id => {
+
+                unique.forEach(id => {
                     if (userCache[id]) {
                         result[id] = userCache[id];
                     } else {
@@ -725,29 +776,25 @@
                 if (needFetch.length === 0) return result;
 
                 try {
-                    // 直接用 in 查询
                     const { data, error } = await supabase
                         .from('profiles')
-                        .select('id, username, avatar_url, user_tag, is_admin, is_banned')
+                        .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color')
                         .in('id', needFetch);
 
                     if (error) {
-                        console.error('查询用户失败:', error);
-                        // 尝试逐个查询
+                        console.warn('批量查询用户失败，尝试逐个查询:', error.message);
                         for (const id of needFetch) {
                             try {
                                 const { data: single } = await supabase
                                     .from('profiles')
-                                    .select('id, username, avatar_url, user_tag, is_admin, is_banned')
+                                    .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color')
                                     .eq('id', id)
-                                    .single();
+                                    .maybeSingle();
                                 if (single) {
                                     userCache[id] = single;
                                     result[id] = single;
                                 }
-                            } catch (e) {
-                                console.warn('单个用户查询失败:', id, e.message);
-                            }
+                            } catch (e) { /* ignore */ }
                         }
                         return result;
                     }
@@ -759,111 +806,190 @@
                         });
                     }
                     return result;
+
                 } catch (err) {
                     console.error('获取用户信息异常:', err);
                     return result;
                 }
             }
 
-            // ---------- 渲染单条日志 ----------
+            // ================================================================
+            // 5. 动态判断操作类型（四种标识）
+            // ================================================================
+            function getDisplayType(log) {
+                const action = log.action_type;
+                const detail = log.action_detail || {};
+                const perm = detail.permission;
+
+                // 管理轮换：授予/撤销 进入后台、用户管理、秩序管理、特殊权益
+                const managerPerms = ['is_admin', 'can_manage_users', 'can_manage_posts', 'special_privilege'];
+                if ((action === 'grant_perm' || action === 'revoke_perm') && managerPerms.includes(perm)) {
+                    return {
+                        label: '管理轮换',
+                        color: '#9d3dcf',
+                        viewBox: '0 0 448 512',
+                        path: 'M72 128l24 0 0 16c0 70.7 57.3 128 128 128s128-57.3 128-128l0-16 24 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-30.7 0c-10.4-53.7-31.9-112-68.3-112-9.6 0-19 3.9-27.5 8.2-8.2 4.1-18.4 7.8-25.5 7.8s-17.3-3.7-25.5-7.8c-8.5-4.3-17.9-8.2-27.5-8.2-36.4 0-57.8 58.3-68.3 112L72 80c-13.3 0-24 10.7-24 24s10.7 24 24 24zm152 0l80 0 0 16c0 44.2-35.8 80-80 80s-80-35.8-80-80l0-16 80 0zM193.5 304c-9.7 0-17.5 7.8-17.5 17.5 0 4.2 1.5 8.2 4.2 11.4l27.2 31.8-18.5 67.8-55.9-102C127 319.5 113.3 315 101.9 320.3 41.8 348.3 0 409.2 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-43.4 21.6-81.8 54.7-105L171 499.5c4.2 7.7 12.3 12.5 21 12.5l64 0c8.8 0 16.8-4.8 21-12.5L345.3 375c33.1 23.2 54.7 61.6 54.7 105l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-70.8-41.8-131.7-101.9-159.7-11.5-5.3-25.1-.9-31.2 10.2l-56.2 102.5-18.4-68.2 27.4-32c2.7-3.2 4.2-7.2 4.2-11.4 0-9.7-7.8-17.5-17.5-17.5l-61 0z'
+                    };
+                }
+
+                // 用户封禁：撤销 进入主站 或 action_type === 'ban'
+                if (action === 'ban' || (action === 'revoke_perm' && perm === 'is_banned')) {
+                    return {
+                        label: '用户封禁',
+                        color: '#e53e3e',
+                        viewBox: '0 0 512 512',
+                        path: 'M385.1 419.1L92.9 126.9c-28.1 35.5-44.9 80.3-44.9 129.1 0 114.9 93.1 208 208 208 48.8 0 93.7-16.8 129.1-44.9zm33.9-33.9c28.1-35.5 44.9-80.3 44.9-129.1 0-114.9-93.1-208-208-208-48.8 0-93.7 16.8-129.1 44.9L419.1 385.1zM0 256a256 256 0 1 1 512 0 256 256 0 1 1 -512 0z'
+                    };
+                }
+
+                // unban 视为授予权限（授予进入主站）
+                if (action === 'unban') {
+                    return {
+                        label: '授予权限',
+                        color: '#38a169',
+                        viewBox: '0 0 640 512',
+                        path: 'M304 304c97.2 0 176 78.8 176 176l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-70.7-57.3-128-128-128l-96 0c-70.7 0-128 57.3-128 128l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-97.2 78.8-176 176-176l96 0zM528 80c13.3 0 24 10.7 24 24l0 48 48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0 0 48c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-48-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0 0-48c0-13.3 10.7-24 24-24zM256 256a128 128 0 1 1 0-256 128 128 0 1 1 0 256zm0-208a80 80 0 1 0 0 160 80 80 0 1 0 0-160z'
+                    };
+                }
+
+                // 其他 grant_perm 操作（包括授予 is_banned）视为授予权限
+                if (action === 'grant_perm') {
+                    return {
+                        label: '授予权限',
+                        color: '#38a169',
+                        viewBox: '0 0 640 512',
+                        path: 'M304 304c97.2 0 176 78.8 176 176l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-70.7-57.3-128-128-128l-96 0c-70.7 0-128 57.3-128 128l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-97.2 78.8-176 176-176l96 0zM528 80c13.3 0 24 10.7 24 24l0 48 48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0 0 48c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-48-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0 0-48c0-13.3 10.7-24 24-24zM256 256a128 128 0 1 1 0-256 128 128 0 1 1 0 256zm0-208a80 80 0 1 0 0 160 80 80 0 1 0 0-160z'
+                    };
+                }
+
+                // 其他 revoke_perm 操作（非管理轮换、非进入主站）视为取消权限
+                if (action === 'revoke_perm') {
+                    return {
+                        label: '取消权限',
+                        color: '#e53e3e',
+                        viewBox: '0 0 640 512',
+                        path: 'M304 304c97.2 0 176 78.8 176 176l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-70.7-57.3-128-128-128l-96 0c-70.7 0-128 57.3-128 128l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-97.2 78.8-176 176-176l96 0zm-48-48a128 128 0 1 1 0-256 128 128 0 1 1 0 256zm0-208a80 80 0 1 0 0 160 80 80 0 1 0 0-160zM600 152c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l144 0z'
+                    };
+                }
+
+                // 其他所有未匹配的（如 cheat、manager_rotate 等），默认归为取消权限
+                // 但 manager_rotate 我们已经在上层处理了，这里作为兜底
+                return {
+                    label: '取消权限',
+                    color: '#e53e3e',
+                    viewBox: '0 0 640 512',
+                    path: 'M304 304c97.2 0 176 78.8 176 176l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-70.7-57.3-128-128-128l-96 0c-70.7 0-128 57.3-128 128l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-97.2 78.8-176 176-176l96 0zm-48-48a128 128 0 1 1 0-256 128 128 0 1 1 0 256zm0-208a80 80 0 1 0 0 160 80 80 0 1 0 0-160zM600 152c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l144 0z'
+                };
+            }
+
+            // ================================================================
+            // 6. 渲染单条日志
+            // ================================================================
             function renderLog(log, userMap) {
-                // 获取用户信息
                 const admin = userMap[log.admin_id] || {
                     username: '已删除',
                     avatar_url: '',
                     user_tag: '',
-                    is_admin: false
+                    is_admin: false,
+                    user_number: '',
+                    username_color: ''
                 };
                 const target = userMap[log.target_user_id] || {
                     username: '已删除',
                     avatar_url: '',
                     user_tag: '',
                     is_admin: false,
-                    is_banned: false
+                    is_banned: false,
+                    user_number: '',
+                    username_color: ''
                 };
 
-                const typeMap = {
-                    'ban': { class: 'ban', icon: '🔒', label: '用户封禁', tag: 'tag-ban' },
-                    'unban': { class: 'unban', icon: '🔓', label: '解除封禁', tag: 'tag-unban' },
-                    'grant_perm': { class: 'grant', icon: '✅', label: '授予权限', tag: 'tag-grant' },
-                    'revoke_perm': { class: 'revoke', icon: '❌', label: '撤销权限', tag: 'tag-revoke' },
-                    'cheat': { class: 'cheat', icon: '⚠️', label: '作弊惩罚', tag: 'tag-cheat' },
-                    'manager_rotate': { class: 'manager', icon: '🔄', label: '管理轮换', tag: 'tag-manager' },
-                };
-                let info = typeMap[log.action_type] || { class: '', icon: '📋', label: log.action_type || '未知操作', tag: '' };
+                // 动态获取显示类型
+                const info = getDisplayType(log);
 
-                let detailText = '';
-                if (log.action_detail) {
-                    const d = log.action_detail;
-                    if (log.action_type === 'grant_perm' || log.action_type === 'revoke_perm') {
-                        const permMap = {
-                            'is_admin': '进入后台',
-                            'can_manage_users': '用户管理',
-                            'can_manage_posts': '秩序管理',
-                            'can_speak': '自由发言',
-                            'is_banned': '进入主站',
-                            'special_privilege': '特殊权限',
-                        };
-                        const permName = permMap[d.permission] || d.permission || '未知权限';
-                        const actionWord = d.new_value ? '授予' : '撤销';
-                        const cls = d.new_value ? 'success' : 'danger';
-                        detailText = `<span class="highlight ${cls}">${actionWord}</span> ${permName} 权限`;
-                    } else if (log.action_type === 'ban') {
-                        detailText = `<span class="highlight danger">撤销</span> 进入主站 权限`;
-                    } else if (log.action_type === 'unban') {
-                        detailText = `<span class="highlight success">授予</span> 进入主站 权限`;
-                    } else if (log.action_type === 'cheat') {
-                        detailText = `学术不端惩罚`;
-                    } else if (log.action_type === 'manager_rotate') {
-                        detailText = `管理志愿者轮换`;
-                    }
+                // 构建权限变更详情（保留原有 detail 展示）
+                let detailHtml = '';
+                const d = log.action_detail;
+                if (log.action_type === 'grant_perm' || log.action_type === 'revoke_perm') {
+                    const permMap = {
+                        'is_admin': '进入后台',
+                        'can_manage_users': '用户管理',
+                        'can_manage_posts': '秩序管理',
+                        'can_speak': '自由发言',
+                        'is_banned': '进入主站',
+                        'special_privilege': '特殊权限',
+                    };
+                    const permName = permMap[d?.permission] || d?.permission || '未知权限';
+                    const isGrant = log.action_type === 'grant_perm';
+                    const cls = isGrant ? 'success' : 'danger';
+                    const word = isGrant ? '授予' : '撤销';
+                    detailHtml =
+                        `<span class="highlight ${cls}">${word}</span> ${permName} 权限`;
+                } else if (log.action_type === 'ban') {
+                    detailHtml = `<span class="highlight danger">撤销</span> 进入主站 权限`;
+                } else if (log.action_type === 'unban') {
+                    detailHtml = `<span class="highlight success">授予</span> 进入主站 权限`;
+                } else if (log.action_type === 'cheat') {
+                    detailHtml = `学术不端惩罚`;
+                } else if (log.action_type === 'manager_rotate') {
+                    const permName = d?.permission || '管理权限';
+                    detailHtml = `授予 ${permName} 权限（轮换）`;
                 }
 
-                const time = log.created_at ? new Date(log.created_at).toLocaleString('zh-CN', { hour12: false }) : '未知时间';
-                const adminColor = admin.is_admin ? '#9b59b6' : '#2c3e50';
-                const targetColor = target.is_admin ? '#9b59b6' : '#2c3e50';
+                const time = formatTime(log.created_at);
+                const adminColor = admin.username_color || (admin.is_admin ? '#9b59b6' : '#2c3e50');
+                const targetColor = target.username_color || (target.is_admin ? '#9b59b6' : '#2c3e50');
 
-                const targetBannedTag = target.is_banned ? `<span class="utag banned">已封禁</span>` : '';
-                const targetTag = target.user_tag ? `<span class="utag" style="background:${targetColor};color:#fff;">${target.user_tag}</span>` : '';
-                const adminTagUser = admin.user_tag ? `<span class="utag" style="background:${adminColor};color:#fff;">${admin.user_tag}</span>` : '';
+                const targetTag = target.user_tag ?
+                    `<span class="user-tag-display" style="background-color: ${targetColor};">${escapeHtml(target.user_tag)}</span>` :
+                    '';
+                const adminTag = admin.user_tag ?
+                    `<span class="user-tag-display" style="background-color: ${adminColor};">${escapeHtml(admin.user_tag)}</span>` :
+                    (admin.is_admin ? `<span class="user-tag-display" style="background-color: ${adminColor};">管理员</span>` : '');
+                const targetBannedTag = target.is_banned ?
+                    `<span class="user-tag-display" style="background-color: #e53e3e;">已封禁</span>` :
+                    '';
 
-                // 默认头像：红色圆 + 用户名首字母（与首页/犇犇页一致）
-                function letterAvatar(name) {
-                    const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-                    return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E' + ch + '%3C/text%3E%3C/svg%3E';
-                }
+                const adminAvatar = admin.avatar_url || letterAvatar(admin.username);
+                const targetAvatar = target.avatar_url || letterAvatar(target.username);
+
+                const adminLink = admin.user_number ? `/user/${admin.user_number}` : '#';
+                const targetLink = target.user_number ? `/user/${target.user_number}` : '#';
+
+                const svgIcon = `<svg viewBox="${info.viewBox}" width="20" height="20" style="color:${info.color}; fill:currentColor;" class="log-icon"><path d="${info.path}"/></svg>`;
 
                 return `
-                    <div class="log-card ${info.class}">
+                    <div class="log-card">
                         <div class="log-meta">
                             <div class="log-action">
-                                <span>${info.icon}</span>
-                                <span>${info.label}</span>
-                                ${info.tag ? `<span class="tag ${info.tag}">${info.label}</span>` : ''}
+                                ${svgIcon}
+                                <span style="color:${info.color}; font-weight:600;">${info.label}</span>
                             </div>
                             <span class="log-time">${time}</span>
                         </div>
+
                         <div class="log-users">
-                            <a href="/user/${log.admin_id || ''}" class="log-user">
-                                <img src="${admin.avatar_url || letterAvatar(admin.username)}" alt="${admin.username}" onerror="this.onerror=null;this.src='${letterAvatar(admin.username)}'">
-                                <span class="uname" style="color:${adminColor};">${admin.username}</span>
-                                ${adminTagUser}
-                            </a>
-                            <span class="log-arrow">→</span>
-                            <a href="/user/${log.target_user_id || ''}" class="log-user">
-                                <img src="${target.avatar_url || letterAvatar(target.username)}" alt="${target.username}" onerror="this.onerror=null;this.src='${letterAvatar(target.username)}'">
-                                <span class="uname" style="color:${targetColor};">${target.username}</span>
+                            <a href="${targetLink}" class="log-user">
+                                <img src="${targetAvatar}" alt="${escapeHtmlAttr(target.username)}" 
+                                    onerror="this.onerror=null;this.src='${letterAvatar(target.username)}'">
+                                <span class="uname" style="color:${targetColor}">${escapeHtml(target.username)}</span>
                                 ${targetTag}
                                 ${targetBannedTag}
                             </a>
                         </div>
-                        ${detailText ? `<div class="log-detail">${detailText}</div>` : ''}
-                        <div class="log-reason"><strong>原因：</strong>${log.reason || '（无）'}</div>
+
+                        ${detailHtml ? `<div class="log-detail">${detailHtml}</div>` : ''}
+
+                        <div class="log-reason">
+                            ${log.reason || '（无）'}
+                        </div>
                     </div>
                 `;
             }
 
-            // ---------- 加载日志 ----------
+            // ================================================================
+            // 7. 加载日志（全量显示）
+            // ================================================================
             async function loadLogs(append = false) {
                 if (loading || !hasMore) return;
                 loading = true;
@@ -871,16 +997,15 @@
                 loadMoreBtn.classList.add('loading');
 
                 try {
-                    // 先获取日志
-                    const { data: logs, error: logError } = await supabase
+                    const { data: logs, error } = await supabase
                         .from('judgement_logs')
                         .select('*')
                         .order('created_at', { ascending: false })
                         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-                    if (logError) {
-                        console.error('查询日志失败:', logError);
-                        throw logError;
+                    if (error) {
+                        console.error('查询日志失败:', error);
+                        throw error;
                     }
 
                     if (!logs || logs.length === 0) {
@@ -897,20 +1022,16 @@
                         return;
                     }
 
-                    // 收集所有用户 ID
                     const userIds = [];
                     logs.forEach(log => {
                         if (log.admin_id) userIds.push(log.admin_id);
                         if (log.target_user_id) userIds.push(log.target_user_id);
                     });
 
-                    const uniqueUserIds = [...new Set(userIds)];
+                    const userMap = await fetchUsers(userIds);
 
-                    // 获取用户信息
-                    const userMap = await fetchUsers(uniqueUserIds);
-
-                    // 渲染
                     const html = logs.map(log => renderLog(log, userMap)).join('');
+
                     if (append) {
                         logList.insertAdjacentHTML('beforeend', html);
                     } else {
@@ -919,11 +1040,8 @@
 
                     page++;
                     hasMore = logs.length === PAGE_SIZE;
-                    if (!hasMore) {
-                        loadMoreBtn.style.display = 'none';
-                    } else {
-                        loadMoreBtn.style.display = 'inline-flex';
-                    }
+                    loadMoreBtn.style.display = hasMore ? 'inline-flex' : 'none';
+
                 } catch (err) {
                     console.error('加载失败:', err);
                     if (!append) {
@@ -931,7 +1049,7 @@
                             <div class="empty-state">
                                 <div class="icon">⚠️</div>
                                 <p>加载失败，请刷新重试</p>
-                                <p style="font-size:0.8rem;color:#ccc;margin-top:8px;">${err.message || ''}</p>
+                                <p style="font-size:0.8rem;color:#ccc;margin-top:8px;">${escapeHtml(err.message || '')}</p>
                             </div>
                         `;
                     }
@@ -942,32 +1060,36 @@
                 }
             }
 
-            // ---------- 用户认证 UI ----------
+            // ================================================================
+            // 8. 用户认证 UI
+            // ================================================================
             async function updateAuthUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
 
-                    if (session && session.user) {
+                    if (session?.user) {
                         const { data: profile } = await supabase
                             .from('profiles')
-                            .select('username, avatar_url, is_admin')
+                            .select('username, avatar_url, is_admin, user_number')
                             .eq('id', session.user.id)
                             .maybeSingle();
 
-                        let displayName = profile?.username || session.user.email || '用户';
-                        let html = `<a href="/user/${session.user.id}" class="user-email">${displayName}</a>`;
+                        const displayName = profile?.username || session.user.email || '用户';
+                        const userNumber = profile?.user_number || '';
 
-                        if (profile?.is_admin) {
-                            html += `<span style="background:#805ad5;color:#fff;padding:0 8px;border-radius:12px;font-size:0.8rem;margin-left:4px;">管理员</span>`;
-                        }
-
-                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                        let html = `
+                            <a href="/user/${userNumber}" class="user-email">${escapeHtml(displayName)}</a>
+                        `;
+                        html += `
+                            <button id="logoutBtn" class="auth-btn logout">登出</button>
+                        `;
                         authButtons.innerHTML = html;
 
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                             await supabase.auth.signOut();
                             location.reload();
                         });
+
                     } else {
                         authButtons.innerHTML = `
                             <a href="/auth/login" class="auth-btn">登录</a>
@@ -983,7 +1105,24 @@
                 }
             }
 
-            // ---------- 初始化 ----------
+            // ================================================================
+            // 9. 回到顶部按钮控制
+            // ================================================================
+            const backToTopBtn = document.getElementById('back-to-top');
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+            backToTopBtn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ================================================================
+            // 10. 初始化
+            // ================================================================
             document.addEventListener('DOMContentLoaded', async () => {
                 await updateAuthUI();
                 await loadLogs(false);
