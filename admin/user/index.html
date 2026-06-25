@@ -530,13 +530,15 @@
             const userDisplay = document.getElementById('userDisplay');
 
             // ---------- 工具函数 ----------
-            function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
+            function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&'; if (m === '<') return '<'; if (m === '>') return '>'; if (m === '"') return '"'; return m; }); }
 
             function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
 
-            function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
+            function showError(text) { msgDiv.innerHTML = `<div class="message error"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 63: …L = &#x27;&#x27;, 5000); }̲
 
-            function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
+            f…" style="color:#cc0000">{text}&lt;/div&gt;`; setTimeout(() =&gt; msgDiv.innerHTML = &#x27;&#x27;, 5000); }
+
+            function showSuccess(text) { msgDiv.innerHTML = `&lt;div class=&quot;message success&quot;&gt;</span>{text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
             // ---------- 日志相关 ----------
             async function getCurrentAdminId() {
@@ -563,15 +565,16 @@
 
             async function promptReason(operationName) {
                 const { value: reason } = await Swal.fire({
-                    title: `请输入 ${operationName} 的原因`,
-                    input: 'textarea',
-                    inputPlaceholder: '详细说明操作原因...',
+                    title: `请输入 <span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 470: …               }̲);
+            …" style="color:#cc0000">{operationName} 的原因`,
+                    input: &#x27;textarea&#x27;,
+                    inputPlaceholder: &#x27;详细说明操作原因...&#x27;,
                     showCancelButton: true,
-                    confirmButtonText: '确认操作',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value || value.trim() === '') {
-                            return '原因不能为空！';
+                    confirmButtonText: &#x27;确认操作&#x27;,
+                    cancelButtonText: &#x27;取消&#x27;,
+                    inputValidator: (value) =&gt; {
+                        if (!value || value.trim() === &#x27;&#x27;) {
+                            return &#x27;原因不能为空！&#x27;;
                         }
                     }
                 });
@@ -582,18 +585,18 @@
             async function updateUserField(userNumber, updateData) {
                 try {
                     const { data, error } = await supabase
-                        .from('profiles')
+                        .from(&#x27;profiles&#x27;)
                         .update(updateData)
-                        .eq('user_number', userNumber)
+                        .eq(&#x27;user_number&#x27;, userNumber)
                         .select();
                     if (error) throw error;
-                    if (data && data.length > 0) {
-                        const target = allUsers.find(u => u.user_number === userNumber);
+                    if (data &amp;&amp; data.length &gt; 0) {
+                        const target = allUsers.find(u =&gt; u.user_number === userNumber);
                         if (target) Object.assign(target, data[0]);
                     }
                 } catch (err) {
-                    console.error('更新失败:', err);
-                    showError('操作失败：' + err.message);
+                    console.error(&#x27;更新失败:&#x27;, err);
+                    showError(&#x27;操作失败：&#x27; + err.message);
                     throw err;
                 }
             }
@@ -603,28 +606,28 @@
             // ================================================================
             async function toggleAdmin(userNumber) {
                 try {
-                    const targetUser = allUsers.find(u => u.user_number === userNumber);
-                    if (!targetUser) { showError('用户不存在'); return; }
+                    const targetUser = allUsers.find(u =&gt; u.user_number === userNumber);
+                    if (!targetUser) { showError(&#x27;用户不存在&#x27;); return; }
 
                     const { data: u, error: fetchErr } = await supabase
-                        .from('profiles')
-                        .select('is_admin, user_tag')
-                        .eq('user_number', userNumber)
+                        .from(&#x27;profiles&#x27;)
+                        .select(&#x27;is_admin, user_tag&#x27;)
+                        .eq(&#x27;user_number&#x27;, userNumber)
                         .single();
-                    if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
+                    if (fetchErr) throw new Error(&#x27;查询失败: &#x27; + fetchErr.message);
 
                     const newAdmin = !u.is_admin;
-                    const actionName = newAdmin ? '授予管理员权限' : '撤销管理员权限';
+                    const actionName = newAdmin ? &#x27;授予管理员权限&#x27; : &#x27;撤销管理员权限&#x27;;
                     const reason = await promptReason(actionName);
                     if (!reason) return;
 
-                    let newTag = u.user_tag || '';
+                    let newTag = u.user_tag || &#x27;&#x27;;
                     if (newAdmin) {
-                        if (!newTag) newTag = '管理员';
+                        if (!newTag) newTag = &#x27;管理员&#x27;;
                     } else {
-                        if (newTag === '管理员') newTag = null;
+                        if (newTag === &#x27;管理员&#x27;) newTag = null;
                     }
-                    const color = newAdmin ? '#9b59b6' : '#333';
+                    const color = newAdmin ? &#x27;#9b59b6&#x27; : &#x27;#333&#x27;;
 
                     await updateUserField(userNumber, {
                         is_admin: newAdmin,
@@ -637,13 +640,13 @@
                         await insertJudgementLog(
                             adminId,
                             targetUser.id,
-                            newAdmin ? 'grant_perm' : 'revoke_perm', { permission: 'is_admin', new_value: newAdmin },
+                            newAdmin ? &#x27;grant_perm&#x27; : &#x27;revoke_perm&#x27;, { permission: &#x27;is_admin&#x27;, new_value: newAdmin },
                             reason
                         );
                     }
                     await loadUsers();
                 } catch (err) {
-                    showError('操作失败：' + err.message);
+                    showError(&#x27;操作失败：&#x27; + err.message);
                 }
             }
 
@@ -652,17 +655,18 @@
             // ================================================================
             async function togglePermission(userNumber, field, currentValue) {
                 try {
-                    const targetUser = allUsers.find(u => u.user_number === userNumber);
-                    if (!targetUser) { showError('用户不存在'); return; }
+                    const targetUser = allUsers.find(u =&gt; u.user_number === userNumber);
+                    if (!targetUser) { showError(&#x27;用户不存在&#x27;); return; }
                     const newValue = !currentValue;
                     const fieldMap = {
-                        'can_manage_users': '用户管理',
-                        'can_manage_posts': '秩序管理',
-                        'can_speak': '自由发言',
-                        'is_banned': '进入主站'
+                        &#x27;can_manage_users&#x27;: &#x27;用户管理&#x27;,
+                        &#x27;can_manage_posts&#x27;: &#x27;秩序管理&#x27;,
+                        &#x27;can_speak&#x27;: &#x27;自由发言&#x27;,
+                        &#x27;is_banned&#x27;: &#x27;进入主站&#x27;
                     };
                     const fieldName = fieldMap[field] || field;
-                    const actionName = newValue ? `授予 ${fieldName} 权限` : `撤销 ${fieldName} 权限`;
+                    const actionName = newValue ? `授予 </span>{fieldName} 权限` : `撤销 <span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 686: …               }̲ catch (err) {
+…" style="color:#cc0000">{fieldName} 权限`;
                     const reason = await promptReason(actionName);
                     if (!reason) return;
 
@@ -673,13 +677,13 @@
                         await insertJudgementLog(
                             adminId,
                             targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm', { permission: field, new_value: newValue },
+                            newValue ? &#x27;grant_perm&#x27; : &#x27;revoke_perm&#x27;, { permission: field, new_value: newValue },
                             reason
                         );
                     }
                     await loadUsers();
                 } catch (err) {
-                    showError('权限更新失败：' + err.message);
+                    showError(&#x27;权限更新失败：&#x27; + err.message);
                 }
             }
 
@@ -688,11 +692,11 @@
             // ================================================================
             async function toggleBan(userNumber) {
                 try {
-                    const targetUser = allUsers.find(u => u.user_number === userNumber);
-                    if (!targetUser) { showError('用户不存在'); return; }
+                    const targetUser = allUsers.find(u =&gt; u.user_number === userNumber);
+                    if (!targetUser) { showError(&#x27;用户不存在&#x27;); return; }
                     const current = targetUser.is_banned || false;
                     const newValue = !current;
-                    const actionName = newValue ? '封禁用户' : '解封用户';
+                    const actionName = newValue ? &#x27;封禁用户&#x27; : &#x27;解封用户&#x27;;
                     const reason = await promptReason(actionName);
                     if (!reason) return;
 
@@ -703,13 +707,13 @@
                         await insertJudgementLog(
                             adminId,
                             targetUser.id,
-                            newValue ? 'ban' : 'unban', { permission: 'is_banned', new_value: newValue },
+                            newValue ? &#x27;ban&#x27; : &#x27;unban&#x27;, { permission: &#x27;is_banned&#x27;, new_value: newValue },
                             reason
                         );
                     }
                     await loadUsers();
                 } catch (err) {
-                    showError('操作失败：' + err.message);
+                    showError(&#x27;操作失败：&#x27; + err.message);
                 }
             }
 
@@ -718,10 +722,10 @@
             // ================================================================
             async function toggleSpecialPrivilege(userNumber, currentValue) {
                 try {
-                    const targetUser = allUsers.find(u => u.user_number === userNumber);
-                    if (!targetUser) { showError('用户不存在'); return; }
+                    const targetUser = allUsers.find(u =&gt; u.user_number === userNumber);
+                    if (!targetUser) { showError(&#x27;用户不存在&#x27;); return; }
                     const newValue = !currentValue;
-                    const actionName = newValue ? '授予特殊权益' : '撤销特殊权益';
+                    const actionName = newValue ? &#x27;授予特殊权益&#x27; : &#x27;撤销特殊权益&#x27;;
                     const reason = await promptReason(actionName);
                     if (!reason) return;
 
@@ -732,8 +736,8 @@
                         await insertJudgementLog(
                             adminId,
                             targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm', {
-                                permission: 'special_privilege',
+                            newValue ? &#x27;grant_perm&#x27; : &#x27;revoke_perm&#x27;, {
+                                permission: &#x27;special_privilege&#x27;,
                             new_value: newValue
                         },
                             reason
@@ -741,7 +745,7 @@
                     }
                     await loadUsers();
                 } catch (err) {
-                    showError('操作失败：' + err.message);
+                    showError(&#x27;操作失败：&#x27; + err.message);
                 }
             }
 
@@ -749,35 +753,35 @@
             //  5. 批量操作（通用，不涉及管理员颜色）
             // ================================================================
             async function batchAction(actionName, updateObj) {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) { showError('请先选择用户'); return; }
+                const ids = JSON.parse(batchBar.dataset.selected || &#x27;[]&#x27;);
+                if (ids.length === 0) { showError(&#x27;请先选择用户&#x27;); return; }
                 const reason = await promptReason(actionName);
                 if (!reason) return;
 
                 try {
                     const { data: users, error: fetchErr } = await supabase
-                        .from('profiles')
-                        .select('user_number, id')
-                        .in('user_number', ids);
+                        .from(&#x27;profiles&#x27;)
+                        .select(&#x27;user_number, id&#x27;)
+                        .in(&#x27;user_number&#x27;, ids);
                     if (fetchErr) throw fetchErr;
 
-                    const { error } = await supabase.from('profiles').update(updateObj).in('user_number', ids);
+                    const { error } = await supabase.from(&#x27;profiles&#x27;).update(updateObj).in(&#x27;user_number&#x27;, ids);
                     if (error) throw error;
 
                     for (const uid of ids) {
-                        const target = allUsers.find(u => u.user_number === uid);
+                        const target = allUsers.find(u =&gt; u.user_number === uid);
                         if (target) Object.assign(target, updateObj);
                     }
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        let actionType = 'grant_perm';
+                        let actionType = &#x27;grant_perm&#x27;;
                         let field = Object.keys(updateObj)[0];
                         let newValue = updateObj[field];
-                        if (field === 'is_banned') {
-                            actionType = newValue ? 'ban' : 'unban';
+                        if (field === &#x27;is_banned&#x27;) {
+                            actionType = newValue ? &#x27;ban&#x27; : &#x27;unban&#x27;;
                         } else {
-                            actionType = newValue ? 'grant_perm' : 'revoke_perm';
+                            actionType = newValue ? &#x27;grant_perm&#x27; : &#x27;revoke_perm&#x27;;
                         }
                         for (const user of users) {
                             await insertJudgementLog(
@@ -789,10 +793,10 @@
                         }
                     }
 
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    document.querySelectorAll(&#x27;.row-checkbox:checked&#x27;).forEach(cb =&gt; cb.checked = false);
                     await loadUsers();
                 } catch (err) {
-                    showError(`批量${actionName}失败：` + err.message);
+                    showError(`批量</span>{actionName}失败：` + err.message);
                 }
             }
 
@@ -946,7 +950,9 @@
                     if (error) throw error;
                     allUsers = data;
                     filterUsers(searchInput.value.trim());
-                } catch (err) { userList.innerHTML = `<div class="error">加载用户失败：${err.message}</div>`; }
+                } catch (err) { userList.innerHTML = `<div class="error">加载用户失败：<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 23: …ssage}&lt;/div&gt;`; }̲
+            }
+…" style="color:#cc0000">{err.message}&lt;/div&gt;`; }
             }
 
             // ---------- 精确搜索 ----------
@@ -958,7 +964,7 @@
                 }
                 const trimmed = keyword.trim();
                 const lower = trimmed.toLowerCase();
-                const isNumber = /^\d+$/.test(trimmed);
+                const isNumber = /^\d+</span>/.test(trimmed);
 
                 filteredUsers = allUsers.filter(user => {
                     const isAdmin = user.is_admin;
@@ -991,114 +997,120 @@
                     batchBar.classList.remove('show');
                     return;
                 }
-                resultCount.textContent = `共 ${filteredUsers.length} 位用户`;
+                resultCount.textContent = `共 <span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;}&#x27;, got &#x27;#&#x27; at position 1286: …|| (isAdmin ? &#x27;#̲9b59b6&#x27; : &#x27;#333…" style="color:#cc0000">{filteredUsers.length} 位用户`;
                 let html = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
-                                        <th>注册时间</th>
-                                        <th>用户编号</th>
-                                        <th>用户名</th>
-                                        <th>备注名</th>
-                                        <th>用户类型</th>
-                                        <th>权限</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            &lt;table&gt;
+                                &lt;thead&gt;
+                                    &lt;tr&gt;
+                                        &lt;th class=&quot;check-col&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;selectAll&quot; title=&quot;全选&quot;&gt;&lt;/th&gt;
+                                        &lt;th&gt;注册时间&lt;/th&gt;
+                                        &lt;th&gt;用户编号&lt;/th&gt;
+                                        &lt;th&gt;用户名&lt;/th&gt;
+                                        &lt;th&gt;备注名&lt;/th&gt;
+                                        &lt;th&gt;用户类型&lt;/th&gt;
+                                        &lt;th&gt;权限&lt;/th&gt;
+                                        &lt;th&gt;操作&lt;/th&gt;
+                                    &lt;/tr&gt;
+                                &lt;/thead&gt;
+                                &lt;tbody&gt;
                         `;
                 for (const user of filteredUsers) {
                     const isSelf = currentProfile.user_number === user.user_number;
                     const isAdmin = user.is_admin;
-                    const roleClass = isAdmin ? 'admin' : 'user';
-                    const roleLabel = isAdmin ? '管理员' : '普通用户';
+                    const roleClass = isAdmin ? &#x27;admin&#x27; : &#x27;user&#x27;;
+                    const roleLabel = isAdmin ? &#x27;管理员&#x27; : &#x27;普通用户&#x27;;
 
                     // ---- 用户名颜色：优先使用 username_color，否则根据 is_admin 推断 ----
-                    const userNameColor = user.username_color || (isAdmin ? '#9b59b6' : '#333');
+                    const userNameColor = user.username_color || (isAdmin ? &#x27;#9b59b6&#x27; : &#x27;#333&#x27;);
 
                     // ---- 用户标签：背景色跟随用户名颜色 ----
-                    let tagHtml = '';
+                    let tagHtml = &#x27;&#x27;;
                     if (user.user_tag) {
-                        const tagColor = user.username_color || (isAdmin ? '#9b59b6' : '#333');
+                        const tagColor = user.username_color || (isAdmin ? &#x27;#9b59b6&#x27; : &#x27;#333&#x27;);
                         tagHtml =
-                            `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.user_tag)}" style="background-color:${tagColor};">${escapeHtmlAttr(user.user_tag)}</span>`;
+                            `&lt;span class=&quot;user-tag-display&quot; data-user=&quot;</span>{user.user_number}" data-current="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>t</mi></msub><mi>a</mi><mi>g</mi><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>b</mi><mi>a</mi><mi>c</mi><mi>k</mi><mi>g</mi><mi>r</mi><mi>o</mi><mi>u</mi><mi>n</mi><mi>d</mi><mo>−</mo><mi>c</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>r</mi><mo>:</mo></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(user.user_tag)}&quot; style=&quot;background-color:</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mclose">)</span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">ba</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">ro</span><span class="mord mathnormal">u</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span></span></span></span>{tagColor};"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 62: …               }̲
+
+             …" style="color:#cc0000">{escapeHtmlAttr(user.user_tag)}&lt;/span&gt;`;
                     }
 
-                    const remarkDisplay = user.remark || '';
+                    const remarkDisplay = user.remark || &#x27;&#x27;;
 
                     let userMgmtHtml, postMgmtHtml;
                     const mgmtStatus = user.can_manage_users;
                     const postStatus = user.can_manage_posts;
                     if (isSelf) {
                         userMgmtHtml =
-                            `<span class="action-link ${mgmtStatus ? 'green' : 'red'} disabled" style="cursor:default;">用户管理</span>`;
+                            `&lt;span class=&quot;action-link </span>{mgmtStatus ? 'green' : 'red'} disabled" style="cursor:default;">用户管理</span>`;
                         postMgmtHtml =
-                            `<span class="action-link ${postStatus ? 'green' : 'red'} disabled" style="cursor:default;">秩序管理</span>`;
+                            `<span class="action-link <span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 100: …               }̲ else {
+       …" style="color:#cc0000">{postStatus ? &#x27;green&#x27; : &#x27;red&#x27;} disabled&quot; style=&quot;cursor:default;&quot;&gt;秩序管理&lt;/span&gt;`;
                     } else {
                         userMgmtHtml =
-                            `<span class="action-link ${mgmtStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_users" data-current="${mgmtStatus}">用户管理</span>`;
+                            `&lt;span class=&quot;action-link </span>{mgmtStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>f</mi><mi>i</mi><mi>e</mi><mi>l</mi><mi>d</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>a</mi><msub><mi>n</mi><mi>m</mi></msub><mi>a</mi><mi>n</mi><mi>a</mi><mi>g</mi><msub><mi>e</mi><mi>u</mi></msub><mi>s</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>c</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{user.user_number}&quot; data-field=&quot;can_manage_users&quot; data-current=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">i</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">c</span><span class="mord mathnormal">a</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">ana</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">u</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">sers</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal">rre</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{mgmtStatus}">用户管理</span>`;
                         postMgmtHtml =
-                            `<span class="action-link ${postStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_posts" data-current="${postStatus}">秩序管理</span>`;
+                            `<span class="action-link <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>p</mi><mi>o</mi><mi>s</mi><mi>t</mi><mi>S</mi><mi>t</mi><mi>a</mi><mi>t</mi><mi>u</mi><mi>s</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>g</mi><mi>r</mi><mi>e</mi><mi>e</mi><msup><mi>n</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>r</mi><mi>e</mi><msup><mi>d</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>u</mi><mi>r</mi><mi>s</mi><mi>o</mi><mi>r</mi><mo>:</mo><mi>p</mi><mi>o</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>e</mi><mi>r</mi><mo separator="true">;</mo><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>t</mi><mi>o</mi><mi>g</mi><mi>g</mi><mi>l</mi><mi>e</mi><mo>−</mo><mi>p</mi><mi>e</mi><mi>r</mi><mi>m</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{postStatus ? &#x27;green&#x27; : &#x27;red&#x27;}&quot; style=&quot;cursor:pointer;&quot; data-action=&quot;toggle-perm&quot; data-user=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="mord mathnormal">os</span><span class="mord mathnormal">tSt</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">u</span><span class="mord mathnormal">s</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">ree</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">re</span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">rsor</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">o</span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">gg</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">m</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{user.user_number}" data-field="can_manage_posts" data-current="<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 49: …               }̲
+
+             …" style="color:#cc0000">{postStatus}&quot;&gt;秩序管理&lt;/span&gt;`;
                     }
 
                     const isBanned = user.is_banned || false;
-                    const banColor = isBanned ? 'red' : 'green';
+                    const banColor = isBanned ? &#x27;red&#x27; : &#x27;green&#x27;;
                     const banAction =
-                        `<span class="action-link ${banColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-ban'}" data-user="${user.user_number}">进入主站</span>`;
+                        `&lt;span class=&quot;action-link </span>{banColor} <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>s</mi><mi>S</mi><mi>e</mi><mi>l</mi><mi>f</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>d</mi><mi>i</mi><mi>s</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><msup><mi>d</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{isSelf ? &#x27;disabled&#x27; : &#x27;&#x27;}&quot; style=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal">ab</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>s</mi><mi>S</mi><mi>e</mi><mi>l</mi><mi>f</mi><msup><mo stretchy="false">?</mo><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>t</mi><mi>o</mi><mi>g</mi><mi>g</mi><mi>l</mi><mi>e</mi><mo>−</mo><mi>b</mi><mi>a</mi><msup><mi>n</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{isSelf ? &#x27;&#x27; : &#x27;toggle-ban&#x27;}&quot; data-user=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">gg</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">ba</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{user.user_number}">进入主站</span>`;
 
                     const canSpeak = user.can_speak !== false;
                     const speakColor = canSpeak ? 'green' : 'red';
                     const speakAction =
-                        `<span class="action-link ${speakColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-speak'}" data-user="${user.user_number}">自由发言</span>`;
+                        `<span class="action-link <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>p</mi><mi>e</mi><mi>a</mi><mi>k</mi><mi>C</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>r</mi></mrow><annotation encoding="application/x-tex">{speakColor} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03148em;">ak</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span></span></span></span></span>{isSelf ? 'disabled' : ''}" style="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>s</mi><mi>S</mi><mi>e</mi><mi>l</mi><mi>f</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>c</mi><mi>u</mi><mi>r</mi><mi>s</mi><mi>o</mi><mi>r</mi><mo>:</mo><mi>d</mi><mi>e</mi><mi>f</mi><mi>a</mi><mi>u</mi><mi>l</mi><mi>t</mi><msup><mo separator="true">;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>c</mi><mi>u</mi><mi>r</mi><mi>s</mi><mi>o</mi><mi>r</mi><mo>:</mo><mi>p</mi><mi>o</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>e</mi><mi>r</mi><msup><mo separator="true">;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{isSelf ? &#x27;cursor:default;&#x27; : &#x27;cursor:pointer;&#x27;}&quot; data-action=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">rsor</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">a</span><span class="mord mathnormal">u</span><span class="mord mathnormal">lt</span><span class="mpunct"><span class="mpunct">;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">rsor</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">o</span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mpunct"><span class="mpunct">;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{isSelf ? '' : 'toggle-speak'}" data-user="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mtext>自由发言</mtext><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi mathvariant="normal">‘</mi><mo separator="true">;</mo><mi>c</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>a</mi><mi>d</mi><mi>m</mi><mi>i</mi><mi>n</mi><mi>C</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>r</mi><mo>=</mo><mi>i</mi><mi>s</mi><mi>A</mi><mi>d</mi><mi>m</mi><mi>i</mi><mi>n</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>g</mi><mi>r</mi><mi>e</mi><mi>e</mi><msup><mi>n</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>r</mi><mi>e</mi><msup><mi>d</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">;</mo><mi>c</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>a</mi><mi>d</mi><mi>m</mi><mi>i</mi><mi>n</mi><mi>A</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>=</mo><mi mathvariant="normal">‘</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>l</mi><mi>i</mi><mi>n</mi><mi>k</mi></mrow><annotation encoding="application/x-tex">{user.user_number}&quot;&gt;自由发言&lt;/span&gt;`;
 
-                    const adminColor = isAdmin ? 'green' : 'red';
+                    const adminColor = isAdmin ? &#x27;green&#x27; : &#x27;red&#x27;;
                     const adminAction =
-                        `<span class="action-link ${adminColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-admin'}" data-user="${user.user_number}">进入后台</span>`;
+                        `&lt;span class=&quot;action-link </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord cjk_fallback">自由发言</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">‘</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">min</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal">A</span><span class="mord mathnormal">d</span><span class="mord mathnormal">min</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">ree</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">re</span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">min</span><span class="mord mathnormal">A</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord">‘</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.03148em;">ink</span></span></span></span>{adminColor} <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>s</mi><mi>S</mi><mi>e</mi><mi>l</mi><mi>f</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>d</mi><mi>i</mi><mi>s</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><msup><mi>d</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{isSelf ? &#x27;disabled&#x27; : &#x27;&#x27;}&quot; style=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal">ab</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>s</mi><mi>S</mi><mi>e</mi><mi>l</mi><mi>f</mi><msup><mo stretchy="false">?</mo><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>t</mi><mi>o</mi><mi>g</mi><mi>g</mi><mi>l</mi><mi>e</mi><mo>−</mo><mi>a</mi><mi>d</mi><mi>m</mi><mi>i</mi><msup><mi>n</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{isSelf ? &#x27;&#x27; : &#x27;toggle-admin&#x27;}&quot; data-user=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">gg</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">mi</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{user.user_number}">进入后台</span>`;
 
                     const specialPrivilege = user.special_privilege || false;
                     const spColor = specialPrivilege ? 'green' : 'red';
                     const spAction =
-                        `<span class="action-link ${spColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-special'}" data-user="${user.user_number}" data-current="${specialPrivilege}">特殊权益</span>`;
+                        `<span class="action-link <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>p</mi><mi>C</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>r</mi></mrow><annotation encoding="application/x-tex">{spColor} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.07153em;">pC</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span></span></span></span></span>{isSelf ? 'disabled' : ''}" style="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>i</mi><mi>s</mi><mi>S</mi><mi>e</mi><mi>l</mi><mi>f</mi><msup><mo stretchy="false">?</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>c</mi><mi>u</mi><mi>r</mi><mi>s</mi><mi>o</mi><mi>r</mi><mo>:</mo><mi>d</mi><mi>e</mi><mi>f</mi><mi>a</mi><mi>u</mi><mi>l</mi><mi>t</mi><msup><mo separator="true">;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mo>:</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mi>c</mi><mi>u</mi><mi>r</mi><mi>s</mi><mi>o</mi><mi>r</mi><mo>:</mo><mi>p</mi><mi>o</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>e</mi><mi>r</mi><msup><mo separator="true">;</mo><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{isSelf ? &#x27;cursor:default;&#x27; : &#x27;cursor:pointer;&#x27;}&quot; data-action=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9463em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose"><span class="mclose">?</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">rsor</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">a</span><span class="mord mathnormal">u</span><span class="mord mathnormal">lt</span><span class="mpunct"><span class="mpunct">;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel">:</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">rsor</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">o</span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mpunct"><span class="mpunct">;</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{isSelf ? '' : 'toggle-special'}" data-user="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>c</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{user.user_number}&quot; data-current=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal">rre</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{specialPrivilege}">特殊权益</span>`;
 
-                    const actionHtml = `${banAction} | ${speakAction} | ${adminAction}`;
+                    const actionHtml = `<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>b</mi><mi>a</mi><mi>n</mi><mi>A</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow><mi mathvariant="normal">∣</mi></mrow><annotation encoding="application/x-tex">{banAction} | </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">ban</span><span class="mord mathnormal">A</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span></span><span class="mord">∣</span></span></span></span>{speakAction} | <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>a</mi><mi>d</mi><mi>m</mi><mi>i</mi><mi>n</mi><mi>A</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow><mi mathvariant="normal">‘</mi><mo separator="true">;</mo><mi>c</mi><mi>o</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>N</mi><mi>a</mi><mi>m</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mo>=</mo><mi mathvariant="normal">‘</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mo>−</mo><mi>d</mi><mi>i</mi><mi>s</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>y</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{adminAction}`;
 
                     const userNameHtml = `
-                                <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};font-weight:500;">${escapeHtmlAttr(user.username || '未命名')}</span>
-                                ${tagHtml}
+                                &lt;span class=&quot;username-display&quot; data-user=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">min</span><span class="mord mathnormal">A</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span></span><span class="mord">‘</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">co</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mord mathnormal">am</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord">‘</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{user.user_number}" data-current="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mi mathvariant="normal">∣</mi><msup><mi mathvariant="normal">∣</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mtext>未命</mtext><msup><mtext>名</mtext><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi><mi>s</mi><mi>t</mi><mi>y</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>o</mi><mi>l</mi><mi>o</mi><mi>r</mi><mo>:</mo></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(user.username || &#x27;未命名&#x27;)}&quot; style=&quot;color:</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mord">∣</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord cjk_fallback">未命</span><span class="mord"><span class="mord cjk_fallback">名</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span><span class="mord">&quot;</span><span class="mord mathnormal">s</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">co</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span></span></span></span>{userNameColor};font-weight:500;"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>n</mi><mi>a</mi><mi>m</mi><mi>e</mi><mi mathvariant="normal">∣</mi><msup><mi mathvariant="normal">∣</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mtext>未命</mtext><msup><mtext>名</mtext><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(user.username || &#x27;未命名&#x27;)}&lt;/span&gt;
+                                </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0019em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal">nam</span><span class="mord mathnormal">e</span><span class="mord">∣</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord cjk_fallback">未命</span><span class="mord"><span class="mord cjk_fallback">名</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{tagHtml}
                             `;
 
                     html += `
                                 <tr>
-                                    <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isSelf ? 'disabled' : ''}></td>
-                                    <td data-label="注册时间">${formatTime(user.created_at)}</td>
-                                    <td data-label="用户编号">${user.user_number}</td>
-                                    <td data-label="用户名">${userNameHtml}</td>
-                                    <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
-                                    <td data-label="用户类型"><span class="role-tag ${roleClass}" data-action="change-role" data-user="${user.user_number}">${roleLabel}</span></td>
-                                    <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml} | ${spAction}</td>
-                                    <td data-label="操作">${actionHtml}</td>
-                                </tr>
+                                    <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>u</mi><mi>s</mi><mi>e</mi><msub><mi>r</mi><mi>n</mi></msub><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi></mrow><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{user.user_number}&quot; </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">u</span><span class="mord mathnormal">se</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">u</span><span class="mord mathnormal">mb</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span></span><span class="mord">&quot;</span></span></span></span>{isSelf ? 'disabled' : ''}></td>
+                                    <td data-label="注册时间"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>f</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>t</mi><mi>T</mi><mi>i</mi><mi>m</mi><mi>e</mi><mo stretchy="false">(</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi mathvariant="normal">.</mi><mi>c</mi><mi>r</mi><mi>e</mi><mi>a</mi><mi>t</mi><mi>e</mi><msub><mi>d</mi><mi>a</mi></msub><mi>t</mi><mo stretchy="false">)</mo></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>t</mi><mi>d</mi><mo>&gt;</mo><mo>&lt;</mo><mi>t</mi><mi>d</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>l</mi><mi>a</mi><mi>b</mi><mi>e</mi><mi>l</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mtext>用户编号</mtext><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{formatTime(user.created_at)}&lt;/td&gt;
+                                    &lt;td data-label=&quot;用户编号&quot;&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.13889em;">tT</span><span class="mord mathnormal">im</span><span class="mord mathnormal">e</span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord">.</span><span class="mord mathnormal">cre</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">t</span><span class="mclose">)</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">t</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">dd</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ab</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord">&quot;</span><span class="mord cjk_fallback">用户编号</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{user.user_number}</td>
+                                    <td data-label="用户名"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>N</mi><mi>a</mi><mi>m</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>t</mi><mi>d</mi><mo>&gt;</mo><mo>&lt;</mo><mi>t</mi><mi>d</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>l</mi><mi>a</mi><mi>b</mi><mi>e</mi><mi>l</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mtext>备注名</mtext><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>e</mi><mi>d</mi><mi>i</mi><mi>t</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><mo>−</mo><mi>f</mi><mi>i</mi><mi>e</mi><mi>l</mi><mi>d</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>f</mi><mi>i</mi><mi>e</mi><mi>l</mi><mi>d</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>r</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>r</mi><mi>k</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{userNameHtml}&lt;/td&gt;
+                                    &lt;td data-label=&quot;备注名&quot;&gt;&lt;span class=&quot;editable-field&quot; data-field=&quot;remark&quot; data-user=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mord mathnormal">am</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">t</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">dd</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ab</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord">&quot;</span><span class="mord cjk_fallback">备注名</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">ab</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">i</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">d</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">i</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">re</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{user.user_number}" data-value="<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>e</mi><mi>s</mi><mi>c</mi><mi>a</mi><mi>p</mi><mi>e</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi><mi>A</mi><mi>t</mi><mi>t</mi><mi>r</mi><mo stretchy="false">(</mo><mi>r</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>r</mi><mi>k</mi><mi>D</mi><mi>i</mi><mi>s</mi><mi>p</mi><mi>l</mi><mi>a</mi><mi>y</mi><mo stretchy="false">)</mo></mrow><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{escapeHtmlAttr(remarkDisplay)}&quot;&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">esc</span><span class="mord mathnormal">a</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.08125em;">eH</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">A</span><span class="mord mathnormal">tt</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mopen">(</span><span class="mord mathnormal">re</span><span class="mord mathnormal">ma</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal">i</span><span class="mord mathnormal">s</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
+                                    <td data-label="用户类型"><span class="role-tag <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>r</mi><mi>o</mi><mi>l</mi><mi>e</mi><mi>C</mi><mi>l</mi><mi>a</mi><mi>s</mi><mi>s</mi></mrow><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mi>c</mi><mi>h</mi><mi>a</mi><mi>n</mi><mi>g</mi><mi>e</mi><mo>−</mo><mi>r</mi><mi>o</mi><mi>l</mi><mi>e</mi><mi mathvariant="normal">&quot;</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>u</mi><mi>s</mi><mi>e</mi><mi>r</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi></mrow><annotation encoding="application/x-tex">{roleClass}&quot; data-action=&quot;change-role&quot; data-user=&quot;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">ro</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">Cl</span><span class="mord mathnormal">a</span><span class="mord mathnormal">ss</span></span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">&quot;</span><span class="mord mathnormal">c</span><span class="mord mathnormal">han</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">ro</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord">&quot;</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.02778em;">ser</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">&quot;</span></span></span></span>{user.user_number}"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>r</mi><mi>o</mi><mi>l</mi><mi>e</mi><mi>L</mi><mi>a</mi><mi>b</mi><mi>e</mi><mi>l</mi></mrow><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>&lt;</mo><mi mathvariant="normal">/</mi><mi>t</mi><mi>d</mi><mo>&gt;</mo><mo>&lt;</mo><mi>t</mi><mi>d</mi><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>−</mo><mi>l</mi><mi>a</mi><mi>b</mi><mi>e</mi><mi>l</mi><mo>=</mo><mi mathvariant="normal">&quot;</mi><mtext>权限</mtext><mi mathvariant="normal">&quot;</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">{roleLabel}&lt;/span&gt;&lt;/td&gt;
+                                    &lt;td data-label=&quot;权限&quot;&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord mathnormal">ro</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal">L</span><span class="mord mathnormal">ab</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">p</span><span class="mord mathnormal">an</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">t</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">dd</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ab</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord">&quot;</span><span class="mord cjk_fallback">权限</span><span class="mord">&quot;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span></span></span></span>{userMgmtHtml} | <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>p</mi><mi>o</mi><mi>s</mi><mi>t</mi><mi>M</mi><mi>g</mi><mi>m</mi><mi>t</mi><mi>H</mi><mi>t</mi><mi>m</mi><mi>l</mi></mrow><mi mathvariant="normal">∣</mi></mrow><annotation encoding="application/x-tex">{postMgmtHtml} | </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="mord mathnormal">os</span><span class="mord mathnormal" style="margin-right:0.10903em;">tM</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">m</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord mathnormal">t</span><span class="mord mathnormal">m</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span></span><span class="mord">∣</span></span></span></span>{spAction}</td>
+                                    <td data-label="操作"><span class="katex-error" title="ParseError: KaTeX parse error: Expected &#x27;EOF&#x27;, got &#x27;}&#x27; at position 104: …               }̲
+              …" style="color:#cc0000">{actionHtml}&lt;/td&gt;
+                                &lt;/tr&gt;
                             `;
                 }
-                html += `</tbody></table>`;
+                html += `&lt;/tbody&gt;&lt;/table&gt;`;
                 userList.innerHTML = html;
 
                 // ---- 事件绑定 ----
 
                 // 用户名双击编辑
-                document.querySelectorAll('.username-display').forEach(el => {
+                document.querySelectorAll(&#x27;.username-display&#x27;).forEach(el =&gt; {
                     let clickCount = 0,
                         timer = null;
-                    el.addEventListener('click', function (e) {
+                    el.addEventListener(&#x27;click&#x27;, function (e) {
                         e.stopPropagation();
                         clickCount++;
                         if (timer) clearTimeout(timer);
-                        timer = setTimeout(() => {
+                        timer = setTimeout(() =&gt; {
                             if (clickCount === 2) enterEditMode(this);
-                            else if (clickCount >= 3) {
+                            else if (clickCount &gt;= 3) {
                                 const uid = parseInt(this.dataset.user);
-                                window.open('/user/' + uid, '_blank');
+                                window.open(&#x27;/user/&#x27; + uid, &#x27;_blank&#x27;);
                             }
                             clickCount = 0;
                             timer = null;
@@ -1108,23 +1120,23 @@
                     async function enterEditMode(el) {
                         const uid = parseInt(el.dataset.user);
                         const current = el.dataset.current || el.textContent.trim();
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
+                        const input = document.createElement(&#x27;input&#x27;);
+                        input.type = &#x27;text&#x27;;
+                        input.className = &#x27;editable-field-input&#x27;;
                         input.value = current;
-                        input.placeholder = '输入新用户名';
-                        el.innerHTML = '';
+                        input.placeholder = &#x27;输入新用户名&#x27;;
+                        el.innerHTML = &#x27;&#x27;;
                         el.appendChild(input);
                         input.focus();
                         input.select();
-                        const save = async () => {
+                        const save = async () =&gt; {
                             const val = input.value.trim();
                             if (val === current) {
                                 el.textContent = current;
                                 el.dataset.current = current; return;
                             }
                             if (!val) {
-                                showError('用户名不能为空');
+                                showError(&#x27;用户名不能为空&#x27;);
                                 el.textContent = current;
                                 el.dataset.current = current; return;
                             }
@@ -1132,18 +1144,18 @@
                                 await updateUserField(uid, { username: val });
                                 await loadUsers();
                             } catch (err) {
-                                showError('更新失败：' + err.message);
+                                showError(&#x27;更新失败：&#x27; + err.message);
                                 el.textContent = current;
                                 el.dataset.current = current;
                             }
                         };
-                        input.addEventListener('blur', save);
-                        input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') {
+                        input.addEventListener(&#x27;blur&#x27;, save);
+                        input.addEventListener(&#x27;keydown&#x27;, function (e) {
+                            if (e.key === &#x27;Enter&#x27;) {
                                 e.preventDefault();
                                 input.blur();
                             }
-                            if (e.key === 'Escape') {
+                            if (e.key === &#x27;Escape&#x27;) {
                                 el.textContent = current;
                                 el.dataset.current = current;
                             }
@@ -1152,44 +1164,44 @@
                 });
 
                 // 备注名双击编辑
-                document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
-                    el.addEventListener('dblclick', function (e) {
+                document.querySelectorAll(&#x27;.editable-field[data-field=&quot;remark&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;dblclick&#x27;, function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
-                        const cur = this.dataset.value || '';
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
+                        const cur = this.dataset.value || &#x27;&#x27;;
+                        const input = document.createElement(&#x27;input&#x27;);
+                        input.type = &#x27;text&#x27;;
+                        input.className = &#x27;editable-field-input&#x27;;
                         input.value = cur;
-                        input.placeholder = '输入备注名';
-                        this.innerHTML = '';
+                        input.placeholder = &#x27;输入备注名&#x27;;
+                        this.innerHTML = &#x27;&#x27;;
                         this.appendChild(input);
                         input.focus();
                         input.select();
-                        const save = async () => {
+                        const save = async () =&gt; {
                             const val = input.value.trim();
                             if (val === cur) {
-                                this.textContent = cur || '-';
+                                this.textContent = cur || &#x27;-&#x27;;
                                 this.dataset.value = cur; return;
                             }
                             try {
                                 await updateUserField(uid, { remark: val });
                                 await loadUsers();
                             } catch (err) {
-                                showError('更新失败：' + err.message);
-                                this.textContent = cur || '-';
+                                showError(&#x27;更新失败：&#x27; + err.message);
+                                this.textContent = cur || &#x27;-&#x27;;
                                 this.dataset.value = cur;
                             }
                         };
-                        input.addEventListener('blur', save);
-                        input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') {
+                        input.addEventListener(&#x27;blur&#x27;, save);
+                        input.addEventListener(&#x27;keydown&#x27;, function (e) {
+                            if (e.key === &#x27;Enter&#x27;) {
                                 e.preventDefault();
                                 input.blur();
                             }
-                            if (e.key === 'Escape') {
+                            if (e.key === &#x27;Escape&#x27;) {
                                 const p = this.parentNode;
-                                p.textContent = cur || '-';
+                                p.textContent = cur || &#x27;-&#x27;;
                                 p.dataset.value = cur;
                             }
                         });
@@ -1197,25 +1209,25 @@
                 });
 
                 // 标签双击编辑（仅修改 user_tag，不联动颜色）
-                document.querySelectorAll('.user-tag-display').forEach(el => {
-                    el.addEventListener('dblclick', function (e) {
+                document.querySelectorAll(&#x27;.user-tag-display&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;dblclick&#x27;, function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const cur = this.dataset.current || this.textContent.trim();
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
+                        const input = document.createElement(&#x27;input&#x27;);
+                        input.type = &#x27;text&#x27;;
+                        input.className = &#x27;editable-field-input&#x27;;
                         input.value = cur;
-                        input.placeholder = '输入用户标签（留空恢复默认）';
-                        this.innerHTML = '';
+                        input.placeholder = &#x27;输入用户标签（留空恢复默认）&#x27;;
+                        this.innerHTML = &#x27;&#x27;;
                         this.appendChild(input);
                         input.focus();
                         input.select();
-                        const save = async () => {
+                        const save = async () =&gt; {
                             const val = input.value.trim();
-                            const user = allUsers.find(u => u.user_number === uid);
+                            const user = allUsers.find(u =&gt; u.user_number === uid);
                             const isAdmin = user ? user.is_admin : false;
-                            let final = val ? val : (isAdmin ? '管理员' : null);
+                            let final = val ? val : (isAdmin ? &#x27;管理员&#x27; : null);
                             if (final === cur) {
                                 this.textContent = cur;
                                 this.dataset.current = cur; return;
@@ -1224,18 +1236,18 @@
                                 await updateUserField(uid, { user_tag: final });
                                 await loadUsers();
                             } catch (err) {
-                                showError('更新失败：' + err.message);
+                                showError(&#x27;更新失败：&#x27; + err.message);
                                 this.textContent = cur;
                                 this.dataset.current = cur;
                             }
                         };
-                        input.addEventListener('blur', save);
-                        input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') {
+                        input.addEventListener(&#x27;blur&#x27;, save);
+                        input.addEventListener(&#x27;keydown&#x27;, function (e) {
+                            if (e.key === &#x27;Enter&#x27;) {
                                 e.preventDefault();
                                 input.blur();
                             }
-                            if (e.key === 'Escape') {
+                            if (e.key === &#x27;Escape&#x27;) {
                                 const p = this.parentNode;
                                 p.textContent = cur;
                                 p.dataset.current = cur;
@@ -1245,67 +1257,67 @@
                 });
 
                 // ---- 权限操作 ----
-                document.querySelectorAll('[data-action="toggle-admin"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                document.querySelectorAll(&#x27;[data-action=&quot;toggle-admin&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;click&#x27;, async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         await toggleAdmin(uid);
                     });
                 });
 
-                document.querySelectorAll('[data-action="toggle-perm"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                document.querySelectorAll(&#x27;[data-action=&quot;toggle-perm&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;click&#x27;, async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const field = this.dataset.field;
-                        const current = this.dataset.current === 'true';
+                        const current = this.dataset.current === &#x27;true&#x27;;
                         await togglePermission(uid, field, current);
                     });
                 });
 
-                document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                document.querySelectorAll(&#x27;[data-action=&quot;toggle-ban&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;click&#x27;, async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         await toggleBan(uid);
                     });
                 });
 
-                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                document.querySelectorAll(&#x27;[data-action=&quot;toggle-speak&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;click&#x27;, async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
-                        const targetUser = allUsers.find(u => u.user_number === uid);
-                        if (!targetUser) { showError('用户不存在'); return; }
+                        const targetUser = allUsers.find(u =&gt; u.user_number === uid);
+                        if (!targetUser) { showError(&#x27;用户不存在&#x27;); return; }
                         const current = targetUser.can_speak !== false;
-                        await togglePermission(uid, 'can_speak', current);
+                        await togglePermission(uid, &#x27;can_speak&#x27;, current);
                     });
                 });
 
-                document.querySelectorAll('[data-action="toggle-special"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                document.querySelectorAll(&#x27;[data-action=&quot;toggle-special&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;click&#x27;, async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
-                        const current = this.dataset.current === 'true';
+                        const current = this.dataset.current === &#x27;true&#x27;;
                         await toggleSpecialPrivilege(uid, current);
                     });
                 });
 
                 // ---- 切换用户类型（change-role）联动颜色 ----
-                document.querySelectorAll('[data-action="change-role"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                document.querySelectorAll(&#x27;[data-action=&quot;change-role&quot;]&#x27;).forEach(el =&gt; {
+                    el.addEventListener(&#x27;click&#x27;, async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const currentRole = this.textContent.trim();
-                        const options = ['普通用户', '管理员'];
-                        const newRole = prompt('选择新角色（输入数字）：\n1. 普通用户\n2. 管理员', '1');
+                        const options = [&#x27;普通用户&#x27;, &#x27;管理员&#x27;];
+                        const newRole = prompt(&#x27;选择新角色（输入数字）：\n1. 普通用户\n2. 管理员&#x27;, &#x27;1&#x27;);
                         if (newRole === null) return;
                         const idx = parseInt(newRole) - 1;
-                        if (isNaN(idx) || idx < 0 || idx > 1) { showError('无效选项'); return; }
+                        if (isNaN(idx) || idx &lt; 0 || idx &gt; 1) { showError(&#x27;无效选项&#x27;); return; }
                         const target = options[idx];
                         if (target === currentRole) return;
 
-                        const actionName = `切换用户角色为 ${target}`;
+                        const actionName = `切换用户角色为 </span>{target}`;
                         const reason = await promptReason(actionName);
                         if (!reason) return;
 
