@@ -2225,22 +2225,19 @@
             }
 
             // ================================================================
-            // ★★★ 核心修改：renderAllBenbenTexts 中 color 逻辑已内联到 renderBenbenList ★★★
+            // ★★★ 核心修改：renderAllBenbenTexts 中颜色逻辑已内联到 renderBenbenList ★★★
             // ================================================================
             function renderAllBenbenTexts() {
                 document.querySelectorAll('.benben-text').forEach(el => {
                     try {
                         const rawEncoded = el.getAttribute('data-raw');
                         const mentionMapStr = el.getAttribute('data-mention-map');
-                        // ★★★ 新增：读取发布者的专属权限和用户名 ★★★
-                        const specialPrivilege = el.getAttribute('data-special-privilege') === 'true';
-                        const username = el.getAttribute('data-username') || '用户';
                         if (!rawEncoded) return;
                         let rawText = rawEncoded;
                         let mentionMap = {};
                         try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
-                        // ★★★ 使用发布者的权限和用户名渲染 ★★★
-                        el.innerHTML = renderContent(rawText, mentionMap, specialPrivilege, username);
+                        el.innerHTML = renderContent(rawText, mentionMap, currentProfile?.special_privilege ||
+                            false, currentProfile?.username || '用户');
                     } catch (e) {
                         console.error('渲染犇犇内容失败:', e);
                         el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
@@ -2272,7 +2269,7 @@
                     }, 50);
                 }
 
-                // 脚注跳转平滑滚动
+                // 在 renderAllBenbenTexts 中添加
                 document.addEventListener('click', function (e) {
                     const link = e.target.closest('.footnote-backref, a[href^="#fn"]');
                     if (link) {
@@ -2369,7 +2366,6 @@
                     loadingSentinel.textContent = '加载中...';
                 }
                 try {
-                    // ★★★ 修改：增加 special_privilege 字段 ★★★
                     let query = supabase.from('benben')
                         .select(`
                 *, 
@@ -2377,8 +2373,7 @@
                     username, 
                     is_admin,
                     username_color,
-                    user_tag,
-                    special_privilege
+                    user_tag
                 )
             `)
                         .eq('is_deleted', false)
@@ -2451,7 +2446,7 @@
             }
 
             // ================================================================
-            // ★★★ 修改 renderBenbenList：添加 data-special-privilege 和 data-username ★★★
+            // ★★★ 修改 renderBenbenList：颜色逻辑调整 ★★★
             // ================================================================
             async function renderBenbenList(data, reset, mentionMap = {}) {
                 if (!benbenList) return;
@@ -2489,10 +2484,6 @@
                         userHtml += labelHtml;
                     }
 
-                    // ★★★ 获取发布者的 special_privilege 和 username（用于签名） ★★★
-                    const specialPrivilege = prof.special_privilege || false;
-                    const ownerUsername = prof.username || '用户';
-
                     const benbenHtml = `
                         <div class="benben-item" data-id="${item.id}">
                             <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E" alt="${username}"></a></div>
@@ -2508,13 +2499,7 @@
                                         ${isOwner ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
                                     </div>
                                 </div>
-                                <!-- ★★★ 新增 data-special-privilege 和 data-username ★★★ -->
-                                <div class="benben-text" 
-                                     data-raw="${escapeHtmlAttr(rawContent)}" 
-                                     data-mention-map='${escapeHtmlAttr(mentionMapJson)}'
-                                     data-special-privilege="${specialPrivilege}"
-                                     data-username="${escapeHtmlAttr(ownerUsername)}">
-                                </div>
+                                <div class="benben-text" data-raw="${escapeHtmlAttr(rawContent)}" data-mention-map='${escapeHtmlAttr(mentionMapJson)}'></div>
                             </div>
                         </div>
                     `;
@@ -2560,6 +2545,11 @@
                 let content = benbenContent?.value.trim();
                 if (!content) { alert('内容不能为空'); return; }
                 if (!currentProfile) { window.location.href = '/auth/login'; return; }
+
+                if (currentProfile.can_speak === false) {
+                    alert('你已被禁言，无法发布犇犇');
+                    return;
+                }
 
                 let finalReplyToId = null;
                 if (currentReplyingId && currentReplyUsername) {
@@ -2665,7 +2655,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege') // 增加 special_privilege
+                    .select('user_number, username, is_admin, special_privilege, can_speak')  // 增加 can_speak
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2723,6 +2713,38 @@
                         if (editor) editor.style.display = 'block';
                         if (nav) nav.style.display = 'flex';
                         if (loadingSentinel) loadingSentinel.style.display = 'block';
+
+                        // 获取 DOM 元素
+                        const editorContainer = document.getElementById('benbenEditor');
+                        const contentTextarea = document.getElementById('benbenContent');
+                        const submitBtn = document.getElementById('benbenSubmit');
+
+                        if (currentProfile && currentProfile.can_speak === false) {
+                            // 禁言状态：禁用输入和按钮，并修改占位符
+                            if (contentTextarea) {
+                                contentTextarea.disabled = true;
+                            }
+                            if (submitBtn) {
+                                submitBtn.disabled = true;
+                                submitBtn.style.opacity = '0.5';
+                                submitBtn.style.cursor = 'not-allowed';
+                            }
+                            // 可选：在编辑器区域显示一条静态提示
+                            if (editorContainer) {
+                                // 可以保留编辑器但显示提示，也可将内容替换为一条信息
+                                // 这里我们保持编辑器可见，但已禁用
+                            }
+                        } else {
+                            // 正常状态
+                            if (contentTextarea) {
+                                contentTextarea.disabled = false;
+                            }
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = '1';
+                                submitBtn.style.cursor = 'pointer';
+                            }
+                        }
 
                         await fetchUnreadCount();
                         startUnreadPolling();
