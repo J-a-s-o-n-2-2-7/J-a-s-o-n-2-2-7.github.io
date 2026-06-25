@@ -121,6 +121,10 @@
                 if (rpcError) throw new Error(`RPC 调用失败: ${rpcError.message}`);
                 if (!user) throw new Error('用户不存在');
 
+                // RPC 未返回 avatar_url，额外查一次头像
+                const { data: avData } = await supabase.from('profiles').select('avatar_url').eq('user_number', parseInt(userNumber)).maybeSingle();
+                const avatarUrl = avData?.avatar_url || '';
+
                 // 直接比较用户 id
                 const isOwner = currentUserId && user.id && currentUserId === user.id;
 
@@ -138,7 +142,7 @@
                 `;
                 } else {
                     html = `
-                    <div class="avatar">${escapeHtml(user.username.charAt(0).toUpperCase())}</div>
+                    <div class="avatar">${avatarUrl ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(user.username)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : escapeHtml(user.username.charAt(0).toUpperCase())}</div>
                     <h1>${escapeHtml(user.username)}</h1>
                     <p class="info">编号 #${user.user_number}</p>
                     <p class="info">注册时间：${new Date(user.created_at).toLocaleDateString()}</p>
