@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理后台 - Jason227 </title>
+    <title>管理后台</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
@@ -403,27 +403,35 @@
             padding: 40px
         }
 
+        /* ===== 颜色选择器：固定六色 ===== */
         .color-picker-wrap {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             margin-left: 4px;
             cursor: pointer;
-        }
-        .color-picker-wrap input[type="color"] {
-            width: 24px;
-            height: 24px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 0;
-            cursor: pointer;
-            background: transparent;
+            padding: 1px 2px;
+            background: #fafafa;
         }
-        .color-picker-wrap input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
-        }
-        .color-picker-wrap input[type="color"]::-webkit-color-swatch {
+        .color-picker-wrap select {
             border: none;
+            background: transparent;
+            font-size: 12px;
+            padding: 2px 4px;
+            cursor: pointer;
+            outline: none;
+            color: #333;
+            max-width: 70px;
+        }
+        .color-picker-wrap .color-swatch {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            flex-shrink: 0;
         }
 
         @media (max-width:800px) {
@@ -499,9 +507,9 @@
             <button id="logoutBtn" class="auth-btn logout">登出</button>
         </div>
     </div>
-    <div class="container">
+    <div class="container" id="mainContainer">
         <div class="card">
-            <div class="card-header">管理后台 · 颜色管理</div>
+            <div class="card-header">管理后台 · 颜色管理 (紫/红/橙/绿/蓝/灰)</div>
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="🔍 搜索用户编号、用户名、备注名、用户类型、权限...">
                 <span class="result-count" id="resultCount">共 0 位用户</span>
@@ -536,11 +544,62 @@
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // ================================================================
+            //  🔐 权限门禁：只有 is_admin = true 或者 user_number = 4 可进入
+            // ================================================================
+            async function checkAccess() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = '/login';
+                        return false;
+                    }
+                    const { data: profile, error } = await supabase
+                        .from('profiles')
+                        .select('is_admin, user_number')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (error || !profile) {
+                        console.error('获取用户信息失败', error);
+                        window.location.href = '/';
+                        return false;
+                    }
+
+                    // 条件：is_admin === true 或 user_number === 4
+                    if (profile.is_admin === true || profile.user_number === 4) {
+                        return true;
+                    } else {
+                        window.location.href = '/';
+                        return false;
+                    }
+                } catch (err) {
+                    console.error('权限检查异常', err);
+                    window.location.href = '/';
+                    return false;
+                }
+            }
+
+            // ================================================================
+            //  🎨 固定六色配置
+            // ================================================================
+            const COLOR_PALETTE = {
+                '紫': '#9b59b6',
+                '红': '#e74c3c',
+                '橙': '#e67e22',
+                '绿': '#2ecc71',
+                '蓝': '#3498db',
+                '灰': '#95a5a6'
+            };
+            const COLOR_NAMES = Object.keys(COLOR_PALETTE);
+            const COLOR_VALUES = Object.values(COLOR_PALETTE);
+
+            // ---------- 全局变量 ----------
             let currentUser = null,
                 currentProfile = null,
                 allUsers = [],
                 filteredUsers = [];
-            const authButtons = document.getElementById('authButtons');
             const userList = document.getElementById('userList');
             const msgDiv = document.getElementById('msgDiv');
             const searchInput = document.getElementById('searchInput');
@@ -558,6 +617,17 @@
             function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
             function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
+
+            // 根据颜色值获取名称
+            function getColorName(hex) {
+                if (!hex) return '灰';
+                const lower = hex.toLowerCase();
+                for (const [name, value] of Object.entries(COLOR_PALETTE)) {
+                    if (value.toLowerCase() === lower) return name;
+                }
+                // 如果不在预设中，默认灰
+                return '灰';
+            }
 
             // ---------- 日志相关 ----------
             async function getCurrentAdminId() {
@@ -645,7 +715,7 @@
                     } else {
                         if (newTag === '管理员') newTag = null;
                     }
-                    const color = newAdmin ? '#9b59b6' : '#333';
+                    const color = newAdmin ? '#9b59b6' : '#95a5a6'; // 管理员紫，普通灰
 
                     await updateUserField(userNumber, {
                         is_admin: newAdmin,
@@ -883,13 +953,13 @@
                         let tag = u.user_tag || '';
                         if (tag === '管理员') tag = null;
                         await supabase.from('profiles')
-                            .update({ is_admin: false, user_tag: tag, username_color: '#333' })
+                            .update({ is_admin: false, user_tag: tag, username_color: '#95a5a6' })
                             .eq('user_number', u.user_number);
                         const target = allUsers.find(t => t.user_number === u.user_number);
                         if (target) {
                             target.is_admin = false;
                             target.user_tag = tag;
-                            target.username_color = '#333';
+                            target.username_color = '#95a5a6';
                         }
                     }
 
@@ -931,19 +1001,21 @@
 
             // ---------- 初始化 ----------
             async function init() {
+                const hasAccess = await checkAccess();
+                if (!hasAccess) return;
+
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (!session) { window.location.href = '/login'; return; }
                     currentUser = session.user;
                     const { data: profile, error: profileError } = await supabase.from('profiles').select(
                         'user_number,username,can_manage_users').eq('id', currentUser.id).single();
-                    if (profileError || !profile || !profile.can_manage_users) { window.location.href = '/'; return; }
+                    if (profileError || !profile) { window.location.href = '/'; return; }
                     currentProfile = profile;
                     const displayName = profile.username || currentUser.email;
                     userDisplay.textContent = displayName;
                     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-                        await supabase.auth
-                            .signOut();
+                        await supabase.auth.signOut();
                         window.location.href = '/';
                     });
                     await loadUsers();
@@ -1003,8 +1075,7 @@
             }
 
             // ================================================================
-            //  7. 渲染用户列表（颜色从 username_color 读取，tag 背景跟随）
-            //     新增：颜色选择器（仅对非自身用户生效）
+            //  7. 渲染用户列表（固定六色选择器）
             // ================================================================
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
@@ -1036,15 +1107,19 @@
                     const roleClass = isAdmin ? 'admin' : 'user';
                     const roleLabel = isAdmin ? '管理员' : '普通用户';
 
-                    // ---- 用户名颜色：优先使用 username_color ----
-                    const userNameColor = user.username_color || (isAdmin ? '#9b59b6' : '#333');
+                    // 当前颜色（如果不在预设中，强制转为灰）
+                    let currentColor = user.username_color || (isAdmin ? '#9b59b6' : '#95a5a6');
+                    // 确保颜色在预设中
+                    const colorName = getColorName(currentColor);
+                    const fixedColor = COLOR_PALETTE[colorName] || '#95a5a6';
 
-                    // ---- 用户标签：背景色跟随用户名颜色 ----
+                    const userNameColor = fixedColor;
+
+                    // ---- 用户标签：背景色跟随 ----
                     let tagHtml = '';
                     if (user.user_tag) {
-                        const tagColor = user.username_color || (isAdmin ? '#9b59b6' : '#333');
                         tagHtml =
-                            `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.user_tag)}" style="background-color:${tagColor};">${escapeHtmlAttr(user.user_tag)}</span>`;
+                            `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.user_tag)}" style="background-color:${userNameColor};">${escapeHtmlAttr(user.user_tag)}</span>`;
                     }
 
                     const remarkDisplay = user.remark || '';
@@ -1085,13 +1160,22 @@
 
                     const actionHtml = `${banAction} | ${speakAction} | ${adminAction}`;
 
-                    // ---- 颜色选择器（仅对非自身用户） ----
+                    // ---- 固定六色选择器（仅对非自身用户） ----
                     let colorPickerHtml = '';
                     if (!isSelf) {
-                        const currentColor = userNameColor;
+                        const currentName = getColorName(userNameColor);
+                        // 构建选项
+                        let optionsHtml = COLOR_NAMES.map(name => {
+                            const val = COLOR_PALETTE[name];
+                            const selected = name === currentName ? 'selected' : '';
+                            return `<option value="${val}" ${selected}>${name}</option>`;
+                        }).join('');
                         colorPickerHtml = `
-                            <span class="color-picker-wrap" title="修改用户名颜色">
-                                <input type="color" value="${currentColor}" data-user="${user.user_number}" class="user-color-picker">
+                            <span class="color-picker-wrap" title="修改用户名颜色 (紫/红/橙/绿/蓝/灰)">
+                                <span class="color-swatch" style="background-color:${userNameColor};"></span>
+                                <select data-user="${user.user_number}" class="user-color-select">
+                                    ${optionsHtml}
+                                </select>
                             </span>
                         `;
                     }
@@ -1118,29 +1202,28 @@
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ---- 事件绑定：颜色选择器 ----
-                document.querySelectorAll('.user-color-picker').forEach(input => {
-                    input.addEventListener('input', async function (e) {
+                // ---- 事件绑定：颜色下拉选择 ----
+                document.querySelectorAll('.user-color-select').forEach(select => {
+                    select.addEventListener('change', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const newColor = this.value;
-                        // 立即更新预览
+                        const newName = getColorName(newColor);
+
+                        // 更新预览
                         const row = this.closest('tr');
+                        const swatch = row.querySelector('.color-swatch');
+                        if (swatch) swatch.style.backgroundColor = newColor;
                         const usernameSpan = row.querySelector('.username-display');
-                        if (usernameSpan) {
-                            usernameSpan.style.color = newColor;
-                        }
+                        if (usernameSpan) usernameSpan.style.color = newColor;
                         const tagSpan = row.querySelector('.user-tag-display');
-                        if (tagSpan) {
-                            tagSpan.style.backgroundColor = newColor;
-                        }
+                        if (tagSpan) tagSpan.style.backgroundColor = newColor;
+
                         // 更新数据库
                         try {
                             await updateUserField(uid, { username_color: newColor });
-                            // 同步更新 allUsers
                             const target = allUsers.find(u => u.user_number === uid);
                             if (target) target.username_color = newColor;
-                            // 可选记录日志（简单记录）
                             const adminId = await getCurrentAdminId();
                             if (adminId) {
                                 await insertJudgementLog(
@@ -1148,16 +1231,20 @@
                                     target ? target.id : uid,
                                     'update_color',
                                     { field: 'username_color', new_value: newColor },
-                                    '通过颜色选择器修改'
+                                    `通过颜色选择器修改为 ${newName}`
                                 );
                             }
-                            showSuccess('颜色已更新');
+                            showSuccess(`颜色已更新为 ${newName}`);
                         } catch (err) {
                             showError('颜色更新失败：' + err.message);
-                            // 回退预览
-                            const oldColor = allUsers.find(u => u.user_number === uid)?.username_color || '#333';
+                            // 回退
+                            const oldColor = allUsers.find(u => u.user_number === uid)?.username_color || '#95a5a6';
                             if (usernameSpan) usernameSpan.style.color = oldColor;
                             if (tagSpan) tagSpan.style.backgroundColor = oldColor;
+                            if (swatch) swatch.style.backgroundColor = oldColor;
+                            // 修正select值
+                            const oldName = getColorName(oldColor);
+                            this.value = oldColor;
                         }
                     });
                 });
@@ -1272,7 +1359,7 @@
                     });
                 });
 
-                // 标签双击编辑（仅修改 user_tag，不联动颜色）
+                // 标签双击编辑
                 document.querySelectorAll('.user-tag-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -1406,7 +1493,7 @@
                             update.is_admin = false;
                             newAdmin = false;
                             if (tag === '管理员') tag = null;
-                            update.username_color = '#333';
+                            update.username_color = '#95a5a6';
                         }
                         update.user_tag = tag;
 
