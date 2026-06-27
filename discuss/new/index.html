@@ -1654,6 +1654,8 @@
                                     </div>
                                 </div>
 
+                                <div class="error-msg" id="contentError">请输入内容</div>
+
                                 <!-- 验证码（模仿登录页） -->
                                 <p class="lfe-caption lcolor--red-3">如果有违规行为将被禁言乃至封号处理。</p>
                                 <div class="captcha-row">
@@ -2240,8 +2242,9 @@
                         isValid = false;
                     } else { contentError.classList.remove('show'); }
 
-                    var userCaptcha = document.getElementById('captchaInput').value.trim();
-                    if (userCaptcha !== captchaCode) {
+                    var userCaptcha = document.getElementById('captchaInput').value.trim().toUpperCase();
+                    var expectedCaptcha = captchaCode.toUpperCase();
+                    if (userCaptcha !== expectedCaptcha) {
                         captchaError.classList.add('show');
                         isValid = false;
                         refreshCaptcha();
