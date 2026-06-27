@@ -644,10 +644,13 @@
                 return hex.toLowerCase() === '#8d6e63';
             }
 
-            // ---------- 日志：棕名强制记录陶片放逐 (作弊惩罚) ----------
-            async function insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason, isBrown) {
-                // 只有棕名才记录陶片
-                if (!isBrown) return;
+            // ---------- 日志：只有棕名记录陶片放逐 (强制原因) ----------
+            async function insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason) {
+                // 强制要求原因
+                if (!reason || reason.trim() === '') {
+                    console.error('陶片放逐必须提供原因');
+                    return;
+                }
                 try {
                     const { error } = await supabase
                         .from('judgement_logs')
@@ -663,29 +666,10 @@
                 } catch (err) { console.error('陶片日志异常:', err); }
             }
 
-            // 普通日志 (非棕名)
+            // 普通日志：非棕名不记录
             async function insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason) {
-                try {
-                    const { error } = await supabase
-                        .from('judgement_logs')
-                        .insert({
-                            admin_id: adminId,
-                            target_user_id: targetUserId,
-                            action_type: actionType,
-                            action_detail: actionDetail,
-                            reason: reason,
-                        });
-                    if (error) console.error('记录普通日志失败:', error);
-                } catch (err) { console.error('普通日志异常:', err); }
-            }
-
-            // 智能日志：根据目标用户当前是否为棕名决定记录方式
-            async function insertSmartLog(adminId, targetUserId, actionType, actionDetail, reason, isBrown) {
-                if (isBrown) {
-                    await insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason, true);
-                } else {
-                    await insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason);
-                }
+                // 非棕名不记录任何日志
+                return;
             }
 
             // 获取当前管理员ID
@@ -696,7 +680,7 @@
                 return null;
             }
 
-            // 强制原因输入 (用于棕名惩罚)
+            // ---- 只有棕名需要输入原因 ----
             async function promptBrownReason() {
                 const { value: reason } = await Swal.fire({
                     title: '⚠️ 棕名惩罚 · 陶片放逐',
@@ -716,22 +700,9 @@
                 return reason;
             }
 
-            // 普通原因输入 (非棕名)
-            async function promptCommonReason(operationName) {
-                const { value: reason } = await Swal.fire({
-                    title: `请输入 ${operationName} 的原因`,
-                    input: 'textarea',
-                    inputPlaceholder: '详细说明操作原因...',
-                    showCancelButton: true,
-                    confirmButtonText: '确认操作',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value || value.trim() === '') {
-                            return '原因不能为空！';
-                        }
-                    }
-                });
-                return reason;
+            // 其他操作不需要输入原因，直接返回空字符串
+            async function promptNoReason() {
+                return '';
             }
 
             // ---------- 通用更新 ----------
@@ -755,7 +726,7 @@
             }
 
             // ================================================================
-            //  核心：颜色变更 (含棕名惩罚原因)
+            //  核心：颜色变更 (棕名自动添加"作弊者"标签，强制原因)
             // ================================================================
             async function changeUserColor(userNumber, newColor) {
                 try {
@@ -766,7 +737,7 @@
                     const isNowBrown = isBrownColor(newColor);
                     const wasBrown = isBrownColor(oldColor);
 
-                    // 如果从非棕变为棕，强制要求输入原因
+                    // 只有从非棕变为棕时，才强制要求输入原因
                     let reason = '';
                     if (isNowBrown && !wasBrown) {
                         reason = await promptBrownReason();
@@ -775,55 +746,50 @@
                             return;
                         }
                     } else {
-                        // 其他情况（包括从棕变非棕），普通原因
-                        const actionName = isNowBrown ? '设为棕名' : '修改颜色';
-                        reason = await promptCommonReason(actionName);
-                        if (!reason) return;
+                        // 其他情况不需要输入原因
+                        reason = '';
                     }
 
-                    // 执行更新
-                    await updateUserField(userNumber, { username_color: newColor });
-
-                    // 记录日志
-                    const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        // 如果当前是棕名，且是从非棕变来的，使用陶片放逐格式
-                        if (isNowBrown && !wasBrown) {
-                            // 陶片放逐专用格式
-                            const detail = {
-                                action: 'brown_penalty',
-                                color: newColor,
-                                reason: reason
-                            };
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                'brown_penalty',
-                                detail,
-                                `因学术不端而棕名惩罚：原因${reason}`,
-                                true
-                            );
-                        } else {
-                            // 普通日志
-                            await insertCommonLog(
-                                adminId,
-                                targetUser.id,
-                                'update_color',
-                                { field: 'username_color', new_value: newColor },
-                                reason
-                            );
+                    // 准备更新数据：如果是棕名，自动添加"作弊者"标签
+                    let updateData = { username_color: newColor };
+                    if (isNowBrown) {
+                        updateData.user_tag = '作弊者';
+                    } else {
+                        // 非棕名：如果当前标签是"作弊者"，则清空
+                        if (targetUser.user_tag === '作弊者') {
+                            updateData.user_tag = null;
                         }
                     }
 
+                    // 执行更新
+                    await updateUserField(userNumber, updateData);
+
+                    // 记录日志：只有棕名才记录陶片 (且必须有原因)
+                    const adminId = await getCurrentAdminId();
+                    if (adminId && isNowBrown && !wasBrown && reason) {
+                        const detail = {
+                            action: 'brown_penalty',
+                            color: newColor,
+                            tag: '作弊者'
+                        };
+                        await insertOstrakonLog(
+                            adminId,
+                            targetUser.id,
+                            'brown_penalty',
+                            detail,
+                            `因学术不端而棕名惩罚：原因${reason}`
+                        );
+                    }
+
                     await loadUsers();
-                    showSuccess(`颜色已更新${isNowBrown ? '，已记录陶片放逐' : ''}`);
+                    showSuccess(`颜色已更新${isNowBrown ? '，已记录陶片放逐，添加"作弊者"标签' : ''}`);
                 } catch (err) {
                     showError('颜色更新失败：' + err.message);
                 }
             }
 
             // ================================================================
-            //  权限操作 (根据目标是否棕名决定日志)
+            //  权限操作 (只有棕名才记录陶片，但不需要输入原因)
             // ================================================================
             async function toggleAdmin(userNumber) {
                 try {
@@ -838,9 +804,6 @@
                     if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
 
                     const newAdmin = !u.is_admin;
-                    const actionName = newAdmin ? '授予管理员权限' : '撤销管理员权限';
-                    const reason = await promptCommonReason(actionName);
-                    if (!reason) return;
 
                     let newTag = u.user_tag || '';
                     if (newAdmin) {
@@ -859,14 +822,15 @@
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                        await insertSmartLog(
-                            adminId,
-                            targetUser.id,
-                            newAdmin ? 'grant_perm' : 'revoke_perm',
-                            { permission: 'is_admin', new_value: newAdmin },
-                            reason,
-                            isBrown
-                        );
+                        if (isBrown) {
+                            await insertOstrakonLog(
+                                adminId,
+                                targetUser.id,
+                                newAdmin ? 'grant_perm' : 'revoke_perm',
+                                { permission: 'is_admin', new_value: newAdmin },
+                                '管理员权限变更' // 自动生成原因
+                            );
+                        }
                     }
                     await loadUsers();
                 } catch (err) {
@@ -886,23 +850,21 @@
                         'is_banned': '进入主站'
                     };
                     const fieldName = fieldMap[field] || field;
-                    const actionName = newValue ? `授予 ${fieldName} 权限` : `撤销 ${fieldName} 权限`;
-                    const reason = await promptCommonReason(actionName);
-                    if (!reason) return;
 
                     await updateUserField(userNumber, { [field]: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
-                        await insertSmartLog(
-                            adminId,
-                            targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm',
-                            { permission: field, new_value: newValue },
-                            reason,
-                            isBrown
-                        );
+                        if (isBrown) {
+                            await insertOstrakonLog(
+                                adminId,
+                                targetUser.id,
+                                newValue ? 'grant_perm' : 'revoke_perm',
+                                { permission: field, new_value: newValue },
+                                `${fieldName}权限变更`
+                            );
+                        }
                     }
                     await loadUsers();
                 } catch (err) {
@@ -916,23 +878,21 @@
                     if (!targetUser) { showError('用户不存在'); return; }
                     const current = targetUser.is_banned || false;
                     const newValue = !current;
-                    const actionName = newValue ? '封禁用户' : '解封用户';
-                    const reason = await promptCommonReason(actionName);
-                    if (!reason) return;
 
                     await updateUserField(userNumber, { is_banned: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
-                        await insertSmartLog(
-                            adminId,
-                            targetUser.id,
-                            newValue ? 'ban' : 'unban',
-                            { permission: 'is_banned', new_value: newValue },
-                            reason,
-                            isBrown
-                        );
+                        if (isBrown) {
+                            await insertOstrakonLog(
+                                adminId,
+                                targetUser.id,
+                                newValue ? 'ban' : 'unban',
+                                { permission: 'is_banned', new_value: newValue },
+                                newValue ? '封禁用户' : '解封用户'
+                            );
+                        }
                     }
                     await loadUsers();
                 } catch (err) {
@@ -945,23 +905,21 @@
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
                     if (!targetUser) { showError('用户不存在'); return; }
                     const newValue = !currentValue;
-                    const actionName = newValue ? '授予特殊权益' : '撤销特殊权益';
-                    const reason = await promptCommonReason(actionName);
-                    if (!reason) return;
 
                     await updateUserField(userNumber, { special_privilege: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
-                        await insertSmartLog(
-                            adminId,
-                            targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm',
-                            { permission: 'special_privilege', new_value: newValue },
-                            reason,
-                            isBrown
-                        );
+                        if (isBrown) {
+                            await insertOstrakonLog(
+                                adminId,
+                                targetUser.id,
+                                newValue ? 'grant_perm' : 'revoke_perm',
+                                { permission: 'special_privilege', new_value: newValue },
+                                newValue ? '授予特殊权益' : '撤销特殊权益'
+                            );
+                        }
                     }
                     await loadUsers();
                 } catch (err) {
@@ -970,13 +928,11 @@
             }
 
             // ================================================================
-            //  批量操作
+            //  批量操作 (只有棕名才记录陶片，自动生成原因)
             // ================================================================
             async function batchAction(actionName, updateObj) {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptCommonReason(actionName);
-                if (!reason) return;
 
                 try {
                     const { data: users, error: fetchErr } = await supabase
@@ -1005,14 +961,15 @@
                         }
                         for (const user of users) {
                             const isBrown = isBrownColor(user.username_color || '#95a5a6');
-                            await insertSmartLog(
-                                adminId,
-                                user.id,
-                                actionType,
-                                { permission: field, new_value: newValue },
-                                reason,
-                                isBrown
-                            );
+                            if (isBrown) {
+                                await insertOstrakonLog(
+                                    adminId,
+                                    user.id,
+                                    actionType,
+                                    { permission: field, new_value: newValue },
+                                    `批量${actionName}`
+                                );
+                            }
                         }
                     }
 
@@ -1161,10 +1118,15 @@
                         brownBadge = `<span class="brown-name-badge">陶片</span>`;
                     }
 
+                    // 显示标签（如果是棕名强制显示作弊者）
+                    let tagDisplay = user.user_tag || '';
+                    if (isBrown && tagDisplay !== '作弊者') {
+                        tagDisplay = '作弊者';
+                    }
                     let tagHtml = '';
-                    if (user.user_tag) {
+                    if (tagDisplay) {
                         tagHtml =
-                            `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.user_tag)}" style="background-color:${userNameColor};">${escapeHtmlAttr(user.user_tag)}</span>`;
+                            `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(tagDisplay)}" style="background-color:${userNameColor};">${escapeHtmlAttr(tagDisplay)}</span>`;
                     }
 
                     const remarkDisplay = user.remark || '';
@@ -1263,7 +1225,13 @@
                         const usernameSpan = row.querySelector('.username-display');
                         if (usernameSpan) usernameSpan.style.color = newColor;
                         const tagSpan = row.querySelector('.user-tag-display');
-                        if (tagSpan) tagSpan.style.backgroundColor = newColor;
+                        if (tagSpan) {
+                            tagSpan.style.backgroundColor = newColor;
+                            if (isBrownNow) {
+                                tagSpan.textContent = '作弊者';
+                                tagSpan.dataset.current = '作弊者';
+                            }
+                        }
 
                         // 更新棕名标记
                         let badgeSpan = row.querySelector('.brown-name-badge');
@@ -1275,16 +1243,20 @@
                                 newBadge.textContent = '陶片';
                                 container.appendChild(newBadge);
                             }
+                            if (tagSpan) {
+                                tagSpan.textContent = '作弊者';
+                                tagSpan.dataset.current = '作弊者';
+                            }
                         } else {
                             if (badgeSpan) badgeSpan.remove();
+                            if (tagSpan && tagSpan.textContent === '作弊者') {
+                                tagSpan.textContent = '';
+                                tagSpan.dataset.current = '';
+                            }
                         }
 
-                        // 调用核心颜色变更函数 (会处理原因和日志)
+                        // 调用核心颜色变更函数
                         await changeUserColor(uid, newColor);
-
-                        // 如果changeUserColor内部失败，会回滚，但为了UI一致性，在成功时不需要额外操作
-                        // 但因为changeUserColor会重新加载列表，所以上面的UI更新会被覆盖
-                        // 但为了用户体验，我们让changeUserColor内部处理
                     });
                 });
 
@@ -1398,11 +1370,18 @@
                     });
                 });
 
-                // 标签双击编辑
+                // 标签双击编辑 (棕名锁定为"作弊者")
                 document.querySelectorAll('.user-tag-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
+                        const user = allUsers.find(u => u.user_number === uid);
+                        if (!user) return;
+                        const isBrown = isBrownColor(user.username_color || '#95a5a6');
+                        if (isBrown) {
+                            showError('棕名用户标签已锁定为"作弊者"，不可修改');
+                            return;
+                        }
                         const cur = this.dataset.current || this.textContent.trim();
                         const input = document.createElement('input');
                         input.type = 'text';
@@ -1507,10 +1486,6 @@
                         const target = options[idx];
                         if (target === currentRole) return;
 
-                        const actionName = `切换用户角色为 ${target}`;
-                        const reason = await promptCommonReason(actionName);
-                        if (!reason) return;
-
                         const targetUser = allUsers.find(u => u.user_number === uid);
                         if (!targetUser) { showError('用户不存在'); return; }
 
@@ -1541,14 +1516,15 @@
                             const adminId = await getCurrentAdminId();
                             if (adminId) {
                                 const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                                await insertSmartLog(
-                                    adminId,
-                                    targetUser.id,
-                                    newAdmin ? 'grant_perm' : 'revoke_perm',
-                                    { permission: 'is_admin', new_value: newAdmin },
-                                    reason,
-                                    isBrown
-                                );
+                                if (isBrown) {
+                                    await insertOstrakonLog(
+                                        adminId,
+                                        targetUser.id,
+                                        newAdmin ? 'grant_perm' : 'revoke_perm',
+                                        { permission: 'is_admin', new_value: newAdmin },
+                                        `角色变更为${target}`
+                                    );
+                                }
                             }
                             await loadUsers();
                         } catch (err) { showError('操作失败：' + err.message); }
@@ -1591,8 +1567,6 @@
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptCommonReason('批量授予进入后台权限');
-                if (!reason) return;
                 try {
                     const { data: users, error: fetchErr } = await supabase
                         .from('profiles')
@@ -1616,14 +1590,15 @@
                     if (adminId) {
                         for (const u of users) {
                             const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                            await insertSmartLog(
-                                adminId,
-                                u.id,
-                                'grant_perm',
-                                { permission: 'is_admin', new_value: true },
-                                reason,
-                                isBrown
-                            );
+                            if (isBrown) {
+                                await insertOstrakonLog(
+                                    adminId,
+                                    u.id,
+                                    'grant_perm',
+                                    { permission: 'is_admin', new_value: true },
+                                    '批量授予进入后台权限'
+                                );
+                            }
                         }
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
@@ -1633,8 +1608,6 @@
             document.getElementById('batchRevokeAdmin').addEventListener('click', async () => {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptCommonReason('批量撤销进入后台权限');
-                if (!reason) return;
                 try {
                     const { data: users, error: fetchErr } = await supabase
                         .from('profiles')
@@ -1658,14 +1631,15 @@
                     if (adminId) {
                         for (const u of users) {
                             const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                            await insertSmartLog(
-                                adminId,
-                                u.id,
-                                'revoke_perm',
-                                { permission: 'is_admin', new_value: false },
-                                reason,
-                                isBrown
-                            );
+                            if (isBrown) {
+                                await insertOstrakonLog(
+                                    adminId,
+                                    u.id,
+                                    'revoke_perm',
+                                    { permission: 'is_admin', new_value: false },
+                                    '批量撤销进入后台权限'
+                                );
+                            }
                         }
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
