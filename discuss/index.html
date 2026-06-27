@@ -371,13 +371,6 @@
         }
 
         /* ===== 卡片样式（帖子列表） ===== */
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 20px 24px;
-            margin-bottom: 24px;
-        }
 
         .discuss-header {
             display: flex;
@@ -1292,24 +1285,19 @@
             height: 14px;
         }
 
-        /* 帖子卡片容器 */
+        /* 帖子卡片容器 —— 独立成块，像犇犇一样分隔 */
         .post-card {
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f2f5;
+            padding: 16px 20px;
+            margin-bottom: 16px;          /* 卡片之间的垂直间距 */
+            background: #ffffff;          /* 白色背景 */
+            border-radius: 16px;          /* 圆角 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             cursor: default;
-            transition: background 0.1s;
+            transition: box-shadow 0.2s, transform 0.1s;
         }
 
         .post-card:last-child {
-            border-bottom: none;
-        }
-
-        .post-card:hover {
-            background: #fafbfc;
-            margin: 0 -8px;
-            padding-left: 8px;
-            padding-right: 8px;
-            border-radius: 6px;
+            margin-bottom: 0;             /* 最后一条不额外留底边距 */
         }
 
         /* 置顶标签 */
@@ -1496,18 +1484,10 @@
                 <!-- 主内容区 -->
                 <div class="main">
                     <div id="listView">
-                        <div class="card">
-                            <div class="discuss-header">
-                                <h2>
-                                    <i class="fas fa-comments"></i> 讨论区
-                                    <span class="sub" id="forumLabel">全部</span>
-                                </h2>
-                                <!-- 右上角发帖按钮已移除，移到左侧边栏 -->
-                            </div>
-                            <div id="postListContainer">
-                                <div id="postList"></div>
-                                <div class="pagination" id="pagination"></div>
-                            </div>
+                        <!-- 直接显示帖子列表，没有任何标题 -->
+                        <div id="postListContainer">
+                            <div id="postList"></div>
+                            <div class="pagination" id="pagination"></div>
                         </div>
                     </div>
 
@@ -1578,7 +1558,7 @@
             let currentUser = null;          // { id, username, email, can_manage_posts }
             let currentForum = 'all';
             let currentPage = 1;
-            const PAGE_SIZE = 6;
+            const PAGE_SIZE = 30;
             let viewingPostId = null;
 
             const forumMap = {
@@ -1633,14 +1613,28 @@
                 return 'all';
             }
 
-            function updateURL(forum) {
+            function updateURL(forum, page) {
                 const url = new URL(window.location);
                 if (forum === 'all') {
                     url.searchParams.delete('forum');
                 } else {
                     url.searchParams.set('forum', forum);
                 }
-                window.history.replaceState({ forum }, '', url);
+                if (page && page > 1) {
+                    url.searchParams.set('page', page);
+                } else {
+                    url.searchParams.delete('page');
+                }
+                window.history.replaceState({ forum, page }, '', url);
+            }
+
+            function getPageFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                const page = parseInt(params.get('page'), 10);
+                if (page && page >= 1) {
+                    return page;
+                }
+                return 1;
             }
 
             // ============================================================
@@ -1838,7 +1832,10 @@
                 document.querySelectorAll('#forumSelector .section-item').forEach(el => {
                     el.classList.toggle('active', el.dataset.forum === forum);
                 });
-                document.getElementById('forumLabel').textContent = forumMap[forum] || '全部';
+                const label = document.getElementById('forumLabel');
+                if (label) {
+                    label.textContent = forumMap[forum] || '全部';
+                }
             }
 
             function updatePostButtonVisibility() {
@@ -1873,7 +1870,7 @@
                 const pagination = document.getElementById('pagination');
 
                 updateForumSelector(currentForum);
-                updateURL(currentForum);
+                updateURL(currentForum, currentPage);
                 updatePostButtonVisibility();
 
                 const newPostBtn = document.getElementById('newPostBtn');
@@ -2015,6 +2012,7 @@
                             if (!isNaN(page) && page >= 1 && page <= totalPages) {
                                 currentPage = page;
                                 renderPostList();
+                                // 滚动到列表顶部
                                 document.getElementById('postListContainer').scrollIntoView({
                                     behavior: 'smooth',
                                     block: 'start'
@@ -2022,6 +2020,8 @@
                             }
                         });
                     });
+
+                    updateURL(currentForum, currentPage);
 
                 } catch (err) {
                     console.error('加载帖子列表失败:', err);
@@ -2034,8 +2034,13 @@
                 try {
                     const post = await fetchPostDetail(postId);
                     if (!post) {
+                        // 帖子不存在，返回列表
+                        backToList();
                         return;
                     }
+
+                    // 更新 URL
+                    history.pushState({ postId: post.id }, '', `/discuss/${post.id}`);
 
                     viewingPostId = postId;
                     document.getElementById('listView').style.display = 'none';
@@ -2205,6 +2210,9 @@
             // ============================================================
             async function init() {
                 // 检查表是否存在
+                // 隐藏加载状态（如果存在）
+                const loadingState = document.getElementById('loadingState');
+                if (loadingState) loadingState.style.display = 'none';
                 const tablesOk = await checkTablesExist();
                 if (!tablesOk) {
                     document.getElementById('postList').innerHTML =
@@ -2214,14 +2222,33 @@
                     return;
                 }
 
+                await loadCurrentUser();
+                updateNav();
+
+                // 检查路径是否匹配 /discuss/数字
+                const path = window.location.pathname;
+                const match = path.match(/^\/discuss\/(\d+)$/);
+                if (match) {
+                    const postId = parseInt(match[1], 10);
+                    await loadCurrentUser();
+                    updateNav(); // ← 添加这个
+                    await showDetail(postId);
+                    return;
+                }
+
                 // 从 URL 读取板块参数
                 const forumFromURL = getForumFromURL();
                 if (forumFromURL !== 'all') {
                     currentForum = forumFromURL;
                 }
 
-                await loadCurrentUser();
-                updateNav();
+                // 从 URL 读取页码参数
+                const pageFromURL = getPageFromURL();
+                if (pageFromURL > 1) {
+                    currentPage = pageFromURL;
+                }
+
+                // 渲染列表
                 renderPostList();
 
                 // ===== 板块切换事件 =====
