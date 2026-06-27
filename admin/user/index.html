@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理后台</title>
+    <title>管理后台 · 棕名与陶片放逐</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
@@ -403,7 +403,7 @@
             padding: 40px
         }
 
-        /* ===== 颜色选择器：固定六色 ===== */
+        /* ===== 颜色选择器：固定七色 (含棕) ===== */
         .color-picker-wrap {
             display: inline-flex;
             align-items: center;
@@ -432,6 +432,18 @@
             border-radius: 3px;
             border: 1px solid #ccc;
             flex-shrink: 0;
+        }
+
+        /* 棕名特殊标记 */
+        .brown-name-badge {
+            display: inline-block;
+            background: #8d6e63;
+            color: #fff;
+            font-size: 10px;
+            padding: 0 6px;
+            border-radius: 10px;
+            margin-left: 4px;
+            font-weight: 600;
         }
 
         @media (max-width:800px) {
@@ -494,7 +506,7 @@
 </head>
 <body>
     <div class="topbar">
-        <div class="logo">✨ Jason227</div>
+        <div class="logo">✨ Jason227 · 陶片</div>
         <div class="auth-buttons" id="authButtons">
             <a href="/user/notification" class="bell-icon" id="bellLink">
                 <svg viewBox="0 0 448 512" width="20" height="20">
@@ -509,7 +521,7 @@
     </div>
     <div class="container" id="mainContainer">
         <div class="card">
-            <div class="card-header">管理后台 · 颜色管理 (紫/红/橙/绿/蓝/灰)</div>
+            <div class="card-header">管理后台 · 棕名与陶片放逐</div>
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="🔍 搜索用户编号、用户名、备注名、用户类型、权限...">
                 <span class="result-count" id="resultCount">共 0 位用户</span>
@@ -567,7 +579,6 @@
                         return false;
                     }
 
-                    // 条件：is_admin === true 或 user_number === 4
                     if (profile.is_admin === true || profile.user_number === 4) {
                         return true;
                     } else {
@@ -582,7 +593,7 @@
             }
 
             // ================================================================
-            //  🎨 固定六色配置
+            //  🎨 固定七色配置 (含棕色 #8d6e63)
             // ================================================================
             const COLOR_PALETTE = {
                 '紫': '#9b59b6',
@@ -590,7 +601,8 @@
                 '橙': '#e67e22',
                 '绿': '#2ecc71',
                 '蓝': '#3498db',
-                '灰': '#95a5a6'
+                '灰': '#95a5a6',
+                '棕': '#8d6e63'
             };
             const COLOR_NAMES = Object.keys(COLOR_PALETTE);
             const COLOR_VALUES = Object.values(COLOR_PALETTE);
@@ -618,26 +630,24 @@
 
             function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
-            // 根据颜色值获取名称
             function getColorName(hex) {
                 if (!hex) return '灰';
                 const lower = hex.toLowerCase();
                 for (const [name, value] of Object.entries(COLOR_PALETTE)) {
                     if (value.toLowerCase() === lower) return name;
                 }
-                // 如果不在预设中，默认灰
                 return '灰';
             }
 
-            // ---------- 日志相关 ----------
-            async function getCurrentAdminId() {
-                if (currentUser) return currentUser.id;
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) return user.id;
-                return null;
+            function isBrownColor(hex) {
+                if (!hex) return false;
+                return hex.toLowerCase() === '#8d6e63';
             }
 
-            async function insertJudgementLog(adminId, targetUserId, actionType, actionDetail, reason) {
+            // ---------- 日志：棕名强制记录陶片放逐 (作弊惩罚) ----------
+            async function insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason, isBrown) {
+                // 只有棕名才记录陶片
+                if (!isBrown) return;
                 try {
                     const { error } = await supabase
                         .from('judgement_logs')
@@ -648,11 +658,66 @@
                             action_detail: actionDetail,
                             reason: reason,
                         });
-                    if (error) console.error('记录日志失败:', error);
-                } catch (err) { console.error('记录日志异常:', err); }
+                    if (error) console.error('记录陶片日志失败:', error);
+                    else console.log('陶片放逐记录成功');
+                } catch (err) { console.error('陶片日志异常:', err); }
             }
 
-            async function promptReason(operationName) {
+            // 普通日志 (非棕名)
+            async function insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason) {
+                try {
+                    const { error } = await supabase
+                        .from('judgement_logs')
+                        .insert({
+                            admin_id: adminId,
+                            target_user_id: targetUserId,
+                            action_type: actionType,
+                            action_detail: actionDetail,
+                            reason: reason,
+                        });
+                    if (error) console.error('记录普通日志失败:', error);
+                } catch (err) { console.error('普通日志异常:', err); }
+            }
+
+            // 智能日志：根据目标用户当前是否为棕名决定记录方式
+            async function insertSmartLog(adminId, targetUserId, actionType, actionDetail, reason, isBrown) {
+                if (isBrown) {
+                    await insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason, true);
+                } else {
+                    await insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason);
+                }
+            }
+
+            // 获取当前管理员ID
+            async function getCurrentAdminId() {
+                if (currentUser) return currentUser.id;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) return user.id;
+                return null;
+            }
+
+            // 强制原因输入 (用于棕名惩罚)
+            async function promptBrownReason() {
+                const { value: reason } = await Swal.fire({
+                    title: '⚠️ 棕名惩罚 · 陶片放逐',
+                    html: '请输入 <strong>作弊惩罚</strong> 的详细原因：<br><small style="color:#8d6e63;">示例：因学术不端而棕名惩罚：原因………………</small>',
+                    input: 'textarea',
+                    inputPlaceholder: '请详细说明惩罚原因 (必填)',
+                    showCancelButton: true,
+                    confirmButtonText: '确认棕名惩罚',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return '原因不能为空！';
+                        }
+                        return null;
+                    }
+                });
+                return reason;
+            }
+
+            // 普通原因输入 (非棕名)
+            async function promptCommonReason(operationName) {
                 const { value: reason } = await Swal.fire({
                     title: `请输入 ${operationName} 的原因`,
                     input: 'textarea',
@@ -690,7 +755,75 @@
             }
 
             // ================================================================
-            //  1. 单个切换管理员（联动 user_tag + username_color）
+            //  核心：颜色变更 (含棕名惩罚原因)
+            // ================================================================
+            async function changeUserColor(userNumber, newColor) {
+                try {
+                    const targetUser = allUsers.find(u => u.user_number === userNumber);
+                    if (!targetUser) { showError('用户不存在'); return; }
+
+                    const oldColor = targetUser.username_color || '#95a5a6';
+                    const isNowBrown = isBrownColor(newColor);
+                    const wasBrown = isBrownColor(oldColor);
+
+                    // 如果从非棕变为棕，强制要求输入原因
+                    let reason = '';
+                    if (isNowBrown && !wasBrown) {
+                        reason = await promptBrownReason();
+                        if (!reason) {
+                            showError('棕名惩罚已取消');
+                            return;
+                        }
+                    } else {
+                        // 其他情况（包括从棕变非棕），普通原因
+                        const actionName = isNowBrown ? '设为棕名' : '修改颜色';
+                        reason = await promptCommonReason(actionName);
+                        if (!reason) return;
+                    }
+
+                    // 执行更新
+                    await updateUserField(userNumber, { username_color: newColor });
+
+                    // 记录日志
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        // 如果当前是棕名，且是从非棕变来的，使用陶片放逐格式
+                        if (isNowBrown && !wasBrown) {
+                            // 陶片放逐专用格式
+                            const detail = {
+                                action: 'brown_penalty',
+                                color: newColor,
+                                reason: reason
+                            };
+                            await insertOstrakonLog(
+                                adminId,
+                                targetUser.id,
+                                'brown_penalty',
+                                detail,
+                                `因学术不端而棕名惩罚：原因${reason}`,
+                                true
+                            );
+                        } else {
+                            // 普通日志
+                            await insertCommonLog(
+                                adminId,
+                                targetUser.id,
+                                'update_color',
+                                { field: 'username_color', new_value: newColor },
+                                reason
+                            );
+                        }
+                    }
+
+                    await loadUsers();
+                    showSuccess(`颜色已更新${isNowBrown ? '，已记录陶片放逐' : ''}`);
+                } catch (err) {
+                    showError('颜色更新失败：' + err.message);
+                }
+            }
+
+            // ================================================================
+            //  权限操作 (根据目标是否棕名决定日志)
             // ================================================================
             async function toggleAdmin(userNumber) {
                 try {
@@ -699,14 +832,14 @@
 
                     const { data: u, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('is_admin, user_tag')
+                        .select('is_admin, user_tag, username_color')
                         .eq('user_number', userNumber)
                         .single();
                     if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
 
                     const newAdmin = !u.is_admin;
                     const actionName = newAdmin ? '授予管理员权限' : '撤销管理员权限';
-                    const reason = await promptReason(actionName);
+                    const reason = await promptCommonReason(actionName);
                     if (!reason) return;
 
                     let newTag = u.user_tag || '';
@@ -715,7 +848,7 @@
                     } else {
                         if (newTag === '管理员') newTag = null;
                     }
-                    const color = newAdmin ? '#9b59b6' : '#95a5a6'; // 管理员紫，普通灰
+                    const color = newAdmin ? '#9b59b6' : '#95a5a6';
 
                     await updateUserField(userNumber, {
                         is_admin: newAdmin,
@@ -725,11 +858,14 @@
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        await insertJudgementLog(
+                        const isBrown = isBrownColor(u.username_color || '#95a5a6');
+                        await insertSmartLog(
                             adminId,
                             targetUser.id,
-                            newAdmin ? 'grant_perm' : 'revoke_perm', { permission: 'is_admin', new_value: newAdmin },
-                            reason
+                            newAdmin ? 'grant_perm' : 'revoke_perm',
+                            { permission: 'is_admin', new_value: newAdmin },
+                            reason,
+                            isBrown
                         );
                     }
                     await loadUsers();
@@ -738,9 +874,6 @@
                 }
             }
 
-            // ================================================================
-            //  2. 切换其他权限（不涉及颜色）
-            // ================================================================
             async function togglePermission(userNumber, field, currentValue) {
                 try {
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
@@ -754,18 +887,21 @@
                     };
                     const fieldName = fieldMap[field] || field;
                     const actionName = newValue ? `授予 ${fieldName} 权限` : `撤销 ${fieldName} 权限`;
-                    const reason = await promptReason(actionName);
+                    const reason = await promptCommonReason(actionName);
                     if (!reason) return;
 
                     await updateUserField(userNumber, { [field]: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        await insertJudgementLog(
+                        const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
+                        await insertSmartLog(
                             adminId,
                             targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm', { permission: field, new_value: newValue },
-                            reason
+                            newValue ? 'grant_perm' : 'revoke_perm',
+                            { permission: field, new_value: newValue },
+                            reason,
+                            isBrown
                         );
                     }
                     await loadUsers();
@@ -774,9 +910,6 @@
                 }
             }
 
-            // ================================================================
-            //  3. 切换封禁
-            // ================================================================
             async function toggleBan(userNumber) {
                 try {
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
@@ -784,18 +917,21 @@
                     const current = targetUser.is_banned || false;
                     const newValue = !current;
                     const actionName = newValue ? '封禁用户' : '解封用户';
-                    const reason = await promptReason(actionName);
+                    const reason = await promptCommonReason(actionName);
                     if (!reason) return;
 
                     await updateUserField(userNumber, { is_banned: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        await insertJudgementLog(
+                        const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
+                        await insertSmartLog(
                             adminId,
                             targetUser.id,
-                            newValue ? 'ban' : 'unban', { permission: 'is_banned', new_value: newValue },
-                            reason
+                            newValue ? 'ban' : 'unban',
+                            { permission: 'is_banned', new_value: newValue },
+                            reason,
+                            isBrown
                         );
                     }
                     await loadUsers();
@@ -804,30 +940,27 @@
                 }
             }
 
-            // ================================================================
-            //  4. 切换特殊权益
-            // ================================================================
             async function toggleSpecialPrivilege(userNumber, currentValue) {
                 try {
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
                     if (!targetUser) { showError('用户不存在'); return; }
                     const newValue = !currentValue;
                     const actionName = newValue ? '授予特殊权益' : '撤销特殊权益';
-                    const reason = await promptReason(actionName);
+                    const reason = await promptCommonReason(actionName);
                     if (!reason) return;
 
                     await updateUserField(userNumber, { special_privilege: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        await insertJudgementLog(
+                        const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
+                        await insertSmartLog(
                             adminId,
                             targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm', {
-                                permission: 'special_privilege',
-                            new_value: newValue
-                        },
-                            reason
+                            newValue ? 'grant_perm' : 'revoke_perm',
+                            { permission: 'special_privilege', new_value: newValue },
+                            reason,
+                            isBrown
                         );
                     }
                     await loadUsers();
@@ -837,18 +970,18 @@
             }
 
             // ================================================================
-            //  5. 批量操作（通用，不涉及管理员颜色）
+            //  批量操作
             // ================================================================
             async function batchAction(actionName, updateObj) {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptReason(actionName);
+                const reason = await promptCommonReason(actionName);
                 if (!reason) return;
 
                 try {
                     const { data: users, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('user_number, id')
+                        .select('user_number, id, username_color')
                         .in('user_number', ids);
                     if (fetchErr) throw fetchErr;
 
@@ -871,11 +1004,14 @@
                             actionType = newValue ? 'grant_perm' : 'revoke_perm';
                         }
                         for (const user of users) {
-                            await insertJudgementLog(
+                            const isBrown = isBrownColor(user.username_color || '#95a5a6');
+                            await insertSmartLog(
                                 adminId,
                                 user.id,
-                                actionType, { permission: field, new_value: newValue },
-                                reason
+                                actionType,
+                                { permission: field, new_value: newValue },
+                                reason,
+                                isBrown
                             );
                         }
                     }
@@ -884,101 +1020,6 @@
                     await loadUsers();
                 } catch (err) {
                     showError(`批量${actionName}失败：` + err.message);
-                }
-            }
-
-            // ================================================================
-            //  6. 批量授予/撤销进入后台（联动 user_tag + username_color）
-            // ================================================================
-            async function batchGrantAdmin() {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptReason('批量授予进入后台权限');
-                if (!reason) return;
-
-                try {
-                    const { data: users, error: fetchErr } = await supabase
-                        .from('profiles')
-                        .select('user_number, id, user_tag')
-                        .in('user_number', ids);
-                    if (fetchErr) throw fetchErr;
-
-                    for (const u of users) {
-                        let tag = u.user_tag || '';
-                        if (!tag) tag = '管理员';
-                        await supabase.from('profiles')
-                            .update({ is_admin: true, user_tag: tag, username_color: '#9b59b6' })
-                            .eq('user_number', u.user_number);
-                        const target = allUsers.find(t => t.user_number === u.user_number);
-                        if (target) {
-                            target.is_admin = true;
-                            target.user_tag = tag;
-                            target.username_color = '#9b59b6';
-                        }
-                    }
-
-                    const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        for (const u of users) {
-                            await insertJudgementLog(
-                                adminId,
-                                u.id,
-                                'grant_perm', { permission: 'is_admin', new_value: true },
-                                reason
-                            );
-                        }
-                    }
-
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
-                    await loadUsers();
-                } catch (err) {
-                    showError('批量授予进入后台失败：' + err.message);
-                }
-            }
-
-            async function batchRevokeAdmin() {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptReason('批量撤销进入后台权限');
-                if (!reason) return;
-
-                try {
-                    const { data: users, error: fetchErr } = await supabase
-                        .from('profiles')
-                        .select('user_number, id, user_tag')
-                        .in('user_number', ids);
-                    if (fetchErr) throw fetchErr;
-
-                    for (const u of users) {
-                        let tag = u.user_tag || '';
-                        if (tag === '管理员') tag = null;
-                        await supabase.from('profiles')
-                            .update({ is_admin: false, user_tag: tag, username_color: '#95a5a6' })
-                            .eq('user_number', u.user_number);
-                        const target = allUsers.find(t => t.user_number === u.user_number);
-                        if (target) {
-                            target.is_admin = false;
-                            target.user_tag = tag;
-                            target.username_color = '#95a5a6';
-                        }
-                    }
-
-                    const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        for (const u of users) {
-                            await insertJudgementLog(
-                                adminId,
-                                u.id,
-                                'revoke_perm', { permission: 'is_admin', new_value: false },
-                                reason
-                            );
-                        }
-                    }
-
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
-                    await loadUsers();
-                } catch (err) {
-                    showError('批量撤销进入后台失败：' + err.message);
                 }
             }
 
@@ -1075,7 +1116,7 @@
             }
 
             // ================================================================
-            //  7. 渲染用户列表（固定六色选择器）
+            //  渲染用户列表
             // ================================================================
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
@@ -1107,15 +1148,19 @@
                     const roleClass = isAdmin ? 'admin' : 'user';
                     const roleLabel = isAdmin ? '管理员' : '普通用户';
 
-                    // 当前颜色（如果不在预设中，强制转为灰）
                     let currentColor = user.username_color || (isAdmin ? '#9b59b6' : '#95a5a6');
-                    // 确保颜色在预设中
                     const colorName = getColorName(currentColor);
                     const fixedColor = COLOR_PALETTE[colorName] || '#95a5a6';
 
                     const userNameColor = fixedColor;
+                    const isBrown = isBrownColor(userNameColor);
 
-                    // ---- 用户标签：背景色跟随 ----
+                    // 棕名标记
+                    let brownBadge = '';
+                    if (isBrown) {
+                        brownBadge = `<span class="brown-name-badge">陶片</span>`;
+                    }
+
                     let tagHtml = '';
                     if (user.user_tag) {
                         tagHtml =
@@ -1160,18 +1205,17 @@
 
                     const actionHtml = `${banAction} | ${speakAction} | ${adminAction}`;
 
-                    // ---- 固定六色选择器（仅对非自身用户） ----
+                    // ---- 七色选择器 ----
                     let colorPickerHtml = '';
                     if (!isSelf) {
                         const currentName = getColorName(userNameColor);
-                        // 构建选项
                         let optionsHtml = COLOR_NAMES.map(name => {
                             const val = COLOR_PALETTE[name];
                             const selected = name === currentName ? 'selected' : '';
                             return `<option value="${val}" ${selected}>${name}</option>`;
                         }).join('');
                         colorPickerHtml = `
-                            <span class="color-picker-wrap" title="修改用户名颜色 (紫/红/橙/绿/蓝/灰)">
+                            <span class="color-picker-wrap" title="修改用户名颜色 (紫/红/橙/绿/蓝/灰/棕)">
                                 <span class="color-swatch" style="background-color:${userNameColor};"></span>
                                 <select data-user="${user.user_number}" class="user-color-select">
                                     ${optionsHtml}
@@ -1183,6 +1227,7 @@
                     const userNameHtml = `
                                 <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};font-weight:500;">${escapeHtmlAttr(user.username || '未命名')}</span>
                                 ${tagHtml}
+                                ${brownBadge}
                                 ${colorPickerHtml}
                             `;
 
@@ -1202,15 +1247,16 @@
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ---- 事件绑定：颜色下拉选择 ----
+                // ---- 颜色下拉事件 ----
                 document.querySelectorAll('.user-color-select').forEach(select => {
                     select.addEventListener('change', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const newColor = this.value;
                         const newName = getColorName(newColor);
+                        const isBrownNow = isBrownColor(newColor);
 
-                        // 更新预览
+                        // 先更新UI预览
                         const row = this.closest('tr');
                         const swatch = row.querySelector('.color-swatch');
                         if (swatch) swatch.style.backgroundColor = newColor;
@@ -1219,37 +1265,30 @@
                         const tagSpan = row.querySelector('.user-tag-display');
                         if (tagSpan) tagSpan.style.backgroundColor = newColor;
 
-                        // 更新数据库
-                        try {
-                            await updateUserField(uid, { username_color: newColor });
-                            const target = allUsers.find(u => u.user_number === uid);
-                            if (target) target.username_color = newColor;
-                            const adminId = await getCurrentAdminId();
-                            if (adminId) {
-                                await insertJudgementLog(
-                                    adminId,
-                                    target ? target.id : uid,
-                                    'update_color',
-                                    { field: 'username_color', new_value: newColor },
-                                    `通过颜色选择器修改为 ${newName}`
-                                );
+                        // 更新棕名标记
+                        let badgeSpan = row.querySelector('.brown-name-badge');
+                        if (isBrownNow) {
+                            if (!badgeSpan) {
+                                const container = row.querySelector('.username-display').parentNode;
+                                const newBadge = document.createElement('span');
+                                newBadge.className = 'brown-name-badge';
+                                newBadge.textContent = '陶片';
+                                container.appendChild(newBadge);
                             }
-                            showSuccess(`颜色已更新为 ${newName}`);
-                        } catch (err) {
-                            showError('颜色更新失败：' + err.message);
-                            // 回退
-                            const oldColor = allUsers.find(u => u.user_number === uid)?.username_color || '#95a5a6';
-                            if (usernameSpan) usernameSpan.style.color = oldColor;
-                            if (tagSpan) tagSpan.style.backgroundColor = oldColor;
-                            if (swatch) swatch.style.backgroundColor = oldColor;
-                            // 修正select值
-                            const oldName = getColorName(oldColor);
-                            this.value = oldColor;
+                        } else {
+                            if (badgeSpan) badgeSpan.remove();
                         }
+
+                        // 调用核心颜色变更函数 (会处理原因和日志)
+                        await changeUserColor(uid, newColor);
+
+                        // 如果changeUserColor内部失败，会回滚，但为了UI一致性，在成功时不需要额外操作
+                        // 但因为changeUserColor会重新加载列表，所以上面的UI更新会被覆盖
+                        // 但为了用户体验，我们让changeUserColor内部处理
                     });
                 });
 
-                // ---- 用户名双击编辑（保持原有功能） ----
+                // ---- 用户名双击编辑 ----
                 document.querySelectorAll('.username-display').forEach(el => {
                     let clickCount = 0,
                         timer = null;
@@ -1454,7 +1493,7 @@
                     });
                 });
 
-                // ---- 切换用户类型（change-role）联动颜色 ----
+                // ---- 切换用户类型 ----
                 document.querySelectorAll('[data-action="change-role"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -1469,14 +1508,14 @@
                         if (target === currentRole) return;
 
                         const actionName = `切换用户角色为 ${target}`;
-                        const reason = await promptReason(actionName);
+                        const reason = await promptCommonReason(actionName);
                         if (!reason) return;
 
                         const targetUser = allUsers.find(u => u.user_number === uid);
                         if (!targetUser) { showError('用户不存在'); return; }
 
                         const { data: u, error: fetchErr } = await supabase.from('profiles')
-                            .select('user_tag')
+                            .select('user_tag, username_color')
                             .eq('user_number', uid)
                             .single();
                         if (fetchErr) { showError('获取用户信息失败'); return; }
@@ -1501,14 +1540,14 @@
                             await updateUserField(uid, update);
                             const adminId = await getCurrentAdminId();
                             if (adminId) {
-                                await insertJudgementLog(
+                                const isBrown = isBrownColor(u.username_color || '#95a5a6');
+                                await insertSmartLog(
                                     adminId,
                                     targetUser.id,
-                                    newAdmin ? 'grant_perm' : 'revoke_perm', {
-                                        permission: 'is_admin',
-                                    new_value: newAdmin
-                                },
-                                    reason
+                                    newAdmin ? 'grant_perm' : 'revoke_perm',
+                                    { permission: 'is_admin', new_value: newAdmin },
+                                    reason,
+                                    isBrown
                                 );
                             }
                             await loadUsers();
@@ -1540,7 +1579,7 @@
                 batchBar.dataset.selected = JSON.stringify(ids);
             }
 
-            // ---------- 批量按钮事件绑定 ----------
+            // ---------- 批量按钮事件 ----------
             document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限',
                 { is_banned: false }));
             document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限',
@@ -1549,8 +1588,90 @@
                 { can_speak: true }));
             document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限',
                 { can_speak: false }));
-            document.getElementById('batchGrantAdmin').addEventListener('click', batchGrantAdmin);
-            document.getElementById('batchRevokeAdmin').addEventListener('click', batchRevokeAdmin);
+            document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                const reason = await promptCommonReason('批量授予进入后台权限');
+                if (!reason) return;
+                try {
+                    const { data: users, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('user_number, id, username_color')
+                        .in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
+                    for (const u of users) {
+                        let tag = u.user_tag || '';
+                        if (!tag) tag = '管理员';
+                        await supabase.from('profiles')
+                            .update({ is_admin: true, user_tag: tag, username_color: '#9b59b6' })
+                            .eq('user_number', u.user_number);
+                        const target = allUsers.find(t => t.user_number === u.user_number);
+                        if (target) {
+                            target.is_admin = true;
+                            target.user_tag = tag;
+                            target.username_color = '#9b59b6';
+                        }
+                    }
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        for (const u of users) {
+                            const isBrown = isBrownColor(u.username_color || '#95a5a6');
+                            await insertSmartLog(
+                                adminId,
+                                u.id,
+                                'grant_perm',
+                                { permission: 'is_admin', new_value: true },
+                                reason,
+                                isBrown
+                            );
+                        }
+                    }
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) { showError('批量授予进入后台失败：' + err.message); }
+            });
+            document.getElementById('batchRevokeAdmin').addEventListener('click', async () => {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) { showError('请先选择用户'); return; }
+                const reason = await promptCommonReason('批量撤销进入后台权限');
+                if (!reason) return;
+                try {
+                    const { data: users, error: fetchErr } = await supabase
+                        .from('profiles')
+                        .select('user_number, id, username_color')
+                        .in('user_number', ids);
+                    if (fetchErr) throw fetchErr;
+                    for (const u of users) {
+                        let tag = u.user_tag || '';
+                        if (tag === '管理员') tag = null;
+                        await supabase.from('profiles')
+                            .update({ is_admin: false, user_tag: tag, username_color: '#95a5a6' })
+                            .eq('user_number', u.user_number);
+                        const target = allUsers.find(t => t.user_number === u.user_number);
+                        if (target) {
+                            target.is_admin = false;
+                            target.user_tag = tag;
+                            target.username_color = '#95a5a6';
+                        }
+                    }
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        for (const u of users) {
+                            const isBrown = isBrownColor(u.username_color || '#95a5a6');
+                            await insertSmartLog(
+                                adminId,
+                                u.id,
+                                'revoke_perm',
+                                { permission: 'is_admin', new_value: false },
+                                reason,
+                                isBrown
+                            );
+                        }
+                    }
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) { showError('批量撤销进入后台失败：' + err.message); }
+            });
             document.getElementById('batchGrantUserMgmt').addEventListener('click', () => batchAction('授予用户管理权限',
                 { can_manage_users: true }));
             document.getElementById('batchRevokeUserMgmt').addEventListener('click', () => batchAction('撤销用户管理权限',
