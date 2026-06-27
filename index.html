@@ -365,6 +365,159 @@
             text-decoration: underline;
         }
 
+        /* ===== 近期讨论（洛谷风格） ===== */
+        .benben-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
+            grid-column: 1 / -1;
+        }
+
+        #recentPostsList {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        #recentPostsCard .post-card {
+            background: #fff;
+            border: 1px solid #e8ecf1;
+            border-radius: 8px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #recentPostsCard .post-card:hover {
+            border-color: #c8d0d8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        #recentPostsCard .post-card-body {
+            display: flex;
+            gap: 14px;
+            padding: 14px 16px;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        #recentPostsCard .post-avatar {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        #recentPostsCard .post-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            background: #f0f2f5;
+        }
+
+        #recentPostsCard .post-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #recentPostsCard .post-title-link {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.2s;
+            line-height: 1.5;
+        }
+
+        #recentPostsCard .post-title-link:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+
+        #recentPostsCard .post-meta-line {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #8a9aa8;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 8px;
+            line-height: 1.6;
+        }
+
+        #recentPostsCard .post-meta-line .benben-username {
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        #recentPostsCard .post-meta-line .benben-username:hover {
+            text-decoration: underline;
+        }
+
+        #recentPostsCard .post-meta-line .forum-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        #recentPostsCard .post-meta-line .forum-link:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+
+        #recentPostsCard .post-meta-line .forum-link .forum-name {
+            color: inherit;
+        }
+
+        #recentPostsCard .post-meta-line .post-time {
+            color: #8a9aa8;
+        }
+
+        #recentPostsCard .post-meta-line .reply-count {
+            color: #8a9aa8;
+        }
+
+        #recentPostsCard .post-meta-line .reply-count strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        #recentPostsCard .post-meta-line .sticky-badge {
+            display: inline-block;
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            background: #e74c3c;
+            line-height: 1.8;
+        }
+
+        #recentPostsCard .post-meta-line .user-tag-display {
+            margin-left: 4px;
+        }
+
+        #recentPostsCard .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
+            grid-column: 1 / -1;
+        }
+
+        #recentPostsCard .error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #e74c3c;
+            font-size: 14px;
+            grid-column: 1 / -1;
+        }
+
         /* 犇犇模块样式 */
         .benben-header {
             font-size: 1.25rem;
@@ -510,7 +663,7 @@
         .benben-user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 4px 8px;  /* ← 原来 10px，改为 8px */
             flex-wrap: wrap;
         }
 
@@ -559,7 +712,7 @@
             color: #fff;
             font-size: 11.5px;
             font-weight: 600;
-            margin: 0;
+            margin: 0 0 0 5px;
             cursor: default;
             transition: filter 0.15s;
             /* background-color 由内联 style 动态设置 */
@@ -592,6 +745,14 @@
         .benben-text .footnotes li,
         .benben-text .footnote-backref {
             scroll-margin-top: 60px;
+        }
+
+        .benben-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
+            grid-column: 1 / -1;
         }
 
         /* ===== 管理组提示（模仿目标样式） ===== */
@@ -1332,6 +1493,13 @@
         }
 
         @media (max-width: 600px) {
+            @media (max-width: 600px) {
+                #recentPostsList {
+                    grid-template-columns: 1fr;  /* 手机端改为单列 */
+                    gap: 10px;
+                }
+            }
+
             .topbar {
                 padding: 10px 16px;
                 flex-wrap: wrap;
@@ -1556,6 +1724,13 @@
 
         <div class="content-wrapper">
             <div class="main-content">
+                <!-- ===== 近期讨论卡片（置于犇犇之前） ===== -->
+                <div class="card" id="recentPostsCard">
+                    <div class="card-header">近期讨论</div>
+                    <div id="recentPostsList">
+                        <div class="benben-loading">加载中...</div>
+                    </div>
+                </div>
                 <div class="card" id="benbenModule">
                     <div class="benben-header">有什么新鲜事告诉大家</div>
                     <div class="benben-editor" id="benbenEditor"><textarea id="benbenContent" rows="3"></textarea>
@@ -2581,11 +2756,11 @@
                     }
 
                     // 用户名颜色直接使用 color
-                    let userHtml =
-                        `<a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
+                    let userHtml = `<span class="benben-user"><a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
                     if (labelHtml) {
                         userHtml += labelHtml;
                     }
+                    userHtml += `</span>`;
 
                     const benbenHtml = `
                         <div class="benben-item" data-id="${item.id}">
@@ -2785,6 +2960,117 @@
                 return data;
             }
 
+            // ---------- 加载近期讨论（用户名完全模仿犇犇） ----------
+            async function loadRecentPosts() {
+                const container = document.getElementById('recentPostsList');
+                if (!container) return;
+
+                try {
+                    // 查询帖子
+                    const { data: posts, error } = await supabase
+                        .from('posts')
+                        .select('id, title, forum, created_at, author_id')
+                        .order('created_at', { ascending: false })
+                        .limit(20);
+
+                    if (error) throw error;
+
+                    if (!posts || posts.length === 0) {
+                        container.innerHTML = '<div class="empty-state">没有更多讨论了</div>';
+                        return;
+                    }
+
+                    // 批量获取用户信息
+                    const authorIds = [...new Set(posts.map(p => p.author_id).filter(id => id))];
+                    let userMap = {};
+                    if (authorIds.length > 0) {
+                        const { data: users, error: userError } = await supabase
+                            .from('profiles')
+                            .select('id, username, user_number, username_color, user_tag, is_admin')
+                            .in('id', authorIds);
+                        if (!userError && users) {
+                            users.forEach(u => { userMap[u.id] = u; });
+                        }
+                    }
+
+                    const forumMap = {
+                        siteaffairs: '站务版',
+                        problem: '题目总版',
+                        academics: '学术版'
+                    };
+
+                    let html = '';
+                    posts.forEach(post => {
+                        const prof = userMap[post.author_id] || {};
+                        const username = prof.username || '匿名';
+                        const userNumber = prof.user_number || '';
+                        const isAdmin = prof.is_admin || false;
+                        const userTag = prof.user_tag || '';
+
+                        // ★★★ 完全复制犇犇的颜色和标签逻辑 ★★★
+                        const color = prof.username_color || (isAdmin ? '#9b59b6' : '#2c3e50');
+                        let labelHtml = '';
+                        if (userTag) {
+                            labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
+                        } else if (isAdmin) {
+                            labelHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
+                        }
+                        let userHtml = `<a href="/user/${userNumber}" class="benben-username" style="color: ${color};">${escapeHtml(username)}</a>`;
+                        if (labelHtml) userHtml += labelHtml;
+
+                        const forumName = forumMap[post.forum] || post.forum;
+                        const forumLink = post.forum;
+
+                        const date = new Date(post.created_at);
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const hours = String(date.getHours()).padStart(2, '0');
+                        const minutes = String(date.getMinutes()).padStart(2, '0');
+                        const timeStr = `${month}-${day} ${hours}:${minutes}`;
+
+                        const initial = (username[0] || 'U').toUpperCase();
+                        const avatarSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='18' font-weight='bold' font-family='Arial'%3E${encodeURIComponent(initial)}%3C/text%3E%3C/svg%3E`;
+
+                        html += `
+                <section class="post-card">
+                    <div class="post-card-body">
+                        <div class="post-avatar">
+                            <a href="/user/${userNumber}">
+                                <img src="${avatarSvg}" alt="${escapeHtmlAttr(username)}">
+                            </a>
+                        </div>
+                        <div class="post-info">
+                            <a href="/discuss?forum=${forumLink}" class="post-title-link">
+                                ${escapeHtml(post.title)}
+                            </a>
+                            <div class="post-meta-line">
+                                <span class="post-author">
+                                    ${userHtml}
+                                </span>
+                                <span class="post-forum">
+                                    In <a href="/discuss?forum=${forumLink}" class="forum-link">
+                                        <span class="forum-name">${escapeHtml(forumName)}</span>
+                                    </a>
+                                </span>
+                                <span class="post-time">
+                                    @ ${timeStr}
+                                    <span class="reply-count"><strong>0</strong> 回复</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+                    });
+
+                    container.innerHTML = html;
+
+                } catch (err) {
+                    console.error('加载近期讨论失败:', err);
+                    container.innerHTML = `<div class="empty-state" style="color:#e74c3c;">加载失败：${err.message || '未知错误'}，请刷新页面重试</div>`;
+                }
+            }
+
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -2868,6 +3154,7 @@
                         startUnreadPolling();
                         loadBenbenList(true);
                         setupInfiniteScroll();
+                        loadRecentPosts();
 
                         // ★★★ 绑定锚点跳转（解决顶部栏遮挡） ★★★
                         document.addEventListener('click', function (e) {
@@ -2909,6 +3196,7 @@
                         // 原有代码中的 loadBenbenList(true) 和 setupInfiniteScroll 已被移除
 
                         stopUnreadPolling();
+                        loadRecentPosts();
                     }
                 } catch (err) {
                     console.error(err);
