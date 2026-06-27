@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Jason227 · 算法竞赛社区</title>
+    <title>首页 - ✨ Jason227</title>
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
@@ -142,9 +142,9 @@
         /* ========== 侧边栏：固定、无圆角、完整撑开、可滚动 ========== */
         .nav-sidebar {
             position: fixed;
-            top: 0;
+            top: 50px;
             left: 0;
-            height: 100vh;
+            height: calc(100vh - 50px);
             width: 64px;
             background: white;
             border-radius: 0;
@@ -192,13 +192,15 @@
             transition: background 0.2s, color 0.2s;
             display: flex;
             align-items: center;
-            gap: 12px;
+            text-decoration: none; /* ← 新增 */
         }
 
         .nav-item:hover,
         .group-title:hover {
             background: #f0f2f5;
             color: #e74c3c;
+            text-decoration: none;   /* ← 新增：禁止下划线 */
+            box-shadow: 0 rgba(0, 0, 0, 0.06);  /* ← 新增：阴影效果 */
         }
 
         .nav-icon {
@@ -206,6 +208,32 @@
             text-align: center;
             font-size: 18px;
             flex-shrink: 0;
+            margin-right: 12px;   /* 用 margin 替代 gap */
+        }
+
+        .nav-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .nav-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-group .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            cursor: default;
+        }
+        .nav-group .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
         }
 
         .nav-text {
@@ -219,9 +247,6 @@
 
         .group-title {
             font-weight: 600;
-            color: #5b6e8c;
-            background: #f8f9fc;
-            border-top: 1px solid #e9ecef;
             margin-top: 8px;
         }
 
@@ -1239,19 +1264,19 @@
                 width: 100%;
             }
 
-            /* 导航项在移动端更紧凑 */
-            .nav-item,
-            .group-title {
-                padding: 8px 14px;
-                font-size: 13px;
-                gap: 8px;
-                border-radius: 6px;
-                background: #f8f9fc;
-            }
-
             .nav-item:hover,
             .group-title:hover {
                 background: #f0f2f5;
+                color: #e74c3c;
+                text-decoration: none;   /* ← 新增 */
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            }
+
+            .nav-sidebar a:hover {
+                text-decoration: none;
+                background: #f0f2f5;
+                color: #e74c3c;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             }
 
             .nav-icon {
@@ -1358,17 +1383,6 @@
                 gap: 2px;
                 padding: 8px;
             }
-
-            .nav-item,
-            .group-title {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-
-            .nav-icon {
-                font-size: 14px;
-                width: 18px;
-            }
         }
 
         @media (max-width: 400px) {
@@ -1387,12 +1401,6 @@
                 padding: 6px;
             }
 
-            .nav-item,
-            .group-title {
-                padding: 4px 8px;
-                font-size: 11px;
-            }
-
             .nav-icon {
                 font-size: 12px;
                 width: 16px;
@@ -1405,44 +1413,117 @@
 
 <body>
     <div class="topbar">
-        <div class="logo">✨ Jason227</div>
+        <a href="/" class="logo" style="text-decoration: none; color: #e74c3c;">✨ Jason227</a>
         <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
     </div>
 
     <div class="main-layout">
         <!-- 侧边栏：固定、无圆角、可滚动（移动端变为相对定位） -->
         <div class="nav-sidebar">
-            <div class="nav-item"><span class="nav-icon">🏠</span><span class="nav-text">主页</span></div>
-            <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">题库</span></div>
-            <div class="nav-item"><span class="nav-icon">🎓</span><span class="nav-text">网校</span></div>
-            <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">训练题单</span></div>
-            <div class="nav-item"><span class="nav-icon">🏆</span><span class="nav-text">比赛</span></div>
-            <div class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">评测记录</span></div>
-            <div class="nav-item"><span class="nav-icon">💬</span><span class="nav-text">讨论区</span></div>
-            <div class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">文章广场</span></div>
-            <div class="group-title"><span class="nav-icon">➕</span><span class="nav-text">更多功能</span></div>
-            <div class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-text">图片上传</span></div>
-            <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-text">云剪贴板</span></div>
-            <div class="nav-item"><span class="nav-icon">🎨</span><span class="nav-text">主题商店</span></div>
-            <div class="nav-item"><span class="nav-icon">🏅</span><span class="nav-text">咕值排名</span></div>
-            <div class="nav-item"><span class="nav-icon">📈</span><span class="nav-text">等级分排名</span></div>
-            <div class="nav-item"><span class="nav-icon">📚</span><span class="nav-text">洛谷有题</span></div>
-            <div class="nav-item"><span class="nav-icon">📩</span><span class="nav-text">工单/反馈</span></div>
+            <!-- ===== 主菜单 第一部分（主页 ~ 评测记录） ===== -->
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20" height="20"
+                                    fill="currentColor">
+                                    <path
+                                        d="M240 6.1c9.1-8.2 22.9-8.2 32 0l232 208c9.9 8.8 10.7 24 1.8 33.9s-24 10.7-33.9 1.8l-8-7.2 0 205.3c0 35.3-28.7 64-64 64l-288 0c-35.3 0-64-28.7-64-64l0-205.3-8 7.2c-9.9 8.8-25 8-33.9-1.8s-8-25 1.8-33.9L240 6.1zm16 50.1L96 199.7 96 448c0 8.8 7.2 16 16 16l48 0 0-104c0-39.8 32.2-72 72-72l48 0c39.8 0 72 32.2 72 72l0 104 48 0c8.8 0 16-7.2 16-16l0-248.3-160-143.4zM208 464l96 0 0-104c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24l0 104z" />
+                                </svg></span><span class="nav-text">主页</span></a></li>
+                    <li><a class="nav-item" href="/problems"><span class="nav-icon"><svg viewBox="0 0 448 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M88 0C39.4 0 0 39.4 0 88L0 432c0 44.2 35.8 80 80 80l344 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-8 0 0-76.1C435.3 375 448 353 448 328l0-256c0-39.8-32.2-72-72-72L88 0zM368 400l0 64-288 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l288 0zM80 352c-11.4 0-22.2 2.4-32 6.7L48 88c0-22.1 17.9-40 40-40l288 0c13.3 0 24 10.7 24 24l0 256c0 13.3-10.7 24-24 24L80 352zm48-200c0 13.3 10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0c-13.3 0-24 10.7-24 24zm24 72c-13.3 0-24 10.7-24 24s10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0z" />
+                                </svg></span><span class="nav-text">题库</span></a></li>
+                    <li><a class="nav-item" href="/courses"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2 48 19.8 0 168.5c0 53 86 96 192 96s192-43 192-96l0-168.5 81.2-33.4c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1zM144 384l0-148.7 113.2 46.6c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1L432 235.3 432 384c0 .1 0 .1 0 .3s-.1 .4-.3 .9c-.4 .9-1.3 2.7-3.4 5.2-4.4 5.2-12.6 11.9-26 18.6-26.8 13.4-67.1 23-114.3 23s-87.5-9.7-114.3-23c-13.4-6.7-21.6-13.4-26-18.6-2.1-2.5-3-4.3-3.4-5.2-.2-.5-.3-.8-.3-.9s0-.2 0-.3zM87.2 160L275.5 82.5c4-1.6 8.2-2.5 12.5-2.5s8.5 .8 12.5 2.5L488.8 160 300.5 237.5c-4 1.6-8.2 2.5-12.5 2.5s-8.5-.8-12.5-2.5L87.2 160z" />
+                                </svg></span><span class="nav-text">网校</span></a></li>
+                    <li><a class="nav-item" href="/training"><span class="nav-icon"><svg viewBox="0 0 384 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M152 96l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0 48c-37.1 0-67.6-28-71.6-64L64 80c-8.8 0-16 7.2-16 16l0 352c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-352c0-8.8-7.2-16-16-16l-16.4 0c-4 36-34.5 64-71.6 64l-80 0zM232 0c25 0 47 12.7 59.9 32L320 32c35.3 0 64 28.7 64 64l0 352c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l28.1 0C105 12.7 127 0 152 0l80 0zM171.2 193.1c8.2 6.7 9.5 18.8 2.8 27l-45.3 56c-3.7 4.5-9.2 7.1-15 7.1s-11.3-2.7-14.9-7.2L73.9 244.9c-6.6-8.3-5.3-20.4 3-27s20.4-5.3 27 3l10 12.5 30.3-37.5c6.7-8.2 18.8-9.5 27-2.8zM192 256c0-13.3 10.7-24 24-24l64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0c-13.3 0-24-10.7-24-24zm-16 96c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24zm-64-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                </svg></span><span class="nav-text">训练题单</span></a></li>
+                    <li><a class="nav-item" href="/contests"><span class="nav-icon"><svg viewBox="0 0 512 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M488 56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24s24-10.7 24-24l0-400zM360 128c-13.3 0-24 10.7-24 24l0 304c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-13.3-10.7-24-24-24zM280 248c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 208c0 13.3 10.7 24 24 24s24-10.7 24-24l0-208zM152 320c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zM48 384c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48c0-13.3-10.7-24-24-24z" />
+                                </svg></span><span class="nav-text">比赛</span></a></li>
+                    <li><a class="nav-item" href="/submissions"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M352.4 54l0 138 138 0C473 124.6 419.9 71.4 352.4 54zm-144 210l0-173.1c-74.6 26.4-128 97.5-128 181.1 0 106 86 192 192 192 24.6 0 48-4.6 69.5-12.9L225 309.9c-10.7-12.9-16.6-29.2-16.6-45.9zm333.9-55.9c2.3 17.5-12.2 31.9-29.9 31.9l-176 0c-17.7 0-32-14.3-32-32l0-176c0-17.7 14.4-32.2 31.9-29.9 107 14.2 191.8 99 206 206zM256.4 66.7l0 197.3c0 5.6 2 11 5.5 15.3L394 438.7c11.7 14.1 9.2 35.4-6.9 44.1-34.1 18.6-73.2 29.2-114.7 29.2-132.5 0-240-107.5-240-240 0-115.5 81.5-211.9 190.2-234.8 18.1-3.8 33.8 11 33.8 29.5zM541.7 288c18.5 0 33.3 15.7 29.5 33.8-10.2 48.4-35 91.4-69.6 124.2-12.3 11.7-31.6 9.2-42.4-3.9L374.9 340.4c-17.3-20.9-2.4-52.4 24.6-52.4l142.2 0z" />
+                                </svg></span><span class="nav-text">评测记录</span></a></li>
+                </ul>
+            </div>
+        
+            <!-- ★ 分割线 ①：评测记录 ↔ 讨论区 -->
             <div class="divider"></div>
-            <div class="group-title"><span class="nav-icon">🔗</span><span class="nav-text">相关链接</span></div>
-            <div class="nav-item"><span class="nav-icon">❓</span><span class="nav-text">帮助中心</span></div>
-            <div class="nav-item"><span class="nav-icon">📧</span><span class="nav-text">联系我们</span></div>
-            <div class="nav-item"><span class="nav-icon">📜</span><span class="nav-text">社区规则</span></div>
-            <div class="nav-item"><span class="nav-icon">🗳️</span><span class="nav-text">陶片放逐</span></div>
-            <div class="nav-item"><span class="nav-icon">👥</span><span class="nav-text">管理名单</span></div>
+        
+            <!-- ===== 主菜单 第二部分（讨论区、文章广场） ===== -->
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M76.2 258.7c6.1-15.2 4-32.6-5.6-45.9-14.5-20.1-22.6-43.7-22.6-68.8 0-66.8 60.5-128 144-128s144 61.2 144 128-60.5 128-144 128c-15.9 0-31.1-2.3-45.3-6.5-10.3-3.1-21.4-2.5-31.4 1.5l-50.4 20.2 11.4-28.5zM0 144c0 35.8 11.6 69.1 31.7 96.8L1.9 315.2c-1.3 3.2-1.9 6.6-1.9 10 0 14.8 12 26.8 26.8 26.8 3.4 0 6.8-.7 10-1.9l96.3-38.5c18.6 5.5 38.4 8.4 58.9 8.4 106 0 192-78.8 192-176S298-32 192-32 0 46.8 0 144zM384 512c20.6 0 40.3-3 58.9-8.4l96.3 38.5c3.2 1.3 6.6 1.9 10 1.9 14.8 0 26.8-12 26.8-26.8 0-3.4-.7-6.8-1.9-10l-29.7-74.4c20-27.8 31.7-61.1 31.7-96.8 0-82.4-61.7-151.5-145-170.7-1.6 16.3-5.1 31.9-10.1 46.9 63.9 14.8 107.2 67.3 107.2 123.9 0 25.1-8.1 48.7-22.6 68.8-9.6 13.3-11.7 30.6-5.6 45.9l11.4 28.5-50.4-20.2c-10-4-21.1-4.5-31.4-1.5-14.2 4.2-29.4 6.5-45.3 6.5-72.2 0-127.1-45.7-140.7-101.2-15.6 3.2-31.7 5-48.1 5.2 16.4 81.9 94.7 144 188.8 144z" />
+                                </svg></span><span class="nav-text">讨论区</span></a></li>
+                    <li><a class="nav-item" href="/articles"><span class="nav-icon"><svg viewBox="0 0 512 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M168 80c-13.3 0-24 10.7-24 24l0 304c0 8.4-1.4 16.5-4.1 24L440 432c13.3 0 24-10.7 24-24l0-304c0-13.3-10.7-24-24-24L168 80zM72 480c-39.8 0-72-32.2-72-72L0 112C0 98.7 10.7 88 24 88s24 10.7 24 24l0 296c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-39.8 32.2-72 72-72l272 0c39.8 0 72 32.2 72 72l0 304c0 39.8-32.2 72-72 72L72 480zM192 152c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 48c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-48zm152 24l48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zM216 256l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 80l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z" />
+                                </svg></span><span class="nav-text">文章广场</span></a></li>
+                </ul>
+            </div>
+        
+            <!-- ★ 分割线 ②：文章广场 ↔ 更多功能 -->
+            <div class="divider"></div>
+        
+            <!-- ===== 更多功能（无图标） ===== -->
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/upload"><span class="nav-icon"></span><span class="nav-text">图片上传</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/clipboard"><span class="nav-icon"></span><span
+                                class="nav-text">云剪贴板</span></a></li>
+                    <li><a class="nav-item" href="/themes"><span class="nav-icon"></span><span class="nav-text">主题商店</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/ranking/gu"><span class="nav-icon"></span><span
+                                class="nav-text">咕值排名</span></a></li>
+                    <li><a class="nav-item" href="/ranking/rating"><span class="nav-icon"></span><span
+                                class="nav-text">等级分排名</span></a></li>
+                    <li><a class="nav-item" href="/luogu"><span class="nav-icon"></span><span class="nav-text">洛谷有题</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/feedback"><span class="nav-icon"></span><span
+                                class="nav-text">工单/反馈</span></a></li>
+                </ul>
+            </div>
+        
+            <!-- ★ 分割线 ③：工单/反馈 ↔ 相关链接 -->
+            <div class="divider"></div>
+        
+            <!-- ===== 相关链接（无图标） ===== -->
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/help"><span class="nav-icon"></span><span class="nav-text">帮助中心</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/contact"><span class="nav-icon"></span><span class="nav-text">联系我们</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/rules"><span class="nav-icon"></span><span class="nav-text">社区规则</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/judgement"><span class="nav-icon"></span><span
+                                class="nav-text">陶片放逐</span></a></li>
+                    <li><a class="nav-item" href="/admins"><span class="nav-icon"></span><span class="nav-text">管理名单</span></a>
+                    </li>
+                    <li><a class="nav-item" href="/admin/user" id="userManageItem" style="display:none;"><span
+                                class="nav-icon"></span><span class="nav-text">用户管理</span></a></li>
+                </ul>
+            </div>
         </div>
 
         <div class="content-wrapper">
             <div class="main-content">
-                <div class="card" id="welcomeCard">
-                    <h2 id="welcomeTitle">✨ 欢迎来到 Jason227 的个人空间</h2>
-                    <p id="welcomeDesc">这里分享算法竞赛、前端开发、技术笔记。</p>
-                </div>
                 <div class="card" id="benbenModule">
                     <div class="benben-header">有什么新鲜事告诉大家</div>
                     <div class="benben-editor" id="benbenEditor"><textarea id="benbenContent" rows="3"></textarea>
@@ -1456,13 +1537,12 @@
                     <div id="benbenList" class="benben-list"></div>
                     <div id="loadingSentinel" class="loading-sentinel" style="display:none;">加载中...</div>
                 </div>
-                <div class="card" id="fortuneCard"></div>
             </div>
         </div>
     </div>
     <button id="back-to-top" title="回到顶部"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s;">↑</button>
-    <footer>© 2026 Jason227 · 基于 Supabase 认证 | <a href="javascript:void(0)">关于本站</a></footer>
+    <footer>© 2026 ✨ Jason227</footer>
 
     <script>
         (function () {
@@ -2504,6 +2584,23 @@
                         </div>
                     `;
                     benbenList.insertAdjacentHTML('beforeend', benbenHtml);
+                    // ===== 新增：只渲染刚插入的这一条（不动旧的） =====
+                    const newItem = benbenList.lastElementChild;
+                    const textEl = newItem.querySelector('.benben-text');
+                    if (textEl) {
+                        const rawEncoded = textEl.getAttribute('data-raw');
+                        const mentionMapStr = textEl.getAttribute('data-mention-map');
+                        if (rawEncoded) {
+                            let map = {};
+                            try { map = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
+                            textEl.innerHTML = renderContent(
+                                rawEncoded,
+                                map,
+                                currentProfile?.special_privilege || false,
+                                currentProfile?.username || '用户'
+                            );
+                        }
+                    }
                 }
                 document.querySelectorAll('.benben-delete').forEach(btn => btn.addEventListener('click', async (e) => {
                     e
@@ -2527,7 +2624,7 @@
                 }));
                 document.querySelectorAll('.benben-report-btn').forEach(btn => btn.addEventListener('click', () =>
                     alert('举报功能暂未开放，请联系管理员。')));
-                renderAllBenbenTexts();
+                // renderAllBenbenTexts();
             }
 
             async function deleteBenben(id) {
@@ -2545,6 +2642,11 @@
                 let content = benbenContent?.value.trim();
                 if (!content) { alert('内容不能为空'); return; }
                 if (!currentProfile) { window.location.href = '/auth/login'; return; }
+
+                if (currentProfile.can_speak === false) {
+                    alert('你已被禁言，无法发布犇犇');
+                    return;
+                }
 
                 let finalReplyToId = null;
                 if (currentReplyingId && currentReplyUsername) {
@@ -2650,7 +2752,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege') // 增加 special_privilege
+                    .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users')  // ← 增加此项
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2683,8 +2785,7 @@
                             }
                         }
 
-                        let displayName = session.user.email;
-                        if (currentProfile?.username) displayName = currentProfile.username;
+                        let displayName = currentProfile?.username || session.user.email || '用户';
                         let html = '';
                         if (currentProfile?.user_number) html +=
                             `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
@@ -2697,10 +2798,6 @@
                             await supabase.auth.signOut();
                             location.reload();
                         });
-                        welcomeTitle.innerHTML = `👋 欢迎回来，${escapeHtmlAttr(displayName)}`;
-                        welcomeDesc.innerHTML = '你已经成功登录，可以查看个性化内容。';
-                        fortuneCard.innerHTML =
-                            `<div class="card-header">🧧 你的运势</div><div style="text-align:center"><span style="font-size:2rem;">中吉</span><p>宜：点外卖 · 纳财 &nbsp;|&nbsp; 忌：摸鱼 · 摆烂</p><p>连续打卡 <strong>228</strong> 天</p></div>`;
 
                         // ★★★ 已登录：显示编辑器、导航、加载哨兵，并加载数据
                         const editor = document.getElementById('benbenEditor');
@@ -2709,10 +2806,52 @@
                         if (nav) nav.style.display = 'flex';
                         if (loadingSentinel) loadingSentinel.style.display = 'block';
 
+                        // 获取 DOM 元素
+                        const editorContainer = document.getElementById('benbenEditor');
+                        const contentTextarea = document.getElementById('benbenContent');
+                        const submitBtn = document.getElementById('benbenSubmit');
+
+                        if (currentProfile && currentProfile.can_speak === false) {
+                            // 禁言状态：禁用输入和按钮，并修改占位符
+                            if (contentTextarea) {
+                                contentTextarea.disabled = true;
+                            }
+                            if (submitBtn) {
+                                submitBtn.disabled = true;
+                                submitBtn.style.opacity = '0.5';
+                                submitBtn.style.cursor = 'not-allowed';
+                            }
+                            // 可选：在编辑器区域显示一条静态提示
+                            if (editorContainer) {
+                                // 可以保留编辑器但显示提示，也可将内容替换为一条信息
+                                // 这里我们保持编辑器可见，但已禁用
+                            }
+                        } else {
+                            // 正常状态
+                            if (contentTextarea) {
+                                contentTextarea.disabled = false;
+                            }
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = '1';
+                                submitBtn.style.cursor = 'pointer';
+                            }
+                        }
+
                         await fetchUnreadCount();
                         startUnreadPolling();
                         loadBenbenList(true);
                         setupInfiniteScroll();
+
+                        // ★ 新增：用户管理按钮控制
+                        const userManageItem = document.getElementById('userManageItem');
+                        if (userManageItem) {
+                            if (currentProfile && currentProfile.can_manage_users === true) {
+                                userManageItem.style.display = 'flex';
+                            } else {
+                                userManageItem.style.display = 'none';
+                            }
+                        }
 
                     } else {
                         // ======== 未登录 ========
@@ -2723,11 +2862,7 @@
                         currentProfile = null;
                         authButtons.innerHTML =
                             `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
-                        welcomeTitle.innerHTML = '✨ 欢迎来到 Jason227 的个人空间';
-                        welcomeDesc.innerHTML = '请点击右上角登录或注册，解锁更多个性化功能～';
-                        fortuneCard.innerHTML =
-                            `<div class="card-header">📅 今日日历</div><div style="text-align:center"><span style="font-size:1.8rem;">6月14日</span><p>星期日</p><p>距 CSP-J/S 2026 第一轮还剩 100 天</p><p><a href="/auth/login">👉 登录后查看专属运势</a></p></div>`;
-
+                        
                         // ★★★ 未登录：不加载犇犇列表，不设置无限滚动（模块已隐藏）
                         // 原有代码中的 loadBenbenList(true) 和 setupInfiniteScroll 已被移除
 
