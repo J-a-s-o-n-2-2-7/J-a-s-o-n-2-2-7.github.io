@@ -1,75 +1,113 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理后台</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>用户管理 - ✨ Jason227</title>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
     </script>
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
+    </script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
+    </script>
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     </script>
     <style>
-        /* ===== 样式重置 & 全局 ===== */
+        /* ========== 基础样式 ========== */
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box
+            box-sizing: border-box;
         }
 
         body {
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-            line-height: 1.5
+            line-height: 1.5;
         }
 
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fff;
+            background: white;
             padding: 12px 24px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
-            z-index: 100
+            z-index: 200;
         }
 
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #e74c3c
+            color: #e74c3c;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            color: #c0392b;
         }
 
         .auth-buttons {
             display: flex;
             gap: 16px;
-            align-items: center
+            align-items: center;
         }
 
         .auth-btn {
             background: #e74c3c;
-            color: #fff;
+            color: white;
             border: none;
             border-radius: 30px;
             padding: 6px 20px;
             font-size: 14px;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #c0392b;
         }
 
         .auth-btn.logout {
-            background: #7f8c8d
+            background: #7f8c8d;
+        }
+
+        .auth-btn.logout:hover {
+            background: #5a6268;
         }
 
         .user-email {
             font-size: 14px;
             color: #2c3e50;
-            text-decoration: none
+            text-decoration: none;
         }
 
         .user-email:hover {
-            text-decoration: underline
+            text-decoration: underline;
         }
 
         .bell-icon {
@@ -78,16 +116,16 @@
             align-items: center;
             text-decoration: none;
             color: #666;
-            transition: color .2s
+            transition: color 0.2s;
         }
 
         .bell-icon:hover {
-            color: #e74c3c
+            color: #e74c3c;
         }
 
         .bell-icon svg {
             width: 20px;
-            height: 20px
+            height: 20px;
         }
 
         .bell-icon sup {
@@ -95,9 +133,9 @@
             top: -8px;
             right: -12px;
             background-color: #e74c3c;
-            color: #fff;
+            color: white;
             font-size: 10px;
-            font-weight: 700;
+            font-weight: bold;
             min-width: 16px;
             height: 16px;
             border-radius: 20px;
@@ -106,21 +144,158 @@
             justify-content: center;
             padding: 0 4px;
             box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-            line-height: 1
+            line-height: 1;
         }
 
-        .container {
+        /* ========== 主布局 ========== */
+        .main-layout {
             max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* ========== 侧边栏 ========== */
+        .nav-sidebar {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            height: calc(100vh - 50px);
+            width: 64px;
+            background: white;
+            border-radius: 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+            padding: 16px 0;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            white-space: nowrap;
+            z-index: 150;
+        }
+
+        .nav-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        .nav-sidebar:hover {
+            width: 260px;
+        }
+
+        .nav-item,
+        .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-item:hover,
+        .group-title:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+            text-decoration: none;
+            /* 移除阴影凸出感 */
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .nav-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .nav-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-group .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            cursor: default;
+        }
+
+        .nav-group .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .group-title {
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 8px 0;
+        }
+
+        .nav-item.active {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        /* ========== 内容区域 ========== */
+        .content-wrapper {
+            margin-left: 64px;
+            padding-top: 20px;
+        }
+
+        .main-content {
+            max-width: 100%;
         }
 
         .card {
-            background: #fff;
+            background: white;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 24px;
-            margin-bottom: 24px
+            padding: 20px 24px;
+            margin-bottom: 24px;
         }
 
         .card-header {
@@ -128,15 +303,16 @@
             font-weight: 600;
             border-left: 4px solid #e74c3c;
             padding-left: 12px;
-            margin-bottom: 20px
+            margin-bottom: 20px;
         }
 
+        /* ===== 管理后台专用样式 ===== */
         .search-bar {
             display: flex;
             gap: 12px;
             align-items: center;
             margin-bottom: 16px;
-            flex-wrap: wrap
+            flex-wrap: wrap;
         }
 
         .search-bar input {
@@ -147,27 +323,27 @@
             border-radius: 8px;
             font-size: 14px;
             outline: none;
-            transition: border .2s
+            transition: border .2s;
         }
 
         .search-bar input:focus {
-            border-color: #e74c3c
+            border-color: #e74c3c;
         }
 
         .search-bar .result-count {
             font-size: 13px;
             color: #999;
-            white-space: nowrap
+            white-space: nowrap;
         }
 
         .table-wrap {
-            overflow-x: auto
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px
+            font-size: 14px;
         }
 
         th,
@@ -175,7 +351,7 @@
             padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #edf2f7;
-            vertical-align: middle
+            vertical-align: middle;
         }
 
         th {
@@ -185,25 +361,25 @@
             white-space: nowrap;
             position: sticky;
             top: 0;
-            z-index: 2
+            z-index: 2;
         }
 
         th:first-child,
         td:first-child {
-            padding-left: 8px
+            padding-left: 8px;
         }
 
         th.check-col,
         td.check-col {
             width: 40px;
-            text-align: center
+            text-align: center;
         }
 
         th.check-col input,
         td.check-col input {
             cursor: pointer;
             width: 16px;
-            height: 16px
+            height: 16px;
         }
 
         .role-tag {
@@ -212,17 +388,17 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: 500;
-            cursor: pointer
+            cursor: pointer;
         }
 
         .role-tag.user {
             background: #e9ecef;
-            color: #333
+            color: #333;
         }
 
         .role-tag.admin {
             background: #8E44AD;
-            color: #fff
+            color: #fff;
         }
 
         .action-link {
@@ -230,44 +406,44 @@
             font-size: 13px;
             padding: 2px 6px;
             border-radius: 4px;
-            cursor: pointer
+            cursor: pointer;
         }
 
         .action-link.green {
             color: #2ECC71;
-            font-weight: 500
+            font-weight: 500;
         }
 
         .action-link.red {
             color: #E74C3C;
-            font-weight: 500
+            font-weight: 500;
         }
 
         .action-link.green:hover {
-            background: #eafaf1
+            background: #eafaf1;
         }
 
         .action-link.red:hover {
-            background: #fdedec
+            background: #fdedec;
         }
 
         .action-link.disabled {
             cursor: default;
-            opacity: 0.6
+            opacity: 0.6;
         }
 
         .action-link.disabled:hover {
-            background: transparent
+            background: transparent;
         }
 
         .editable-field {
             cursor: default;
             padding: 2px 4px;
-            border-radius: 3px
+            border-radius: 3px;
         }
 
         .editable-field:hover {
-            background: #f0f2f5
+            background: #f0f2f5;
         }
 
         .editable-field-input {
@@ -277,7 +453,7 @@
             font-size: 14px;
             width: 100%;
             min-width: 80px;
-            outline: none
+            outline: none;
         }
 
         .username-display {
@@ -287,11 +463,11 @@
             font-weight: 500;
             transition: background 0.15s;
         }
+
         .username-display:hover {
             background: #f0f2f5;
         }
 
-        /* 用户标签：背景色由内联 style 控制，文字白色 */
         .user-tag-display {
             display: inline-block;
             border-radius: 2px;
@@ -303,11 +479,10 @@
             cursor: default;
             transition: filter 0.15s;
             background-color: #8e44ad;
-            /* fallback */
         }
 
         .user-tag-display:hover {
-            filter: brightness(0.9)
+            filter: brightness(0.9);
         }
 
         .btn-sm {
@@ -316,29 +491,29 @@
             border-radius: 4px;
             font-size: 12px;
             cursor: pointer;
-            margin: 2px
+            margin: 2px;
         }
 
         .btn-sm.grant {
             background: #2ECC71;
-            color: #fff
+            color: #fff;
         }
 
         .btn-sm.revoke {
             background: #E74C3C;
-            color: #fff
+            color: #fff;
         }
 
         .btn-sm:disabled {
             opacity: 0.5;
-            cursor: not-allowed
+            cursor: not-allowed;
         }
 
         .btn-sm.batch {
             background: #3498DB;
             color: #fff;
             padding: 6px 16px;
-            font-size: 13px
+            font-size: 13px;
         }
 
         .batch-bar {
@@ -349,17 +524,17 @@
             border-radius: 8px;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap
+            flex-wrap: wrap;
         }
 
         .batch-bar.show {
-            display: flex
+            display: flex;
         }
 
         .batch-bar .info {
             font-size: 14px;
             color: #2c3e50;
-            margin-right: 8px
+            margin-right: 8px;
         }
 
         .batch-bar .btn-sm {
@@ -372,11 +547,11 @@
             margin-top: 20px;
             color: #e74c3c;
             text-decoration: none;
-            font-size: 14px
+            font-size: 14px;
         }
 
         .back-link:hover {
-            text-decoration: underline
+            text-decoration: underline;
         }
 
         .message {
@@ -384,26 +559,26 @@
             padding: 10px;
             border-radius: 12px;
             font-size: 14px;
-            text-align: center
+            text-align: center;
         }
 
         .error {
             background: #fee2e2;
-            color: #b91c1c
+            color: #b91c1c;
         }
 
         .success {
             background: #dcfce7;
-            color: #166534
+            color: #166534;
         }
 
         .loading-text {
             color: #999;
             text-align: center;
-            padding: 40px
+            padding: 40px;
         }
 
-        /* ===== 颜色选择器：固定七色 (含棕) ===== */
+        /* 颜色选择器 */
         .color-picker-wrap {
             display: inline-flex;
             align-items: center;
@@ -415,6 +590,7 @@
             padding: 1px 2px;
             background: #fafafa;
         }
+
         .color-picker-wrap select {
             border: none;
             background: transparent;
@@ -425,6 +601,7 @@
             color: #333;
             max-width: 70px;
         }
+
         .color-picker-wrap .color-swatch {
             display: inline-block;
             width: 18px;
@@ -434,7 +611,6 @@
             flex-shrink: 0;
         }
 
-        /* 棕名特殊标记 */
         .brown-name-badge {
             display: inline-block;
             background: #8d6e63;
@@ -454,17 +630,17 @@
             th,
             td,
             tr {
-                display: block
+                display: block;
             }
 
             thead tr {
-                display: none
+                display: none;
             }
 
             tr {
                 border: 1px solid #eee;
                 margin-bottom: 10px;
-                padding: 10px
+                padding: 10px;
             }
 
             td {
@@ -472,7 +648,7 @@
                 padding: 6px 0;
                 display: flex;
                 justify-content: space-between;
-                align-items: center
+                align-items: center;
             }
 
             td::before {
@@ -480,33 +656,187 @@
                 font-weight: 600;
                 color: #333;
                 margin-right: 10px;
-                flex-shrink: 0
+                flex-shrink: 0;
             }
 
             td.check-col {
                 display: flex;
-                justify-content: flex-start
+                justify-content: flex-start;
             }
 
             td.check-col::before {
                 content: '';
-                display: none
+                display: none;
             }
 
             .batch-bar {
                 flex-direction: column;
-                align-items: stretch
+                align-items: stretch;
             }
 
             .editable-field-input {
-                width: auto
+                width: auto;
+            }
+        }
+
+        /* ========== 响应式：侧边栏（与主页一致） ========== */
+        @media (max-width: 900px) {
+            .main-layout {
+                padding: 0 16px 16px 16px;
+            }
+
+            .nav-sidebar {
+                position: relative;
+                top: auto;
+                left: auto;
+                height: auto;
+                width: 100%;
+                border-radius: 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                margin-bottom: 20px;
+                padding: 12px 0;
+                transition: none;
+                overflow: visible;
+                white-space: normal;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+            }
+
+            .nav-sidebar:hover {
+                width: 100%;
+            }
+
+            .nav-text {
+                opacity: 1;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 0;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 8px 14px;
+                font-size: 13px;
+                gap: 8px;
+                border-radius: 6px;
+                background: #f8f9fc;
+            }
+
+            .nav-item:hover,
+            .group-title:hover {
+                background: #f0f2f5;
+                color: #e74c3c;
+                text-decoration: none;
+            }
+
+            .nav-sidebar a:hover {
+                text-decoration: none;
+                background: #f0f2f5;
+                color: #e74c3c;
+            }
+
+            .nav-icon {
+                font-size: 16px;
+                width: 20px;
+            }
+
+            .group-title {
+                grid-column: 1 / -1;
+                background: #e9ecef;
+                margin-top: 0;
+                border-top: none;
+            }
+
+            .divider {
+                display: none;
+            }
+
+            .nav-sidebar::-webkit-scrollbar {
+                width: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                padding: 16px 18px;
+            }
+
+            .auth-buttons .auth-btn {
+                padding: 4px 14px;
+                font-size: 12px;
+            }
+
+            .user-email {
+                font-size: 12px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 8px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .nav-icon {
+                font-size: 14px;
+                width: 18px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-buttons .auth-btn {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .user-email {
+                font-size: 11px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 6px;
+            }
+
+            .nav-item,
+            .group-title {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .nav-icon {
+                font-size: 12px;
+                width: 16px;
             }
         }
     </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
 </head>
+
 <body>
+    <!-- ===== 顶栏 ===== -->
     <div class="topbar">
-        <div class="logo">✨ Jason227 · 陶片</div>
+        <a href="/" class="logo">✨ Jason227</a>
         <div class="auth-buttons" id="authButtons">
             <a href="/user/notification" class="bell-icon" id="bellLink">
                 <svg viewBox="0 0 448 512" width="20" height="20">
@@ -519,36 +849,140 @@
             <button id="logoutBtn" class="auth-btn logout">登出</button>
         </div>
     </div>
-    <div class="container" id="mainContainer">
-        <div class="card">
-            <div class="card-header">管理后台 · 棕名与陶片放逐</div>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="🔍 搜索用户编号、用户名、备注名、用户类型、权限...">
-                <span class="result-count" id="resultCount">共 0 位用户</span>
+
+    <!-- ===== 主布局 ===== -->
+    <div class="main-layout">
+        <!-- ===== 侧边栏（与主页完全一致） ===== -->
+        <div class="nav-sidebar">
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M240 6.1c9.1-8.2 22.9-8.2 32 0l232 208c9.9 8.8 10.7 24 1.8 33.9s-24 10.7-33.9 1.8l-8-7.2 0 205.3c0 35.3-28.7 64-64 64l-288 0c-35.3 0-64-28.7-64-64l0-205.3-8 7.2c-9.9 8.8-25 8-33.9-1.8s-8-25 1.8-33.9L240 6.1zm16 50.1L96 199.7 96 448c0 8.8 7.2 16 16 16l48 0 0-104c0-39.8 32.2-72 72-72l48 0c39.8 0 72 32.2 72 72l0 104 48 0c8.8 0 16-7.2 16-16l0-248.3-160-143.4zM208 464l96 0 0-104c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24l0 104z" />
+                                </svg></span><span class="nav-text">主页</span></a></li>
+                    <li><a class="nav-item" href="/problems"><span class="nav-icon"><svg viewBox="0 0 448 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M88 0C39.4 0 0 39.4 0 88L0 432c0 44.2 35.8 80 80 80l344 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-8 0 0-76.1C435.3 375 448 353 448 328l0-256c0-39.8-32.2-72-72-72L88 0zM368 400l0 64-288 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l288 0zM80 352c-11.4 0-22.2 2.4-32 6.7L48 88c0-22.1 17.9-40 40-40l288 0c13.3 0 24 10.7 24 24l0 256c0 13.3-10.7 24-24 24L80 352zm48-200c0 13.3 10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0c-13.3 0-24 10.7-24 24zm24 72c-13.3 0-24 10.7-24 24s10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0z" />
+                                </svg></span><span class="nav-text">题库</span></a></li>
+                    <li><a class="nav-item" href="/courses"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2 48 19.8 0 168.5c0 53 86 96 192 96s192-43 192-96l0-168.5 81.2-33.4c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1zM144 384l0-148.7 113.2 46.6c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1L432 235.3 432 384c0 .1 0 .1 0 .3s-.1 .4-.3 .9c-.4 .9-1.3 2.7-3.4 5.2-4.4 5.2-12.6 11.9-26 18.6-26.8 13.4-67.1 23-114.3 23s-87.5-9.7-114.3-23c-13.4-6.7-21.6-13.4-26-18.6-2.1-2.5-3-4.3-3.4-5.2-.2-.5-.3-.8-.3-.9s0-.2 0-.3zM87.2 160L275.5 82.5c4-1.6 8.2-2.5 12.5-2.5s8.5 .8 12.5 2.5L488.8 160 300.5 237.5c-4 1.6-8.2 2.5-12.5 2.5s-8.5-.8-12.5-2.5L87.2 160z" />
+                                </svg></span><span class="nav-text">网校</span></a></li>
+                    <li><a class="nav-item" href="/training"><span class="nav-icon"><svg viewBox="0 0 384 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M152 96l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0 48c-37.1 0-67.6-28-71.6-64L64 80c-8.8 0-16 7.2-16 16l0 352c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-352c0-8.8-7.2-16-16-16l-16.4 0c-4 36-34.5 64-71.6 64l-80 0zM232 0c25 0 47 12.7 59.9 32L320 32c35.3 0 64 28.7 64 64l0 352c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l28.1 0C105 12.7 127 0 152 0l80 0zM171.2 193.1c8.2 6.7 9.5 18.8 2.8 27l-45.3 56c-3.7 4.5-9.2 7.1-15 7.1s-11.3-2.7-14.9-7.2L73.9 244.9c-6.6-8.3-5.3-20.4 3-27s20.4-5.3 27 3l10 12.5 30.3-37.5c6.7-8.2 18.8-9.5 27-2.8zM192 256c0-13.3 10.7-24 24-24l64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0c-13.3 0-24-10.7-24-24zm-16 96c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24zm-64-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                </svg></span><span class="nav-text">训练题单</span></a></li>
+                    <li><a class="nav-item" href="/contests"><span class="nav-icon"><svg viewBox="0 0 512 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M488 56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24s24-10.7 24-24l0-400zM360 128c-13.3 0-24 10.7-24 24l0 304c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-13.3-10.7-24-24-24zM280 248c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 208c0 13.3 10.7 24 24 24s24-10.7 24-24l0-208zM152 320c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zM48 384c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48c0-13.3-10.7-24-24-24z" />
+                                </svg></span><span class="nav-text">比赛</span></a></li>
+                    <li><a class="nav-item" href="/submissions"><span class="nav-icon"><svg viewBox="0 0 576 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M352.4 54l0 138 138 0C473 124.6 419.9 71.4 352.4 54zm-144 210l0-173.1c-74.6 26.4-128 97.5-128 181.1 0 106 86 192 192 192 24.6 0 48-4.6 69.5-12.9L225 309.9c-10.7-12.9-16.6-29.2-16.6-45.9zm333.9-55.9c2.3 17.5-12.2 31.9-29.9 31.9l-176 0c-17.7 0-32-14.3-32-32l0-176c0-17.7 14.4-32.2 31.9-29.9 107 14.2 191.8 99 206 206zM256.4 66.7l0 197.3c0 5.6 2 11 5.5 15.3L394 438.7c11.7 14.1 9.2 35.4-6.9 44.1-34.1 18.6-73.2 29.2-114.7 29.2-132.5 0-240-107.5-240-240 0-115.5 81.5-211.9 190.2-234.8 18.1-3.8 33.8 11 33.8 29.5zM541.7 288c18.5 0 33.3 15.7 29.5 33.8-10.2 48.4-35 91.4-69.6 124.2-12.3 11.7-31.6 9.2-42.4-3.9L374.9 340.4c-17.3-20.9-2.4-52.4 24.6-52.4l142.2 0z" />
+                                </svg></span><span class="nav-text">评测记录</span></a></li>
+                </ul>
             </div>
-            <div class="table-wrap">
-                <div id="userList">
-                    <div class="loading-text">加载用户列表...</div>
+
+            <div class="divider"></div>
+
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M76.2 258.7c6.1-15.2 4-32.6-5.6-45.9-14.5-20.1-22.6-43.7-22.6-68.8 0-66.8 60.5-128 144-128s144 61.2 144 128-60.5 128-144 128c-15.9 0-31.1-2.3-45.3-6.5-10.3-3.1-21.4-2.5-31.4 1.5l-50.4 20.2 11.4-28.5zM0 144c0 35.8 11.6 69.1 31.7 96.8L1.9 315.2c-1.3 3.2-1.9 6.6-1.9 10 0 14.8 12 26.8 26.8 26.8 3.4 0 6.8-.7 10-1.9l96.3-38.5c18.6 5.5 38.4 8.4 58.9 8.4 106 0 192-78.8 192-176S298-32 192-32 0 46.8 0 144zM384 512c20.6 0 40.3-3 58.9-8.4l96.3 38.5c3.2 1.3 6.6 1.9 10 1.9 14.8 0 26.8-12 26.8-26.8 0-3.4-.7-6.8-1.9-10l-29.7-74.4c20-27.8 31.7-61.1 31.7-96.8 0-82.4-61.7-151.5-145-170.7-1.6 16.3-5.1 31.9-10.1 46.9 63.9 14.8 107.2 67.3 107.2 123.9 0 25.1-8.1 48.7-22.6 68.8-9.6 13.3-11.7 30.6-5.6 45.9l11.4 28.5-50.4-20.2c-10-4-21.1-4.5-31.4-1.5-14.2 4.2-29.4 6.5-45.3 6.5-72.2 0-127.1-45.7-140.7-101.2-15.6 3.2-31.7 5-48.1 5.2 16.4 81.9 94.7 144 188.8 144z" />
+                                </svg></span><span class="nav-text">讨论区</span></a></li>
+                    <li><a class="nav-item" href="/articles"><span class="nav-icon"><svg viewBox="0 0 512 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M168 80c-13.3 0-24 10.7-24 24l0 304c0 8.4-1.4 16.5-4.1 24L440 432c13.3 0 24-10.7 24-24l0-304c0-13.3-10.7-24-24-24L168 80zM72 480c-39.8 0-72-32.2-72-72L0 112C0 98.7 10.7 88 24 88s24 10.7 24 24l0 296c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-39.8 32.2-72 72-72l272 0c39.8 0 72 32.2 72 72l0 304c0 39.8-32.2 72-72 72L72 480zM192 152c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 48c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-48zm152 24l48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zM216 256l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 80l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z" />
+                                </svg></span><span class="nav-text">文章广场</span></a></li>
+                </ul>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/upload"><span class="nav-icon"></span><span
+                                class="nav-text">图片上传</span></a></li>
+                    <li><a class="nav-item" href="/clipboard"><span class="nav-icon"></span><span
+                                class="nav-text">云剪贴板</span></a></li>
+                    <li><a class="nav-item" href="/themes"><span class="nav-icon"></span><span
+                                class="nav-text">主题商店</span></a></li>
+                    <li><a class="nav-item" href="/ranking/gu"><span class="nav-icon"></span><span
+                                class="nav-text">咕值排名</span></a></li>
+                    <li><a class="nav-item" href="/ranking/rating"><span class="nav-icon"></span><span
+                                class="nav-text">等级分排名</span></a></li>
+                    <li><a class="nav-item" href="/luogu"><span class="nav-icon"></span><span
+                                class="nav-text">洛谷有题</span></a></li>
+                    <li><a class="nav-item" href="/feedback"><span class="nav-icon"></span><span
+                                class="nav-text">工单/反馈</span></a></li>
+                </ul>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/help"><span class="nav-icon"></span><span
+                                class="nav-text">帮助中心</span></a></li>
+                    <li><a class="nav-item" href="/contact"><span class="nav-icon"></span><span
+                                class="nav-text">联系我们</span></a></li>
+                    <li><a class="nav-item" href="/rules"><span class="nav-icon"></span><span
+                                class="nav-text">社区规则</span></a></li>
+                    <li><a class="nav-item" href="/judgement"><span class="nav-icon"></span><span
+                                class="nav-text">陶片放逐</span></a></li>
+                    <li><a class="nav-item" href="/admins"><span class="nav-icon"></span><span
+                                class="nav-text">管理名单</span></a></li>
+                    <!-- 用户管理按钮（权限控制） -->
+                    <li><a class="nav-item active" href="/admin/user"><span class="nav-icon"></span><span
+                                class="nav-text">用户管理</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ===== 内容区域 ===== -->
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="card">
+                    <div class="card-header">用户管理</div>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="搜索用户">
+                        <span class="result-count" id="resultCount">共 0 位用户</span>
+                    </div>
+                    <div class="table-wrap">
+                        <div id="userList">
+                            <div class="loading-text">加载中...</div>
+                        </div>
+                    </div>
+                    <div class="batch-bar" id="batchBar">
+                        <span class="info" id="batchInfo">已选 0 位用户</span>
+                        <button class="btn-sm grant" id="batchGrantEnterSite">授予进入主站权限</button>
+                        <button class="btn-sm revoke" id="batchRevokeEnterSite">撤销进入主站权限</button>
+                        <button class="btn-sm grant" id="batchGrantSpeak">授予自由发言权限</button>
+                        <button class="btn-sm revoke" id="batchRevokeSpeak">撤销自由发言权限</button>
+                        <button class="btn-sm grant" id="batchGrantAdmin">授予进入后台权限</button>
+                        <button class="btn-sm revoke" id="batchRevokeAdmin">撤销进入后台权限</button>
+                        <button class="btn-sm grant" id="batchGrantUserMgmt">授予用户管理权限</button>
+                        <button class="btn-sm revoke" id="batchRevokeUserMgmt">撤销用户管理权限</button>
+                        <button class="btn-sm grant" id="batchGrantPostMgmt">授予秩序管理权限</button>
+                        <button class="btn-sm revoke" id="batchRevokePostMgmt">撤销秩序管理权限</button>
+                        <button class="btn-sm grant" id="batchGrantSpecial">授予特殊权益</button>
+                        <button class="btn-sm revoke" id="batchRevokeSpecial">撤销特殊权益</button>
+                    </div>
+                    <div id="msgDiv"></div>
                 </div>
             </div>
-            <div class="batch-bar" id="batchBar">
-                <span class="info" id="batchInfo">已选 0 位用户</span>
-                <button class="btn-sm grant" id="batchGrantEnterSite">授予进入主站权限</button>
-                <button class="btn-sm revoke" id="batchRevokeEnterSite">撤销进入主站权限</button>
-                <button class="btn-sm grant" id="batchGrantSpeak">授予自由发言权限</button>
-                <button class="btn-sm revoke" id="batchRevokeSpeak">撤销自由发言权限</button>
-                <button class="btn-sm grant" id="batchGrantAdmin">授予进入后台权限</button>
-                <button class="btn-sm revoke" id="batchRevokeAdmin">撤销进入后台权限</button>
-                <button class="btn-sm grant" id="batchGrantUserMgmt">授予用户管理权限</button>
-                <button class="btn-sm revoke" id="batchRevokeUserMgmt">撤销用户管理权限</button>
-                <button class="btn-sm grant" id="batchGrantPostMgmt">授予秩序管理权限</button>
-                <button class="btn-sm revoke" id="batchRevokePostMgmt">撤销秩序管理权限</button>
-                <button class="btn-sm grant" id="batchGrantSpecial">授予特殊权益</button>
-                <button class="btn-sm revoke" id="batchRevokeSpecial">撤销特殊权益</button>
-            </div>
-            <div id="msgDiv"></div>
         </div>
-        <a href="/" class="back-link">← 返回首页</a>
     </div>
 
     <script>
@@ -558,7 +992,7 @@
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ================================================================
-            //  🔐 权限门禁：只有 is_admin = true 或者 user_number = 4 可进入
+            //  🔐 权限门禁：只有 can_manage_users = true 或 user_number = 4 可进入
             // ================================================================
             async function checkAccess() {
                 try {
@@ -569,7 +1003,7 @@
                     }
                     const { data: profile, error } = await supabase
                         .from('profiles')
-                        .select('is_admin, user_number')
+                        .select('can_manage_users, user_number')
                         .eq('id', session.user.id)
                         .single();
 
@@ -579,7 +1013,7 @@
                         return false;
                     }
 
-                    if (profile.is_admin === true || profile.user_number === 4) {
+                    if (profile.can_manage_users === true || profile.user_number === 4) {
                         return true;
                     } else {
                         window.location.href = '/';
@@ -623,11 +1057,10 @@
 
             // ---------- 工具函数 ----------
             function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
-
+            function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
             function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
 
             function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
-
             function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
             function getColorName(hex) {
@@ -646,7 +1079,6 @@
 
             // ---------- 日志：只有棕名记录陶片放逐 (强制原因) ----------
             async function insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason) {
-                // 强制要求原因
                 if (!reason || reason.trim() === '') {
                     console.error('陶片放逐必须提供原因');
                     return;
@@ -675,14 +1107,12 @@
             // 智能日志：只有棕名才记录陶片
             async function insertSmartLog(adminId, targetUserId, actionType, actionDetail, reason, isBrown) {
                 if (isBrown) {
-                    // 棕名必须记录陶片
                     if (!reason || reason.trim() === '') {
                         console.error('棕名操作必须提供原因');
                         return;
                     }
                     await insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason);
                 } else {
-                    // 非棕名不记录
                     await insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason);
                 }
             }
@@ -765,7 +1195,6 @@
                     const isNowBrown = isBrownColor(newColor);
                     const wasBrown = isBrownColor(oldColor);
 
-                    // 如果从非棕变为棕，强制要求输入原因
                     let reason = '';
                     if (isNowBrown && !wasBrown) {
                         reason = await promptBrownReason();
@@ -774,37 +1203,26 @@
                             return;
                         }
                     } else {
-                        // 其他情况（包括从棕变非棕），普通原因
                         const actionName = isNowBrown ? '设为棕名' : '修改颜色';
                         reason = await promptCommonReason(actionName);
                         if (!reason) return;
                     }
 
-                    // 准备更新数据：如果是棕名，自动添加"作弊者"标签
                     let updateData = { username_color: newColor };
                     if (isNowBrown) {
-                        // 棕名：强制添加"作弊者"标签 (如果已有其他标签，替换为作弊者)
                         updateData.user_tag = '作弊者';
                     } else {
-                        // 非棕名：如果当前标签是"作弊者"，则清空
                         if (targetUser.user_tag === '作弊者') {
                             updateData.user_tag = null;
                         }
                     }
 
-                    // 执行更新
                     await updateUserField(userNumber, updateData);
 
-                    // 记录日志：只有棕名才记录陶片
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         if (isNowBrown && !wasBrown) {
-                            // 从非棕变棕 → 记录陶片放逐
-                            const detail = {
-                                action: 'brown_penalty',
-                                color: newColor,
-                                tag: '作弊者'
-                            };
+                            const detail = { action: 'brown_penalty', color: newColor, tag: '作弊者' };
                             await insertOstrakonLog(
                                 adminId,
                                 targetUser.id,
@@ -812,12 +1230,8 @@
                                 detail,
                                 `因学术不端而棕名惩罚：原因${reason}`
                             );
-                        } else if (!isNowBrown && wasBrown) {
-                            // 从棕变非棕 → 清除棕名，不记录陶片（但保留普通日志，我们选择不记录）
-                            // 不记录任何日志
-                        } else {
-                            // 其他颜色变更，不记录
                         }
+                        // 从棕变非棕不记录日志
                     }
 
                     await loadUsers();
@@ -864,7 +1278,6 @@
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                        // 只有棕名才记录
                         if (isBrown) {
                             await insertOstrakonLog(
                                 adminId,
@@ -1166,16 +1579,13 @@
                     const userNameColor = fixedColor;
                     const isBrown = isBrownColor(userNameColor);
 
-                    // 棕名标记
                     let brownBadge = '';
                     if (isBrown) {
                         brownBadge = `<span class="brown-name-badge">陶片</span>`;
                     }
 
-                    // 显示标签（如果是棕名且没有作弊者标签，会自动显示作弊者）
                     let tagDisplay = user.user_tag || '';
                     if (isBrown && tagDisplay !== '作弊者') {
-                        // 如果数据库还没更新，但UI显示，我们强制显示作弊者
                         tagDisplay = '作弊者';
                     }
                     let tagHtml = '';
@@ -1255,7 +1665,7 @@
                                     <td data-label="用户编号">${user.user_number}</td>
                                     <td data-label="用户名">${userNameHtml}</td>
                                     <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
-                                    <td data-label="用户类型"><span class="role-tag ${roleClass}" data-action="change-role" data-user="${user.user_number}">${roleLabel}</span></td>
+                                    <td data-label="用户类型">${roleLabel}</td>
                                     <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml} | ${spAction}</td>
                                     <td data-label="操作">${actionHtml}</td>
                                 </tr>
@@ -1270,7 +1680,6 @@
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const newColor = this.value;
-                        const newName = getColorName(newColor);
                         const isBrownNow = isBrownColor(newColor);
 
                         // 先更新UI预览
@@ -1282,14 +1691,12 @@
                         const tagSpan = row.querySelector('.user-tag-display');
                         if (tagSpan) {
                             tagSpan.style.backgroundColor = newColor;
-                            // 如果是棕名，强制显示"作弊者"
                             if (isBrownNow) {
                                 tagSpan.textContent = '作弊者';
                                 tagSpan.dataset.current = '作弊者';
                             }
                         }
 
-                        // 更新棕名标记
                         let badgeSpan = row.querySelector('.brown-name-badge');
                         if (isBrownNow) {
                             if (!badgeSpan) {
@@ -1299,21 +1706,18 @@
                                 newBadge.textContent = '陶片';
                                 container.appendChild(newBadge);
                             }
-                            // 确保标签是"作弊者"
                             if (tagSpan) {
                                 tagSpan.textContent = '作弊者';
                                 tagSpan.dataset.current = '作弊者';
                             }
                         } else {
                             if (badgeSpan) badgeSpan.remove();
-                            // 如果标签是"作弊者"，清空
                             if (tagSpan && tagSpan.textContent === '作弊者') {
                                 tagSpan.textContent = '';
                                 tagSpan.dataset.current = '';
                             }
                         }
 
-                        // 调用核心颜色变更函数
                         await changeUserColor(uid, newColor);
                     });
                 });
@@ -1530,69 +1934,6 @@
                     });
                 });
 
-                // ---- 切换用户类型 ----
-                document.querySelectorAll('[data-action="change-role"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        const currentRole = this.textContent.trim();
-                        const options = ['普通用户', '管理员'];
-                        const newRole = prompt('选择新角色（输入数字）：\n1. 普通用户\n2. 管理员', '1');
-                        if (newRole === null) return;
-                        const idx = parseInt(newRole) - 1;
-                        if (isNaN(idx) || idx < 0 || idx > 1) { showError('无效选项'); return; }
-                        const target = options[idx];
-                        if (target === currentRole) return;
-
-                        const actionName = `切换用户角色为 ${target}`;
-                        const reason = await promptCommonReason(actionName);
-                        if (!reason) return;
-
-                        const targetUser = allUsers.find(u => u.user_number === uid);
-                        if (!targetUser) { showError('用户不存在'); return; }
-
-                        const { data: u, error: fetchErr } = await supabase.from('profiles')
-                            .select('user_tag, username_color')
-                            .eq('user_number', uid)
-                            .single();
-                        if (fetchErr) { showError('获取用户信息失败'); return; }
-
-                        let tag = u.user_tag || '';
-                        let update = {};
-                        let newAdmin = false;
-                        if (target === '管理员') {
-                            update.is_admin = true;
-                            newAdmin = true;
-                            if (!tag) tag = '管理员';
-                            update.username_color = '#9b59b6';
-                        } else {
-                            update.is_admin = false;
-                            newAdmin = false;
-                            if (tag === '管理员') tag = null;
-                            update.username_color = '#95a5a6';
-                        }
-                        update.user_tag = tag;
-
-                        try {
-                            await updateUserField(uid, update);
-                            const adminId = await getCurrentAdminId();
-                            if (adminId) {
-                                const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                                if (isBrown) {
-                                    await insertOstrakonLog(
-                                        adminId,
-                                        targetUser.id,
-                                        newAdmin ? 'grant_perm' : 'revoke_perm',
-                                        { permission: 'is_admin', new_value: newAdmin },
-                                        reason
-                                    );
-                                }
-                            }
-                            await loadUsers();
-                        } catch (err) { showError('操作失败：' + err.message); }
-                    });
-                });
-
                 // ---- 全选 ----
                 const selectAll = document.getElementById('selectAll');
                 if (selectAll) {
@@ -1618,14 +1959,10 @@
             }
 
             // ---------- 批量按钮事件 ----------
-            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限',
-                { is_banned: false }));
-            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限',
-                { is_banned: true }));
-            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('授予自由发言权限',
-                { can_speak: true }));
-            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限',
-                { can_speak: false }));
+            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限', { is_banned: false }));
+            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限', { is_banned: true }));
+            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('授予自由发言权限', { can_speak: true }));
+            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限', { can_speak: false }));
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
@@ -1712,22 +2049,17 @@
                     await loadUsers();
                 } catch (err) { showError('批量撤销进入后台失败：' + err.message); }
             });
-            document.getElementById('batchGrantUserMgmt').addEventListener('click', () => batchAction('授予用户管理权限',
-                { can_manage_users: true }));
-            document.getElementById('batchRevokeUserMgmt').addEventListener('click', () => batchAction('撤销用户管理权限',
-                { can_manage_users: false }));
-            document.getElementById('batchGrantPostMgmt').addEventListener('click', () => batchAction('授予秩序管理权限',
-                { can_manage_posts: true }));
-            document.getElementById('batchRevokePostMgmt').addEventListener('click', () => batchAction('撤销秩序管理权限',
-                { can_manage_posts: false }));
-            document.getElementById('batchGrantSpecial').addEventListener('click', () => batchAction('授予特殊权益',
-                { special_privilege: true }));
-            document.getElementById('batchRevokeSpecial').addEventListener('click', () => batchAction('撤销特殊权益',
-                { special_privilege: false }));
+            document.getElementById('batchGrantUserMgmt').addEventListener('click', () => batchAction('授予用户管理权限', { can_manage_users: true }));
+            document.getElementById('batchRevokeUserMgmt').addEventListener('click', () => batchAction('撤销用户管理权限', { can_manage_users: false }));
+            document.getElementById('batchGrantPostMgmt').addEventListener('click', () => batchAction('授予秩序管理权限', { can_manage_posts: true }));
+            document.getElementById('batchRevokePostMgmt').addEventListener('click', () => batchAction('撤销秩序管理权限', { can_manage_posts: false }));
+            document.getElementById('batchGrantSpecial').addEventListener('click', () => batchAction('授予特殊权益', { special_privilege: true }));
+            document.getElementById('batchRevokeSpecial').addEventListener('click', () => batchAction('撤销特殊权益', { special_privilege: false }));
 
             // ---------- 启动 ----------
             init();
         })();
     </script>
 </body>
+
 </html>
