@@ -1040,6 +1040,15 @@
                     };
                 }
 
+                // 棕名惩罚（作弊者棕标）
+                if (action === 'brown_penalty') {
+                    return {
+                        label: '棕名惩罚',
+                        color: detail.color || '#8d6e63',
+                        iconPath: 'M48 32C21.5 32 0 53.5 0 80l0 64c0 8.5 3.4 16.6 9.4 22.6l301.4 301.4c12.5 12.5 32.8 12.5 45.3 0l146.7-146.7c12.5-12.5 12.5-32.8 0-45.3L201.4 41.4C195.4 35.4 187.3 32 178.8 32L48 32zM112 112a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z'
+                    };
+                }
+
                 // 用户封禁
                 if (action === 'ban' || (action === 'revoke_perm' && perm === 'is_banned')) {
                     return {
@@ -1145,6 +1154,8 @@
                         `<span class="permission-change"><span class="lcolor--green-3">授予</span> <span class="perm-name">进入主站</span> 权限</span>`;
                 } else if (log.action_type === 'cheat') {
                     changeHtml = `<span class="permission-change">学术不端惩罚</span>`;
+                } else if (log.action_type === 'brown_penalty') {
+                    changeHtml = `<span class="permission-change">标记为「<span class="perm-name">${d?.tag || '作弊者'}</span>」</span>`;
                 } else if (log.action_type === 'manager_rotate') {
                     const permName = d?.permission || '管理权限';
                     changeHtml =
