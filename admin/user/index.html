@@ -5,11 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>用户管理 - ✨ Jason227</title>
-    <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
     </script>
-    <!-- markdown-it -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
@@ -22,17 +20,14 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
     </script>
-    <!-- Mermaid -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
     </script>
-    <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
     </script>
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     </script>
     <style>
-        /* ========== 基础样式 ========== */
+        /* ========== 基础样式（与原样式完全一致） ========== */
         * {
             margin: 0;
             padding: 0;
@@ -147,7 +142,6 @@
             line-height: 1;
         }
 
-        /* ========== 主布局 ========== */
         .main-layout {
             max-width: 1400px;
             margin: 0 auto;
@@ -156,7 +150,6 @@
             min-height: 100vh;
         }
 
-        /* ========== 侧边栏 ========== */
         .nav-sidebar {
             position: fixed;
             top: 50px;
@@ -212,7 +205,6 @@
             background: #f0f2f5;
             color: #e74c3c;
             text-decoration: none;
-            /* 移除阴影凸出感 */
         }
 
         .nav-icon {
@@ -280,7 +272,6 @@
             color: #e74c3c;
         }
 
-        /* ========== 内容区域 ========== */
         .content-wrapper {
             margin-left: 64px;
             padding-top: 20px;
@@ -306,7 +297,6 @@
             margin-bottom: 20px;
         }
 
-        /* ===== 管理后台专用样式 ===== */
         .search-bar {
             display: flex;
             gap: 12px;
@@ -456,11 +446,11 @@
             outline: none;
         }
 
+        /* ===== 修改点1：用户名加粗 ===== */
         .username-display {
+            font-weight: bold;
+            /* 新增：加粗 */
             cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: 500;
             transition: background 0.15s;
         }
 
@@ -468,6 +458,7 @@
             background: #f0f2f5;
         }
 
+        /* ===== 修改点2：标签左间距改为 8px（与犇犇一致） ===== */
         .user-tag-display {
             display: inline-block;
             border-radius: 2px;
@@ -475,7 +466,8 @@
             color: #fff;
             font-size: 11.5px;
             font-weight: 600;
-            margin: 0 0 0 4px;
+            margin: 0 0 0 8px;
+            /* 原来是 5px，现改为 8px */
             cursor: default;
             transition: filter 0.15s;
             background-color: #8e44ad;
@@ -578,50 +570,6 @@
             padding: 40px;
         }
 
-        /* 颜色选择器 */
-        .color-picker-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            margin-left: 4px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 1px 2px;
-            background: #fafafa;
-        }
-
-        .color-picker-wrap select {
-            border: none;
-            background: transparent;
-            font-size: 12px;
-            padding: 2px 4px;
-            cursor: pointer;
-            outline: none;
-            color: #333;
-            max-width: 70px;
-        }
-
-        .color-picker-wrap .color-swatch {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-            flex-shrink: 0;
-        }
-
-        .brown-name-badge {
-            display: inline-block;
-            background: #8d6e63;
-            color: #fff;
-            font-size: 10px;
-            padding: 0 6px;
-            border-radius: 10px;
-            margin-left: 4px;
-            font-weight: 600;
-        }
-
         @media (max-width:800px) {
 
             table,
@@ -679,7 +627,6 @@
             }
         }
 
-        /* ========== 响应式：侧边栏（与主页一致） ========== */
         @media (max-width: 900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
@@ -852,7 +799,7 @@
 
     <!-- ===== 主布局 ===== -->
     <div class="main-layout">
-        <!-- ===== 侧边栏（与主页完全一致） ===== -->
+        <!-- ===== 侧边栏 ===== -->
         <div class="nav-sidebar">
             <div class="nav-group">
                 <ul>
@@ -888,9 +835,7 @@
                                 </svg></span><span class="nav-text">评测记录</span></a></li>
                 </ul>
             </div>
-
             <div class="divider"></div>
-
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -905,9 +850,7 @@
                                 </svg></span><span class="nav-text">文章广场</span></a></li>
                 </ul>
             </div>
-
             <div class="divider"></div>
-
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
                 <ul>
@@ -927,9 +870,7 @@
                                 class="nav-text">工单/反馈</span></a></li>
                 </ul>
             </div>
-
             <div class="divider"></div>
-
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
                 <ul>
@@ -943,7 +884,6 @@
                                 class="nav-text">陶片放逐</span></a></li>
                     <li><a class="nav-item" href="/admins"><span class="nav-icon"></span><span
                                 class="nav-text">管理名单</span></a></li>
-                    <!-- 用户管理按钮（权限控制） -->
                     <li><a class="nav-item active" href="/admin/user"><span class="nav-icon"></span><span
                                 class="nav-text">用户管理</span></a></li>
                 </ul>
@@ -992,33 +932,24 @@
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ================================================================
-            //  🔐 权限门禁：只有 can_manage_users = true 或 user_number = 4 可进入
+            //  权限门禁
             // ================================================================
             async function checkAccess() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) {
-                        window.location.href = '/login';
-                        return false;
-                    }
+                    if (!session) { window.location.href = '/login'; return false; }
                     const { data: profile, error } = await supabase
                         .from('profiles')
                         .select('can_manage_users, user_number')
                         .eq('id', session.user.id)
                         .single();
-
                     if (error || !profile) {
                         console.error('获取用户信息失败', error);
                         window.location.href = '/';
                         return false;
                     }
-
-                    if (profile.can_manage_users === true || profile.user_number === 4) {
-                        return true;
-                    } else {
-                        window.location.href = '/';
-                        return false;
-                    }
+                    if (profile.can_manage_users === true || profile.user_number === 4) return true;
+                    else { window.location.href = '/'; return false; }
                 } catch (err) {
                     console.error('权限检查异常', err);
                     window.location.href = '/';
@@ -1026,22 +957,11 @@
                 }
             }
 
-            // ================================================================
-            //  🎨 固定七色配置 (含棕色 #8d6e63)
-            // ================================================================
-            const COLOR_PALETTE = {
-                '紫': '#9b59b6',
-                '红': '#e74c3c',
-                '橙': '#e67e22',
-                '绿': '#2ecc71',
-                '蓝': '#3498db',
-                '灰': '#95a5a6',
-                '棕': '#8d6e63'
-            };
-            const COLOR_NAMES = Object.keys(COLOR_PALETTE);
-            const COLOR_VALUES = Object.values(COLOR_PALETTE);
+            // ---------- 颜色常量（仅三种） ----------
+            const COLOR_RED = '#e74c3c';
+            const COLOR_PURPLE = '#9b59b6';
+            const COLOR_BROWN = '#AD8B00';
 
-            // ---------- 全局变量 ----------
             let currentUser = null,
                 currentProfile = null,
                 allUsers = [],
@@ -1059,28 +979,31 @@
             function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
             function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
             function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
-
             function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
             function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
 
-            function getColorName(hex) {
-                if (!hex) return '灰';
-                const lower = hex.toLowerCase();
-                for (const [name, value] of Object.entries(COLOR_PALETTE)) {
-                    if (value.toLowerCase() === lower) return name;
-                }
-                return '灰';
-            }
-
             function isBrownColor(hex) {
                 if (!hex) return false;
-                return hex.toLowerCase() === '#8d6e63';
+                return hex.toLowerCase() === COLOR_BROWN.toLowerCase();
+            }
+            function isPurpleColor(hex) {
+                if (!hex) return false;
+                return hex.toLowerCase() === COLOR_PURPLE.toLowerCase();
             }
 
-            // ---------- 日志：只有棕名记录陶片放逐 (强制原因) ----------
+            // 根据用户状态决定显示颜色（红/紫/棕）
+            function getUserDisplayColor(user) {
+                if (user.is_cheater) return COLOR_BROWN;      // 作弊者棕名优先
+                if (user.is_admin) return COLOR_PURPLE;       // 管理员紫色
+                return COLOR_RED;                             // 普通用户红色
+            }
+
+            // ================================================================
+            //  日志：所有按钮操作记录陶片
+            // ================================================================
             async function insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason) {
                 if (!reason || reason.trim() === '') {
-                    console.error('陶片放逐必须提供原因');
+                    console.error('原因不能为空，跳过记录');
                     return;
                 }
                 try {
@@ -1098,26 +1021,6 @@
                 } catch (err) { console.error('陶片日志异常:', err); }
             }
 
-            // 普通日志 (非棕名，不记录)
-            async function insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason) {
-                // 非棕名不记录任何日志（完全静默）
-                return;
-            }
-
-            // 智能日志：只有棕名才记录陶片
-            async function insertSmartLog(adminId, targetUserId, actionType, actionDetail, reason, isBrown) {
-                if (isBrown) {
-                    if (!reason || reason.trim() === '') {
-                        console.error('棕名操作必须提供原因');
-                        return;
-                    }
-                    await insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason);
-                } else {
-                    await insertCommonLog(adminId, targetUserId, actionType, actionDetail, reason);
-                }
-            }
-
-            // 获取当前管理员ID
             async function getCurrentAdminId() {
                 if (currentUser) return currentUser.id;
                 const { data: { user } } = await supabase.auth.getUser();
@@ -1125,28 +1028,8 @@
                 return null;
             }
 
-            // 强制原因输入 (用于棕名惩罚)
-            async function promptBrownReason() {
-                const { value: reason } = await Swal.fire({
-                    title: '⚠️ 棕名惩罚 · 陶片放逐',
-                    html: '请输入 <strong>作弊惩罚</strong> 的详细原因：<br><small style="color:#8d6e63;">示例：因学术不端而棕名惩罚：原因………………</small>',
-                    input: 'textarea',
-                    inputPlaceholder: '请详细说明惩罚原因 (必填)',
-                    showCancelButton: true,
-                    confirmButtonText: '确认棕名惩罚',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value || value.trim() === '') {
-                            return '原因不能为空！';
-                        }
-                        return null;
-                    }
-                });
-                return reason;
-            }
-
-            // 普通原因输入 (非棕名，但实际不会记录)
-            async function promptCommonReason(operationName) {
+            // ---------- 原因输入（仅按钮操作使用） ----------
+            async function promptReason(operationName) {
                 const { value: reason } = await Swal.fire({
                     title: `请输入 ${operationName} 的原因`,
                     input: 'textarea',
@@ -1155,9 +1038,7 @@
                     confirmButtonText: '确认操作',
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
-                        if (!value || value.trim() === '') {
-                            return '原因不能为空！';
-                        }
+                        if (!value || value.trim() === '') return '原因不能为空！';
                     }
                 });
                 return reason;
@@ -1184,65 +1065,36 @@
             }
 
             // ================================================================
-            //  核心：颜色变更 (棕名自动添加"作弊者"标签)
+            //  学术不端切换（设置/取消棕名）
+            //  设置棕名时备份原标签到 remark，取消时恢复
             // ================================================================
-            async function changeUserColor(userNumber, newColor) {
-                try {
-                    const targetUser = allUsers.find(u => u.user_number === userNumber);
-                    if (!targetUser) { showError('用户不存在'); return; }
+            async function toggleAcademicMisconduct(userNumber) {
+                const targetUser = allUsers.find(u => u.user_number === userNumber);
+                if (!targetUser) { showError('用户不存在'); return; }
 
-                    const oldColor = targetUser.username_color || '#95a5a6';
-                    const isNowBrown = isBrownColor(newColor);
-                    const wasBrown = isBrownColor(oldColor);
+                const newCheater = !targetUser.is_cheater;
+                const actionName = newCheater ? '学术不端（设为棕名）' : '取消棕名';
+                const reason = await promptReason(actionName);
+                if (!reason) return;
 
-                    let reason = '';
-                    if (isNowBrown && !wasBrown) {
-                        reason = await promptBrownReason();
-                        if (!reason) {
-                            showError('棕名惩罚已取消');
-                            return;
-                        }
-                    } else {
-                        const actionName = isNowBrown ? '设为棕名' : '修改颜色';
-                        reason = await promptCommonReason(actionName);
-                        if (!reason) return;
-                    }
+                // 只切换 is_cheater，不修改 user_tag（保留管理员或自定义标签）
+                await updateUserField(userNumber, { is_cheater: newCheater });
 
-                    let updateData = { username_color: newColor };
-                    if (isNowBrown) {
-                        updateData.user_tag = '作弊者';
-                    } else {
-                        if (targetUser.user_tag === '作弊者') {
-                            updateData.user_tag = null;
-                        }
-                    }
-
-                    await updateUserField(userNumber, updateData);
-
-                    const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        if (isNowBrown && !wasBrown) {
-                            const detail = { action: 'brown_penalty', color: newColor, tag: '作弊者' };
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                'brown_penalty',
-                                detail,
-                                `因学术不端而棕名惩罚：原因${reason}`
-                            );
-                        }
-                        // 从棕变非棕不记录日志
-                    }
-
-                    await loadUsers();
-                    showSuccess(`颜色已更新${isNowBrown ? '，已记录陶片放逐，添加"作弊者"标签' : ''}`);
-                } catch (err) {
-                    showError('颜色更新失败：' + err.message);
+                const adminId = await getCurrentAdminId();
+                if (adminId) {
+                    await insertOstrakonLog(
+                        adminId,
+                        targetUser.id,
+                        newCheater ? 'brown_penalty' : 'unbrown_penalty',
+                        { action: newCheater ? 'set_cheater' : 'unset_cheater' },
+                        reason
+                    );
                 }
+                await loadUsers();
             }
 
             // ================================================================
-            //  权限操作 (只有棕名才记录陶片)
+            //  权限操作（按钮操作，均需输入原因并记录陶片）
             // ================================================================
             async function toggleAdmin(userNumber) {
                 try {
@@ -1258,35 +1110,38 @@
 
                     const newAdmin = !u.is_admin;
                     const actionName = newAdmin ? '授予管理员权限' : '撤销管理员权限';
-                    const reason = await promptCommonReason(actionName);
+                    const reason = await promptReason(actionName);
                     if (!reason) return;
 
-                    let newTag = u.user_tag || '';
+                    let newTag, newColor;
+
                     if (newAdmin) {
-                        if (!newTag) newTag = '管理员';
+                        const currentTag = u.user_tag || '';
+                        // 如果当前标签为空或为"管理员"，则设为"管理员"；否则保留原标签
+                        newTag = (currentTag === '' || currentTag === '管理员') ? '管理员' : currentTag;
+                        newColor = COLOR_PURPLE;
                     } else {
-                        if (newTag === '管理员') newTag = null;
+                        const currentTag = u.user_tag || '';
+                        newTag = (currentTag === '管理员') ? null : currentTag;
+                        newColor = COLOR_RED;
                     }
-                    const color = newAdmin ? '#9b59b6' : '#95a5a6';
 
                     await updateUserField(userNumber, {
                         is_admin: newAdmin,
                         user_tag: newTag,
-                        username_color: color
+                        username_color: newColor
+                        // 不修改 is_cheater
                     });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                        if (isBrown) {
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                newAdmin ? 'grant_perm' : 'revoke_perm',
-                                { permission: 'is_admin', new_value: newAdmin },
-                                reason
-                            );
-                        }
+                        await insertOstrakonLog(
+                            adminId,
+                            targetUser.id,
+                            newAdmin ? 'grant_perm' : 'revoke_perm',
+                            { permission: 'is_admin', new_value: newAdmin },
+                            reason
+                        );
                     }
                     await loadUsers();
                 } catch (err) {
@@ -1307,23 +1162,20 @@
                     };
                     const fieldName = fieldMap[field] || field;
                     const actionName = newValue ? `授予 ${fieldName} 权限` : `撤销 ${fieldName} 权限`;
-                    const reason = await promptCommonReason(actionName);
+                    const reason = await promptReason(actionName);
                     if (!reason) return;
 
                     await updateUserField(userNumber, { [field]: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
-                        if (isBrown) {
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                newValue ? 'grant_perm' : 'revoke_perm',
-                                { permission: field, new_value: newValue },
-                                reason
-                            );
-                        }
+                        await insertOstrakonLog(
+                            adminId,
+                            targetUser.id,
+                            newValue ? 'grant_perm' : 'revoke_perm',
+                            { permission: field, new_value: newValue },
+                            reason
+                        );
                     }
                     await loadUsers();
                 } catch (err) {
@@ -1338,23 +1190,20 @@
                     const current = targetUser.is_banned || false;
                     const newValue = !current;
                     const actionName = newValue ? '封禁用户' : '解封用户';
-                    const reason = await promptCommonReason(actionName);
+                    const reason = await promptReason(actionName);
                     if (!reason) return;
 
                     await updateUserField(userNumber, { is_banned: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
-                        if (isBrown) {
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                newValue ? 'ban' : 'unban',
-                                { permission: 'is_banned', new_value: newValue },
-                                reason
-                            );
-                        }
+                        await insertOstrakonLog(
+                            adminId,
+                            targetUser.id,
+                            newValue ? 'ban' : 'unban',
+                            { permission: 'is_banned', new_value: newValue },
+                            reason
+                        );
                     }
                     await loadUsers();
                 } catch (err) {
@@ -1368,23 +1217,20 @@
                     if (!targetUser) { showError('用户不存在'); return; }
                     const newValue = !currentValue;
                     const actionName = newValue ? '授予特殊权益' : '撤销特殊权益';
-                    const reason = await promptCommonReason(actionName);
+                    const reason = await promptReason(actionName);
                     if (!reason) return;
 
                     await updateUserField(userNumber, { special_privilege: newValue });
 
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        const isBrown = isBrownColor(targetUser.username_color || '#95a5a6');
-                        if (isBrown) {
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                newValue ? 'grant_perm' : 'revoke_perm',
-                                { permission: 'special_privilege', new_value: newValue },
-                                reason
-                            );
-                        }
+                        await insertOstrakonLog(
+                            adminId,
+                            targetUser.id,
+                            newValue ? 'grant_perm' : 'revoke_perm',
+                            { permission: 'special_privilege', new_value: newValue },
+                            reason
+                        );
                     }
                     await loadUsers();
                 } catch (err) {
@@ -1393,18 +1239,18 @@
             }
 
             // ================================================================
-            //  批量操作 (只有棕名才记录陶片)
+            //  批量操作（按钮操作，记录陶片）
             // ================================================================
             async function batchAction(actionName, updateObj) {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptCommonReason(actionName);
+                const reason = await promptReason(actionName);
                 if (!reason) return;
 
                 try {
                     const { data: users, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('user_number, id, username_color')
+                        .select('user_number, id')
                         .in('user_number', ids);
                     if (fetchErr) throw fetchErr;
 
@@ -1427,16 +1273,13 @@
                             actionType = newValue ? 'grant_perm' : 'revoke_perm';
                         }
                         for (const user of users) {
-                            const isBrown = isBrownColor(user.username_color || '#95a5a6');
-                            if (isBrown) {
-                                await insertOstrakonLog(
-                                    adminId,
-                                    user.id,
-                                    actionType,
-                                    { permission: field, new_value: newValue },
-                                    reason
-                                );
-                            }
+                            await insertOstrakonLog(
+                                adminId,
+                                user.id,
+                                actionType,
+                                { permission: field, new_value: newValue },
+                                reason
+                            );
                         }
                     }
 
@@ -1473,12 +1316,13 @@
                     const { data: { session } } = await supabase.auth.getSession();
                     if (!session) { window.location.href = '/login'; return; }
                     currentUser = session.user;
-                    const { data: profile, error: profileError } = await supabase.from('profiles').select(
-                        'user_number,username,can_manage_users').eq('id', currentUser.id).single();
+                    const { data: profile, error: profileError } = await supabase.from('profiles')
+                        .select('user_number,username,can_manage_users')
+                        .eq('id', currentUser.id)
+                        .single();
                     if (profileError || !profile) { window.location.href = '/'; return; }
                     currentProfile = profile;
-                    const displayName = profile.username || currentUser.email;
-                    userDisplay.textContent = displayName;
+                    userDisplay.textContent = profile.username || currentUser.email;
                     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                         await supabase.auth.signOut();
                         window.location.href = '/';
@@ -1498,7 +1342,7 @@
                 try {
                     const { data, error } = await supabase.from('profiles')
                         .select(
-                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, special_privilege'
+                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, special_privilege, is_cheater'
                         )
                         .order('user_number');
                     if (error) throw error;
@@ -1540,7 +1384,7 @@
             }
 
             // ================================================================
-            //  渲染用户列表
+            //  渲染用户列表（仅红/紫/棕，移除颜色选择器，添加学术不端按钮）
             // ================================================================
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
@@ -1551,43 +1395,46 @@
                 }
                 resultCount.textContent = `共 ${filteredUsers.length} 位用户`;
                 let html = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
-                                        <th>注册时间</th>
-                                        <th>用户编号</th>
-                                        <th>用户名</th>
-                                        <th>备注名</th>
-                                        <th>用户类型</th>
-                                        <th>权限</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                        `;
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
+                                <th>注册时间</th>
+                                <th>用户编号</th>
+                                <th>用户名</th>
+                                <th>备注名</th>
+                                <th>用户类型</th>
+                                <th>权限</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
                 for (const user of filteredUsers) {
                     const isSelf = currentProfile.user_number === user.user_number;
                     const isAdmin = user.is_admin;
-                    const roleClass = isAdmin ? 'admin' : 'user';
                     const roleLabel = isAdmin ? '管理员' : '普通用户';
 
-                    let currentColor = user.username_color || (isAdmin ? '#9b59b6' : '#95a5a6');
-                    const colorName = getColorName(currentColor);
-                    const fixedColor = COLOR_PALETTE[colorName] || '#95a5a6';
-
-                    const userNameColor = fixedColor;
+                    // 根据状态决定显示颜色
+                    const userNameColor = getUserDisplayColor(user);
                     const isBrown = isBrownColor(userNameColor);
 
-                    let brownBadge = '';
-                    if (isBrown) {
-                        brownBadge = `<span class="brown-name-badge">陶片</span>`;
+                    // tag 显示逻辑：
+                    // - 若 is_cheater=true 且 is_admin=true → 显示 user.user_tag（保留原标签，如"管理员"）
+                    // - 若 is_cheater=true 且 is_admin=false → 显示 "作弊者"
+                    // - 否则显示 user.user_tag（可能为空）
+                    let tagDisplay = '';
+                    if (user.is_cheater) {
+                        if (user.is_admin) {
+                            tagDisplay = user.user_tag || '';   // 管理员作弊者保留原标签
+                        } else {
+                            tagDisplay = '作弊者';
+                        }
+                    } else {
+                        tagDisplay = user.user_tag || '';
                     }
-
-                    let tagDisplay = user.user_tag || '';
-                    if (isBrown && tagDisplay !== '作弊者') {
-                        tagDisplay = '作弊者';
-                    }
+                    // 如果 tagDisplay 为空，则不生成标签
+                    // 如果既不是管理员也不是作弊者，但user_tag有值，显示它
                     let tagHtml = '';
                     if (tagDisplay) {
                         tagHtml =
@@ -1596,6 +1443,7 @@
 
                     const remarkDisplay = user.remark || '';
 
+                    // 权限管理链接（仅非本人可操作）
                     let userMgmtHtml, postMgmtHtml;
                     const mgmtStatus = user.can_manage_users;
                     const postStatus = user.can_manage_posts;
@@ -1611,118 +1459,56 @@
                             `<span class="action-link ${postStatus ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-perm" data-user="${user.user_number}" data-field="can_manage_posts" data-current="${postStatus}">秩序管理</span>`;
                     }
 
+                    // 操作按钮
                     const isBanned = user.is_banned || false;
                     const banColor = isBanned ? 'red' : 'green';
                     const banAction =
                         `<span class="action-link ${banColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-ban'}" data-user="${user.user_number}">进入主站</span>`;
+
+                    // 学术不端按钮
+                    const academicLabel = isBrown ? '取消棕名' : '学术不端';
+                    const academicColor = isBrown ? 'green' : 'red';
+                    const academicAction =
+                        `<span class="action-link ${academicColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="toggle-misconduct" data-user="${user.user_number}">${academicLabel}</span>`;
 
                     const canSpeak = user.can_speak !== false;
                     const speakColor = canSpeak ? 'green' : 'red';
                     const speakAction =
                         `<span class="action-link ${speakColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-speak'}" data-user="${user.user_number}">自由发言</span>`;
 
-                    const adminColor = isAdmin ? 'green' : 'red';
                     const adminAction =
-                        `<span class="action-link ${adminColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-admin'}" data-user="${user.user_number}">进入后台</span>`;
+                        `<span class="action-link ${isAdmin ? 'green' : 'red'} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-admin'}" data-user="${user.user_number}">进入后台</span>`;
 
                     const specialPrivilege = user.special_privilege || false;
                     const spColor = specialPrivilege ? 'green' : 'red';
                     const spAction =
                         `<span class="action-link ${spColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-special'}" data-user="${user.user_number}" data-current="${specialPrivilege}">特殊权益</span>`;
 
-                    const actionHtml = `${banAction} | ${speakAction} | ${adminAction}`;
-
-                    // ---- 七色选择器 ----
-                    let colorPickerHtml = '';
-                    if (!isSelf) {
-                        const currentName = getColorName(userNameColor);
-                        let optionsHtml = COLOR_NAMES.map(name => {
-                            const val = COLOR_PALETTE[name];
-                            const selected = name === currentName ? 'selected' : '';
-                            return `<option value="${val}" ${selected}>${name}</option>`;
-                        }).join('');
-                        colorPickerHtml = `
-                            <span class="color-picker-wrap" title="修改用户名颜色 (紫/红/橙/绿/蓝/灰/棕)">
-                                <span class="color-swatch" style="background-color:${userNameColor};"></span>
-                                <select data-user="${user.user_number}" class="user-color-select">
-                                    ${optionsHtml}
-                                </select>
-                            </span>
-                        `;
-                    }
+                    // 操作列顺序：进入主站 | 学术不端 | 自由发言 | 进入后台
+                    const actionHtml = `${banAction} | ${academicAction} | ${speakAction} | ${adminAction}`;
 
                     const userNameHtml = `
-                                <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};font-weight:500;">${escapeHtmlAttr(user.username || '未命名')}</span>
-                                ${tagHtml}
-                                ${brownBadge}
-                                ${colorPickerHtml}
-                            `;
+                        <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>
+                        ${tagHtml}
+                    `;
 
                     html += `
-                                <tr>
-                                    <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isSelf ? 'disabled' : ''}></td>
-                                    <td data-label="注册时间">${formatTime(user.created_at)}</td>
-                                    <td data-label="用户编号">${user.user_number}</td>
-                                    <td data-label="用户名">${userNameHtml}</td>
-                                    <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
-                                    <td data-label="用户类型">${roleLabel}</td>
-                                    <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml} | ${spAction}</td>
-                                    <td data-label="操作">${actionHtml}</td>
-                                </tr>
-                            `;
+                        <tr>
+                            <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isSelf ? 'disabled' : ''}></td>
+                            <td data-label="注册时间">${formatTime(user.created_at)}</td>
+                            <td data-label="用户编号">${user.user_number}</td>
+                            <td data-label="用户名">${userNameHtml}</td>
+                            <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
+                            <td data-label="用户类型">${roleLabel}</td>
+                            <td data-label="权限">${userMgmtHtml} | ${postMgmtHtml} | ${spAction}</td>
+                            <td data-label="操作">${actionHtml}</td>
+                        </tr>
+                    `;
                 }
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ---- 颜色下拉事件 ----
-                document.querySelectorAll('.user-color-select').forEach(select => {
-                    select.addEventListener('change', async function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        const newColor = this.value;
-                        const isBrownNow = isBrownColor(newColor);
-
-                        // 先更新UI预览
-                        const row = this.closest('tr');
-                        const swatch = row.querySelector('.color-swatch');
-                        if (swatch) swatch.style.backgroundColor = newColor;
-                        const usernameSpan = row.querySelector('.username-display');
-                        if (usernameSpan) usernameSpan.style.color = newColor;
-                        const tagSpan = row.querySelector('.user-tag-display');
-                        if (tagSpan) {
-                            tagSpan.style.backgroundColor = newColor;
-                            if (isBrownNow) {
-                                tagSpan.textContent = '作弊者';
-                                tagSpan.dataset.current = '作弊者';
-                            }
-                        }
-
-                        let badgeSpan = row.querySelector('.brown-name-badge');
-                        if (isBrownNow) {
-                            if (!badgeSpan) {
-                                const container = row.querySelector('.username-display').parentNode;
-                                const newBadge = document.createElement('span');
-                                newBadge.className = 'brown-name-badge';
-                                newBadge.textContent = '陶片';
-                                container.appendChild(newBadge);
-                            }
-                            if (tagSpan) {
-                                tagSpan.textContent = '作弊者';
-                                tagSpan.dataset.current = '作弊者';
-                            }
-                        } else {
-                            if (badgeSpan) badgeSpan.remove();
-                            if (tagSpan && tagSpan.textContent === '作弊者') {
-                                tagSpan.textContent = '';
-                                tagSpan.dataset.current = '';
-                            }
-                        }
-
-                        await changeUserColor(uid, newColor);
-                    });
-                });
-
-                // ---- 用户名双击编辑 ----
+                // ---- 用户名双击编辑（无原因，不记录） ----
                 document.querySelectorAll('.username-display').forEach(el => {
                     let clickCount = 0,
                         timer = null;
@@ -1757,14 +1543,17 @@
                             const val = input.value.trim();
                             if (val === current) {
                                 el.textContent = current;
-                                el.dataset.current = current; return;
+                                el.dataset.current = current;
+                                return;
                             }
                             if (!val) {
                                 showError('用户名不能为空');
                                 el.textContent = current;
-                                el.dataset.current = current; return;
+                                el.dataset.current = current;
+                                return;
                             }
                             try {
+                                // 直接更新，不记录日志
                                 await updateUserField(uid, { username: val });
                                 await loadUsers();
                             } catch (err) {
@@ -1787,7 +1576,7 @@
                     }
                 });
 
-                // 备注名双击编辑
+                // ---- 备注名双击编辑（无原因，不记录） ----
                 document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -1806,7 +1595,8 @@
                             const val = input.value.trim();
                             if (val === cur) {
                                 this.textContent = cur || '-';
-                                this.dataset.value = cur; return;
+                                this.dataset.value = cur;
+                                return;
                             }
                             try {
                                 await updateUserField(uid, { remark: val });
@@ -1832,18 +1622,19 @@
                     });
                 });
 
-                // 标签双击编辑 (但棕名自动锁定为"作弊者")
+                // ---- 标签双击编辑（仅作弊者不可修改） ----
                 document.querySelectorAll('.user-tag-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const user = allUsers.find(u => u.user_number === uid);
                         if (!user) return;
-                        const isBrown = isBrownColor(user.username_color || '#95a5a6');
-                        if (isBrown) {
-                            showError('棕名用户标签已锁定为"作弊者"，不可修改');
+                        // 仅作弊者（is_cheater）不可修改标签
+                        if (user.is_cheater) {
+                            showError('作弊者标签已锁定为"作弊者"，不可修改');
                             return;
                         }
+                        // 管理员和普通用户均可编辑
                         const cur = this.dataset.current || this.textContent.trim();
                         const input = document.createElement('input');
                         input.type = 'text';
@@ -1856,12 +1647,11 @@
                         input.select();
                         const save = async () => {
                             const val = input.value.trim();
-                            const user = allUsers.find(u => u.user_number === uid);
-                            const isAdmin = user ? user.is_admin : false;
-                            let final = val ? val : (isAdmin ? '管理员' : null);
+                            let final = val || null;
                             if (final === cur) {
                                 this.textContent = cur;
-                                this.dataset.current = cur; return;
+                                this.dataset.current = cur;
+                                return;
                             }
                             try {
                                 await updateUserField(uid, { user_tag: final });
@@ -1887,7 +1677,7 @@
                     });
                 });
 
-                // ---- 权限操作 ----
+                // ---- 按钮事件绑定 ----
                 document.querySelectorAll('[data-action="toggle-admin"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -1895,7 +1685,6 @@
                         await toggleAdmin(uid);
                     });
                 });
-
                 document.querySelectorAll('[data-action="toggle-perm"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -1905,7 +1694,6 @@
                         await togglePermission(uid, field, current);
                     });
                 });
-
                 document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -1913,7 +1701,6 @@
                         await toggleBan(uid);
                     });
                 });
-
                 document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
@@ -1924,13 +1711,19 @@
                         await togglePermission(uid, 'can_speak', current);
                     });
                 });
-
                 document.querySelectorAll('[data-action="toggle-special"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const current = this.dataset.current === 'true';
                         await toggleSpecialPrivilege(uid, current);
+                    });
+                });
+                document.querySelectorAll('[data-action="toggle-misconduct"]').forEach(el => {
+                    el.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const uid = parseInt(this.dataset.user);
+                        await toggleAcademicMisconduct(uid);
                     });
                 });
 
@@ -1959,102 +1752,113 @@
             }
 
             // ---------- 批量按钮事件 ----------
-            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限', { is_banned: false }));
-            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限', { is_banned: true }));
-            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('授予自由发言权限', { can_speak: true }));
-            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限', { can_speak: false }));
+            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限',
+                { is_banned: false }));
+            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限',
+                { is_banned: true }));
+            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('授予自由发言权限',
+                { can_speak: true }));
+            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限',
+                { can_speak: false }));
+
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptCommonReason('批量授予进入后台权限');
+                const reason = await promptReason('批量授予进入后台权限');
                 if (!reason) return;
                 try {
                     const { data: users, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('user_number, id, username_color')
+                        .select('user_number, id, user_tag')
                         .in('user_number', ids);
                     if (fetchErr) throw fetchErr;
+
                     for (const u of users) {
-                        let tag = u.user_tag || '';
-                        if (!tag) tag = '管理员';
+                        const currentTag = u.user_tag || '';
+                        const newTag = (currentTag === '' || currentTag === '管理员') ? '管理员' : currentTag;
                         await supabase.from('profiles')
-                            .update({ is_admin: true, user_tag: tag, username_color: '#9b59b6' })
+                            .update({ is_admin: true, user_tag: newTag, username_color: COLOR_PURPLE })
                             .eq('user_number', u.user_number);
                         const target = allUsers.find(t => t.user_number === u.user_number);
                         if (target) {
                             target.is_admin = true;
-                            target.user_tag = tag;
-                            target.username_color = '#9b59b6';
+                            target.user_tag = newTag;
+                            target.username_color = COLOR_PURPLE;
                         }
                     }
+
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         for (const u of users) {
-                            const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                            if (isBrown) {
-                                await insertOstrakonLog(
-                                    adminId,
-                                    u.id,
-                                    'grant_perm',
-                                    { permission: 'is_admin', new_value: true },
-                                    reason
-                                );
-                            }
+                            await insertOstrakonLog(
+                                adminId,
+                                u.id,
+                                'grant_perm',
+                                { permission: 'is_admin', new_value: true },
+                                reason
+                            );
                         }
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
                     await loadUsers();
                 } catch (err) { showError('批量授予进入后台失败：' + err.message); }
             });
+
             document.getElementById('batchRevokeAdmin').addEventListener('click', async () => {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) { showError('请先选择用户'); return; }
-                const reason = await promptCommonReason('批量撤销进入后台权限');
+                const reason = await promptReason('批量撤销进入后台权限');
                 if (!reason) return;
                 try {
                     const { data: users, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('user_number, id, username_color')
+                        .select('user_number, id, user_tag')
                         .in('user_number', ids);
                     if (fetchErr) throw fetchErr;
+
                     for (const u of users) {
-                        let tag = u.user_tag || '';
-                        if (tag === '管理员') tag = null;
+                        const currentTag = u.user_tag || '';
+                        const newTag = (currentTag === '管理员') ? null : currentTag;
                         await supabase.from('profiles')
-                            .update({ is_admin: false, user_tag: tag, username_color: '#95a5a6' })
+                            .update({ is_admin: false, user_tag: newTag, username_color: COLOR_RED })
                             .eq('user_number', u.user_number);
                         const target = allUsers.find(t => t.user_number === u.user_number);
                         if (target) {
                             target.is_admin = false;
-                            target.user_tag = tag;
-                            target.username_color = '#95a5a6';
+                            target.user_tag = newTag;
+                            target.username_color = COLOR_RED;
                         }
                     }
+
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
                         for (const u of users) {
-                            const isBrown = isBrownColor(u.username_color || '#95a5a6');
-                            if (isBrown) {
-                                await insertOstrakonLog(
-                                    adminId,
-                                    u.id,
-                                    'revoke_perm',
-                                    { permission: 'is_admin', new_value: false },
-                                    reason
-                                );
-                            }
+                            await insertOstrakonLog(
+                                adminId,
+                                u.id,
+                                'revoke_perm',
+                                { permission: 'is_admin', new_value: false },
+                                reason
+                            );
                         }
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
                     await loadUsers();
                 } catch (err) { showError('批量撤销进入后台失败：' + err.message); }
             });
-            document.getElementById('batchGrantUserMgmt').addEventListener('click', () => batchAction('授予用户管理权限', { can_manage_users: true }));
-            document.getElementById('batchRevokeUserMgmt').addEventListener('click', () => batchAction('撤销用户管理权限', { can_manage_users: false }));
-            document.getElementById('batchGrantPostMgmt').addEventListener('click', () => batchAction('授予秩序管理权限', { can_manage_posts: true }));
-            document.getElementById('batchRevokePostMgmt').addEventListener('click', () => batchAction('撤销秩序管理权限', { can_manage_posts: false }));
-            document.getElementById('batchGrantSpecial').addEventListener('click', () => batchAction('授予特殊权益', { special_privilege: true }));
-            document.getElementById('batchRevokeSpecial').addEventListener('click', () => batchAction('撤销特殊权益', { special_privilege: false }));
+
+            document.getElementById('batchGrantUserMgmt').addEventListener('click', () => batchAction('授予用户管理权限',
+                { can_manage_users: true }));
+            document.getElementById('batchRevokeUserMgmt').addEventListener('click', () => batchAction('撤销用户管理权限',
+                { can_manage_users: false }));
+            document.getElementById('batchGrantPostMgmt').addEventListener('click', () => batchAction('授予秩序管理权限',
+                { can_manage_posts: true }));
+            document.getElementById('batchRevokePostMgmt').addEventListener('click', () => batchAction('撤销秩序管理权限',
+                { can_manage_posts: false }));
+            document.getElementById('batchGrantSpecial').addEventListener('click', () => batchAction('授予特殊权益',
+                { special_privilege: true }));
+            document.getElementById('batchRevokeSpecial').addEventListener('click', () => batchAction('撤销特殊权益',
+                { special_privilege: false }));
 
             // ---------- 启动 ----------
             init();
