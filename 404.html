@@ -79,12 +79,25 @@
                 return;
             }
 
-            // 2.5 帖子详情：/discuss/数字 → /post-detail.html
-            var discussMatch = path.match(/^\/discuss\/(\d+)/);
+            // 2.5 帖子详情：/discuss/数字 → 加载 post.html
+            var discussMatch = path.match(/^\/discuss\/(\d+)$/);
             if (discussMatch) {
                 var postId = discussMatch[1];
-                // 跳转到根目录下的帖子详情页，并带上 ID 参数
-                window.location.href = '/post.html?id=' + postId;
+                fetch('/post.html')
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('无法加载帖子详情页');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', '/discuss/' + postId);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法获取帖子详情页，请稍后再试。</p>';
+                    });
                 return;
             }
 
