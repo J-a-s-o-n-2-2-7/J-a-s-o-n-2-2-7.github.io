@@ -1124,8 +1124,17 @@
 
             // ===== 加载帖子 =====
             async function loadPost() {
-                var params = new URLSearchParams(window.location.search);
-                var postId = params.get('id');
+                // 1. 从路径中提取 ID（例如 /discuss/123）
+                var path = window.location.pathname;
+                var match = path.match(/^\/discuss\/(\d+)$/);
+                var postId = match ? match[1] : null;
+
+                // 2. 如果路径中没有，则回退到查询参数 ?id=
+                if (!postId) {
+                    var params = new URLSearchParams(window.location.search);
+                    postId = params.get('id');
+                }
+
                 if (!postId) {
                     document.getElementById('loadingState').style.display = 'none';
                     document.getElementById('postContent').innerHTML = '<div style="text-align:center;padding:60px 20px;"><h1 style="font-size:28px;font-weight:600;color:#2c3e50;">缺少帖子 ID</h1><p style="color:#8a9aa8;">请提供有效的帖子编号。</p></div>';
