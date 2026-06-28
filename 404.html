@@ -79,6 +79,15 @@
                 return;
             }
 
+            // 2.5 帖子详情：/discuss/数字 → /post-detail.html
+            var discussMatch = path.match(/^\/discuss\/(\d+)/);
+            if (discussMatch) {
+                var postId = discussMatch[1];
+                // 跳转到根目录下的帖子详情页，并带上 ID 参数
+                window.location.href = '/post.html?id=' + postId;
+                return;
+            }
+
             // ===== 新增：帮助文档路由（管理后台） =====
 
             // 3. 编辑帮助文档：/admin/help/数字/edit
