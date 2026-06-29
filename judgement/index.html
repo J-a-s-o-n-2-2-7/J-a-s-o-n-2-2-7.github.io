@@ -1099,6 +1099,12 @@
                 return map[perm] || perm || '未知权限';
             }
 
+            // 判断是否为"解除棕名"类操作（本页不展示，只展示处罚本身）
+            function isUnbrownAction(action_type) {
+                const t = (action_type || '').toLowerCase();
+                return /unbrown|remove_brown|lift_brown|clear_brown|restore_color|brown_restored|penalty_expired|penalty_lifted|penalty_removed|unpenalty/.test(t);
+            }
+
             // ================================================================
             // 7. ★★★ 渲染单条日志（深色头部） ★★★
             // ================================================================
@@ -1155,7 +1161,7 @@
                 } else if (log.action_type === 'cheat') {
                     changeHtml = `<span class="permission-change">学术不端惩罚</span>`;
                 } else if (log.action_type === 'brown_penalty') {
-                    changeHtml = `<span class="permission-change">标记为「<span class="perm-name">${d?.tag || '作弊者'}</span>」</span>`;
+                    changeHtml = '';   // 作弊惩罚：不显示"标记为作弊者"，只显示原因
                 } else if (log.action_type === 'manager_rotate') {
                     const permName = d?.permission || '管理权限';
                     changeHtml =
@@ -1192,9 +1198,7 @@
 
                         <!-- 内容 -->
                         <div class="log-content">
-                            <ul>
-                                <li>${changeHtml}</li>
-                            </ul>
+                            ${changeHtml ? `<ul><li>${changeHtml}</li></ul>` : ''}
                             <p>${escapeHtml(log.reason || '（无）')}</p>
                         </div>
                     </div>
@@ -1232,15 +1236,18 @@
                         return;
                     }
 
+                    // 过滤掉"解除棕名"类记录：本页只展示处罚本身，不展示解除
+                    const visibleLogs = logs.filter(l => !isUnbrownAction(l.action_type));
+
                     const userIds = [];
-                    logs.forEach(log => {
+                    visibleLogs.forEach(log => {
                         if (log.admin_id) userIds.push(log.admin_id);
                         if (log.target_user_id) userIds.push(log.target_user_id);
                     });
 
                     const userMap = await fetchUsers(userIds);
 
-                    const html = logs.map(log => renderLog(log, userMap)).join('');
+                    const html = visibleLogs.map(log => renderLog(log, userMap)).join('');
 
                     if (append) {
                         logList.insertAdjacentHTML('beforeend', html);

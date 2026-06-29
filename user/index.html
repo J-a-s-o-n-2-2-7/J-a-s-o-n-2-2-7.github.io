@@ -121,6 +121,10 @@
                 if (rpcError) throw new Error(`RPC 调用失败: ${rpcError.message}`);
                 if (!user) throw new Error('用户不存在');
 
+                // 取头像（RPC 未返回 avatar_url，单独查一次）
+                const { data: avRow } = await supabase.from('profiles').select('avatar_url').eq('user_number', parseInt(userNumber)).maybeSingle();
+                const avatarUrl = avRow?.avatar_url || '';
+
                 // 直接比较用户 id
                 const isOwner = currentUserId && user.id && currentUserId === user.id;
 
@@ -138,7 +142,7 @@
                 `;
                 } else {
                     html = `
-                    <div class="avatar">${escapeHtml(user.username.charAt(0).toUpperCase())}</div>
+                    <div class="avatar"><img src="${avatarUrl || letterAvatar(user.username)}" alt="头像" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;" onerror="this.onerror=null;this.src='${letterAvatar(user.username)}'"></div>
                     <h1>${escapeHtml(user.username)}</h1>
                     <p class="info">编号 #${user.user_number}</p>
                     <p class="info">注册时间：${new Date(user.created_at).toLocaleDateString()}</p>
@@ -156,6 +160,12 @@
                 profileDiv.innerHTML = `<div class="error">❌ 加载失败: ${err.message}<br>请确认编号 ${userNumber} 存在，且 RPC 函数已返回 id 字段。</div>`;
             }
         })();
+
+        // 系统默认头像（首字母 SVG，任意尺寸清晰缩放）
+        function letterAvatar(name) {
+            const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+            return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+        }
 
         function escapeHtml(str) {
             if (!str) return '';
