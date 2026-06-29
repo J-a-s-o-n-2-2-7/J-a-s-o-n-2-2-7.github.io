@@ -248,8 +248,7 @@
 
         async function uploadAvatar(file) {
             const fileExt = file.name.split('.').pop();
-            const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
+            const filePath = `${currentUser.id}/avatar_${Date.now()}.${fileExt}`;
             const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
             if (uploadError) throw new Error(`上传失败: ${uploadError.message}`);
             const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
