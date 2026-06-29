@@ -1797,6 +1797,12 @@
             md.use(window.markdownitDeflist);
             md.use(window.markdownitAbbr);
 
+            // 系统默认头像（首字母 SVG，任意尺寸清晰缩放）
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+            }
+
             // ---------- 辅助函数 ----------
             function escapeHtmlAttr(str) {
                 if (!str) return '';
@@ -2644,7 +2650,8 @@
                     username, 
                     is_admin,
                     username_color,
-                    user_tag
+                    user_tag,
+                    avatar_url
                 )
             `)
                         .eq('is_deleted', false)
@@ -2746,6 +2753,7 @@
                     const rawContent = item.content;
 
                     const prof = item.profiles || {};
+                    const avatarUrl = prof.avatar_url || '';
                     const isAdmin = prof.is_admin || false;
                     const userTag = prof.user_tag || '';
                     // ★★★ 核心改动：直接使用 username_color，若为空则根据 isAdmin 给默认值 ★★★
@@ -2772,7 +2780,7 @@
 
                     const benbenHtml = `
                         <div class="benben-item" data-id="${item.id}">
-                            <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${(username[0] || 'U').toUpperCase()}%3C/text%3E%3C/svg%3E" alt="${username}"></a></div>
+                            <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="${avatarUrl || letterAvatar(item.profiles?.username || '用户')}" alt="${username}" onerror="this.onerror=null;this.src='${letterAvatar(item.profiles?.username || '用户')}'"></a></div>
                             <div class="benben-content">
                                 <div class="benben-item-header">
                                     <div class="post-author">
@@ -2994,7 +3002,7 @@
                     if (authorIds.length > 0) {
                         const { data: users, error: userError } = await supabase
                             .from('profiles')
-                            .select('id, username, user_number, username_color, user_tag, is_admin')
+                            .select('id, username, user_number, username_color, user_tag, is_admin, avatar_url')
                             .in('id', authorIds);
                         if (!userError && users) {
                             users.forEach(u => { userMap[u.id] = u; });
@@ -3048,7 +3056,7 @@
                                 <div class="post-card-body">
                                     <div class="post-avatar">
                                         <a href="/user/${userNumber}">
-                                            <img src="${avatarSvg}" alt="${escapeHtmlAttr(username)}">
+                                            <img src="${prof.avatar_url || letterAvatar(username)}" alt="${escapeHtmlAttr(username)}" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">
                                         </a>
                                     </div>
                                     <div class="post-info">
