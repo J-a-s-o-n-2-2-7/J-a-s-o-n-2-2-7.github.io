@@ -917,6 +917,7 @@
             let loading = false;
             let hasMore = true;
             let userCache = {};
+            let canManageLogs = false;   // 当前用户是否可删除陶片（is_admin 或 can_manage_users）
 
             const logList = document.getElementById('logList');
             const loadMoreBtn = document.getElementById('load-more');
@@ -1183,7 +1184,7 @@
                                     ${info.label}
                                 </b>
                             </div>
-                            <div class="time">${time}</div>
+                            <div class="time">${time}${canManageLogs ? ` <button class="log-delete-btn" data-id="${log.id}" title="删除这条陶片" style="margin-left:8px;background:none;border:none;color:#e74c3c;font-size:12px;cursor:pointer;padding:0;">删除</button>` : ''}</div>
                         </div>
 
                         <!-- 用户信息 -->
@@ -1273,6 +1274,29 @@
             }
 
             // ================================================================
+            // 8.5 删除陶片（仅管理员）
+            // ================================================================
+            async function deleteLog(id) {
+                if (!canManageLogs || !id) return;
+                if (!confirm('确定删除这条陶片？删除后不可恢复。')) return;
+                try {
+                    const { error } = await supabase.from('judgement_logs').delete().eq('id', id);
+                    if (error) throw error;
+                    const btn = logList.querySelector('.log-delete-btn[data-id="' + id + '"]');
+                    if (btn) { const card = btn.closest('.log-card'); if (card) card.remove(); }
+                } catch (err) {
+                    alert('删除失败：' + (err.message || err));
+                }
+            }
+
+            // 删除按钮事件委托（动态加载的卡片也能响应）
+            logList.addEventListener('click', function (e) {
+                const btn = e.target.closest('.log-delete-btn');
+                if (!btn) return;
+                deleteLog(parseInt(btn.dataset.id, 10));
+            });
+
+            // ================================================================
             // 9. 用户认证 UI
             // ================================================================
             async function updateAuthUI() {
@@ -1306,6 +1330,8 @@
                         if (userManageItem) {
                             userManageItem.style.display = (profile?.can_manage_users === true) ? 'flex' : 'none';
                         }
+                        // 是否可删除陶片（管理员）
+                        canManageLogs = !!(profile?.is_admin || profile?.can_manage_users);
 
                     } else {
                         authButtons.innerHTML =
