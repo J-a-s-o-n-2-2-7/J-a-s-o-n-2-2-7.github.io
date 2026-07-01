@@ -1278,10 +1278,15 @@
             // ================================================================
             async function deleteLog(id) {
                 if (!canManageLogs || !id) return;
-                if (!confirm('确定删除这条陶片？删除后不可恢复。')) return;
+                if (!confirm('永久删除这条陶片？此操作不可恢复。')) return;
                 try {
-                    const { error } = await supabase.from('judgement_logs').delete().eq('id', id);
+                    // 用 .select() 拿回被删的行，验证是否真的删除（RLS 拦截时会删 0 行却不报错）
+                    const { data, error } = await supabase.from('judgement_logs').delete().eq('id', id).select();
                     if (error) throw error;
+                    if (!data || data.length === 0) {
+                        alert('删除失败：数据库未真正删除该记录（可能未配置管理员删除权限）。\n请在 Supabase 执行 supabase-judgement-delete.sql。');
+                        return;
+                    }
                     const btn = logList.querySelector('.log-delete-btn[data-id="' + id + '"]');
                     if (btn) { const card = btn.closest('.log-card'); if (card) card.remove(); }
                 } catch (err) {
