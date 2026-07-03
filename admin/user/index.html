@@ -1498,18 +1498,18 @@
                     const spAction =
                         `<span class="action-link ${spColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-special'}" data-user="${user.user_number}" data-current="${specialPrivilege}">特殊权益</span>`;
 
-                    // 标签按钮：仅非管理员、非作弊者用户显示
-                    const canSetTag = !isAdmin && !user.is_cheater;
+                    // 标签按钮：仅作弊者不显示（管理员也可设置）；置于用户名后
+                    const canSetTag = !user.is_cheater;
                     const tagAction = canSetTag
-                        ? ` | <span class="action-link" style="color:#9b59b6;cursor:pointer;" data-action="set-tag" data-user="${user.user_number}">🏷️标签</span>`
+                        ? `<span class="action-link" style="color:#9b59b6;cursor:pointer;margin-left:6px;" data-action="set-tag" data-user="${user.user_number}">🏷️标签</span>`
                         : '';
 
-                    // 操作列顺序：进入主站 | 学术不端 | 自由发言 | 进入后台 | (标签)
-                    const actionHtml = `${banAction} | ${academicAction} | ${speakAction} | ${adminAction}${tagAction}`;
+                    // 操作列顺序：进入主站 | 学术不端 | 自由发言 | 进入后台
+                    const actionHtml = `${banAction} | ${academicAction} | ${speakAction} | ${adminAction}`;
 
                     const userNameHtml = `
                         <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>
-                        ${tagHtml}
+                        ${tagHtml}${tagAction}
                     `;
 
                     html += `
@@ -1697,11 +1697,10 @@
                     });
                 });
 
-                // ---- 设置标签（仅非管理员、非作弊者） ----
+                // ---- 设置标签（仅作弊者不可修改，管理员可设置） ----
                 async function setTag(userNumber) {
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
                     if (!targetUser) return;
-                    if (targetUser.is_admin) { showError('管理员标签由系统管理'); return; }
                     if (targetUser.is_cheater) { showError('作弊者标签已锁定为"作弊者"，不可修改'); return; }
                     const cur = targetUser.user_tag || '';
                     const { value: val } = await Swal.fire({
