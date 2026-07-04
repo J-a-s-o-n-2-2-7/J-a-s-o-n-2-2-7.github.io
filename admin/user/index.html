@@ -1742,61 +1742,6 @@
                     });
                 });
 
-                // ---- 标签双击编辑（仅作弊者不可修改） ----
-                document.querySelectorAll('.user-tag-display').forEach(el => {
-                    el.addEventListener('dblclick', function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        const user = allUsers.find(u => u.user_number === uid);
-                        if (!user) return;
-                        // 仅作弊者（is_cheater）不可修改标签
-                        if (user.is_cheater) {
-                            showError('作弊者标签已锁定为"作弊者"，不可修改');
-                            return;
-                        }
-                        // 管理员和普通用户均可编辑
-                        const cur = this.dataset.current || this.textContent.trim();
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'editable-field-input';
-                        input.value = cur;
-                        input.placeholder = '输入用户标签（留空恢复默认）';
-                        this.innerHTML = '';
-                        this.appendChild(input);
-                        input.focus();
-                        input.select();
-                        const save = async () => {
-                            const val = input.value.trim();
-                            let final = val || null;
-                            if (final === cur) {
-                                this.textContent = cur;
-                                this.dataset.current = cur;
-                                return;
-                            }
-                            try {
-                                await updateUserField(uid, { user_tag: final });
-                                await loadUsers();
-                            } catch (err) {
-                                showError('更新失败：' + err.message);
-                                this.textContent = cur;
-                                this.dataset.current = cur;
-                            }
-                        };
-                        input.addEventListener('blur', save);
-                        input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                input.blur();
-                            }
-                            if (e.key === 'Escape') {
-                                const p = this.parentNode;
-                                p.textContent = cur;
-                                p.dataset.current = cur;
-                            }
-                        });
-                    });
-                });
-
                 // ---- 设置标签（仅作弊者不可修改，管理员可设置） ----
                 async function setTag(userNumber) {
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
@@ -1813,7 +1758,11 @@
                         cancelButtonText: '取消'
                     });
                     if (val === undefined || val === null) return;   // 用户取消
-                    const final = val.trim() || null;
+                    let final = val.trim() || null;
+                    // 管理员的标签不允许清空：被删除时强制恢复为"管理员"
+                    if (final === null && targetUser.is_admin) {
+                        final = '管理员';
+                    }
                     if ((final || null) === (cur || null)) return;   // 无变化
                     try {
                         await updateUserField(userNumber, { user_tag: final });
