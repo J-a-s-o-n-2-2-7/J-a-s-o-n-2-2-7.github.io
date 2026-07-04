@@ -1259,7 +1259,7 @@
                         title: `编辑管理权限 — ${escapeHtmlAttr(targetUser.username || '未命名')}`,
                         html: `
                             <div class="perm-editor">
-                                <div style="margin-bottom:6px;color:#666;font-size:13px;text-align:left;">勾选目标状态（勾=授予 / 不勾=撤销），可一次调整多个管理权限，合并成一条"管理轮换"陶片。</div>
+                                <div style="margin-bottom:6px;color:#666;font-size:13px;text-align:left;">勾选目标状态（勾=授予 / 不勾=撤销），可一次调整多个管理权限，合并成一条"管理轮换"陶片。<br><span style="color:#e67e22;">授予"用户管理/秩序管理/特殊权益"时，会自动开通"进入后台"。</span></div>
                                 <div style="text-align:left;">${checkboxHtml}</div>
                                 <textarea id="perm-reason" placeholder="请输入操作原因（必填）..."></textarea>
                             </div>`,
@@ -1277,6 +1277,14 @@
                         }
                     });
                     if (!value) return;   // 取消
+
+                    // 约束：授予任何管理权限（用户管理/秩序管理/特殊权益）时，必须同时授予"进入后台"（后台入口）
+                    let autoGrantedAdmin = false;
+                    if (!value.desired.is_admin &&
+                        (value.desired.can_manage_users || value.desired.can_manage_posts || value.desired.special_privilege)) {
+                        value.desired.is_admin = true;
+                        autoGrantedAdmin = true;
+                    }
 
                     // 计算 diff（只含实际变化的字段）
                     const changes = FIELDS
@@ -1318,7 +1326,8 @@
                         );
                     }
                     await loadUsers();
-                    showSuccess(`已更新 ${changes.length} 项权限`);
+                    const adminNote = (autoGrantedAdmin && !current.is_admin) ? '（已自动开通"进入后台"）' : '';
+                    showSuccess(`已更新 ${changes.length} 项权限${adminNote}`);
                 } catch (err) {
                     showError('操作失败：' + err.message);
                 }
