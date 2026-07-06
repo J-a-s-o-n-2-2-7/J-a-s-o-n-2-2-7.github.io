@@ -1724,8 +1724,7 @@
                     <li><a class="nav-item" href="/admins"><span class="nav-icon"></span><span
                                 class="nav-text">管理名单</span></a>
                     </li>
-                    <li><a class="nav-item" href="/admin/user" id="userManageItem" style="display:none;"><span
-                                class="nav-icon"></span><span class="nav-text">用户管理</span></a></li>
+                    <!-- 用户管理入口已移至顶栏 ⚙️ 图标（仅管理员可见） -->
                 </ul>
             </div>
         </div>
@@ -2647,8 +2646,9 @@
                         .select(`
                 *, 
                 profiles:user_number (
-                    username, 
+                    username,
                     is_admin,
+                    is_cheater,
                     username_color,
                     user_tag,
                     avatar_url
@@ -2756,8 +2756,8 @@
                     const avatarUrl = prof.avatar_url || '';
                     const isAdmin = prof.is_admin || false;
                     const userTag = prof.user_tag || '';
-                    // ★★★ 核心改动：直接使用 username_color，若为空则根据 isAdmin 给默认值 ★★★
-                    const color = prof.username_color || (isAdmin ? '#9b59b6' : '#333');
+                    // 棕名以 is_cheater 为唯一真源；否则用 username_color，空则按 isAdmin 给默认值
+                    const color = prof.is_cheater ? '#AD8B00' : (isAdmin ? '#9D3DCF' : (prof.username_color || '#333'));
 
                     // 生成用户标签（如果有自定义标签或管理员身份）
                     let labelHtml = '';
@@ -3002,7 +3002,7 @@
                     if (authorIds.length > 0) {
                         const { data: users, error: userError } = await supabase
                             .from('profiles')
-                            .select('id, username, user_number, username_color, user_tag, is_admin, avatar_url')
+                            .select('id, username, user_number, username_color, user_tag, is_admin, is_cheater, avatar_url')
                             .in('id', authorIds);
                         if (!userError && users) {
                             users.forEach(u => { userMap[u.id] = u; });
@@ -3024,7 +3024,7 @@
                         const userTag = prof.user_tag || '';
 
                         // ★★★ 完全复制犇犇的颜色和标签逻辑 ★★★
-                        const color = prof.username_color || (isAdmin ? '#9b59b6' : '#2c3e50');
+                        const color = prof.is_cheater ? '#AD8B00' : (isAdmin ? '#9D3DCF' : (prof.username_color || '#2c3e50'));
                         let labelHtml = '';
                         if (userTag) {
                             labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
@@ -3260,6 +3260,79 @@
             bindBenbenEvents();
         })();
     </script>
+<script>
+/* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
+(function () {
+    if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+    var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+    var authBtns = document.querySelector('.topbar .auth-buttons');
+    if (!authBtns) return;
+    if (!document.getElementById('topAvatarStyle')) {
+        var st = document.createElement('style');
+        st.id = 'topAvatarStyle';
+        st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+        document.head.appendChild(st);
+    }
+    function letterAvatar(name) {
+        var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+    }
+    var me = null;
+    var mo = new MutationObserver(ensure);
+    mo.observe(authBtns, { childList: true });
+    function ensure() {
+        if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+        mo.disconnect();
+        try {
+            var ue = authBtns.querySelector('.user-email');
+            if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+            var wrap = document.getElementById('topAvatarWrap');
+            if (!wrap) {
+                wrap = document.createElement('div');
+                wrap.id = 'topAvatarWrap';
+                wrap.className = 'top-avatar-wrap';
+                var av = document.createElement('a');
+                av.id = 'topAvatar';
+                av.href = '/user/' + (me.user_number || '');
+                av.title = me.username || '';
+                av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                var img = document.createElement('img');
+                img.alt = '头像';
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                img.src = me.avatar_url || letterAvatar(me.username);
+                av.appendChild(img);
+                wrap.appendChild(av);
+                var menu = document.createElement('div');
+                menu.id = 'topAvatarMenu';
+                menu.className = 'top-avatar-menu';
+                wrap.appendChild(menu);
+                authBtns.appendChild(wrap);
+            }
+            // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
+            var menu = document.getElementById('topAvatarMenu');
+            var logoutEl = authBtns.querySelector('.auth-btn.logout');
+            if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+            if (me.can_manage_users && !document.getElementById('adminEntry')) {
+                var gear = document.createElement('a');
+                gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
+                gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                gear.textContent = '⚙️';
+                authBtns.appendChild(gear);
+            }
+            ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                var el = authBtns.querySelector(sel);
+                if (el) authBtns.appendChild(el);
+            });
+        } finally { mo.observe(authBtns, { childList: true }); }
+    }
+    sb.auth.getSession().then(function (r) {
+        var s = r.data && r.data.session;
+        if (!s) return;
+        return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
+    }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () {});
+})();
+</script>
 </body>
 
 </html>
