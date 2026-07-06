@@ -2133,11 +2133,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-<<<<<<< HEAD
-                    .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users, username_color, user_tag')
-=======
                     .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users, username_color, user_tag, is_cheater')
->>>>>>> main
                     .eq('id', userId)
                     .single();
                 if (error) return null;
