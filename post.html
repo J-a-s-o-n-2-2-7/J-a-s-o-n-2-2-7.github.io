@@ -5,16 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>帖子详情 - ✨ Jason227</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- KaTeX -->
+    <!-- 与主页完全一致的依赖 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
     </script>
-    <!-- Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
-    </script>
-    <!-- markdown-it 及其插件 -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
@@ -27,14 +21,18 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
     </script>
-    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
     </script>
+    <!-- Font Awesome（主页未用，但保留因为原帖子详情页用了） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
+
     <style>
-        /* ========== 基础样式 ========== */
+        /* ========== 基础样式（与主页完全一致） ========== */
         * {
             margin: 0;
             padding: 0;
@@ -43,71 +41,53 @@
 
         body {
             background: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-            color: #1a2632;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
         }
 
-        /* ========== 顶部栏 ========== */
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fff;
-            padding: 10px 24px;
+            background: white;
+            padding: 12px 24px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
             z-index: 200;
-            height: 50px;
         }
 
         .logo {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #e74c3c;
             text-decoration: none;
-            cursor: pointer;
-            letter-spacing: -0.5px;
-        }
-
-        .logo:hover {
-            color: #c0392b;
         }
 
         .auth-buttons {
             display: flex;
-            gap: 14px;
+            gap: 16px;
             align-items: center;
         }
 
         .auth-btn {
             background: #e74c3c;
-            color: #fff;
+            color: white;
             border: none;
             border-radius: 30px;
-            padding: 5px 18px;
-            font-size: 13px;
+            padding: 6px 20px;
+            font-size: 14px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            transition: background 0.2s;
-        }
-
-        .auth-btn:hover {
-            background: #c0392b;
         }
 
         .auth-btn.logout {
             background: #7f8c8d;
         }
 
-        .auth-btn.logout:hover {
-            background: #5a6268;
-        }
-
         .user-email {
-            font-size: 13px;
+            font-size: 14px;
             color: #2c3e50;
             text-decoration: none;
         }
@@ -130,20 +110,20 @@
         }
 
         .bell-icon svg {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
         }
 
         .bell-icon sup {
             position: absolute;
-            top: -6px;
-            right: -10px;
-            background: #e74c3c;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            min-width: 14px;
-            height: 14px;
+            top: -8px;
+            right: -12px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            height: 16px;
             border-radius: 20px;
             display: inline-flex;
             align-items: center;
@@ -153,25 +133,17 @@
             line-height: 1;
         }
 
-        /* ========== 主布局 ========== */
-        .main-layout {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px 20px 20px;
-            min-height: 100vh;
-        }
-
-        /* ========== 侧边栏 ========== */
+        /* ========== 侧边栏（与主页完全一致） ========== */
         .nav-sidebar {
             position: fixed;
             top: 50px;
             left: 0;
             height: calc(100vh - 50px);
             width: 64px;
-            background: #fff;
+            background: white;
             border-radius: 0;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
-            padding: 12px 0;
+            padding: 16px 0;
             transition: width 0.3s ease;
             overflow-y: auto;
             overflow-x: hidden;
@@ -202,8 +174,8 @@
 
         .nav-item,
         .group-title {
-            padding: 8px 16px;
-            font-size: 13px;
+            padding: 10px 16px;
+            font-size: 14px;
             color: #2c3e50;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
@@ -216,19 +188,21 @@
         .group-title:hover {
             background: #f0f2f5;
             color: #e74c3c;
+            text-decoration: none;
+            box-shadow: 0 rgba(0, 0, 0, 0.06);
         }
 
         .nav-icon {
             width: 24px;
             text-align: center;
-            font-size: 16px;
+            font-size: 18px;
             flex-shrink: 0;
             margin-right: 12px;
         }
 
         .nav-icon svg {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             fill: currentColor;
         }
 
@@ -240,18 +214,19 @@
 
         .group-title {
             font-weight: 600;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #8a9aa8;
+            margin-top: 8px;
             cursor: default;
         }
 
         .group-title:first-of-type {
+            border-top: none;
             margin-top: 0;
         }
 
-        .group-title .nav-icon {
-            width: 20px;
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 8px 0;
         }
 
         .nav-text {
@@ -263,13 +238,7 @@
             opacity: 1;
         }
 
-        .divider {
-            height: 1px;
-            background: #e9ecef;
-            margin: 6px 0;
-        }
-
-        /* ========== 内容区域 ========== */
+        /* ========== 内容区域（帖子详情专用） ========== */
         .content-wrapper {
             margin-left: 64px;
             padding-top: 16px;
@@ -282,7 +251,6 @@
             flex-direction: row-reverse;
         }
 
-        /* ===== 左侧信息卡片 ===== */
         .side {
             flex: 0 0 260px;
             position: sticky;
@@ -335,10 +303,6 @@
             padding: 6px 0;
             font-size: 13px;
             color: #6b7280;
-        }
-
-        .side-card .info-row:last-child {
-            border-bottom: none;
         }
 
         .side-card .info-row .label {
@@ -430,7 +394,6 @@
             margin-bottom: 2px;
         }
 
-        /* ===== 主内容 ===== */
         .main {
             flex: 1;
             min-width: 0;
@@ -456,10 +419,6 @@
             min-width: 0;
         }
 
-        .post-detail-author:hover {
-            color: #e74c3c;
-        }
-
         .post-detail-meta {
             display: flex;
             align-items: center;
@@ -475,26 +434,6 @@
             color: #1a2632;
             line-height: 1.3;
             margin: 0 0 16px 0;
-        }
-
-        @media (max-width: 600px) {
-            .post-detail-avatar {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
-
-            .post-detail-author {
-                font-size: 14px;
-            }
-
-            .post-detail-title {
-                font-size: 20px;
-            }
-
-            .post-detail-meta {
-                font-size: 12px;
-            }
         }
 
         .post-card {
@@ -516,7 +455,6 @@
             border-top: none;
         }
 
-        /* ===== 评论区域 ===== */
         .comment-section {
             background: transparent;
             box-shadow: none;
@@ -644,9 +582,6 @@
             margin-bottom: 12px;
         }
 
-        /* ============================================================ */
-        /* ===== 回复编辑器（洛谷风格） ===== */
-        /* ============================================================ */
         .reply-editor {
             background: #f8f9fc;
             border: 1px solid #e9ecef;
@@ -907,7 +842,6 @@
             text-decoration: underline;
         }
 
-        /* ===== 分页 ===== */
         .pagination-wrap {
             display: flex;
             justify-content: center;
@@ -948,7 +882,6 @@
             pointer-events: none;
         }
 
-        /* ===== 加载 & 错误 ===== */
         .loading-state {
             text-align: center;
             padding: 60px 20px;
@@ -1022,9 +955,7 @@
             font-size: 12px;
         }
 
-        /* ============================================================ */
-        /* ===== 预览区 Markdown 完整样式（复制自首页 .benben-text） ===== */
-        /* ============================================================ */
+        /* ===== 预览区 Markdown 样式（完整复制自主页 .benben-text） ===== */
         .cs-viewer .lfe-marked h1,
         .cs-viewer .lfe-marked h2,
         .cs-viewer .lfe-marked h3,
@@ -1383,7 +1314,6 @@
             margin: 0.5em 0 0.5em auto;
         }
 
-        /* ===== 折叠框 ===== */
         .cs-viewer .lfe-marked details {
             margin: 1em 0;
             padding: 8px 16px;
@@ -1474,7 +1404,6 @@
             color: #E74C3C;
         }
 
-        /* ===== Toast 复制成功 ===== */
         .swal2-toast-copy {
             position: fixed;
             top: 20px;
@@ -1515,13 +1444,7 @@
             line-height: 1.4;
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 1024px) {
-            .side {
-                flex: 0 0 220px;
-            }
-        }
-
+        /* ===== 响应式（与主页一致） ===== */
         @media (max-width: 900px) {
             .nav-sidebar {
                 position: relative;
@@ -1531,8 +1454,8 @@
                 width: 100%;
                 border-radius: 0;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-                margin-bottom: 16px;
-                padding: 10px 0;
+                margin-bottom: 20px;
+                padding: 12px 0;
                 transition: none;
                 overflow: visible;
                 white-space: normal;
@@ -1596,17 +1519,20 @@
             .group-title:hover {
                 background: #f0f2f5;
                 color: #e74c3c;
+                text-decoration: none;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             }
 
             .nav-icon {
-                font-size: 14px;
-                width: 18px;
+                font-size: 16px;
+                width: 20px;
             }
 
             .group-title {
                 grid-column: 1 / -1;
                 background: #e9ecef;
                 margin-top: 0;
+                border-top: none;
             }
 
             .divider {
@@ -1653,14 +1579,13 @@
 
         @media (max-width: 600px) {
             .topbar {
-                padding: 8px 14px;
+                padding: 10px 16px;
                 flex-wrap: wrap;
-                gap: 6px;
-                height: auto;
+                gap: 8px;
             }
 
             .logo {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
 
             .post-card {
@@ -1671,24 +1596,8 @@
                 font-size: 18px;
             }
 
-            .post-meta-top {
-                gap: 8px;
-            }
-
-            .post-meta-top .meta-avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 12px;
-            }
-
             .comment-item {
                 gap: 10px;
-            }
-
-            .comment-item .c-avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 12px;
             }
 
             .side-card .btn-actions {
@@ -1696,7 +1605,7 @@
             }
 
             .auth-buttons .auth-btn {
-                padding: 4px 12px;
+                padding: 4px 14px;
                 font-size: 12px;
             }
 
@@ -1705,17 +1614,17 @@
             }
 
             #back-to-top {
-                bottom: 16px;
-                right: 16px;
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
             }
 
             .nav-sidebar {
                 grid-template-columns: 1fr 1fr;
                 gap: 2px;
-                padding: 6px;
+                padding: 8px;
             }
 
             .nav-item,
@@ -1774,39 +1683,121 @@
 
 <body>
 
-    <!-- ===== 顶部栏 ===== -->
+    <!-- ===== 顶部栏（与主页完全一致，直接复制） ===== -->
     <div class="topbar">
-        <a href="/" class="logo">✨ Jason227</a>
-        <div class="auth-buttons" id="authButtons">
-            <span style="font-size:13px; color:#aaa;">加载中...</span>
-        </div>
+        <a href="/" class="logo" style="text-decoration: none; color: #e74c3c;">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
     </div>
 
     <!-- ===== 主布局 ===== -->
-    <div class="main-layout">
-        <!-- ===== 侧边栏 ===== -->
+    <div class="main-layout"
+        style="max-width:1400px;margin:0 auto;padding:0 20px 20px 20px;position:relative;min-height:100vh;">
+
+        <!-- ===== 侧边栏（与主页完全一致，直接复制） ===== -->
         <div class="nav-sidebar">
-            <!-- 侧边栏内容（与之前相同，已省略以节约篇幅，实际使用时请保留完整侧边栏） -->
-            <!-- 此处保留占位，实际部署时请复制完整的 nav-sidebar 内容 -->
+            <!-- ===== 主菜单 第一部分（主页 ~ 评测记录） ===== -->
             <div class="nav-group">
                 <ul>
-                    <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="18"
-                                    height="18" fill="currentColor">
+                    <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
                                     <path
                                         d="M240 6.1c9.1-8.2 22.9-8.2 32 0l232 208c9.9 8.8 10.7 24 1.8 33.9s-24 10.7-33.9 1.8l-8-7.2 0 205.3c0 35.3-28.7 64-64 64l-288 0c-35.3 0-64-28.7-64-64l0-205.3-8 7.2c-9.9 8.8-25 8-33.9-1.8s-8-25 1.8-33.9L240 6.1zm16 50.1L96 199.7 96 448c0 8.8 7.2 16 16 16l48 0 0-104c0-39.8 32.2-72 72-72l48 0c39.8 0 72 32.2 72 72l0 104 48 0c8.8 0 16-7.2 16-16l0-248.3-160-143.4zM208 464l96 0 0-104c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24l0 104z" />
                                 </svg></span><span class="nav-text">主页</span></a></li>
                     <li><a class="nav-item" href="/problems"><span class="nav-icon"><svg viewBox="0 0 448 512"
-                                    width="18" height="18" fill="currentColor">
+                                    width="20" height="20" fill="currentColor">
                                     <path
                                         d="M88 0C39.4 0 0 39.4 0 88L0 432c0 44.2 35.8 80 80 80l344 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-8 0 0-76.1C435.3 375 448 353 448 328l0-256c0-39.8-32.2-72-72-72L88 0zM368 400l0 64-288 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l288 0zM80 352c-11.4 0-22.2 2.4-32 6.7L48 88c0-22.1 17.9-40 40-40l288 0c13.3 0 24 10.7 24 24l0 256c0 13.3-10.7 24-24 24L80 352zm48-200c0 13.3 10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0c-13.3 0-24 10.7-24 24zm24 72c-13.3 0-24 10.7-24 24s10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0z" />
                                 </svg></span><span class="nav-text">题库</span></a></li>
-                    <!-- 其他项已省略 -->
+                    <li><a class="nav-item" href="/courses"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2 48 19.8 0 168.5c0 53 86 96 192 96s192-43 192-96l0-168.5 81.2-33.4c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1zM144 384l0-148.7 113.2 46.6c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1L432 235.3 432 384c0 .1 0 .1 0 .3s-.1 .4-.3 .9c-.4 .9-1.3 2.7-3.4 5.2-4.4 5.2-12.6 11.9-26 18.6-26.8 13.4-67.1 23-114.3 23s-87.5-9.7-114.3-23c-13.4-6.7-21.6-13.4-26-18.6-2.1-2.5-3-4.3-3.4-5.2-.2-.5-.3-.8-.3-.9s0-.2 0-.3zM87.2 160L275.5 82.5c4-1.6 8.2-2.5 12.5-2.5s8.5 .8 12.5 2.5L488.8 160 300.5 237.5c-4 1.6-8.2 2.5-12.5 2.5s-8.5-.8-12.5-2.5L87.2 160z" />
+                                </svg></span><span class="nav-text">网校</span></a></li>
+                    <li><a class="nav-item" href="/training"><span class="nav-icon"><svg viewBox="0 0 384 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M152 96l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0 48c-37.1 0-67.6-28-71.6-64L64 80c-8.8 0-16 7.2-16 16l0 352c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-352c0-8.8-7.2-16-16-16l-16.4 0c-4 36-34.5 64-71.6 64l-80 0zM232 0c25 0 47 12.7 59.9 32L320 32c35.3 0 64 28.7 64 64l0 352c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l28.1 0C105 12.7 127 0 152 0l80 0zM171.2 193.1c8.2 6.7 9.5 18.8 2.8 27l-45.3 56c-3.7 4.5-9.2 7.1-15 7.1s-11.3-2.7-14.9-7.2L73.9 244.9c-6.6-8.3-5.3-20.4 3-27s20.4-5.3 27 3l10 12.5 30.3-37.5c6.7-8.2 18.8-9.5 27-2.8zM192 256c0-13.3 10.7-24 24-24l64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0c-13.3 0-24-10.7-24-24zm-16 96c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24zm-64-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                </svg></span><span class="nav-text">训练题单</span></a></li>
+                    <li><a class="nav-item" href="/contests"><span class="nav-icon"><svg viewBox="0 0 512 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M488 56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24s24-10.7 24-24l0-400zM360 128c-13.3 0-24 10.7-24 24l0 304c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-13.3-10.7-24-24-24zM280 248c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 208c0 13.3 10.7 24 24 24s24-10.7 24-24l0-208zM152 320c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zM48 384c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48c0-13.3-10.7-24-24-24z" />
+                                </svg></span><span class="nav-text">比赛</span></a></li>
+                    <li><a class="nav-item" href="/submissions"><span class="nav-icon"><svg viewBox="0 0 576 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M352.4 54l0 138 138 0C473 124.6 419.9 71.4 352.4 54zm-144 210l0-173.1c-74.6 26.4-128 97.5-128 181.1 0 106 86 192 192 192 24.6 0 48-4.6 69.5-12.9L225 309.9c-10.7-12.9-16.6-29.2-16.6-45.9zm333.9-55.9c2.3 17.5-12.2 31.9-29.9 31.9l-176 0c-17.7 0-32-14.3-32-32l0-176c0-17.7 14.4-32.2 31.9-29.9 107 14.2 191.8 99 206 206zM256.4 66.7l0 197.3c0 5.6 2 11 5.5 15.3L394 438.7c11.7 14.1 9.2 35.4-6.9 44.1-34.1 18.6-73.2 29.2-114.7 29.2-132.5 0-240-107.5-240-240 0-115.5 81.5-211.9 190.2-234.8 18.1-3.8 33.8 11 33.8 29.5zM541.7 288c18.5 0 33.3 15.7 29.5 33.8-10.2 48.4-35 91.4-69.6 124.2-12.3 11.7-31.6 9.2-42.4-3.9L374.9 340.4c-17.3-20.9-2.4-52.4 24.6-52.4l142.2 0z" />
+                                </svg></span><span class="nav-text">评测记录</span></a></li>
                 </ul>
             </div>
-            <!-- 实际部署时请补全所有侧边栏条目 -->
+
+            <!-- ★ 分割线 ①：评测记录 ↔ 讨论区 -->
+            <div class="divider"></div>
+
+            <!-- ===== 主菜单 第二部分（讨论区、文章广场） ===== -->
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M76.2 258.7c6.1-15.2 4-32.6-5.6-45.9-14.5-20.1-22.6-43.7-22.6-68.8 0-66.8 60.5-128 144-128s144 61.2 144 128-60.5 128-144 128c-15.9 0-31.1-2.3-45.3-6.5-10.3-3.1-21.4-2.5-31.4 1.5l-50.4 20.2 11.4-28.5zM0 144c0 35.8 11.6 69.1 31.7 96.8L1.9 315.2c-1.3 3.2-1.9 6.6-1.9 10 0 14.8 12 26.8 26.8 26.8 3.4 0 6.8-.7 10-1.9l96.3-38.5c18.6 5.5 38.4 8.4 58.9 8.4 106 0 192-78.8 192-176S298-32 192-32 0 46.8 0 144zM384 512c20.6 0 40.3-3 58.9-8.4l96.3 38.5c3.2 1.3 6.6 1.9 10 1.9 14.8 0 26.8-12 26.8-26.8 0-3.4-.7-6.8-1.9-10l-29.7-74.4c20-27.8 31.7-61.1 31.7-96.8 0-82.4-61.7-151.5-145-170.7-1.6 16.3-5.1 31.9-10.1 46.9 63.9 14.8 107.2 67.3 107.2 123.9 0 25.1-8.1 48.7-22.6 68.8-9.6 13.3-11.7 30.6-5.6 45.9l11.4 28.5-50.4-20.2c-10-4-21.1-4.5-31.4-1.5-14.2 4.2-29.4 6.5-45.3 6.5-72.2 0-127.1-45.7-140.7-101.2-15.6 3.2-31.7 5-48.1 5.2 16.4 81.9 94.7 144 188.8 144z" />
+                                </svg></span><span class="nav-text">讨论区</span></a></li>
+                    <li><a class="nav-item" href="/articles"><span class="nav-icon"><svg viewBox="0 0 512 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M168 80c-13.3 0-24 10.7-24 24l0 304c0 8.4-1.4 16.5-4.1 24L440 432c13.3 0 24-10.7 24-24l0-304c0-13.3-10.7-24-24-24L168 80zM72 480c-39.8 0-72-32.2-72-72L0 112C0 98.7 10.7 88 24 88s24 10.7 24 24l0 296c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-39.8 32.2-72 72-72l272 0c39.8 0 72 32.2 72 72l0 304c0 39.8-32.2 72-72 72L72 480zM192 152c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 48c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-48zm152 24l48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zM216 256l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 80l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z" />
+                                </svg></span><span class="nav-text">文章广场</span></a></li>
+                </ul>
+            </div>
+
+            <!-- ★ 分割线 ②：文章广场 ↔ 更多功能 -->
+            <div class="divider"></div>
+
+            <!-- ===== 更多功能（无图标） ===== -->
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/upload"><span class="nav-icon"></span><span
+                                class="nav-text">图片上传</span></a></li>
+                    <li><a class="nav-item" href="/clipboard"><span class="nav-icon"></span><span
+                                class="nav-text">云剪贴板</span></a></li>
+                    <li><a class="nav-item" href="/themes"><span class="nav-icon"></span><span
+                                class="nav-text">主题商店</span></a></li>
+                    <li><a class="nav-item" href="/ranking/gu"><span class="nav-icon"></span><span
+                                class="nav-text">咕值排名</span></a></li>
+                    <li><a class="nav-item" href="/ranking/rating"><span class="nav-icon"></span><span
+                                class="nav-text">等级分排名</span></a></li>
+                    <li><a class="nav-item" href="/luogu"><span class="nav-icon"></span><span
+                                class="nav-text">洛谷有题</span></a></li>
+                    <li><a class="nav-item" href="/feedback"><span class="nav-icon"></span><span
+                                class="nav-text">工单/反馈</span></a></li>
+                </ul>
+            </div>
+
+            <!-- ★ 分割线 ③：工单/反馈 ↔ 相关链接 -->
+            <div class="divider"></div>
+
+            <!-- ===== 相关链接（无图标） ===== -->
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/help"><span class="nav-icon"></span><span
+                                class="nav-text">帮助中心</span></a></li>
+                    <li><a class="nav-item" href="/contact"><span class="nav-icon"></span><span
+                                class="nav-text">联系我们</span></a></li>
+                    <li><a class="nav-item" href="/rules"><span class="nav-icon"></span><span
+                                class="nav-text">社区规则</span></a></li>
+                    <li><a class="nav-item" href="/judgement"><span class="nav-icon"></span><span
+                                class="nav-text">陶片放逐</span></a></li>
+                    <li><a class="nav-item" href="/admins"><span class="nav-icon"></span><span
+                                class="nav-text">管理名单</span></a></li>
+                    <li><a class="nav-item" href="/admin/user" id="userManageItem" style="display:none;"><span
+                                class="nav-icon"></span><span class="nav-text">用户管理</span></a></li>
+                </ul>
+            </div>
         </div>
 
-        <!-- ===== 内容区域 ===== -->
+        <!-- ===== 内容区域（帖子详情） ===== -->
         <div class="content-wrapper">
             <div class="sidebar-container">
                 <!-- 左侧信息卡片 -->
@@ -1832,35 +1823,23 @@
 
                 <!-- 主内容 -->
                 <div class="main">
-                    <!-- 加载状态 -->
                     <div id="loadingState" class="loading-state">
                         <div class="spinner"></div>
                         <p>加载中...</p>
                     </div>
-
-                    <!-- 帖子内容 -->
                     <div id="postContent" style="display:none;"></div>
-
-                    <!-- 回复数信息 -->
                     <div id="replyInfo" style="display:none; margin: 12px 0 8px 0; font-size: 14px; color: #8a9aa8;">
                         <span id="replyCountDisplay" style="font-weight:600; color: #1a2632;"></span>
                     </div>
-
-                    <!-- 评论区域 -->
                     <div id="commentSection" class="comment-section" style="display:none;">
                         <div id="commentList"></div>
                         <div class="pagination-wrap" id="paginationWrap"></div>
-
-                        <!-- 回复编辑器 -->
                         <div id="replyEditorContainer" style="display:none;">
                             <div class="reply-editor">
-                                <div class="editor-title">
-                                    <i class="fas fa-pencil-alt"></i> 编辑回复
-                                </div>
-
-                                <!-- 工具栏 -->
+                                <div class="editor-title"><i class="fas fa-pencil-alt"></i> 编辑回复</div>
+                                <!-- 工具栏（已包含在代码中，省略……） -->
                                 <div class="cs-toolbar" id="editorToolbar">
-                                    <!-- 标题 -->
+                                    <!-- 标题组 -->
                                     <span class="cs-toolbar-group">
                                         <span class="cs-toolbar-tool" data-action="heading-up" title="提升一级">
                                             <svg viewBox="0 0 640 512">
@@ -2029,8 +2008,6 @@
                                         </span>
                                     </span>
                                 </div>
-
-                                <!-- 编辑区 -->
                                 <div class="cs-content" id="editorContent">
                                     <div class="cs-zone-half" style="padding:0;">
                                         <textarea class="cs-editor" id="replyInput"
@@ -2042,39 +2019,28 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- 底部 -->
                                 <div class="cs-footer">
-                                    <div class="cs-footer-left">
-                                        <span id="wordCount">字数统计：0 字符</span>
-                                    </div>
+                                    <div class="cs-footer-left"><span id="wordCount">字数统计：0 字符</span></div>
                                     <div class="cs-footer-right">
                                         <button class="cs-footer-button" id="toggleScrollSync">禁用滚动同步</button>
                                         <button class="cs-footer-button" id="scrollToTopEditor">回到顶部</button>
                                     </div>
                                 </div>
-
-                                <p class="lfe-caption">
-                                    希望更丰富的展现？阅读 <a href="https://help.luogu.com.cn/rules/academic/handbook/markdown"
+                                <p class="lfe-caption">希望更丰富的展现？阅读 <a
+                                        href="https://help.luogu.com.cn/rules/academic/handbook/markdown"
                                         target="_blank">Markdown 使用帮助</a>、<a
                                         href="https://help.luogu.com.cn/rules/academic/handbook/latex"
-                                        target="_blank">KaTeX 文档</a>。
-                                </p>
-
-                                <!-- 底部操作栏 -->
+                                        target="_blank">KaTeX 文档</a>。</p>
                                 <div class="reply-bottom">
                                     <div class="reply-bottom-left">
                                         <input class="captcha-input" id="captchaInput" placeholder="点击获取图形验证码"
                                             type="text">
                                     </div>
-                                    <button class="btn-submit" id="submitReplyBtn">
-                                        <i class="fas fa-paper-plane"></i> 发表
-                                    </button>
+                                    <button class="btn-submit" id="submitReplyBtn"><i class="fas fa-paper-plane"></i>
+                                        发表</button>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- 未登录提示 -->
                         <div id="loginToComment"
                             style="display:none; text-align:center; padding:12px 0; font-size:14px; color:#8a9aa8;">
                             <a href="#" id="loginToCommentLink" style="color:#e74c3c;">登录</a> 后发表评论
@@ -2090,9 +2056,6 @@
 
     <footer>© 2026 ✨ Jason227</footer>
 
-    <!-- ============================================================ -->
-    <!-- JavaScript -->
-    <!-- ============================================================ -->
     <script>
         (function () {
             'use strict';
@@ -2104,12 +2067,14 @@
 
             // ===== 全局状态 =====
             let currentUser = null;
+            let currentProfile = null;
             let currentPost = null;
             let currentComments = [];
             let currentPage = 1;
             const PAGE_SIZE = 10;
             let totalComments = 0;
             let totalPages = 1;
+            let unreadTimer = null;
 
             // ===== 工具函数 =====
             function escapeHtml(str) {
@@ -2146,18 +2111,14 @@
                         .padStart(2, '0');
             }
 
-            function getColorByUsername(name) {
-                if (!name) return '#e74c3c';
-                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#e84393'];
-                let hash = 0;
-                for (let i = 0; i < name.length; i++) {
-                    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                return colors[Math.abs(hash) % colors.length];
-            }
-
             function getAvatarLetter(name) {
                 return (name || 'U').charAt(0).toUpperCase();
+            }
+
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
 
             // ===== markdown-it 初始化 =====
@@ -2168,16 +2129,25 @@
             md.use(window.markdownitDeflist);
             md.use(window.markdownitAbbr);
 
-            // ============================================================
-            // 完整 Markdown 渲染引擎（复制自首页，支持所有扩展语法）
-            // ============================================================
+            // ===== 获取用户画像 =====
+            async function getProfile(userId) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users, username_color, user_tag, is_cheater')
+                    .eq('id', userId)
+                    .single();
+                if (error) return null;
+                return data;
+            }
 
-            // ---------- 洛谷扩展预处理 ----------
+            // ============================================================
+            // 完整 Markdown 渲染引擎（与主页完全一致）
+            // ============================================================
             function preprocessLuoguSyntax(text) {
                 text = text.replace(/!\[\]\(bilibili:([^)]+)\)/g, (match, param) => {
-                    let bvid = '';
-                    let aid = '';
-                    let extraParams = '';
+                    let bvid = '',
+                        aid = '',
+                        extraParams = '';
                     const queryIndex = param.indexOf('?');
                     let base = param;
                     if (queryIndex !== -1) {
@@ -2186,15 +2156,10 @@
                         extraParams = extraParams.replace(/^\?/, '&');
                     }
                     const lowerBase = base.toLowerCase();
-                    if (lowerBase.startsWith('bv')) {
-                        bvid = base;
-                    } else if (lowerBase.startsWith('av')) {
-                        aid = base.substring(2);
-                    } else if (/^\d+$/.test(base)) {
-                        aid = base;
-                    } else {
-                        return match;
-                    }
+                    if (lowerBase.startsWith('bv')) bvid = base;
+                    else if (lowerBase.startsWith('av')) aid = base.substring(2);
+                    else if (/^\d+$/.test(base)) aid = base;
+                    else return match;
                     let embedUrl = 'https://player.bilibili.com/player.html?';
                     if (bvid) embedUrl += `bvid=${bvid}`;
                     else if (aid) embedUrl += `aid=${aid}`;
@@ -2202,9 +2167,9 @@
                     if (!extraParams.includes('page=')) embedUrl += '&page=1';
                     return `<iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
                 });
-                text = text.replace(/!\[\]\(embed:([^)]+)\)/g, (match, url) => {
-                    return `<iframe src="${url}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
-                });
+                text = text.replace(/!\[\]\(embed:([^)]+)\)/g, (match, url) =>
+                    `<iframe src="${url}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
+                );
                 text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =>
                     `<iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
                 );
@@ -2213,7 +2178,6 @@
                 return text;
             }
 
-            // ---------- 解析嵌套折叠框 ----------
             function parseNestedDetails(text) {
                 const lines = text.split('\n');
                 const output = [];
@@ -2232,8 +2196,8 @@
                             const typeMatch = rest.match(/^([a-zA-Z0-9]+)/);
                             if (typeMatch) {
                                 const type = typeMatch[1];
-                                let title = '';
-                                let openAttr = '';
+                                let title = '',
+                                    openAttr = '';
                                 let remaining = rest.slice(type.length).trim();
                                 const titleMatch = remaining.match(/^\[([^\]]*)\]/);
                                 if (titleMatch) {
@@ -2245,20 +2209,14 @@
                                     openAttr = ' open';
                                     remaining = remaining.slice(6).trim();
                                 }
-                                if (!remaining) {
-                                    startMatch = { colonsCount, type, title, openAttr };
-                                }
+                                if (!remaining) startMatch = { colonsCount, type, title, openAttr };
                             }
                         }
                     }
                     if (startMatch && ['info', 'success', 'warning', 'error'].includes(startMatch.type)) {
                         const node = {
-                            type: startMatch.type,
-                            title: startMatch.title,
-                            openAttr: startMatch.openAttr,
-                            colonsCount: startMatch.colonsCount,
-                            contentLines: [],
-                            children: []
+                            type: startMatch.type, title: startMatch.title, openAttr: startMatch.openAttr,
+                            colonsCount: startMatch.colonsCount, contentLines: [], children: []
                         };
                         stack.push(node);
                         i++;
@@ -2268,9 +2226,7 @@
                     if (trimmed.startsWith(':::')) {
                         let colonsCount = 0;
                         while (colonsCount < trimmed.length && trimmed[colonsCount] === ':') colonsCount++;
-                        if (colonsCount >= 3 && trimmed.slice(colonsCount).trim() === '') {
-                            endMatch = { colonsCount };
-                        }
+                        if (colonsCount >= 3 && trimmed.slice(colonsCount).trim() === '') endMatch = { colonsCount };
                     }
                     if (endMatch && stack.length > 0) {
                         const top = stack[stack.length - 1];
@@ -2281,47 +2237,39 @@
                                 roots.push(node);
                                 output.push(`%%DETAILS_ROOT_${idx}%%`);
                             } else {
-                                stack[stack.length - 1].children.push(node);
+                                stack[stack.length - 1].children.push(
+                                    node);
                             }
                             i++;
                             continue;
                         }
                     }
-                    if (stack.length > 0) {
-                        stack[stack.length - 1].contentLines.push(rawLine);
-                    } else {
-                        output.push(rawLine);
-                    }
+                    if (stack.length > 0) stack[stack.length - 1].contentLines.push(rawLine);
+                    else output.push(rawLine);
                     i++;
                 }
                 while (stack.length > 0) {
-                    const node = stack.pop();
-                    const idx = roots.length;
+                    const node = stack.pop(); const idx = roots.length;
                     roots.push(node);
                     output.push(`%%DETAILS_ROOT_${idx}%%`);
                 }
                 return { roots, output: output.join('\n') };
             }
 
-            // ---------- LaTeX 渲染 ----------
             function renderLatex(text) {
                 if (!text) return '';
                 text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
                     let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-                    try {
-                        return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`;
-                    } catch (e) { return match; }
+                    try { return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`; } catch (
+                    e) { return match; }
                 });
                 text = text.replace(/\$([^$]+?)\$/g, (match, math) => {
                     let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-                    try {
-                        return katex.renderToString(realMath, { throwOnError: false });
-                    } catch (e) { return match; }
+                    try { return katex.renderToString(realMath, { throwOnError: false }); } catch (e) { return match; }
                 });
                 return text;
             }
 
-            // ---------- 渲染折叠框节点 ----------
             function renderDetailsNode(node) {
                 let content = node.contentLines.join('\n');
                 content = renderLatex(content);
@@ -2333,7 +2281,6 @@
                 return `<details class="${escapeHtmlAttr(node.type)}"${openAttr}><summary>${renderedTitle}</summary>${renderedContent}${childrenHtml}</details>`;
             }
 
-            // ---------- 生成目录 ----------
             function generateTOC(htmlText, uniqueId) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
@@ -2356,15 +2303,8 @@
                 let currentLevel = 0;
                 for (const item of tocItems) {
                     const level = item.level;
-                    if (level > currentLevel) {
-                        for (let j = 0; j < level - currentLevel; j++) {
-                            tocHtml += '<ul>';
-                        }
-                    } else if (level < currentLevel) {
-                        for (let j = 0; j < currentLevel - level; j++) {
-                            tocHtml += '</ul>';
-                        }
-                    }
+                    if (level > currentLevel) { for (let j = 0; j < level - currentLevel; j++) tocHtml += '<ul>'; } else if (
+                        level < currentLevel) { for (let j = 0; j < currentLevel - level; j++) tocHtml += '</ul>'; }
                     tocHtml += `<li><a href="#${item.id}">${item.text}</a></li>`;
                     currentLevel = level;
                 }
@@ -2378,7 +2318,6 @@
                 return newHtml;
             }
 
-            // ---------- 主渲染函数 ----------
             function renderContent(rawText, mentionMap, hasSpecialPrivilege, username, uniqueId) {
                 if (!rawText) return '';
                 rawText = rawText
@@ -2387,25 +2326,21 @@
                     .replace(/&quot;/g, '"')
                     .replace(/&#39;/g, "'")
                     .replace(/&amp;/g, '&');
-
                 const { roots, output } = parseNestedDetails(rawText);
                 rawText = output;
                 const detailRoots = roots;
-
                 const mermaidBlocks = [];
                 rawText = rawText.replace(/```mermaid\s*([\s\S]*?)```/g, (match, code) => {
                     const idx = mermaidBlocks.length;
                     mermaidBlocks.push(code.trim());
                     return `%%MERMAID_${idx}%%`;
                 });
-
                 const lines = rawText.split('\n');
                 const blocks = [];
                 let processedLines = [];
-                let inFence = false;
-                let fenceContent = [];
-                let blockIdx = 0;
-
+                let inFence = false,
+                    fenceContent = [],
+                    blockIdx = 0;
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];
                     const prefixMatch = line.match(/^(>\s*)+/);
@@ -2421,8 +2356,8 @@
                             inFence = false;
                             const content = fenceContent.join('\n');
                             const firstLine = fenceContent[0] || '';
-                            let lang = '';
-                            let filename = '';
+                            let lang = '',
+                                filename = '';
                             if (firstLine.startsWith('```')) {
                                 const params = firstLine.slice(3).trim();
                                 const parts = params.split(/\s+/);
@@ -2431,22 +2366,18 @@
                                     const [langPart, ...fileParts] = firstPart.split(':');
                                     lang = langPart;
                                     filename = fileParts.join(':');
-                                } else {
-                                    lang = firstPart;
-                                }
+                                } else lang = firstPart;
                             }
                             blocks.push({ type: 'fence', content, filename, lang });
                             blockIdx++;
                         }
-                    } else {
-                        processedLines.push(line);
-                    }
+                    } else processedLines.push(line);
                 }
                 if (inFence && fenceContent.length > 0) {
                     const content = fenceContent.join('\n');
                     const firstLine = fenceContent[0] || '';
-                    let lang = '';
-                    let filename = '';
+                    let lang = '',
+                        filename = '';
                     if (firstLine.startsWith('```')) {
                         const params = firstLine.slice(3).trim();
                         const parts = params.split(/\s+/);
@@ -2455,15 +2386,12 @@
                             const [langPart, ...fileParts] = firstPart.split(':');
                             lang = langPart;
                             filename = fileParts.join(':');
-                        } else {
-                            lang = firstPart;
-                        }
+                        } else lang = firstPart;
                     }
                     blocks.push({ type: 'fence', content, filename, lang });
                     blockIdx++;
                 }
                 let processed = processedLines.join('\n');
-
                 processed = processed.replace(/`([^`]+)`/g, (match, code) => {
                     if (/^%%BLOCK\d+%%$/.test(match)) return match;
                     const idx = blocks.length;
@@ -2471,21 +2399,18 @@
                     blocks.push({ type: 'inline', content: safeCode });
                     return `%%BLOCK${idx}%%`;
                 });
-
                 processed = preprocessLuoguSyntax(processed);
                 processed = renderLatex(processed);
-
                 processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x(\d*)\)/g, (match, alt, url, width, height) => {
                     const style = `width:${width}px;${height ? ` height:${height}px;` : ''}`;
                     return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="${style}">`;
                 });
-                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x\)/g, (match, alt, url, width) => {
-                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="width:${width}px; height:auto;">`;
-                });
-                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*x(\d+)\)/g, (match, alt, url, height) => {
-                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="height:${height}px; width:auto;">`;
-                });
-
+                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x\)/g, (match, alt, url, width) =>
+                    `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="width:${width}px; height:auto;">`
+                );
+                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*x(\d+)\)/g, (match, alt, url, height) =>
+                    `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="height:${height}px; width:auto;">`
+                );
                 processed = processed.replace(/~~([^~]+)~~/g, '<del>$1</del>');
                 processed = processed.replace(/==([^=]+)==/g, '<mark>$1</mark>');
                 processed = processed.replace(/\+\+([^+]+)\+\+/g, '<ins>$1</ins>');
@@ -2495,17 +2420,16 @@
                 processed = processed.replace(/\[\[TOC\]\]/g, '%%TOC_PLACEHOLDER%%');
                 processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
                 processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, '[[TOC]]');
-
                 if (hasSpecialPrivilege) {
-                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
-                        return `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`;
-                    });
+                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) =>
+                        `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`
+                    );
                     processed = processed.replace(/\{rainbow\}([\s\S]*?)\{rainbow\}/g, (match, content) => {
                         const chars = content.split('');
                         const len = chars.length;
                         if (len === 0) return '';
-                        const startHue = 0;
-                        const endHue = 300;
+                        const startHue = 0,
+                            endHue = 300;
                         let result = '';
                         for (let i = 0; i < len; i++) {
                             const hue = startHue + (endHue - startHue) * (i / (len - 1));
@@ -2513,32 +2437,26 @@
                         }
                         return `<span style="font-weight:bold;">${result}</span>`;
                     });
-                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) => {
-                        return `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`;
-                    });
+                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) =>
+                        `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`
+                    );
                 }
-
                 let html = md.render(processed);
-
                 if (uniqueId) {
                     html = html.replace(/\bid="(fn|fnref)(\d+)"/g, `id="${uniqueId}-$1$2"`);
                     html = html.replace(/href="#(fn|fnref)(\d+)"/g, `href="#${uniqueId}-$1$2"`);
                 }
-
                 html = generateTOC(html, uniqueId);
-
                 html = html.replace(/%%MERMAID_(\d+)%%/g, (match, idx) => {
                     const code = mermaidBlocks[parseInt(idx)];
                     if (!code) return match;
                     return `<div class="mermaid">${code}</div>`;
                 });
-
                 html = html.replace(/%%DETAILS_ROOT_(\d+)%%/g, (match, idx) => {
                     const node = detailRoots[parseInt(idx)];
                     if (!node) return match;
                     return renderDetailsNode(node);
                 });
-
                 html = html.replace(/%%ALIGN_CENTER%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
                     const rendered = md.render(content);
                     return `<div class="align-center">${rendered}</div>`;
@@ -2547,15 +2465,11 @@
                     const rendered = md.render(content);
                     return `<div class="align-right">${rendered}</div>`;
                 });
-
                 html = html.replace(/“/g, '"').replace(/”/g, '"');
-
                 html = html.replace(/%%BLOCK(\d+)%%/g, (match, idx) => {
                     let block = blocks[parseInt(idx)];
                     if (!block) return '';
-                    if (block.type === 'inline') {
-                        return `<code>${escapeHtml(block.content)}</code>`;
-                    }
+                    if (block.type === 'inline') return `<code>${escapeHtml(block.content)}</code>`;
                     const lines = block.content.split('\n');
                     const firstLine = lines[0];
                     let lang = '',
@@ -2575,9 +2489,7 @@
                     }
                     let codeContent = lines.slice(1, -1).join('\n');
                     let titleHtml = '';
-                    if (block.filename) {
-                        titleHtml = `<div class="code-filename">${escapeHtml(block.filename)}</div>`;
-                    }
+                    if (block.filename) titleHtml = `<div class="code-filename">${escapeHtml(block.filename)}</div>`;
                     let codeHtml = '';
                     const codeLines = codeContent.split('\n');
                     if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
@@ -2589,14 +2501,10 @@
                         const lineContent = codeLines[i] || ' ';
                         let lineClass = '';
                         if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines
-                            .end) {
-                            lineClass = ' code-highlight-line';
-                        }
+                            .end) lineClass = ' code-highlight-line';
                         codeHtml += `<div class="code-line${lineClass}">`;
-                        if (showLineNumbers) {
-                            codeHtml +=
-                                `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
-                        }
+                        if (showLineNumbers) codeHtml +=
+                            `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
                         codeHtml += `<span class="code-text">${escapeHtml(lineContent)}</span>`;
                         codeHtml += `</div>`;
                     }
@@ -2613,16 +2521,13 @@
                 </div>
                 `;
                 });
-
                 html = html.replace(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g, (match, username) => {
                     const uid = mentionMap && mentionMap[username];
                     if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
                     return match;
                 });
-
                 html = html.replace(/<p><\/p>\s*$/, '').replace(/<br\s*\/?>\s*$/, '').trim();
                 html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
-
                 return DOMPurify.sanitize(html, {
                     ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del',
                         'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'details', 'summary'
@@ -2641,7 +2546,8 @@
                 if (!toast) {
                     toast = document.createElement('div');
                     toast.className = 'swal2-toast-copy';
-                    toast.innerHTML = `
+                    toast.innerHTML =
+                        `
                         <svg class="success-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#a5dc86" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
@@ -2654,9 +2560,7 @@
                 }
                 toast.classList.add('show');
                 clearTimeout(toast._hideTimer);
-                toast._hideTimer = setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
+                toast._hideTimer = setTimeout(() => { toast.classList.remove('show'); }, 2000);
             }
 
             function fallbackCopy(text, btn) {
@@ -2669,9 +2573,7 @@
                 try {
                     document.execCommand('copy');
                     showCopyToast();
-                } catch (e) {
-                    alert('复制失败，请手动复制');
-                }
+                } catch (e) { alert('复制失败，请手动复制'); }
                 document.body.removeChild(textarea);
             }
 
@@ -2682,19 +2584,14 @@
                 if (!pre) return;
                 const codeTexts = pre.querySelectorAll('.code-text');
                 let code = '';
-                codeTexts.forEach(el => {
-                    code += el.textContent + '\n';
-                });
+                codeTexts.forEach(el => { code += el.textContent + '\n'; });
                 code = code.replace(/\n$/, '');
                 if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(code).then(() => {
-                        showCopyToast();
-                    }).catch(() => {
-                        fallbackCopy(code, btn);
+                    navigator.clipboard.writeText(code).then(() => { showCopyToast(); }).catch(() => {
+                        fallbackCopy(code,
+                            btn);
                     });
-                } else {
-                    fallbackCopy(code, btn);
-                }
+                } else { fallbackCopy(code, btn); }
             };
 
             // ============================================================
@@ -2722,42 +2619,91 @@
             }
 
             // ============================================================
-            // 认证相关
+            // 认证相关（与主页完全一致）
             // ============================================================
             async function getSupabaseSession() {
                 const { data: { session } } = await supabase.auth.getSession();
                 return session;
             }
 
-            async function fetchProfile(userId) {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('username, can_manage_posts, special_privilege')
-                    .eq('id', userId)
-                    .maybeSingle();
-                if (error) return null;
-                return data;
+            async function fetchUnreadCount() {
+                if (!currentProfile) return;
+                try {
+                    const { count, error } = await supabase.from('notifications').select('*', {
+                        count: 'exact',
+                        head: true
+                    }).eq('user_number', currentProfile.user_number).eq('read', false);
+                    if (!error && count !== null) {
+                        const badge = document.getElementById('bell-badge');
+                        if (badge) {
+                            if (count > 0) {
+                                badge.textContent = count > 99 ? '99+' : count;
+                                badge.style.display = 'inline-flex';
+                            } else { badge.style.display = 'none'; }
+                        }
+                    }
+                } catch (err) { console.error(err); }
+            }
+
+            function startUnreadPolling() {
+                if (unreadTimer) clearInterval(unreadTimer);
+                unreadTimer = setInterval(() => {
+                    if (currentProfile && document.visibilityState === 'visible') fetchUnreadCount();
+                }, 30000);
+            }
+
+            function stopUnreadPolling() {
+                if (unreadTimer) {
+                    clearInterval(unreadTimer);
+                    unreadTimer = null;
+                }
             }
 
             async function updateNav() {
                 var container = document.getElementById('authButtons');
                 var session = await getSupabaseSession();
                 if (session) {
-                    var profile = await fetchProfile(session.user.id);
+                    var profile = await getProfile(session.user.id);
                     var username = profile?.username || session.user.email || '用户';
                     currentUser = { id: session.user.id, username: username, profile: profile };
-                    container.innerHTML =
-                        '<a href="/user/notification" class="bell-icon" style="color:#666;"><svg viewBox="0 0 448 512" width="18" height="18"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/></svg><sup id="bell-badge" style="display:none;">0</sup></a><span class="user-email">' +
-                        escapeHtml(username) +
-                        '</span><button class="auth-btn logout" id="logoutBtn">登出</button>';
+                    currentProfile = profile;
+                    let html = '';
+                    if (profile?.user_number) html +=
+                        `<a href="/user/${profile.user_number}" class="user-email">${escapeHtmlAttr(username)}</a>`;
+                    else html += `<span class="user-email">${escapeHtmlAttr(username)}</span>`;
+                    html +=
+                        `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
+                    html += `<button class="auth-btn logout" id="logoutBtn">登出</button>`;
+                    container.innerHTML = html;
                     document.getElementById('logoutBtn').addEventListener('click', function () {
                         supabase.auth.signOut();
                         window.location.href = '/';
                     });
+                    const userManageItem = document.getElementById('userManageItem');
+                    if (userManageItem) {
+                        if (profile && profile.can_manage_users === true) { userManageItem.style.display = 'flex'; } else { userManageItem.style.display = 'none'; }
+                    }
+                    await fetchUnreadCount();
+                    startUnreadPolling();
+                    const editorContainer = document.getElementById('replyEditorContainer');
+                    const loginTip = document.getElementById('loginToComment');
+                    if (editorContainer) {
+                        editorContainer.style.display = 'block'; if (loginTip) loginTip.style.display =
+                            'none';
+                        loadDraft();
+                    }
                 } else {
                     currentUser = null;
+                    currentProfile = null;
                     container.innerHTML =
                         '<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>';
+                    stopUnreadPolling();
+                    const editorContainer = document.getElementById('replyEditorContainer');
+                    const loginTip = document.getElementById('loginToComment');
+                    if (editorContainer) {
+                        editorContainer.style.display = 'none'; if (loginTip) loginTip.style.display =
+                            'block';
+                    }
                 }
             }
 
@@ -2769,7 +2715,7 @@
                     .from('posts')
                     .select(`
                         id, forum, title, content, author_id, created_at, updated_at, is_deleted,
-                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin )
+                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin, is_cheater )
                     `)
                     .eq('id', postId)
                     .eq('is_deleted', false)
@@ -2793,7 +2739,7 @@
                     .from('comments')
                     .select(`
                         id, content, author_id, created_at,
-                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin )
+                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin, is_cheater )
                     `, { count: 'exact' })
                     .eq('post_id', postId)
                     .order('created_at', { ascending: true })
@@ -2803,7 +2749,7 @@
                     ...c,
                     authorName: c.profiles?.username || '匿名用户',
                     authorId: c.profiles?.user_number || '',
-                    usernameColor: c.profiles?.username_color || '#2c3e50',
+                    usernameColor: c.profiles?.is_cheater ? '#AD8B00' : (c.profiles?.username_color || (c.profiles?.is_admin ? '#9b59b6' : '#2c3e50')),
                     userTag: c.profiles?.user_tag || '',
                     isAdmin: c.profiles?.is_admin || false,
                 }));
@@ -2827,14 +2773,6 @@
             // ============================================================
             // 辅助函数
             // ============================================================
-            function getAvatarSvg(letter, color = '#e74c3c') {
-                const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-                    <rect width="40" height="40" fill="${color}"/>
-                    <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="white" font-size="16">${letter.toUpperCase()}</text>
-                </svg>`;
-                return 'data:image/svg+xml,' + encodeURIComponent(svg);
-            }
-
             function formatAbsoluteTime(ts) {
                 const d = new Date(ts);
                 const pad = n => String(n).padStart(2, '0');
@@ -2854,23 +2792,20 @@
             const previewContent = document.getElementById('previewContent');
             const wordCount = document.getElementById('wordCount');
             const submitReplyBtn = document.getElementById('submitReplyBtn');
-            const captchaInput = document.getElementById('captchaInput');
 
-            // 实时预览
             function updatePreview() {
                 const text = replyInput.value;
                 const rendered = renderContent(
                     text,
                     {},
-                    false,
-                    currentUser?.username || '',
+                    currentProfile?.special_privilege || false,
+                    currentProfile?.username || '',
                     'preview-' + Date.now()
                 );
                 previewContent.innerHTML = rendered || '<p style="color:#b0b8c4;">预览区域，输入内容后将实时渲染</p>';
                 const chars = text.replace(/\s/g, '').length;
                 wordCount.textContent = `字数统计：${chars} 字符`;
                 renderMermaid();
-                // 绑定复制按钮事件
                 document.querySelectorAll('.copy-code-btn').forEach(btn => {
                     btn.addEventListener('click', function (e) {
                         e.stopPropagation();
@@ -2881,10 +2816,9 @@
 
             replyInput.addEventListener('input', updatePreview);
 
-            // 工具栏操作
             function wrapSelection(before, after) {
-                const start = replyInput.selectionStart;
-                const end = replyInput.selectionEnd;
+                const start = replyInput.selectionStart,
+                    end = replyInput.selectionEnd;
                 const text = replyInput.value;
                 const selected = text.substring(start, end);
                 const replacement = before + selected + after;
@@ -2968,11 +2902,8 @@
                             break;
                         case 'fullscreen':
                             const editor = document.querySelector('.reply-editor');
-                            if (!document.fullscreenElement) {
-                                editor.requestFullscreen().catch(() => { });
-                            } else {
-                                document.exitFullscreen().catch(() => { });
-                            }
+                            if (!document.fullscreenElement) editor.requestFullscreen().catch(() => { });
+                            else document.exitFullscreen().catch(() => { });
                             break;
                         case 'help':
                             window.open('https://help.luogu.com.cn/rules/academic/handbook/markdown', '_blank');
@@ -2985,22 +2916,17 @@
                 });
             });
 
-            // 滚动同步（简化版）
             let scrollSyncEnabled = true;
             document.getElementById('toggleScrollSync').addEventListener('click', function () {
                 scrollSyncEnabled = !scrollSyncEnabled;
                 this.textContent = scrollSyncEnabled ? '禁用滚动同步' : '启用滚动同步';
             });
-
             document.getElementById('scrollToTopEditor').addEventListener('click', function () {
                 document.querySelector('.cs-content').scrollTop = 0;
             });
 
-            // 自动保存草稿
             setInterval(function () {
-                if (currentPost) {
-                    localStorage.setItem('reply_draft_' + currentPost.id, replyInput.value);
-                }
+                if (currentPost) localStorage.setItem('reply_draft_' + currentPost.id, replyInput.value);
             }, 30000);
 
             function loadDraft() {
@@ -3013,21 +2939,12 @@
                 }
             }
 
-            // 提交回复
             async function handleSubmitReply() {
                 const text = replyInput.value.trim();
-                if (!text) {
-                    alert('请输入回复内容');
-                    return;
-                }
-                if (!currentUser) {
-                    document.getElementById('loginToCommentLink').click();
-                    return;
-                }
-
+                if (!text) { alert('请输入回复内容'); return; }
+                if (!currentUser) { document.getElementById('loginToCommentLink').click(); return; }
                 submitReplyBtn.disabled = true;
                 submitReplyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
-
                 try {
                     await createComment(currentPost.id, text, currentUser.id);
                     replyInput.value = '';
@@ -3035,9 +2952,7 @@
                     localStorage.removeItem('reply_draft_' + currentPost.id);
                     await loadComments(1);
                     document.getElementById('commentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } catch (err) {
-                    alert('评论失败：' + err.message);
-                } finally {
+                } catch (err) { alert('评论失败：' + err.message); } finally {
                     submitReplyBtn.disabled = false;
                     submitReplyBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发表';
                 }
@@ -3061,70 +2976,50 @@
                     const userNumber = prof.user_number || '';
                     const isAdmin = prof.is_admin || false;
                     const userTag = prof.user_tag || '';
-                    const color = prof.username_color || (isAdmin ? '#9b59b6' : '#2c3e50');
+                    const color = prof.is_cheater ? '#AD8B00' : (prof.username_color || (isAdmin ? '#9b59b6' : '#2c3e50'));
                     const avatarLetter = getAvatarLetter(username);
-                    const authorColor = '#e74c3c';
-
                     let userTagHtml = '';
                     if (userTag) {
                         userTagHtml =
-                            `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
-                    } else if (isAdmin) {
-                        userTagHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
-                    }
-
+                        `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
+                    } else if (isAdmin) { userTagHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`; }
                     const userHtml =
                         `<a href="/user/${userNumber}" class="post-detail-author" style="color: ${color};">${escapeHtml(username)}</a>`;
-
                     currentPost = post;
-
                     const forumMap = { siteaffairs: '站务版', problem: '题目总版', academics: '学术版' };
                     const forumName = forumMap[post.forum] || post.forum;
                     const timeStrForHeader = formatAbsoluteTimeNoSeconds(post.created_at);
                     const timeStrForSide = formatAbsoluteTime(post.created_at);
-
                     document.getElementById('replyInfo').style.display = 'block';
-
                     let renderedContent = '';
                     try {
-                        renderedContent = renderContent(post.content || '', {}, false, '', 'post-' + post.id);
+                        renderedContent = renderContent(post.content || '', {}, currentProfile?.special_privilege || false,
+                            currentProfile?.username || '', 'post-' + post.id);
                     } catch (e) {
                         console.error('渲染内容失败:', e);
                         renderedContent = '<p style="color:red;">内容渲染出错，请检查格式。</p>';
                     }
-
                     const postHtml = `
                         <div class="post-card">
                             <h1 class="post-detail-title">${escapeHtml(post.title)}</h1>
                             <div class="post-detail-header">
                                 <div class="post-detail-avatar">
-                                    <img src="${getAvatarSvg(avatarLetter, authorColor)}" alt="${escapeHtml(username)}" style="width:48px;height:48px;border-radius:50%;display:block;">
+                                    <img src="${letterAvatar(username)}" alt="${escapeHtml(username)}" style="width:48px;height:48px;border-radius:50%;display:block;">
                                 </div>
                                 <div class="post-detail-info">
-                                    <div class="post-detail-author-line">
-                                        ${userHtml}
-                                        ${userTagHtml}
-                                    </div>
-                                    <div class="post-detail-meta">
-                                        <span>发表于 ${timeStrForHeader}</span>
-                                    </div>
+                                    <div class="post-detail-author-line">${userHtml}${userTagHtml}</div>
+                                    <div class="post-detail-meta"><span>发表于 ${timeStrForHeader}</span></div>
                                 </div>
                             </div>
-                            <div class="post-body">
-                                <div class="lfe-marked">${renderedContent}</div>
-                            </div>
+                            <div class="post-body"><div class="lfe-marked">${renderedContent}</div></div>
                         </div>
                     `;
-
                     document.getElementById('postContent').innerHTML = postHtml;
                     document.getElementById('postContent').style.display = 'block';
-
-                    // 侧边栏
                     const authorCard = document.getElementById('authorCard');
                     if (authorCard) {
-                        const avatarImg = getAvatarSvg(avatarLetter, authorColor);
+                        const avatarImg = letterAvatar(username);
                         const avatarSize = '40px';
-
                         authorCard.innerHTML = `
                             <div class="author-row" style="display:flex;align-items:center;gap:12px;justify-content:center;padding:4px 0;">
                                 <span class="author-label" style="font-size:13px;color:#8a9aa8;flex-shrink:0;">创建者</span>
@@ -3150,22 +3045,13 @@
                                 <a href="#replyEditorContainer" class="btn btn-primary" id="sideReplyBtn" style="flex:1;padding:8px 0;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;text-decoration:none;background:#e74c3c;color:#fff;">
                                     回复
                                 </a>
-                                ${currentUser ? `
-                                    <button class="btn btn-outline" id="reportBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #e74c3c;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#e74c3c;">
-                                        举报
-                                    </button>
-                                ` : ''}
-                                ${currentUser && currentUser.profile && currentUser.profile.can_manage_posts ? `
-                                    <button class="btn btn-outline" id="pinBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #f39c12;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#f39c12;">
-                                        置顶
-                                    </button>
-                                    <button class="btn btn-outline" id="lockBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #3498db;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#3498db;">
-                                        锁定
-                                    </button>
+                                ${currentUser ? `<button class="btn btn-outline" id="reportBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #e74c3c;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#e74c3c;">举报</button>` : ''}
+                                ${currentUser && currentProfile && currentProfile.can_manage_posts ? `
+                                    <button class="btn btn-outline" id="pinBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #f39c12;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#f39c12;">置顶</button>
+                                    <button class="btn btn-outline" id="lockBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #3498db;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#3498db;">锁定</button>
                                 ` : ''}
                             </div>
                         `;
-
                         document.getElementById('sideReplyBtn').addEventListener('click', function (e) {
                             e.preventDefault();
                             document.getElementById('replyEditorContainer').scrollIntoView({
@@ -3174,34 +3060,14 @@
                             });
                             replyInput.focus();
                         });
-
                         authorCard.style.display = 'block';
                     }
-
                     document.getElementById('commentSection').style.display = 'block';
-
-                    // 显示编辑器
-                    const editorContainer = document.getElementById('replyEditorContainer');
-                    const loginTip = document.getElementById('loginToComment');
-                    if (currentUser) {
-                        editorContainer.style.display = 'block';
-                        loginTip.style.display = 'none';
-                        loadDraft();
-                    } else {
-                        editorContainer.style.display = 'none';
-                        loginTip.style.display = 'block';
-                    }
-
                     loadComments(1);
-
                 } catch (err) {
                     console.error('renderPost 执行出错:', err);
                     document.getElementById('postContent').innerHTML = `
-                        <div class="error-state">
-                            <h1>加载失败</h1>
-                            <p>${escapeHtml(err.message || '未知错误')}</p>
-                            <p style="margin-top:12px;"><a href="/discuss" style="color:#e74c3c;">返回讨论区</a></p>
-                        </div>
+                        <div class="error-state"><h1>加载失败</h1><p>${escapeHtml(err.message || '未知错误')}</p><p style="margin-top:12px;"><a href="/discuss" style="color:#e74c3c;">返回讨论区</a></p></div>
                     `;
                     document.getElementById('postContent').style.display = 'block';
                 }
@@ -3213,18 +3079,14 @@
             async function loadComments(page) {
                 if (!currentPost) return;
                 currentPage = page;
-
                 try {
                     const { comments, count } = await fetchComments(currentPost.id, page);
                     currentComments = comments;
                     totalComments = count;
                     totalPages = Math.ceil(count / PAGE_SIZE) || 1;
-
                     document.getElementById('replyCountDisplay').textContent = count + ' 条回复';
-
                     renderComments(comments);
                     renderPagination();
-
                 } catch (err) {
                     console.error('加载评论失败:', err);
                     document.getElementById('commentList').innerHTML =
@@ -3232,42 +3094,28 @@
                 }
             }
 
-            // ============================================================
-            // 渲染评论列表
-            // ============================================================
             function renderComments(comments) {
                 const container = document.getElementById('commentList');
-
                 if (!comments || comments.length === 0) {
                     container.innerHTML =
                         '<div class="empty-comments"><i class="far fa-comment-dots"></i><p>还没有评论，来说点什么吧！</p></div>';
                     return;
                 }
-
                 let html = '';
                 comments.forEach(c => {
-                    const letter = getAvatarLetter(c.authorName);
                     const timeStr = formatTime(c.created_at);
-                    const avatarSvg = getAvatarSvg(letter, '#e74c3c');
+                    const avatarImg = letterAvatar(c.authorName);
                     const usernameColor = c.usernameColor || '#2c3e50';
                     const userTag = c.userTag || '';
                     let tagHtml = '';
-                    if (userTag) {
-                        tagHtml =
-                            `<span class="comment-user-tag" style="background-color: ${usernameColor};">${escapeHtml(userTag)}</span>`;
-                    }
+                    if (userTag) tagHtml =
+                        `<span class="comment-user-tag" style="background-color: ${usernameColor};">${escapeHtml(userTag)}</span>`;
                     html += `
                         <div class="comment-item">
                             <div class="comment-header">
                                 <div class="comment-header-left">
-                                    <div class="comment-avatar">
-                                        <a href="/user/${c.authorId}">
-                                            <img src="${avatarSvg}" alt="${escapeHtml(c.authorName)}">
-                                        </a>
-                                    </div>
-                                    <a class="comment-username" href="/user/${c.authorId}" style="color: ${usernameColor};">
-                                        ${escapeHtml(c.authorName)}
-                                    </a>
+                                    <div class="comment-avatar"><a href="/user/${c.authorId}"><img src="${avatarImg}" alt="${escapeHtml(c.authorName)}"></a></div>
+                                    <a class="comment-username" href="/user/${c.authorId}" style="color: ${usernameColor};">${escapeHtml(c.authorName)}</a>
                                     ${tagHtml}
                                     <span class="comment-time">回复于 ${timeStr}</span>
                                 </div>
@@ -3276,15 +3124,11 @@
                                     <a href="javascript:void(0)" class="comment-reply-btn" data-author="${escapeHtml(c.authorName)}">回复</a>
                                 </div>
                             </div>
-                            <div class="comment-body">
-                                <div class="comment-text">${escapeHtml(c.content)}</div>
-                            </div>
+                            <div class="comment-body"><div class="comment-text">${escapeHtml(c.content)}</div></div>
                         </div>
                     `;
                 });
-
                 container.innerHTML = html;
-
                 container.querySelectorAll('.comment-reply-btn').forEach(btn => {
                     btn.addEventListener('click', function (e) {
                         e.preventDefault();
@@ -3299,41 +3143,29 @@
                         });
                     });
                 });
-
                 container.querySelectorAll('.comment-report-btn').forEach(btn => {
                     btn.addEventListener('click', function (e) {
                         e.preventDefault();
                         if (!currentUser) {
-                            window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location
-                                .pathname);
-                            return;
+                            window.location.href = '/auth/login?redirect=' + encodeURIComponent(
+                                window.location.pathname); return;
                         }
                         alert('举报功能开发中，即将支持。');
                     });
                 });
             }
 
-            // ============================================================
-            // 渲染分页
-            // ============================================================
             function renderPagination() {
                 const wrap = document.getElementById('paginationWrap');
-                if (totalPages <= 1) {
-                    wrap.innerHTML = '';
-                    return;
-                }
-
+                if (totalPages <= 1) { wrap.innerHTML = ''; return; }
                 let html = '';
                 html +=
                     `<button class="page-btn ${currentPage <= 1 ? 'disabled' : ''}" data-page="${currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
-                for (let i = 1; i <= totalPages; i++) {
-                    html +=
-                        `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
-                }
+                for (let i = 1; i <= totalPages; i++) html +=
+                    `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
                 html +=
                     `<button class="page-btn ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
                 wrap.innerHTML = html;
-
                 wrap.querySelectorAll('.page-btn:not(.disabled)').forEach(btn => {
                     btn.addEventListener('click', function () {
                         const page = parseInt(this.dataset.page);
@@ -3355,12 +3187,10 @@
                 var path = window.location.pathname;
                 var match = path.match(/^\/discuss\/(\d+)$/);
                 var postId = match ? match[1] : null;
-
                 if (!postId) {
                     var params = new URLSearchParams(window.location.search);
                     postId = params.get('id');
                 }
-
                 if (!postId) {
                     document.getElementById('loadingState').style.display = 'none';
                     document.getElementById('postContent').innerHTML =
@@ -3368,7 +3198,6 @@
                     document.getElementById('postContent').style.display = 'block';
                     return;
                 }
-
                 try {
                     const post = await fetchPostDetail(postId);
                     if (!post) {
@@ -3378,10 +3207,8 @@
                         document.getElementById('postContent').style.display = 'block';
                         return;
                     }
-
                     document.getElementById('loadingState').style.display = 'none';
                     renderPost(post);
-
                 } catch (err) {
                     console.error('加载帖子失败:', err);
                     document.getElementById('loadingState').style.display = 'none';
@@ -3397,21 +3224,15 @@
             // ============================================================
             async function init() {
                 await updateNav();
-
                 document.getElementById('loginToCommentLink').addEventListener('click', function (e) {
                     e.preventDefault();
                     window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
                 });
-
                 var backToTopBtn = document.getElementById('back-to-top');
                 window.addEventListener('scroll', function () {
                     backToTopBtn.style.display = window.pageYOffset > 300 ? 'block' : 'none';
                 });
-                backToTopBtn.addEventListener('click', function () {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-
-                // 锚点跳转修正
+                backToTopBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
                 if (window.location.hash) {
                     setTimeout(() => {
                         const target = document.querySelector(window.location.hash);
@@ -3422,18 +3243,95 @@
                         }
                     }, 300);
                 }
-
+                const sidebar = document.querySelector('.nav-sidebar');
+                if (sidebar) {
+                    sidebar.addEventListener('mouseleave', function () {
+                        if (window.innerWidth > 900) {
+                            this.scrollTop = 0;
+                        }
+                    });
+                }
                 await loadPost();
             }
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
 
         })();
     </script>
+<script>
+/* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
+(function () {
+    if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+    var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+    var authBtns = document.querySelector('.topbar .auth-buttons');
+    if (!authBtns) return;
+    if (!document.getElementById('topAvatarStyle')) {
+        var st = document.createElement('style');
+        st.id = 'topAvatarStyle';
+        st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+        document.head.appendChild(st);
+    }
+    function letterAvatar(name) {
+        var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+    }
+    var me = null;
+    var mo = new MutationObserver(ensure);
+    mo.observe(authBtns, { childList: true });
+    function ensure() {
+        if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+        mo.disconnect();
+        try {
+            var ue = authBtns.querySelector('.user-email');
+            if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+            var wrap = document.getElementById('topAvatarWrap');
+            if (!wrap) {
+                wrap = document.createElement('div');
+                wrap.id = 'topAvatarWrap';
+                wrap.className = 'top-avatar-wrap';
+                var av = document.createElement('a');
+                av.id = 'topAvatar';
+                av.href = '/user/' + (me.user_number || '');
+                av.title = me.username || '';
+                av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                var img = document.createElement('img');
+                img.alt = '头像';
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                img.src = me.avatar_url || letterAvatar(me.username);
+                av.appendChild(img);
+                wrap.appendChild(av);
+                var menu = document.createElement('div');
+                menu.id = 'topAvatarMenu';
+                menu.className = 'top-avatar-menu';
+                wrap.appendChild(menu);
+                authBtns.appendChild(wrap);
+            }
+            // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
+            var menu = document.getElementById('topAvatarMenu');
+            var logoutEl = authBtns.querySelector('.auth-btn.logout');
+            if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+            if (me.can_manage_users && !document.getElementById('adminEntry')) {
+                var gear = document.createElement('a');
+                gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
+                gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                gear.textContent = '⚙️';
+                authBtns.appendChild(gear);
+            }
+            ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                var el = authBtns.querySelector(sel);
+                if (el) authBtns.appendChild(el);
+            });
+        } finally { mo.observe(authBtns, { childList: true }); }
+    }
+    sb.auth.getSession().then(function (r) {
+        var s = r.data && r.data.session;
+        if (!s) return;
+        return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
+    }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () {});
+})();
+</script>
 </body>
 
 </html>
