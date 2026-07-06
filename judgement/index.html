@@ -839,7 +839,7 @@
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
                 <ul>
-                    <li><a class="nav-item" href="/upload"><span class="nav-icon"></span><span
+                    <li><a class="nav-item" href="/image"><span class="nav-icon"></span><span
                                 class="nav-text">图片上传</span></a></li>
                     <li><a class="nav-item" href="/clipboard"><span class="nav-icon"></span><span
                                 class="nav-text">云剪贴板</span></a></li>
@@ -988,7 +988,7 @@
                 try {
                     const { data, error } = await supabase
                         .from('profiles')
-                        .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color')
+                        .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color, is_cheater')
                         .in('id', needFetch);
 
                     if (error) {
@@ -997,7 +997,7 @@
                             try {
                                 const { data: single } = await supabase
                                     .from('profiles')
-                                    .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color')
+                                    .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color, is_cheater')
                                     .eq('id', id)
                                     .maybeSingle();
                                 if (single) {
@@ -1030,6 +1030,15 @@
                 const action = log.action_type;
                 const detail = log.action_detail || {};
                 const perm = detail.permission;
+
+                // 管理权限批量调整（一次多个管理权限，合并为一条日志）→ 归入"管理轮换"
+                if (action === 'perm_update') {
+                    return {
+                        label: '管理轮换',
+                        color: '#9D3DCF',
+                        iconPath: 'M72 128l24 0 0 16c0 70.7 57.3 128 128 128s128-57.3 128-128l0-16 24 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-30.7 0c-10.4-53.7-31.9-112-68.3-112-9.6 0-19 3.9-27.5 8.2-8.2 4.1-18.4 7.8-25.5 7.8s-17.3-3.7-25.5-7.8c-8.5-4.3-17.9-8.2-27.5-8.2-36.4 0-57.8 58.3-68.3 112L72 80c-13.3 0-24 10.7-24 24s10.7 24 24 24zm152 0l80 0 0 16c0 44.2-35.8 80-80 80s-80-35.8-80-80l0-16 80 0zM193.5 304c-9.7 0-17.5 7.8-17.5 17.5 0 4.2 1.5 8.2 4.2 11.4l27.2 31.8-18.5 67.8-55.9-102C127 319.5 113.3 315 101.9 320.3 41.8 348.3 0 409.2 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-43.4 21.6-81.8 54.7-105L171 499.5c4.2 7.7 12.3 12.5 21 12.5l64 0c8.8 0 16.8-4.8 21-12.5L345.3 375c33.1 23.2 54.7 61.6 54.7 105l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-70.8-41.8-131.7-101.9-159.7-11.5-5.3-25.1-.9-31.2 10.2l-56.2 102.5-18.4-68.2 27.4-32c2.7-3.2 4.2-7.2 4.2-11.4 0-9.7-7.8-17.5-17.5-17.5l-61 0z'
+                    };
+                }
 
                 // 管理轮换
                 const managerPerms = ['is_admin', 'can_manage_users', 'can_manage_posts', 'special_privilege'];
@@ -1068,10 +1077,10 @@
                     };
                 }
 
-                // 取消权限（revoke_perm 其他）
+                // 撤销权限（revoke_perm 其他）
                 if (action === 'revoke_perm') {
                     return {
-                        label: '取消权限',
+                        label: '撤销权限',
                         color: '#E74C3C',
                         iconPath: 'M304 304c97.2 0 176 78.8 176 176l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-70.7-57.3-128-128-128l-96 0c-70.7 0-128 57.3-128 128l0 8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8c0-97.2 78.8-176 176-176l96 0zm-48-48a128 128 0 1 1 0-256 128 128 0 1 1 0 256zm0-208a80 80 0 1 0 0 160 80 80 0 1 0 0-160zM600 152c13.3 0 24 10.7 24 24s-10.7 24-24 24l-144 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l144 0z'
                     };
@@ -1124,7 +1133,7 @@
                 const time = formatTime(log.created_at);
 
                 // 目标用户颜色
-                const targetColor = target.username_color || (target.is_admin ? '#9b59b6' : '#2c3e50');
+                const targetColor = target.is_cheater ? '#AD8B00' : (target.username_color || (target.is_admin ? '#9b59b6' : '#2c3e50'));
 
                 // 标签
                 let tagHtml = '';
@@ -1143,32 +1152,33 @@
                 const avatar = target.avatar_url || letterAvatar(target.username);
                 const userLink = target.user_number ? `/user/${target.user_number}` : '#';
 
-                // 权限变更详情
+                // 权限变更详情（各分支产出 0 个或多个 <li>，由外层 <ul> 统一包裹）
                 let changeHtml = '';
                 const d = log.action_detail;
-                if (log.action_type === 'grant_perm' || log.action_type === 'revoke_perm') {
-                    const permName = getPermName(d?.permission);
+                const permLine = (word, cls, name) =>
+                    `<li><span class="permission-change"><span class="${cls}">${word}</span> <span class="perm-name">${name}</span> 权限</span></li>`;
+                if (log.action_type === 'perm_update') {
+                    const changes = Array.isArray(d?.changes) ? d.changes : [];
+                    changeHtml = changes.map(c => {
+                        const isGrant = c.new_value === true;
+                        return permLine(isGrant ? '授予' : '撤销', isGrant ? 'lcolor--green-3' : 'lcolor--red-3', getPermName(c.permission));
+                    }).join('');
+                } else if (log.action_type === 'grant_perm' || log.action_type === 'revoke_perm') {
                     const isGrant = log.action_type === 'grant_perm';
-                    const cls = isGrant ? 'lcolor--green-3' : 'lcolor--red-3';
-                    const word = isGrant ? '授予' : '撤销';
-                    changeHtml =
-                        `<span class="permission-change"><span class="${cls}">${word}</span> <span class="perm-name">${permName}</span> 权限</span>`;
+                    changeHtml = permLine(isGrant ? '授予' : '撤销', isGrant ? 'lcolor--green-3' : 'lcolor--red-3', getPermName(d?.permission));
                 } else if (log.action_type === 'ban') {
-                    changeHtml =
-                        `<span class="permission-change"><span class="lcolor--red-3">撤销</span> <span class="perm-name">进入主站</span> 权限</span>`;
+                    changeHtml = permLine('撤销', 'lcolor--red-3', '进入主站');
                 } else if (log.action_type === 'unban') {
-                    changeHtml =
-                        `<span class="permission-change"><span class="lcolor--green-3">授予</span> <span class="perm-name">进入主站</span> 权限</span>`;
+                    changeHtml = permLine('授予', 'lcolor--green-3', '进入主站');
                 } else if (log.action_type === 'cheat') {
-                    changeHtml = `<span class="permission-change">学术不端惩罚</span>`;
+                    changeHtml = `<li><span class="permission-change">学术不端惩罚</span></li>`;
                 } else if (log.action_type === 'brown_penalty') {
                     changeHtml = '';   // 作弊惩罚：不显示"标记为作弊者"，只显示原因
                 } else if (log.action_type === 'manager_rotate') {
                     const permName = d?.permission || '管理权限';
-                    changeHtml =
-                        `<span class="permission-change">授予 <span class="perm-name">${permName}</span> 权限（轮换）</span>`;
+                    changeHtml = `<li><span class="permission-change">授予 <span class="perm-name">${permName}</span> 权限（轮换）</span></li>`;
                 } else {
-                    changeHtml = `<span class="permission-change">${info.label}</span>`;
+                    changeHtml = `<li><span class="permission-change">${info.label}</span></li>`;
                 }
 
                 // ---- 卡片 HTML ----
@@ -1199,7 +1209,7 @@
 
                         <!-- 内容 -->
                         <div class="log-content">
-                            ${changeHtml ? `<ul><li>${changeHtml}</li></ul>` : ''}
+                            ${changeHtml ? `<ul>${changeHtml}</ul>` : ''}
                             <p>${escapeHtml(log.reason || '（无）')}</p>
                         </div>
                     </div>
@@ -1371,6 +1381,79 @@
             });
         })();
     </script>
+<script>
+/* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
+(function () {
+    if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+    var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+    var authBtns = document.querySelector('.topbar .auth-buttons');
+    if (!authBtns) return;
+    if (!document.getElementById('topAvatarStyle')) {
+        var st = document.createElement('style');
+        st.id = 'topAvatarStyle';
+        st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+        document.head.appendChild(st);
+    }
+    function letterAvatar(name) {
+        var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+    }
+    var me = null;
+    var mo = new MutationObserver(ensure);
+    mo.observe(authBtns, { childList: true });
+    function ensure() {
+        if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+        mo.disconnect();
+        try {
+            var ue = authBtns.querySelector('.user-email');
+            if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+            var wrap = document.getElementById('topAvatarWrap');
+            if (!wrap) {
+                wrap = document.createElement('div');
+                wrap.id = 'topAvatarWrap';
+                wrap.className = 'top-avatar-wrap';
+                var av = document.createElement('a');
+                av.id = 'topAvatar';
+                av.href = '/user/' + (me.user_number || '');
+                av.title = me.username || '';
+                av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                var img = document.createElement('img');
+                img.alt = '头像';
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                img.src = me.avatar_url || letterAvatar(me.username);
+                av.appendChild(img);
+                wrap.appendChild(av);
+                var menu = document.createElement('div');
+                menu.id = 'topAvatarMenu';
+                menu.className = 'top-avatar-menu';
+                wrap.appendChild(menu);
+                authBtns.appendChild(wrap);
+            }
+            // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
+            var menu = document.getElementById('topAvatarMenu');
+            var logoutEl = authBtns.querySelector('.auth-btn.logout');
+            if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+            if (me.can_manage_users && !document.getElementById('adminEntry')) {
+                var gear = document.createElement('a');
+                gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
+                gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                gear.textContent = '⚙️';
+                authBtns.appendChild(gear);
+            }
+            ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                var el = authBtns.querySelector(sel);
+                if (el) authBtns.appendChild(el);
+            });
+        } finally { mo.observe(authBtns, { childList: true }); }
+    }
+    sb.auth.getSession().then(function (r) {
+        var s = r.data && r.data.session;
+        if (!s) return;
+        return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
+    }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () {});
+})();
+</script>
 </body>
 
 </html>

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册 - Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * {
             margin: 0;
@@ -194,11 +193,6 @@
             display: block;
         }
 
-        .turnstile-wrapper {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
     </style>
 </head>
 
@@ -241,10 +235,6 @@
             </div>
         </div>
 
-        <div id="turnstileContainer" class="turnstile-wrapper" style="display: none;">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADcNcP2JrYuEkEhx"></div>
-        </div>
-
         <div id="emailVerification" class="verification-row">
             <input type="text" id="emailCode" placeholder="6位数字验证码" autocomplete="off" maxlength="6">
             <button type="button" id="sendEmailCodeBtn">发送验证码</button>
@@ -264,7 +254,6 @@
 
         const EDGE_SEND_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/send-email-code';
         const EDGE_VERIFY_CODE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-email-code';
-        const EDGE_VERIFY_TURNSTILE = 'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-phone-turnstile';
 
         // 已登录自动跳转首页
         (async function redirectIfLoggedIn() {
@@ -323,7 +312,6 @@
         const emailPanel = document.getElementById('emailPanel');
         const phonePanel = document.getElementById('phonePanel');
         const emailVerification = document.getElementById('emailVerification');
-        const turnstileContainer = document.getElementById('turnstileContainer');
         const tabs = document.querySelectorAll('.tab');
 
         let activeTab = 'email';
@@ -337,13 +325,11 @@
                     emailPanel.classList.add('active');
                     phonePanel.classList.remove('active');
                     emailVerification.style.display = 'flex';
-                    turnstileContainer.style.display = 'none';
                     activeTab = 'email';
                 } else {
                     phonePanel.classList.add('active');
                     emailPanel.classList.remove('active');
                     emailVerification.style.display = 'none';
-                    turnstileContainer.style.display = 'flex';
                     activeTab = 'phone';
                 }
                 document.getElementById('regMsg').innerHTML = '';
@@ -458,8 +444,7 @@
                 }
             } else {
                 const phone = document.getElementById('regPhone').value.trim();
-                const turnstileToken = document.querySelector('#turnstileContainer .cf-turnstile [name="cf-turnstile-response"]')?.value;
-                if (!phone || !turnstileToken) {
+                if (!phone) {
                     showMessage('请填写完整所有内容', 'error');
                     return;
                 }
@@ -513,17 +498,6 @@
                 phone = document.getElementById('regPhone').value.trim();
                 if (!/^1[3-9]\d{9}$/.test(phone)) {
                     showMessage('手机号格式不合法', 'error');
-                    return;
-                }
-                const turnstileToken = document.querySelector('#turnstileContainer .cf-turnstile [name="cf-turnstile-response"]')?.value;
-                const turnstileResp = await fetch(EDGE_VERIFY_TURNSTILE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: turnstileToken })
-                });
-                if (!turnstileResp.ok) {
-                    const err = await turnstileResp.json();
-                    showMessage(err.error || '安全验证失败', 'error');
                     return;
                 }
                 email = `phone+${phone}@temp.com`;
