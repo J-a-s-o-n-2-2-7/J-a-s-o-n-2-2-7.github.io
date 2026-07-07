@@ -60,10 +60,6 @@
             cursor: pointer;
         }
 
-        .logo:hover {
-            color: #c0392b;
-        }
-
         .auth-buttons {
             display: flex;
             gap: 16px;
@@ -648,6 +644,71 @@
             padding: 40px;
         }
 
+        /* 美化筛选下拉框 */
+        #permFilter {
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            min-width: 140px;
+            transition: border .2s;
+        }
+
+        #permFilter:focus {
+            border-color: #e74c3c;
+        }
+
+        /* ===== 筛选标签样式 ===== */
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 8px 0 12px 0;
+        }
+        .filter-tag {
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+            border: 2px solid transparent;
+            background: #f0f2f5;
+            color: #8a9aa8;
+            white-space: nowrap;
+        }
+        .filter-tag:hover {
+            background: #e0e0e0;
+            transform: scale(1.02);
+        }
+        .filter-tag.active-green {
+            background: #eafaf1;
+            color: #2ECC71;
+            border-color: #2ECC71;
+        }
+        .filter-tag.active-red {
+            background: #fdedec;
+            color: #E74C3C;
+            border-color: #E74C3C;
+        }
+        
+        /* 选项颜色（部分浏览器支持） */
+        #permFilter option[value="admin"],
+        #permFilter option[value="user_mgmt"],
+        #permFilter option[value="post_mgmt"],
+        #permFilter option[value="enter_site"],
+        #permFilter option[value="speak"] {
+            color: #2ECC71;
+        }
+
+        #permFilter option[value="cheater"] {
+            color: #E74C3C;
+        }
+
         @media (max-width:800px) {
 
             table,
@@ -973,8 +1034,16 @@
                 <div class="card">
                     <div class="card-header">用户管理</div>
                     <div class="search-bar">
-                        <input type="text" id="searchInput" placeholder="搜索用户">
+                        <input type="text" id="searchInput">
                         <span class="result-count" id="resultCount">共 0 位用户</span>
+                    </div>
+                    <div class="filter-tags" id="filterTags">
+                        <span class="filter-tag" data-key="admin" data-state="off">进入后台</span>
+                        <span class="filter-tag" data-key="user_mgmt" data-state="off">用户管理</span>
+                        <span class="filter-tag" data-key="post_mgmt" data-state="off">秩序管理</span>
+                        <span class="filter-tag" data-key="enter_site" data-state="off">进入主站</span>
+                        <span class="filter-tag" data-key="cheater" data-state="off">学术不端</span>
+                        <span class="filter-tag" data-key="speak" data-state="off">自由发言</span>
                     </div>
                     <div class="table-wrap">
                         <div id="userList">
@@ -993,8 +1062,6 @@
                         <button class="btn-sm revoke" id="batchRevokeUserMgmt">撤销用户管理权限</button>
                         <button class="btn-sm grant" id="batchGrantPostMgmt">授予秩序管理权限</button>
                         <button class="btn-sm revoke" id="batchRevokePostMgmt">撤销秩序管理权限</button>
-                        <button class="btn-sm grant" id="batchGrantSpecial">授予特殊权益</button>
-                        <button class="btn-sm revoke" id="batchRevokeSpecial">撤销特殊权益</button>
                     </div>
                     <div id="msgDiv"></div>
                 </div>
@@ -1058,6 +1125,10 @@
             function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
             function showError(text) { msgDiv.innerHTML = `<div class="message error">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
             function showSuccess(text) { msgDiv.innerHTML = `<div class="message success">${text}</div>`; setTimeout(() => msgDiv.innerHTML = '', 5000); }
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+            }
 
             function isBrownColor(hex) {
                 if (!hex) return false;
@@ -1150,29 +1221,25 @@
                 if (!targetUser) { showError('用户不存在'); return; }
 
                 const newCheater = !targetUser.is_cheater;
-                const actionName = newCheater ? '学术不端（设为棕名）' : '取消棕名';
+                const actionName = '取消棕名';
                 const reason = await promptReason(actionName);
                 if (!reason) return;
 
-                // 设为作弊者：备份原 user_tag 和原颜色，强制 user_tag='作弊者'、username_color=棕色
-                // 取消作弊者：恢复原标签和原颜色（无备份时：管理员→「管理员」/紫色，其余→空/红色）
                 if (newCheater) {
+                    // 设为作弊者：强制标签为"作弊者"，颜色棕色（不备份）
                     await updateUserField(userNumber, {
                         is_cheater: true,
                         user_tag: '作弊者',
-                        cheater_prev_tag: targetUser.user_tag ?? null,
-                        username_color: COLOR_BROWN,
-                        cheater_prev_color: targetUser.username_color ?? null
+                        username_color: COLOR_BROWN
                     });
                 } else {
-                    const restoredTag = targetUser.cheater_prev_tag ?? (targetUser.is_admin ? '管理员' : null);
-                    const restoredColor = targetUser.cheater_prev_color ?? (targetUser.is_admin ? COLOR_PURPLE : COLOR_RED);
+                    // 取消作弊者：根据是否管理员决定默认标签/颜色
+                    const restoredTag = targetUser.is_admin ? '管理员' : null;
+                    const restoredColor = targetUser.is_admin ? COLOR_PURPLE : COLOR_RED;
                     await updateUserField(userNumber, {
                         is_cheater: false,
                         user_tag: restoredTag,
-                        cheater_prev_tag: null,
-                        username_color: restoredColor,
-                        cheater_prev_color: null
+                        username_color: restoredColor
                     });
                 }
 
@@ -1228,26 +1295,24 @@
                     const targetUser = allUsers.find(u => u.user_number === userNumber);
                     if (!targetUser) { showError('用户不存在'); return; }
 
-                    // 复查最新值（含 user_tag/颜色，用于 is_admin 的标签逻辑）
+                    // 复查最新值（不再查询 special_privilege）
                     const { data: u, error: fetchErr } = await supabase
                         .from('profiles')
-                        .select('is_admin, can_manage_users, can_manage_posts, can_speak, special_privilege, user_tag, username_color')
+                        .select('is_admin, can_manage_users, can_manage_posts, can_speak, user_tag, username_color')
                         .eq('user_number', userNumber)
                         .single();
                     if (fetchErr) throw new Error('查询失败: ' + fetchErr.message);
 
-                    // 仅管理权限类（→管理轮换）；自由发言/进入主站属其它类，单独操作
+                    // 只管理三类权限
                     const FIELDS = [
                         { field: 'is_admin', name: '进入后台' },
                         { field: 'can_manage_users', name: '用户管理' },
                         { field: 'can_manage_posts', name: '秩序管理' },
-                        { field: 'special_privilege', name: '特殊权益' },
                     ];
                     const current = {
                         is_admin: !!u.is_admin,
                         can_manage_users: !!u.can_manage_users,
                         can_manage_posts: !!u.can_manage_posts,
-                        special_privilege: !!u.special_privilege,
                     };
 
                     const checkboxHtml = FIELDS.map(f => {
@@ -1258,11 +1323,11 @@
                     const { value } = await Swal.fire({
                         title: `编辑管理权限 — ${escapeHtmlAttr(targetUser.username || '未命名')}`,
                         html: `
-                            <div class="perm-editor">
-                                <div style="margin-bottom:6px;color:#666;font-size:13px;text-align:left;">勾选目标状态（勾=授予 / 不勾=撤销），可一次调整多个管理权限，合并成一条"管理轮换"陶片。<br><span style="color:#e67e22;">授予"用户管理/秩序管理/特殊权益"时，会自动开通"进入后台"。</span></div>
-                                <div style="text-align:left;">${checkboxHtml}</div>
-                                <textarea id="perm-reason" placeholder="请输入操作原因（必填）..."></textarea>
-                            </div>`,
+                <div class="perm-editor">
+                    <div style="margin-bottom:6px;color:#666;font-size:13px;text-align:left;">勾选目标状态（勾=授予 / 不勾=撤销），可一次调整多个管理权限，合并成一条"管理轮换"陶片。<br><span style="color:#e67e22;">授予"用户管理/秩序管理"时，会自动开通"进入后台"。</span></div>
+                    <div style="text-align:left;">${checkboxHtml}</div>
+                    <textarea id="perm-reason" placeholder="请输入操作原因（必填）..."></textarea>
+                </div>`,
                         showCancelButton: true,
                         confirmButtonText: '保存更改',
                         cancelButtonText: '取消',
@@ -1276,17 +1341,16 @@
                             return { desired, reason };
                         }
                     });
-                    if (!value) return;   // 取消
+                    if (!value) return;
 
-                    // 约束：授予任何管理权限（用户管理/秩序管理/特殊权益）时，必须同时授予"进入后台"（后台入口）
+                    // 约束：授予用户管理或秩序管理时自动开通进入后台
                     let autoGrantedAdmin = false;
                     if (!value.desired.is_admin &&
-                        (value.desired.can_manage_users || value.desired.can_manage_posts || value.desired.special_privilege)) {
+                        (value.desired.can_manage_users || value.desired.can_manage_posts)) {
                         value.desired.is_admin = true;
                         autoGrantedAdmin = true;
                     }
 
-                    // 计算 diff（只含实际变化的字段）
                     const changes = FIELDS
                         .filter(f => value.desired[f.field] !== current[f.field])
                         .map(f => ({ permission: f.field, new_value: value.desired[f.field] }));
@@ -1296,11 +1360,9 @@
                         return;
                     }
 
-                    // 构造更新对象
                     const updateObj = {};
                     changes.forEach(c => { updateObj[c.permission] = c.new_value; });
 
-                    // is_admin 变化：复用原 toggleAdmin 的标签/颜色逻辑（不碰 is_cheater）
                     if ('is_admin' in updateObj) {
                         const newAdmin = updateObj.is_admin;
                         const currentTag = u.user_tag || '';
@@ -1359,6 +1421,31 @@
                 } catch (err) {
                     showError('操作失败：' + err.message);
                 }
+            }
+
+            // ---------- 为指定用户上传头像（管理员操作） ----------
+            async function uploadAvatarForUser(userNumber, file) {
+                const targetUser = allUsers.find(u => u.user_number === userNumber);
+                if (!targetUser) throw new Error('用户不存在');
+                if (!file.type.startsWith('image/')) throw new Error('请选择图片文件');
+
+                const fileExt = file.name.split('.').pop();
+                const filePath = targetUser.id + '/avatar_' + Date.now() + '.' + fileExt;
+
+                // 1. 上传到存储桶
+                const { error: uploadError } = await supabase.storage
+                    .from('avatars')
+                    .upload(filePath, file, { upsert: true });
+                if (uploadError) throw new Error('上传失败: ' + uploadError.message);
+
+                // 2. 获取公开 URL
+                const { data: { publicUrl } } = supabase.storage
+                    .from('avatars')
+                    .getPublicUrl(filePath);
+
+                // 3. 更新数据库
+                await updateUserField(userNumber, { avatar_url: publicUrl });
+                return publicUrl;
             }
 
             // ================================================================
@@ -1451,7 +1538,16 @@
                         window.location.href = '/';
                     });
                     await loadUsers();
-                    searchInput.addEventListener('input', function () { filterUsers(this.value.trim()); });
+                    // 搜索框事件
+                    searchInput.addEventListener('input', filterUsers);
+
+                    // 标签点击事件
+                    document.querySelectorAll('.filter-tag').forEach(el => {
+                        el.addEventListener('click', function () {
+                            const key = this.dataset.key;
+                            toggleFilterTag(key);
+                        });
+                    });
                     await fetchUnreadCount();
                     setInterval(fetchUnreadCount, 30000);
                 } catch (err) {
@@ -1465,43 +1561,108 @@
                 try {
                     const { data, error } = await supabase.from('profiles')
                         .select(
-                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, special_privilege, is_cheater, cheater_prev_tag, cheater_prev_color'
+                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url'
                         )
                         .order('user_number');
                     if (error) throw error;
                     allUsers = data;
-                    filterUsers(searchInput.value.trim());
+                    // 重置筛选状态为 off
+                    Object.keys(filterStates).forEach(k => filterStates[k] = 'off');
+                    updateFilterTags();
+                    filterUsers();
                 } catch (err) { userList.innerHTML = `<div class="error">加载用户失败：${err.message}</div>`; }
             }
 
-            // ---------- 精确搜索 ----------
-            function filterUsers(keyword) {
-                if (!keyword) {
-                    filteredUsers = [...allUsers];
-                    renderUserList();
-                    return;
-                }
-                const trimmed = keyword.trim();
-                const lower = trimmed.toLowerCase();
-                const isNumber = /^\d+$/.test(trimmed);
+            // ---------- 筛选状态 ----------
+            const filterStates = {
+                admin: 'off',
+                user_mgmt: 'off',
+                post_mgmt: 'off',
+                enter_site: 'off',
+                cheater: 'off',
+                speak: 'off'
+            };
+
+            // ---------- 切换标签状态 ----------
+            function toggleFilterTag(key) {
+                const current = filterStates[key] || 'off';
+                if (current === 'off') filterStates[key] = 'has';
+                else if (current === 'has') filterStates[key] = 'no';
+                else if (current === 'no') filterStates[key] = 'off';
+                updateFilterTags();
+                filterUsers();
+            }
+
+            // ---------- 更新标签视觉 ----------
+            function updateFilterTags() {
+                document.querySelectorAll('.filter-tag').forEach(el => {
+                    const key = el.dataset.key;
+                    const state = filterStates[key] || 'off';
+                    el.className = 'filter-tag';
+                    if (state === 'has') el.classList.add('active-green');
+                    else if (state === 'no') el.classList.add('active-red');
+                    el.dataset.state = state;
+                });
+            }
+
+            // ---------- 精确搜索 + 权限筛选 ----------
+            function filterUsers() {
+                const keyword = searchInput.value.trim();
 
                 filteredUsers = allUsers.filter(user => {
-                    const isAdmin = user.is_admin;
-                    const roleLabel = isAdmin ? '管理员' : '普通用户';
-                    const remark = user.remark || '';
-                    const tag = user.user_tag || '';
-                    const username = user.username || '';
-                    const userNumber = String(user.user_number);
+                    let match = true;
 
-                    if (isNumber && userNumber === trimmed) return true;
-                    if (username.toLowerCase() === lower) return true;
-                    if (remark.toLowerCase() === lower) return true;
-                    if (roleLabel === trimmed) return true;
-                    if (tag.toLowerCase() === lower) return true;
-                    if (trimmed === '用户管理' && user.can_manage_users) return true;
-                    if (trimmed === '秩序管理' && user.can_manage_posts) return true;
+                    // ----- 精准匹配 -----
+                    if (keyword) {
+                        const userNumber = String(user.user_number);
+                        const username = (user.username || '');
+                        const remark = (user.remark || '');
+                        const tag = (user.user_tag || '');
+                        const roleLabel = user.is_admin ? '管理员' : '普通用户';
 
-                    return false;
+                        if (userNumber !== keyword &&
+                            username !== keyword &&
+                            remark !== keyword &&
+                            tag !== keyword &&
+                            roleLabel !== keyword) {
+                            match = false;
+                        }
+                    }
+
+                    // ----- 权限筛选 -----
+                    if (match) {
+                        for (const key in filterStates) {
+                            const state = filterStates[key];
+                            if (state === 'off') continue;
+
+                            let hasPermission = false;
+                            switch (key) {
+                                case 'admin':
+                                    hasPermission = user.is_admin;
+                                    break;
+                                case 'user_mgmt':
+                                    hasPermission = user.can_manage_users;
+                                    break;
+                                case 'post_mgmt':
+                                    hasPermission = user.can_manage_posts;
+                                    break;
+                                case 'enter_site':
+                                    hasPermission = !user.is_banned;
+                                    break;
+                                case 'cheater':
+                                    hasPermission = user.is_cheater;
+                                    break;
+                                case 'speak':
+                                    hasPermission = user.can_speak !== false;
+                                    break;
+                            }
+
+                            if (state === 'has' && !hasPermission) { match = false; break; }
+                            if (state === 'no' && hasPermission) { match = false; break; }
+                        }
+                    }
+
+                    return match;
                 });
                 renderUserList();
             }
@@ -1518,136 +1679,124 @@
                 }
                 resultCount.textContent = `共 ${filteredUsers.length} 位用户`;
                 let html = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
-                                <th>注册时间</th>
-                                <th>用户编号</th>
-                                <th>用户名</th>
-                                <th>备注名</th>
-                                <th>用户类型</th>
-                                <th>权限</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+        <table>
+            <thead>
+                <tr>
+                    <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
+                    <th>注册时间</th>
+                    <th>用户编号</th>
+                    <th>头像</th>
+                    <th>用户名</th>
+                    <th>标签</th>
+                    <th>备注名</th>
+                    <th>用户类型</th>
+                    <th>权限</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
                 for (const user of filteredUsers) {
                     const isSelf = currentProfile.user_number === user.user_number;
                     const isAdmin = user.is_admin;
                     const roleLabel = isAdmin ? '管理员' : '普通用户';
 
-                    // 根据状态决定显示颜色
                     const userNameColor = getUserDisplayColor(user);
                     const isBrown = isBrownColor(userNameColor);
 
-                    // tag 显示逻辑：
-                    // - 作弊者（is_cheater=true）一律显示"作弊者"（含管理员）；
-                    //   user_tag 本身不被修改，原标签保留，解除棕名(is_cheater=false)后自动恢复。
-                    // - 否则显示 user.user_tag（可能为空）
+                    // ---- 头像 ----
+                    const username = user.username || '用户';
+                    const avatarUrl = user.avatar_url || '';
+                    const avatarImgSrc = avatarUrl || letterAvatar(username);
+                    const avatarHtml = `<img class="avatar-image" data-user="${user.user_number}" src="${avatarImgSrc}" alt="${escapeHtmlAttr(username)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#f0f2f5;display:block;cursor:pointer;" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">`;
+
+                    // ---- 标签 ----
                     let tagDisplay = '';
                     if (user.is_cheater) {
                         tagDisplay = '作弊者';
                     } else {
                         tagDisplay = user.user_tag || '';
                     }
-                    // 如果 tagDisplay 为空，则不生成标签
-                    // 如果既不是管理员也不是作弊者，但user_tag有值，显示它
-                    let tagHtml = '';
+                    let tagCellHtml = '';
                     if (tagDisplay) {
-                        tagHtml =
-                            `<span class="user-tag-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(tagDisplay)}" style="background-color:${userNameColor};">${escapeHtmlAttr(tagDisplay)}</span>`;
+                        tagCellHtml = `<span class="user-tag-display" style="background-color:${userNameColor};">${escapeHtmlAttr(tagDisplay)}</span>`;
+                    } else {
+                        tagCellHtml = `<span style="color:#bbb;font-size:13px;">无</span>`;
                     }
+
+                    const userNameHtml = `
+            <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>
+        `;
 
                     const remarkDisplay = user.remark || '';
 
-                    // ---- 权限列：按陶片分类分组 ----
-                    // 管理权限类（→管理轮换·紫）：可批量编辑；自由发言（→授予/撤销）单独开关。
+                    // ---- 权限列 ----
                     const mgmtPerms = [
                         { name: '进入后台', on: !!user.is_admin },
                         { name: '用户管理', on: !!user.can_manage_users },
                         { name: '秩序管理', on: !!user.can_manage_posts },
-                        { name: '特殊权益', on: !!user.special_privilege },
                     ];
-                    const mgmtPillsHtml = mgmtPerms
-                        .map(p => `<span class="perm-pill ${p.on ? 'on' : 'off'}">${p.name}</span>`)
-                        .join('');
-                    const mgmtEditHtml = isSelf
-                        ? ''
-                        : `<span class="perm-edit-btn" data-action="edit-perms" data-user="${user.user_number}">✎</span>`;
-                    const mgmtHtml = `<div class="perm-group-line"><span class="perm-cat">管理权限</span>${mgmtPillsHtml}${mgmtEditHtml}</div>`;
+                    const mgmtLinksHtml = mgmtPerms
+                        .map(p => {
+                            const color = p.on ? 'green' : 'red';
+                            if (isSelf) {
+                                return `<span class="action-link ${color} disabled" style="cursor:default;">${p.name}</span>`;
+                            }
+                            return `<span class="action-link ${color}" style="cursor:pointer;" data-action="edit-perms" data-user="${user.user_number}">${p.name}</span>`;
+                        })
+                        .join(' | ');
+                    const mgmtHtml = `<div class="perm-group-line"><span class="perm-cat">管理权限</span>${mgmtLinksHtml}</div>`;
 
-                    // 自由发言：单开关（绿=已授予，点撤销；红=已撤销，点授予）
+                    const isBanned = user.is_banned || false;
+                    const banLabel = '进入主站';
+                    const banColor = isBanned ? 'red' : 'green';
+                    const banHtml = isSelf
+                        ? `<span class="action-link ${banColor} disabled" style="cursor:default;">${banLabel}</span>`
+                        : `<span class="action-link ${banColor}" style="cursor:pointer;" data-action="toggle-ban" data-user="${user.user_number}">${banLabel}</span>`;
+
+                    const isCheater = user.is_cheater || false;
+                    const cheaterLabel = '学术不端';
+                    const cheaterColor = isCheater ? 'green' : 'red';
+                    const cheaterHtml = isSelf
+                        ? `<span class="action-link ${cheaterColor} disabled" style="cursor:default;">${cheaterLabel}</span>`
+                        : `<span class="action-link ${cheaterColor}" style="cursor:pointer;" data-action="toggle-misconduct" data-user="${user.user_number}">${cheaterLabel}</span>`;
+
                     const canSpeak = user.can_speak !== false;
                     const speakHtml = isSelf
                         ? `<span class="action-link ${canSpeak ? 'green' : 'red'} disabled" style="cursor:default;">自由发言</span>`
                         : `<span class="action-link ${canSpeak ? 'green' : 'red'}" style="cursor:pointer;" data-action="toggle-speak" data-user="${user.user_number}">自由发言</span>`;
-                    const speakLineHtml = `<div class="perm-group-line"><span class="perm-cat">普通权限</span>${speakHtml}</div>`;
 
-                    const permSummaryHtml = `${mgmtHtml}${speakLineHtml}`;
+                    const normalLinksHtml = `${banHtml} | ${cheaterHtml} | ${speakHtml}`;
+                    const normalHtml = `<div class="perm-group-line"><span class="perm-cat">普通权限</span>${normalLinksHtml}</div>`;
 
-                    // 操作列：仅保留处罚类（进入主站=封禁 toggle、学术不端=棕名 toggle）
-                    const isBanned = user.is_banned || false;
-                    const banColor = isBanned ? 'red' : 'green';
-                    const banAction =
-                        `<span class="action-link ${banColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="${isSelf ? '' : 'toggle-ban'}" data-user="${user.user_number}">进入主站</span>`;
-
-                    const academicLabel = isBrown ? '取消棕名' : '学术不端';
-                    const academicColor = isBrown ? 'green' : 'red';
-                    const academicAction =
-                        `<span class="action-link ${academicColor} ${isSelf ? 'disabled' : ''}" style="${isSelf ? 'cursor:default;' : 'cursor:pointer;'}" data-action="toggle-misconduct" data-user="${user.user_number}">${academicLabel}</span>`;
-
-                    // 标签按钮：仅作弊者不显示（管理员也可设置）；置于用户名后
-                    const canSetTag = !user.is_cheater;
-                    const tagAction = canSetTag
-                        ? `<span class="action-link" style="color:#9b59b6;cursor:pointer;margin-left:6px;" data-action="set-tag" data-user="${user.user_number}">🏷️标签</span>`
-                        : '';
-
-                    // 操作列：进入主站 | 学术不端
-                    const actionHtml = `${banAction} | ${academicAction}`;
-
-                    const userNameHtml = `
-                        <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>
-                        ${tagHtml}${tagAction}
-                    `;
+                    const permSummaryHtml = `${mgmtHtml}${normalHtml}`;
 
                     html += `
-                        <tr>
-                            <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isSelf ? 'disabled' : ''}></td>
-                            <td data-label="注册时间">${formatTime(user.created_at)}</td>
-                            <td data-label="用户编号">${user.user_number}</td>
-                            <td data-label="用户名">${userNameHtml}</td>
-                            <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
-                            <td data-label="用户类型">${roleLabel}</td>
-                            <td data-label="权限">${permSummaryHtml}</td>
-                            <td data-label="操作">${actionHtml}</td>
-                        </tr>
-                    `;
+            <tr>
+                <td class="check-col" data-label="选择"><input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isSelf ? 'disabled' : ''}></td>
+                <td data-label="注册时间">${formatTime(user.created_at)}</td>
+                <td data-label="用户编号"><a href="/user/${user.user_number}" style="color:#2c3e50;text-decoration:none; onmouseout="this.style.textDecoration='none'">${user.user_number}</a></td>
+                <td data-label="头像">${avatarHtml}</td>
+                <td data-label="用户名">${userNameHtml}</td>
+                <td data-label="标签" class="tag-cell" data-user="${user.user_number}" data-current="${escapeHtmlAttr(tagDisplay)}" data-cheater="${user.is_cheater}">${tagCellHtml}</td>
+                <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
+                <td data-label="用户类型">${roleLabel}</td>
+                <td data-label="权限">${permSummaryHtml}</td>
+            </tr>
+        `;
                 }
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ---- 用户名双击编辑（无原因，不记录） ----
+                // ========== 事件绑定 ==========
+
+                // 1. 用户名双击编辑
                 document.querySelectorAll('.username-display').forEach(el => {
-                    let clickCount = 0,
-                        timer = null;
-                    el.addEventListener('click', function (e) {
+                    el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
-                        clickCount++;
-                        if (timer) clearTimeout(timer);
-                        timer = setTimeout(() => {
-                            if (clickCount === 2) enterEditMode(this);
-                            else if (clickCount >= 3) {
-                                const uid = parseInt(this.dataset.user);
-                                window.open('/user/' + uid, '_blank');
-                            }
-                            clickCount = 0;
-                            timer = null;
-                        }, 300);
+                        enterEditModeUsername(this);
                     });
 
-                    async function enterEditMode(el) {
+                    async function enterEditModeUsername(el) {
                         const uid = parseInt(el.dataset.user);
                         const current = el.dataset.current || el.textContent.trim();
                         const input = document.createElement('input');
@@ -1673,7 +1822,6 @@
                                 return;
                             }
                             try {
-                                // 直接更新，不记录日志
                                 await updateUserField(uid, { username: val });
                                 await loadUsers();
                             } catch (err) {
@@ -1684,10 +1832,7 @@
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                input.blur();
-                            }
+                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
                             if (e.key === 'Escape') {
                                 el.textContent = current;
                                 el.dataset.current = current;
@@ -1696,7 +1841,7 @@
                     }
                 });
 
-                // ---- 备注名双击编辑（无原因，不记录） ----
+                // 2. 备注名双击编辑
                 document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -1729,10 +1874,7 @@
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                input.blur();
-                            }
+                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
                             if (e.key === 'Escape') {
                                 const p = this.parentNode;
                                 p.textContent = cur || '-';
@@ -1742,50 +1884,83 @@
                     });
                 });
 
-                // ---- 设置标签（仅作弊者不可修改，管理员可设置） ----
-                async function setTag(userNumber) {
-                    const targetUser = allUsers.find(u => u.user_number === userNumber);
-                    if (!targetUser) return;
-                    if (targetUser.is_cheater) { showError('作弊者标签已锁定为"作弊者"，不可修改'); return; }
-                    const cur = targetUser.user_tag || '';
-                    const { value: val } = await Swal.fire({
-                        title: '设置用户标签',
-                        input: 'text',
-                        inputValue: cur,
-                        inputPlaceholder: '输入标签（留空清除标签）',
-                        showCancelButton: true,
-                        confirmButtonText: '保存',
-                        cancelButtonText: '取消'
+                // 3. 标签列双击编辑
+                document.querySelectorAll('.tag-cell').forEach(el => {
+                    el.addEventListener('dblclick', function (e) {
+                        e.stopPropagation();
+                        const uid = parseInt(this.dataset.user);
+                        const isCheater = this.dataset.cheater === 'true';
+                        if (isCheater) {
+                            showError('作弊者标签已锁定为"作弊者"，不可编辑');
+                            return;
+                        }
+                        const current = this.dataset.current || '';
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'editable-field-input';
+                        input.value = current;
+                        input.placeholder = '输入标签（留空清除）';
+                        this.innerHTML = '';
+                        this.appendChild(input);
+                        input.focus();
+                        input.select();
+
+                        const save = async () => {
+                            let val = input.value.trim();
+                            const targetUser = allUsers.find(u => u.user_number === uid);
+                            if (targetUser && targetUser.is_admin && val === '') {
+                                val = '管理员';
+                            }
+                            if (val === current) {
+                                renderTagCell(this, uid, current);
+                                return;
+                            }
+                            try {
+                                await updateUserField(uid, { user_tag: val || null });
+                                await loadUsers();
+                            } catch (err) {
+                                showError('更新标签失败：' + err.message);
+                                renderTagCell(this, uid, current);
+                            }
+                        };
+
+                        input.addEventListener('blur', save);
+                        input.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+                            if (e.key === 'Escape') {
+                                renderTagCell(el, uid, current);
+                            }
+                        });
                     });
-                    if (val === undefined || val === null) return;   // 用户取消
-                    let final = val.trim() || null;
-                    // 管理员的标签不允许清空：被删除时强制恢复为"管理员"
-                    if (final === null && targetUser.is_admin) {
-                        final = '管理员';
+                });
+
+                function renderTagCell(el, uid, tagValue) {
+                    const targetUser = allUsers.find(u => u.user_number === uid);
+                    if (!targetUser) {
+                        el.textContent = tagValue || '-';
+                        el.dataset.current = tagValue || '';
+                        return;
                     }
-                    if ((final || null) === (cur || null)) return;   // 无变化
-                    try {
-                        await updateUserField(userNumber, { user_tag: final });
-                        await loadUsers();
-                        showSuccess('标签已更新');
-                    } catch (err) {
-                        showError('更新失败：' + err.message);
+                    const color = getUserDisplayColor(targetUser);
+                    let display = tagValue || '';
+                    if (targetUser.is_cheater) {
+                        display = '作弊者';
                     }
+                    if (display) {
+                        el.innerHTML = `<span class="user-tag-display" style="background-color:${color};">${escapeHtmlAttr(display)}</span>`;
+                    } else {
+                        el.innerHTML = `<span style="color:#bbb;font-size:13px;">空</span>`;
+                    }
+                    el.dataset.current = display;
+                    el.dataset.cheater = targetUser.is_cheater ? 'true' : 'false';
                 }
 
-                // ---- 按钮事件绑定 ----
+                // 4. 权限操作事件
                 document.querySelectorAll('[data-action="edit-perms"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         await editPermissions(uid);
-                    });
-                });
-                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        await toggleCanSpeak(uid);
                     });
                 });
                 document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
@@ -1802,20 +1977,49 @@
                         await toggleAcademicMisconduct(uid);
                     });
                 });
-                document.querySelectorAll('[data-action="set-tag"]').forEach(el => {
+                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
                     el.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
-                        await setTag(uid);
+                        await toggleCanSpeak(uid);
                     });
                 });
 
-                // ---- 全选 ----
+                // 5. 头像双击编辑
+                // 5. 头像双击编辑（文件上传版）
+                document.querySelectorAll('.avatar-image').forEach(img => {
+                    img.addEventListener('dblclick', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const uid = parseInt(this.dataset.user);
+                        // 动态创建隐藏的 file input
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.style.display = 'none';
+                        document.body.appendChild(input);
+                        input.addEventListener('change', async function () {
+                            const file = this.files[0];
+                            if (!file) { this.remove(); return; }
+                            try {
+                                const url = await uploadAvatarForUser(uid, file);
+                                showSuccess('头像已更新，请强制刷新查看');
+                                await loadUsers();
+                            } catch (err) {
+                                showError('更新头像失败：' + err.message);
+                            } finally {
+                                this.remove();
+                            }
+                        });
+                        input.click();
+                    });
+                });
+
+                // 6. 全选 & 批量栏
                 const selectAll = document.getElementById('selectAll');
                 if (selectAll) {
                     selectAll.addEventListener('change', function () {
-                        document.querySelectorAll('.row-checkbox:not(:disabled)').forEach(cb => cb.checked = this
-                            .checked);
+                        document.querySelectorAll('.row-checkbox:not(:disabled)').forEach(cb => cb.checked = this.checked);
                         updateBatchBar();
                     });
                 }
@@ -1938,10 +2142,6 @@
                 { can_manage_posts: true }));
             document.getElementById('batchRevokePostMgmt').addEventListener('click', () => batchAction('撤销秩序管理权限',
                 { can_manage_posts: false }));
-            document.getElementById('batchGrantSpecial').addEventListener('click', () => batchAction('授予特殊权益',
-                { special_privilege: true }));
-            document.getElementById('batchRevokeSpecial').addEventListener('click', () => batchAction('撤销特殊权益',
-                { special_privilege: false }));
 
             // ---------- 启动 ----------
             init();

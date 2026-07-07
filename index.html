@@ -395,14 +395,16 @@
             display: flex;
             gap: 14px;
             padding: 14px 16px;
-            align-items: center;          /* ← 新增：垂直居中 */
+            align-items: center;
+            /* ← 新增：垂直居中 */
         }
 
         /* 头像圆形 + 大小统一 */
         #recentPostsCard .post-avatar img {
             width: 40px;
             height: 40px;
-            border-radius: 50%;           /* ← 圆形 */
+            border-radius: 50%;
+            /* ← 圆形 */
             object-fit: cover;
             display: block;
             background: #f0f2f5;
@@ -427,7 +429,8 @@
         /* 保持头像外层容器与内容对齐 */
         #recentPostsCard .post-avatar {
             flex-shrink: 0;
-            margin-top: 0;               /* 移除之前可能存在的负边距 */
+            margin-top: 0;
+            /* 移除之前可能存在的负边距 */
         }
 
         #recentPostsCard .post-meta-line {
@@ -436,27 +439,32 @@
             color: #8a9aa8;
             line-height: 1.6;
             display: flex;
-            flex-direction: column;   /* 改为纵向排列 */
+            flex-direction: column;
+            /* 改为纵向排列 */
             gap: 2px 0;
         }
 
         #recentPostsCard .post-meta-row1,
         #recentPostsCard .post-meta-row2 {
-            display: block;   /* 改为块级，或继续用 flex 但只有一个子元素也无妨 */
+            display: block;
+            /* 改为块级，或继续用 flex 但只有一个子元素也无妨 */
         }
 
         /* 确保回复数样式与之前一致 */
         #recentPostsCard .reply-count {
             color: #8a9aa8;
         }
+
         #recentPostsCard .reply-count strong {
             font-weight: 600;
             color: #2c3e50;
         }
 
         #recentPostsCard .post-meta-line .post-time-reply strong {
-            color: #2c3e50;        /* 深色 */
-            font-weight: 600;      /* 保持加粗 */
+            color: #2c3e50;
+            /* 深色 */
+            font-weight: 600;
+            /* 保持加粗 */
         }
 
         #recentPostsCard .post-meta-line .benben-username {
@@ -671,7 +679,8 @@
         .benben-user-info {
             display: flex;
             align-items: center;
-            gap: 4px 8px;  /* ← 原来 10px，改为 8px */
+            gap: 4px 8px;
+            /* ← 原来 10px，改为 8px */
             flex-wrap: wrap;
         }
 
@@ -1503,7 +1512,8 @@
         @media (max-width: 600px) {
             @media (max-width: 600px) {
                 #recentPostsList {
-                    grid-template-columns: 1fr;  /* 手机端改为单列 */
+                    grid-template-columns: 1fr;
+                    /* 手机端改为单列 */
                     gap: 10px;
                 }
             }
@@ -1992,7 +2002,7 @@
                 return { roots, output: output.join('\n') };
             }
 
-            function renderContent(rawText, mentionMap, hasSpecialPrivilege = false, username = '用户', uniqueId = '') {
+            function renderContent(rawText, mentionMap, isAdmin = false, username = '用户', uniqueId = '') {
                 if (!rawText) return '';
 
                 // 0. 解码 HTML 实体（把 &gt; 转成 >）
@@ -2165,20 +2175,17 @@
                 });
 
                 // ===== 专属语法（仅当 hasSpecialPrivilege = true） =====
-                if (hasSpecialPrivilege) {
+                if (isAdmin) {
                     // 1. 管理员公告 [admin]内容[/admin]
                     processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
                         return `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`;
                     });
-                    // 2. 彩虹文字 {rainbow}文字{rainbow}（从红色平滑渐变到紫色）
+                    // 2. 彩虹文字 {rainbow}文字{rainbow}
                     processed = processed.replace(/\{rainbow\}([\s\S]*?)\{rainbow\}/g, (match, content) => {
                         const chars = content.split('');
                         const len = chars.length;
                         if (len === 0) return '';
-
-                        const startHue = 0;
-                        const endHue = 300;
-
+                        const startHue = 0, endHue = 300;
                         let result = '';
                         for (let i = 0; i < len; i++) {
                             const hue = startHue + (endHue - startHue) * (i / (len - 1));
@@ -2191,6 +2198,7 @@
                         return `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`;
                     });
                 }
+
 
                 let html = md.render(processed);
 
@@ -2520,8 +2528,12 @@
                         let rawText = rawEncoded;
                         let mentionMap = {};
                         try { mentionMap = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
-                        el.innerHTML = renderContent(rawText, mentionMap, currentProfile?.special_privilege ||
-                            false, currentProfile?.username || '用户');
+                        el.innerHTML = renderContent(
+                            rawText,
+                            mentionMap,
+                            currentProfile?.is_admin || false,   // 改为 is_admin
+                            currentProfile?.username || '用户'
+                        );
                     } catch (e) {
                         console.error('渲染犇犇内容失败:', e);
                         el.innerHTML = '<p style="color:red;">内容渲染失败</p>';
@@ -2810,9 +2822,9 @@
                             textEl.innerHTML = renderContent(
                                 rawEncoded,
                                 map,
-                                currentProfile?.special_privilege || false,
+                                currentProfile?.is_admin || false,   // 改为 is_admin
                                 currentProfile?.username || '用户',
-                                'benben-' + item.id   // ← 新增唯一前缀
+                                'benben-' + item.id
                             );
                         }
                     }
@@ -2969,7 +2981,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users') // ← 增加此项
+                    .select('user_number, username, is_admin, can_speak, can_manage_users') // ← 增加此项
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -3260,79 +3272,79 @@
             bindBenbenEvents();
         })();
     </script>
-<script>
-/* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
-(function () {
-    if (!window.supabase || document.getElementById('topAvatarWrap')) return;
-    var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
-    var authBtns = document.querySelector('.topbar .auth-buttons');
-    if (!authBtns) return;
-    if (!document.getElementById('topAvatarStyle')) {
-        var st = document.createElement('style');
-        st.id = 'topAvatarStyle';
-        st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
-        document.head.appendChild(st);
-    }
-    function letterAvatar(name) {
-        var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
-    }
-    var me = null;
-    var mo = new MutationObserver(ensure);
-    mo.observe(authBtns, { childList: true });
-    function ensure() {
-        if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
-        mo.disconnect();
-        try {
-            var ue = authBtns.querySelector('.user-email');
-            if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
-            var wrap = document.getElementById('topAvatarWrap');
-            if (!wrap) {
-                wrap = document.createElement('div');
-                wrap.id = 'topAvatarWrap';
-                wrap.className = 'top-avatar-wrap';
-                var av = document.createElement('a');
-                av.id = 'topAvatar';
-                av.href = '/user/' + (me.user_number || '');
-                av.title = me.username || '';
-                av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
-                var img = document.createElement('img');
-                img.alt = '头像';
-                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
-                img.src = me.avatar_url || letterAvatar(me.username);
-                av.appendChild(img);
-                wrap.appendChild(av);
-                var menu = document.createElement('div');
-                menu.id = 'topAvatarMenu';
-                menu.className = 'top-avatar-menu';
-                wrap.appendChild(menu);
-                authBtns.appendChild(wrap);
+    <script>
+        /* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
+        (function () {
+            if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+            var authBtns = document.querySelector('.topbar .auth-buttons');
+            if (!authBtns) return;
+            if (!document.getElementById('topAvatarStyle')) {
+                var st = document.createElement('style');
+                st.id = 'topAvatarStyle';
+                st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+                document.head.appendChild(st);
             }
-            // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
-            var menu = document.getElementById('topAvatarMenu');
-            var logoutEl = authBtns.querySelector('.auth-btn.logout');
-            if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
-            if (me.can_manage_users && !document.getElementById('adminEntry')) {
-                var gear = document.createElement('a');
-                gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
-                gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
-                gear.textContent = '⚙️';
-                authBtns.appendChild(gear);
+            function letterAvatar(name) {
+                var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
-            ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
-                var el = authBtns.querySelector(sel);
-                if (el) authBtns.appendChild(el);
-            });
-        } finally { mo.observe(authBtns, { childList: true }); }
-    }
-    sb.auth.getSession().then(function (r) {
-        var s = r.data && r.data.session;
-        if (!s) return;
-        return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
-    }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () {});
-})();
-</script>
+            var me = null;
+            var mo = new MutationObserver(ensure);
+            mo.observe(authBtns, { childList: true });
+            function ensure() {
+                if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+                mo.disconnect();
+                try {
+                    var ue = authBtns.querySelector('.user-email');
+                    if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+                    var wrap = document.getElementById('topAvatarWrap');
+                    if (!wrap) {
+                        wrap = document.createElement('div');
+                        wrap.id = 'topAvatarWrap';
+                        wrap.className = 'top-avatar-wrap';
+                        var av = document.createElement('a');
+                        av.id = 'topAvatar';
+                        av.href = '/user/' + (me.user_number || '');
+                        av.title = me.username || '';
+                        av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                        var img = document.createElement('img');
+                        img.alt = '头像';
+                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                        img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                        img.src = me.avatar_url || letterAvatar(me.username);
+                        av.appendChild(img);
+                        wrap.appendChild(av);
+                        var menu = document.createElement('div');
+                        menu.id = 'topAvatarMenu';
+                        menu.className = 'top-avatar-menu';
+                        wrap.appendChild(menu);
+                        authBtns.appendChild(wrap);
+                    }
+                    // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
+                    var menu = document.getElementById('topAvatarMenu');
+                    var logoutEl = authBtns.querySelector('.auth-btn.logout');
+                    if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+                    if (me.can_manage_users && !document.getElementById('adminEntry')) {
+                        var gear = document.createElement('a');
+                        gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
+                        gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                        gear.textContent = '⚙️';
+                        authBtns.appendChild(gear);
+                    }
+                    ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                        var el = authBtns.querySelector(sel);
+                        if (el) authBtns.appendChild(el);
+                    });
+                } finally { mo.observe(authBtns, { childList: true }); }
+            }
+            sb.auth.getSession().then(function (r) {
+                var s = r.data && r.data.session;
+                if (!s) return;
+                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
+            }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () { });
+        })();
+    </script>
 </body>
 
 </html>
