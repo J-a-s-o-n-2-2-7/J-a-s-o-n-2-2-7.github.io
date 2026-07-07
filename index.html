@@ -437,7 +437,7 @@
             margin-top: 4px;
             font-size: 13px;
             color: #8a9aa8;
-            line-height: 1.6;
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
             /* 改为纵向排列 */
@@ -448,6 +448,14 @@
         #recentPostsCard .post-meta-row2 {
             display: block;
             /* 改为块级，或继续用 flex 但只有一个子元素也无妨 */
+        }
+
+        #recentPostsCard .benben-username {
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 14px;
+            vertical-align: middle;
         }
 
         /* 确保回复数样式与之前一致 */
@@ -512,10 +520,6 @@
             color: #fff;
             background: #e74c3c;
             line-height: 1.8;
-        }
-
-        #recentPostsCard .post-meta-line .user-tag-display {
-            margin-left: 4px;
         }
 
         #recentPostsCard .empty-state {
@@ -688,6 +692,8 @@
             font-weight: bold;
             color: #333;
             text-decoration: none;
+            font-size: 14px;
+            vertical-align: middle;
         }
 
         .benben-username:hover {
@@ -729,10 +735,10 @@
             color: #fff;
             font-size: 11.5px;
             font-weight: 600;
-            margin: 0 0 0 5px;
+            margin: 0 0 0 4px;
             cursor: default;
             transition: filter 0.15s;
-            /* background-color 由内联 style 动态设置 */
+            vertical-align: middle;   /* ← 新增这一行 */
         }
 
         .user-tag-display:hover {
@@ -1617,6 +1623,225 @@
                 width: 16px;
             }
         }
+
+        /* ========== 打卡卡片（洛谷风格） ========== */
+        #punchCard {
+            padding: 18px 24px 20px;
+        }
+        #punchCard .lg-punch {
+            text-align: center;
+        }
+        #punchCard .lg-punch h2 {
+            margin-bottom: 8px;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #333;
+        }
+        #punchCard .lg-punch h2 .lg-fg-bluelight {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #punchCard .lg-punch h2 .lg-fg-bluelight:hover {
+            text-decoration: underline;
+        }
+        #punchCard .lg-punch h2 .lg-fg-red {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #punchCard .lg-punch h2 .lg-fg-red:hover {
+            text-decoration: underline;
+        }
+        #punchCard .lg-punch h2 .lg-fg-gold {
+            color: #d4a017;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #punchCard .lg-punch h2 .lg-fg-gold:hover {
+            text-decoration: underline;
+        }
+        #punchCard .lg-punch h2 .lg-fg-purple {
+            color: #9D3DCF;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #punchCard .lg-punch h2 .lg-fg-purple:hover {
+            text-decoration: underline;
+        }
+        #punchCard .sb_amazeui {
+            display: inline-block;
+            margin-left: 2px;
+            text-decoration: none;
+        }
+        #punchCard .sb_amazeui svg {
+            vertical-align: middle;
+            margin-bottom: 3px;
+        }
+        #punchCard .lg-punch-result {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            padding: 8px 32px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+        #punchCard .lg-bold {
+            font-weight: bold;
+        }
+        /* 日历区域 */
+        #punchCard .lg-index-calendar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 8px 0 12px;
+            color: #396A42;
+        }
+        #punchCard .lg-index-calendar .lg-punch-left,
+        #punchCard .lg-index-calendar .lg-punch-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #396A42;
+            line-height: 1.3;
+        }
+        #punchCard .lg-index-calendar .lg-punch-small {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-weight: 400;
+        }
+        #punchCard .lg-index-calendar .lg-punch-big {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #396A42;
+            line-height: 1.1;
+            letter-spacing: 2px;
+        }
+        #punchCard .lg-fg-greendark {
+            color: #2c3e50;
+        }
+        #punchCard .lg-punch-result.lg-fg-red {
+            color: #E74C3C;
+        }
+        #punchCard .lg-punch-result.lg-fg-green {
+            color: #5EB95E;
+        }
+        #punchCard .lg-punch-result.lg-fg-black {
+            color: #000000;
+        }
+        /* 倒计时和按钮 */
+        #punchCard .lg-small {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        #punchCard .lg-small strong {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+        #punchCard .brand-highlight {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+        /* ★★★ 打卡按钮（模仿用户设置页面，仅保留橙色） ★★★ */
+        #punchCard .am-btn {
+            display: inline-block;
+            padding: 8px 16px;          /* 改为与设置页一致 */
+            margin-top: 10px;
+            font-size: 15px;
+            font-weight: normal;        /* 不加粗 */
+            border: none;
+            border-radius: 40px;        /* 圆角加大 */
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+            text-decoration: none;
+            color: #fff;
+        }
+        #punchCard .am-btn-warning {
+            background: #F37B1D;        /* 橙色保留 */
+        }
+        #punchCard .am-btn-warning:hover {
+            background: #E0690C;
+        }
+        #punchCard .am-btn-warning:disabled {
+            background: #95a5a6;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        /* 以下两个样式在打卡中未直接使用，但保留以防万一 */
+        #punchCard .am-btn-success {
+            background: #5eb95e;
+            color: #fff;
+        }
+        #punchCard .am-btn-success:hover {
+            background: #4a9e4a;
+        }
+        #punchCard .am-btn-success:disabled {
+            background: #95a5a6;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        #punchCard .am-btn-primary {
+            background: #3498db;
+            color: #fff;
+        }
+        #punchCard .am-btn-primary:hover {
+            background: #2980b9;
+        }
+        /* 连续天数提示 */
+        #punchCard .punch-streak-info {
+            display: inline-block;
+            margin-left: 16px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        #punchCard .punch-streak-info strong {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+        #punchCard .punch-today-badge {
+            display: inline-block;
+            background: #5eb95e;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 1px 12px;
+            border-radius: 20px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        #punchCard .punch-username-logo {
+            color: #e74c3c;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        #punchCard .punch-username-logo:hover {
+            text-decoration: underline;
+        }
+        /* 响应式 */
+        @media (max-width: 600px) {
+            #punchCard .lg-index-calendar .lg-punch-big {
+                font-size: 2rem;
+            }
+            #punchCard .lg-small {
+                font-size: 0.88rem;
+            }
+            #punchCard .am-btn {
+                padding: 6px 20px;
+                font-size: 14px;
+            }
+            #punchCard .punch-streak-info {
+                display: block;
+                margin-left: 0;
+                margin-top: 6px;
+            }
+        }
     </style>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
@@ -1741,6 +1966,14 @@
 
         <div class="content-wrapper">
             <div class="main-content">
+
+                <!-- ===== 打卡卡片（洛谷风格） ===== -->
+                <div class="card" id="punchCard">
+                    <div id="punchCardContent" style="min-height:80px;">
+                        <div class="benben-loading">加载中...</div>
+                    </div>
+                </div>
+
                 <!-- ===== 近期讨论卡片（置于犇犇之前） ===== -->
                 <div class="card" id="recentPostsCard">
                     <div class="card-header">近期讨论</div>
@@ -1799,12 +2032,873 @@
             const benbenSubmit = document.getElementById('benbenSubmit');
             const loadingSentinel = document.getElementById('loadingSentinel');
 
+            const COLOR_RED = '#e74c3c';
+            const COLOR_PURPLE = '#8E44AD';
+            const COLOR_BROWN = '#AD8B00';
+
             const md = window.markdownit({ html: true, linkify: true, typographer: true });
             md.use(window.markdownitTaskLists);
             md.use(window.markdownitEmoji);
             md.use(window.markdownitFootnote);
             md.use(window.markdownitDeflist);
             md.use(window.markdownitAbbr);
+
+            // ========== ★★★ 新增打卡数据 ★★★ ==========
+            const ACTIVITIES = [
+                { name: '写作文', good: '非常有文采', bad: '不知所云，离题千里' },
+                { name: '写洛谷日报', good: '文思泉涌，下笔如有神', bad: '发现还差得远' },
+                { name: '放假', good: '自由自在的一个假期', bad: '就放一天，全是作业' },
+                { name: '玩网游', good: '犹如神助', bad: '匹配到一群猪队友' },
+                { name: '考试', good: '学的全会，蒙的全对', bad: '作弊会被抓' },
+                { name: '背诵课文', good: '看一遍就背下来了', bad: '记忆力只有 50 Byte' },
+                { name: '交友', good: '友谊地久天长', bad: '交友不慎' },
+                { name: '骗分', good: '"不可以，总司令"然后拿一半分', bad: '一分不得' },
+                { name: '抽卡', good: '一发入魂', bad: '只有保底' },
+                { name: '贴贴', good: '说不定擦出火花', bad: '一定会被拒绝' },
+                { name: '出公开赛', good: 'rated，评价很高', bad: '出了原题裸题错题不可做题' },
+                { name: '开电脑', good: '电脑的状态也很好', bad: '意外的死机故障不可避' },
+                { name: '祭祀', good: '获得祖宗的庇护', bad: '未能得到祖宗保佑' },
+                { name: '体育锻炼', good: '身体棒棒哒', bad: '消耗的能量全吃回来了' },
+                { name: '网购', good: '买到历史最低价', bad: '正好错过促销' },
+                { name: '摸鱼', good: '放松身心', bad: '被教练制裁' },
+                { name: '请教问题', good: '获得大佬的解答', bad: '被当作 xxs' },
+                { name: '抢最优解', good: '一发就是最优解', bad: '越卡常越慢' },
+                { name: '洗澡', good: '洗香香', bad: '小心着凉' },
+                { name: '唱歌', good: '成为歌神', bad: '别人唱歌要钱，你要命' },
+                { name: '玩我的世界', good: '下界挖到远古遗骸', bad: '转角遇到苦力怕' },
+                { name: '熬夜', good: '事情终究可以完成的', bad: '爆肝，通宵干不完' },
+                { name: '写暴戾语言', good: '成功发泄', bad: '禁赛一年' },
+                { name: '卷题', good: '水平显著提升', bad: '我咋啥都不会' },
+                { name: '上洛谷', good: '全方位提升', bad: '你谷日爆' },
+                { name: '出行', good: '一路顺风', bad: '路途也许坎坷' },
+                { name: '点外卖', good: '及时送到', bad: '一直没有送到还不给退款' },
+                { name: '写题解', good: '一遍通过审核', bad: '连续提交不符合要求' },
+                { name: '学新算法', good: '看一遍就懂了', bad: '怎么也学不会' },
+                { name: '重构代码', good: '代码质量明显提高', bad: '越改越乱' },
+                { name: '继续完成 WA 的题', good: '下一次就 AC', bad: '然而变成了 TLE' },
+                { name: '打线上公开赛', good: '涨很多 rating', bad: '掉大分' },
+                { name: '参加模拟赛', good: '可以 AK 虐全场', bad: '注意爆零' },
+                { name: '水讨论区', good: '看到有趣的事情', bad: '和其他人激情对线' },
+                { name: '写作业', good: '都会写，写的全对', bad: '上课讲了这些了吗' },
+                { name: '装弱', good: '谦虚最好了', bad: '被看穿' },
+                { name: '看视频网站', good: '愉悦身心', bad: '会被教练看见' },
+                { name: '刷题', good: '成为虐题狂魔', bad: '容易 WA' },
+                { name: '装逼', good: '获得众人敬仰', bad: '被识破' },
+                { name: '睡觉', good: '养足精力，明日再战', bad: '翻来覆去睡不着' },
+                { name: '切水题', good: '通过数猛涨', bad: '被抓抄题解' },
+                { name: '膜拜大神', good: '接受神犇光环照耀', bad: '被大神鄙视' },
+                { name: '吃饭', good: '人是铁饭是钢', bad: '小心变胖啊' },
+                { name: '上厕所', good: '想出了题目的解法', bad: '被机房惨案' },
+                { name: '打东方', good: 'All clear！', bad: '满身疮痍' },
+                { name: '造数据', good: '严谨数据，经久耐用', bad: '数据出锅，当众谢罪' },
+                { name: '纳财', good: '要到好多 Money', bad: '然而今天并没有财运' },
+                { name: '去食堂', good: '给了双倍的量', bad: '爱吃的菜刚被打完' },
+                { name: '上课', good: '100% 消化', bad: '反正你听不懂' },
+                { name: '发朋友圈', good: '分享是种美德', bad: '会被当做卖面膜的' },
+                { name: '扶老奶奶过马路', good: '增加 RP', bad: '会被讹' }
+            ];
+
+            const FORTUNE_LEVELS = [
+                { label: '大吉', cls: 'good' },      // 红色
+                { label: '中吉', cls: 'good' },      // 红色
+                { label: '小吉', cls: 'good' },      // 红色
+                { label: '中平', cls: 'bad' },       // 绿色
+                { label: '凶', cls: 'terrible' },    // 黑色
+                { label: '大凶', cls: 'terrible' }   // 黑色
+            ];
+
+            // ===== 种子随机函数 =====
+            function seededRandom(seed) {
+                let s = seed >>> 0;
+                return function () {
+                    s |= 0;
+                    s = s + 0x6D2B79F5 | 0;
+                    let t = Math.imul(s ^ s >>> 15, 1 | s);
+                    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+                    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+                };
+            }
+
+            function getDailySeed(userId) {
+                const today = new Date().toISOString().slice(0, 10);
+                const base = userId || 'anonymous';
+                let hash = 0;
+                const str = base + today;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return Math.abs(hash);
+            }
+
+            function getDeviceId() {
+                let id = localStorage.getItem('device_id');
+                if (!id) {
+                    id = 'dev_' + Math.random().toString(36).slice(2, 10);
+                    localStorage.setItem('device_id', id);
+                }
+                return id;
+            }
+
+            // ===== 打卡数据库操作 =====
+
+            // 获取今天日期（YYYY-MM-DD 格式，用于数据库查询）
+            function getTodayDateStr() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // 获取昨天日期
+            function getYesterdayDateStr() {
+                const now = new Date();
+                now.setDate(now.getDate() - 1);
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // 从数据库获取当前用户的打卡记录
+            async function fetchPunchRecord(userNumber) {
+                if (!userNumber) return null;
+                try {
+                    const today = getTodayDateStr();
+                    const { data, error } = await supabase
+                        .from('punch_records')
+                        .select('punch_date, streak')
+                        .eq('user_number', userNumber)
+                        .eq('punch_date', today)
+                        .maybeSingle();
+                    if (error) throw error;
+                    return data;
+                } catch (err) {
+                    console.error('获取打卡记录失败:', err);
+                    return null;
+                }
+            }
+
+            // 获取当前用户的连续天数（从最新记录往前推算）
+            async function fetchStreak(userNumber) {
+                if (!userNumber) return 0;
+                try {
+                    // 获取该用户所有打卡记录，按日期降序
+                    const { data, error } = await supabase
+                        .from('punch_records')
+                        .select('punch_date, streak')
+                        .eq('user_number', userNumber)
+                        .order('punch_date', { ascending: false })
+                        .limit(1);
+                    if (error) throw error;
+                    if (!data || data.length === 0) return 0;
+
+                    // 检查最新记录是否是今天
+                    const today = getTodayDateStr();
+                    if (data[0].punch_date === today) {
+                        return data[0].streak;
+                    }
+
+                    // 检查最新记录是否是昨天（如果是，返回 streak + 1，但实际需要从今天重新计算）
+                    // 更准确的做法：从最新记录往前推，找出连续打卡天数
+                    // 但由于我们每次打卡都存储 streak，直接返回最新记录的 streak 可能不准确
+                    // 我们需要重新计算连续天数
+
+                    // 改为从数据库查询所有记录，在 JS 中计算
+                    const { data: allData, error: allError } = await supabase
+                        .from('punch_records')
+                        .select('punch_date')
+                        .eq('user_number', userNumber)
+                        .order('punch_date', { ascending: false });
+                    if (allError) throw allError;
+
+                    if (!allData || allData.length === 0) return 0;
+
+                    // 从今天开始往前推，计算连续天数
+                    let streak = 0;
+                    const todayDate = new Date();
+                    todayDate.setHours(0, 0, 0, 0);
+
+                    // 创建一个 Set 存储所有打卡日期
+                    const punchDates = new Set(allData.map(r => r.punch_date));
+
+                    // 从今天开始往前检查
+                    let checkDate = new Date(todayDate);
+                    while (true) {
+                        const dateStr = checkDate.toISOString().slice(0, 10);
+                        if (punchDates.has(dateStr)) {
+                            streak++;
+                            checkDate.setDate(checkDate.getDate() - 1);
+                        } else {
+                            break;
+                        }
+                    }
+                    return streak;
+                } catch (err) {
+                    console.error('获取连续天数失败:', err);
+                    return 0;
+                }
+            }
+
+            // 执行打卡（写入数据库）
+            async function doDatabaseCheckIn(userNumber) {
+                if (!userNumber) return { success: false, message: '未登录' };
+
+                try {
+                    const today = getTodayDateStr();
+                    const yesterday = getYesterdayDateStr();
+
+                    // 1. 检查今天是否已打卡
+                    const { data: todayData, error: todayError } = await supabase
+                        .from('punch_records')
+                        .select('id')
+                        .eq('user_number', userNumber)
+                        .eq('punch_date', today)
+                        .maybeSingle();
+                    if (todayError) throw todayError;
+
+                    if (todayData) {
+                        return { success: false, message: '今天已打卡', days: 0 };
+                    }
+
+                    // 2. 查询昨天的打卡记录，获取连续天数
+                    const { data: yesterdayData, error: yesterdayError } = await supabase
+                        .from('punch_records')
+                        .select('streak')
+                        .eq('user_number', userNumber)
+                        .eq('punch_date', yesterday)
+                        .maybeSingle();
+                    if (yesterdayError) throw yesterdayError;
+
+                    const newStreak = yesterdayData ? (yesterdayData.streak + 1) : 1;
+
+                    // 3. 插入新打卡记录
+                    const { data: insertData, error: insertError } = await supabase
+                        .from('punch_records')
+                        .insert({
+                            user_number: userNumber,
+                            punch_date: today,
+                            streak: newStreak
+                        })
+                        .select()
+                        .single();
+                    if (insertError) throw insertError;
+
+                    return { success: true, days: newStreak, record: insertData };
+                } catch (err) {
+                    console.error('打卡失败:', err);
+                    return { success: false, message: err.message };
+                }
+            }
+
+            // 检查今天是否已打卡（用于渲染）
+            async function isCheckedInToday(userNumber) {
+                if (!userNumber) return false;
+                try {
+                    const today = getTodayDateStr();
+                    const { data, error } = await supabase
+                        .from('punch_records')
+                        .select('id')
+                        .eq('user_number', userNumber)
+                        .eq('punch_date', today)
+                        .maybeSingle();
+                    if (error) throw error;
+                    return !!data;
+                } catch (err) {
+                    console.error('检查打卡状态失败:', err);
+                    return false;
+                }
+            }
+
+            // ===== 日期工具 =====
+            function getChineseWeekday(date) {
+                const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                return weekdays[date.getDay()];
+            }
+            function getMonthSize(date) {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                return daysInMonth >= 30 ? '大' : '小';
+            }
+            function getMonthChinese(date) {
+                const months = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
+                return months[date.getMonth()] + '月';
+            }
+            function daysUntil(targetDate) {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const target = new Date(targetDate);
+                target.setHours(0, 0, 0, 0);
+                const diff = target - now;
+                return Math.ceil(diff / (1000 * 60 * 60 * 24));
+            }
+
+            // 获取用户名颜色
+            function getUserDisplayColor(user) {
+                if (user && user.is_cheater) return COLOR_BROWN;
+                if (user && user.is_admin) return COLOR_PURPLE;
+                return COLOR_RED;
+            }
+
+            // 获取标签显示文本
+            function getUserTagDisplay(user) {
+                if (!user) return '';
+                if (user.is_cheater) {
+                    if (user.is_admin) {
+                        return user.user_tag || '管理员';
+                    } else {
+                        return '作弊者';
+                    }
+                } else {
+                    return user.user_tag || '';
+                }
+            }
+
+            // ===== 获取指定日期的管理员运势设置 =====
+            async function fetchDailyFortune(dateStr) {
+                try {
+                    const { data, error } = await supabase
+                        .from('daily_fortune')
+                        .select('*')
+                        .eq('fortune_date', dateStr)
+                        .maybeSingle();
+                    if (error) throw error;
+                    return data;
+                } catch (err) {
+                    console.error('获取运势设置失败:', err);
+                    return null;
+                }
+            }
+
+            // ===== 管理员设置运势（支持2宜2忌） =====
+            async function adminSetDailyFortune(
+                fortuneDate, fortuneLevel,
+                goodName1, goodDesc1,
+                goodName2, goodDesc2,
+                badName1, badDesc1,
+                badName2, badDesc2
+            ) {
+                if (!currentProfile || !currentProfile.can_manage_posts) {
+                    throw new Error('无权限，需要秩序管理员权限');
+                }
+
+                // ★★★ 根据运势等级强制忽略字段 ★★★
+                if (fortuneLevel === '大吉') {
+                    // 大吉忽略忌
+                    badName1 = badName2 = badDesc1 = badDesc2 = null;
+                } else if (fortuneLevel === '大凶') {
+                    // 大凶忽略宜
+                    goodName1 = goodName2 = goodDesc1 = goodDesc2 = null;
+                }
+
+                const insertData = {
+                    fortune_date: fortuneDate,
+                    fortune_level: fortuneLevel,
+                    good_name: goodName1 || null,
+                    good_desc: goodDesc1 || null,
+                    good_name2: goodName2 || null,
+                    good_desc2: goodDesc2 || null,
+                    bad_name: badName1 || null,
+                    bad_desc: badDesc1 || null,
+                    bad_name2: badName2 || null,
+                    bad_desc2: badDesc2 || null,
+                    set_by: currentProfile.user_number
+                };
+
+                const { data: existing, error: checkError } = await supabase
+                    .from('daily_fortune')
+                    .select('id')
+                    .eq('fortune_date', fortuneDate)
+                    .maybeSingle();
+
+                if (checkError) throw checkError;
+
+                if (existing) {
+                    const { error } = await supabase
+                        .from('daily_fortune')
+                        .update(insertData)
+                        .eq('id', existing.id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('daily_fortune')
+                        .insert(insertData);
+                    if (error) throw error;
+                }
+            }
+
+            // ===== 渲染打卡卡片（异步版本） =====
+            async function renderPunchCard() {
+                const container = document.getElementById('punchCardContent');
+                if (!container) return;
+
+                const profile = currentProfile || null;
+                const username = profile?.username || '游客';
+                const userNumber = profile?.user_number || '';
+                const isLoggedIn = !!profile;
+
+                let days = 0;
+                let checkedIn = false;
+
+                if (isLoggedIn && userNumber) {
+                    days = await fetchStreak(userNumber);
+                    checkedIn = await isCheckedInToday(userNumber);
+                }
+
+                // 获取颜色和标签（与犇犇一致）
+                const color = getUserDisplayColor(profile);
+                const tagText = getUserTagDisplay(profile);
+
+                // 生成带颜色和标签的用户名 HTML
+                let userDisplayHtml = `<a href="/user/${userNumber}" target="_blank" class="benben-username" style="color: ${color};">${escapeHtml(username)}</a>`;
+                if (tagText) {
+                    userDisplayHtml += `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
+                }
+
+                // 日期信息
+                const now = new Date();
+                const monthChinese = getMonthChinese(now);
+                const monthSize = getMonthSize(now);
+                const monthChineseFull = monthChinese + monthSize;
+                const dayStr = String(now.getDate()).padStart(2, '0');
+                const weekday = getChineseWeekday(now);
+
+                // 倒计时
+                const cspRound1 = new Date(2026, 8, 18);
+                const cspRound2 = new Date(2026, 9, 30);
+                const days1 = daysUntil(cspRound1);
+                const days2 = daysUntil(cspRound2);
+
+                const hasCheckedIn = isLoggedIn && checkedIn;
+
+                // ---------- 未打卡模板 ----------
+                if (!hasCheckedIn) {
+                    let buttonHtml = '';
+                    let welcomeHtml = '';
+                    if (isLoggedIn) {
+                        buttonHtml = `<button class="am-btn am-btn-warning" id="punchActionBtn">点击打卡</button>`;
+                        welcomeHtml = `<p style="font-weight: 700; font-size: 1.2rem; margin-bottom: 8px;">欢迎回来，${userDisplayHtml}</p>`;
+                    }
+
+                    let html = `
+            <div class="lg-punch">
+                ${welcomeHtml}
+                <div class="lg-index-calendar">
+                    <div class="lg-punch-left">
+                        ${monthChineseFull.split('').map(ch => `<span>${ch}</span>`).join('')}
+                    </div>
+                    <span class="lg-punch-big">${dayStr}</span>
+                    <div class="lg-punch-right">
+                        ${weekday.split('').map(ch => `<span>${ch}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="lg-small">
+                    距 <strong>CSP-J/S 2026 第一轮</strong> 还剩 <strong>${days1} 天</strong><br>
+                    距 <strong>CSP-J/S 2026 第二轮</strong> 还剩 <strong>${days2} 天</strong><br>
+                    ${buttonHtml}
+                </div>
+            </div>
+        `;
+                    container.innerHTML = html;
+
+                    const punchBtn = document.getElementById('punchActionBtn');
+                    if (punchBtn) {
+                        punchBtn.addEventListener('click', async function (e) {
+                            e.stopPropagation();
+                            if (!currentProfile) {
+                                window.location.href = '/auth/login';
+                                return;
+                            }
+                            const result = await doDatabaseCheckIn(currentProfile.user_number);
+                            if (result.success) {
+                                await renderPunchCard();
+                                const tip = document.createElement('div');
+                                tip.className = 'punch-tip';
+                                tip.style.cssText = 'background:#5eb95e20;color:#2c3e50;padding:4px 16px;border-radius:20px;font-size:14px;margin-top:8px;display:inline-block;';
+                                tip.textContent = '✅ 打卡成功！连续 ' + result.days + ' 天';
+                                const container2 = document.querySelector('.lg-small');
+                                if (container2) container2.appendChild(tip);
+                                setTimeout(() => { if (tip.parentNode) tip.remove(); }, 3000);
+                            } else {
+                                alert(result.message || '打卡失败，请重试');
+                            }
+                        });
+                    }
+
+                    if (isLoggedIn) {
+                        container.style.cursor = 'default';
+                    }
+                    return;
+                }
+
+                // ---------- 已打卡模板 ----------
+                const todayStr = new Date().toISOString().slice(0, 10);
+                let adminFortune = await fetchDailyFortune(todayStr);
+
+                let fortune = null;
+                let goodItems = [];
+                let badItems = [];
+
+                if (adminFortune) {
+                    const levelMap = {
+                        '大吉': 'good', '中吉': 'good', '小吉': 'good',
+                        '中平': 'bad',
+                        '凶': 'terrible', '大凶': 'terrible'
+                    };
+                    fortune = {
+                        label: adminFortune.fortune_level,
+                        cls: levelMap[adminFortune.fortune_level] || 'good'
+                    };
+
+                    // ★★★ 收集管理员设置的宜（名称和描述都必须非空） ★★★
+                    const adminGoodItems = [];
+                    if (adminFortune.good_name && adminFortune.good_desc) {
+                        adminGoodItems.push({ name: adminFortune.good_name, desc: adminFortune.good_desc });
+                    }
+                    if (adminFortune.good_name2 && adminFortune.good_desc2) {
+                        adminGoodItems.push({ name: adminFortune.good_name2, desc: adminFortune.good_desc2 });
+                    }
+
+                    // ★★★ 收集管理员设置的忌（名称和描述都必须非空） ★★★
+                    const adminBadItems = [];
+                    if (adminFortune.bad_name && adminFortune.bad_desc) {
+                        adminBadItems.push({ name: adminFortune.bad_name, desc: adminFortune.bad_desc });
+                    }
+                    if (adminFortune.bad_name2 && adminFortune.bad_desc2) {
+                        adminBadItems.push({ name: adminFortune.bad_name2, desc: adminFortune.bad_desc2 });
+                    }
+
+                    // ★★★ 如果运势是大吉，强制忽略忌 ★★★
+                    // ★★★ 如果运势是大凶，强制忽略宜 ★★★
+                    const finalGoodItems = (fortune.label === '大凶') ? [] : adminGoodItems;
+                    const finalBadItems = (fortune.label === '大吉') ? [] : adminBadItems;
+
+                    // 用于去重的 Set
+                    const usedNames = new Set();
+                    finalGoodItems.forEach(item => usedNames.add(item.name));
+                    finalBadItems.forEach(item => usedNames.add(item.name));
+
+                    // 补齐宜（最多2个）
+                    goodItems = [...finalGoodItems];
+                    while (goodItems.length < 2 && fortune.label !== '大凶') {
+                        const shuffled = [...ACTIVITIES];
+                        const rand = seededRandom(getDailySeed(isLoggedIn ? (profile?.user_number || '') : getDeviceId()));
+                        for (let i = shuffled.length - 1; i > 0; i--) {
+                            const j = Math.floor(rand() * (i + 1));
+                            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                        }
+                        let candidate = null;
+                        for (const activity of shuffled) {
+                            if (!usedNames.has(activity.name)) {
+                                candidate = { name: activity.name, desc: activity.good };
+                                usedNames.add(activity.name);
+                                break;
+                            }
+                        }
+                        if (candidate) {
+                            goodItems.push(candidate);
+                        } else {
+                            // 极端情况：所有活动都用过了，强行取第一个未使用的
+                            for (const activity of shuffled) {
+                                if (!usedNames.has(activity.name)) {
+                                    goodItems.push({ name: activity.name, desc: activity.good });
+                                    usedNames.add(activity.name);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // 补齐忌（最多2个）
+                    badItems = [...finalBadItems];
+                    while (badItems.length < 2 && fortune.label !== '大吉') {
+                        const shuffled = [...ACTIVITIES];
+                        const rand = seededRandom(getDailySeed(isLoggedIn ? (profile?.user_number || '') : getDeviceId()));
+                        for (let i = shuffled.length - 1; i > 0; i--) {
+                            const j = Math.floor(rand() * (i + 1));
+                            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                        }
+                        let candidate = null;
+                        for (const activity of shuffled) {
+                            if (!usedNames.has(activity.name)) {
+                                candidate = { name: activity.name, desc: activity.bad };
+                                usedNames.add(activity.name);
+                                break;
+                            }
+                        }
+                        if (candidate) {
+                            badItems.push(candidate);
+                        } else {
+                            for (const activity of shuffled) {
+                                if (!usedNames.has(activity.name)) {
+                                    badItems.push({ name: activity.name, desc: activity.bad });
+                                    usedNames.add(activity.name);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // 原有的随机逻辑（无管理员设置）
+                    const userIdSeed = isLoggedIn ? (profile?.user_number || '') : getDeviceId();
+                    const seed = getDailySeed(userIdSeed);
+                    const rand = seededRandom(seed);
+
+                    const fortuneIdx = Math.floor(rand() * FORTUNE_LEVELS.length);
+                    fortune = FORTUNE_LEVELS[fortuneIdx];
+
+                    const shuffled = [...ACTIVITIES];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(rand() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    const picked = shuffled.slice(0, 4);
+                    goodItems = picked.slice(0, 2).map(a => ({ name: a.name, desc: a.good }));
+                    badItems = picked.slice(2, 4).map(a => ({ name: a.name, desc: a.bad }));
+                }
+
+                // 确定运势显示颜色
+                let resultColor = '';
+                let resultClass = '';
+                if (fortune.cls === 'great' || fortune.cls === 'good') {
+                    resultColor = '#E74C3C';
+                    resultClass = 'lg-fg-red';
+                } else if (fortune.cls === 'bad') {
+                    resultColor = '#5EB95E';
+                    resultClass = 'lg-fg-green';
+                } else if (fortune.cls === 'terrible') {
+                    resultColor = '#000000';
+                    resultClass = 'lg-fg-black';
+                } else {
+                    resultColor = '#5EB95E';
+                    resultClass = 'lg-fg-green';
+                }
+
+                // ★★★ 构建宜/忌显示内容 ★★★
+                let contentHtml = '';
+                if (fortune.label === '大吉') {
+                    // 大吉：左侧显示宜列表，右侧显示“万事皆宜”（占据忌的位置）
+                    contentHtml = `
+        <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
+            <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
+                ${goodItems.map(item => `
+                    <div style="margin-bottom:10px;line-height:1.5;">
+                        <span class="lg-bold" style="color:#E74C3C;">宜：</span>
+                        <span style="color:#E74C3C;">${escapeHtml(item.name)}</span><br>
+                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+                <span class="lg-bold" style="color:#000;font-size:1rem;line-height:1.5;">万事皆宜</span>
+            </div>
+        </div>
+    `;
+                } else if (fortune.label === '大凶') {
+                    // 大凶：左侧显示“诸事不宜”（占据宜的位置），右侧显示忌列表
+                    contentHtml = `
+        <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
+            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+                <span class="lg-bold" style="color:#E74C3C;font-size:1rem;line-height:1.5;">诸事不宜</span>
+            </div>
+            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+                ${badItems.map(item => `
+                    <div style="margin-bottom:10px;line-height:1.5;">
+                        <span class="lg-bold" style="color:#000000;">忌：</span>
+                        <span style="color:#000000;">${escapeHtml(item.name)}</span><br>
+                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+                } else {
+                    // 正常显示2宜2忌
+                    contentHtml = `
+        <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
+            <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
+                ${goodItems.map(item => `
+                    <div style="margin-bottom:10px;line-height:1.5;">
+                        <span class="lg-bold" style="color:#E74C3C;">宜：</span>
+                        <span style="color:#E74C3C;">${escapeHtml(item.name)}</span><br>
+                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+                ${badItems.map(item => `
+                    <div style="margin-bottom:10px;line-height:1.5;">
+                        <span class="lg-bold" style="color:#000000;">忌：</span>
+                        <span style="color:#000000;">${escapeHtml(item.name)}</span><br>
+                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+                }
+
+                // ★★★ 判断是否为管理员 ★★★
+                const isAdmin = currentProfile && currentProfile.can_manage_posts === true;
+
+                let html = `
+        <div class="lg-punch">
+            <h2 style="margin-bottom: 0">
+                ${userDisplayHtml} <span style="font-weight: bold;">的运势</span>
+            </h2>
+            <span class="lg-punch-result ${resultClass}" style="color:${resultColor};">§ ${fortune.label} §</span>
+            ${contentHtml}
+            <div class="lg-small" style="text-align:center;border-top:1px solid #f0f2f5;padding-top:12px;margin-top:4px;">
+                你已经在 <span class="brand-highlight">✨ Jason227</span> 连续打卡了 <strong>${days}</strong> 天
+            </div>
+
+            <!-- ★★★ 管理员设置运势控件（支持2宜2忌，大吉/大凶特殊控制） ★★★ -->
+            ${isAdmin ? `
+            <div id="adminFortuneControl" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e0e0e0;">
+                <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
+                    <label style="font-size:13px; color:#555;">日期：</label>
+                    <input type="date" id="adminFortuneDate" value="${new Date().toISOString().slice(0, 10)}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                    
+                    <label style="font-size:13px; color:#555;">运势：</label>
+                    <select id="adminFortuneLevel" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                        <option value="大吉">大吉</option>
+                        <option value="中吉" selected>中吉</option>
+                        <option value="小吉">小吉</option>
+                        <option value="中平">中平</option>
+                        <option value="凶">凶</option>
+                        <option value="大凶">大凶</option>
+                    </select>
+                </div>
+                <div id="adminGoodContainer" style="margin-bottom:4px;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
+                        <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
+                        <input type="text" id="adminFortuneGoodName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneGoodDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                        
+                        <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
+                        <input type="text" id="adminFortuneGoodName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneGoodDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                    </div>
+                </div>
+                <div id="adminBadContainer" style="margin-bottom:8px;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
+                        <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
+                        <input type="text" id="adminFortuneBadName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneBadDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                        
+                        <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
+                        <input type="text" id="adminFortuneBadName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneBadDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                    </div>
+                </div>
+                <div id="adminSpecialTip" style="display:none; font-size:14px; color:#555; margin-bottom:8px; text-align:center;"></div>
+                <div style="display:flex; justify-content:center;">
+                    <button id="adminSetFortuneBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">设置全站运势</button>
+                </div>
+                <div id="adminFortuneStatus" style="margin-top:6px; font-size:13px; color:#888; text-align:center;"></div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+                container.innerHTML = html;
+                container.style.cursor = 'default';
+
+                // ★★★ 动态控制宜/忌显示 ★★★
+                const levelSelect = document.getElementById('adminFortuneLevel');
+                if (levelSelect) {
+                    const toggleContainers = () => {
+                        const val = levelSelect.value;
+                        const goodContainer = document.getElementById('adminGoodContainer');
+                        const badContainer = document.getElementById('adminBadContainer');
+                        const tip = document.getElementById('adminSpecialTip');
+                        if (val === '大吉') {
+                            if (goodContainer) goodContainer.style.display = 'block';
+                            if (badContainer) badContainer.style.display = 'none';
+                            if (tip) {
+                                tip.style.display = 'block';
+                                tip.style.color = '#333';
+                            }
+                        } else if (val === '大凶') {
+                            if (goodContainer) goodContainer.style.display = 'none';
+                            if (badContainer) badContainer.style.display = 'block';
+                            if (tip) {
+                                tip.style.display = 'block';
+                                tip.style.color = '#E74C3C';
+                            }
+                        } else {
+                            if (goodContainer) goodContainer.style.display = 'block';
+                            if (badContainer) badContainer.style.display = 'block';
+                            if (tip) tip.style.display = 'none';
+                        }
+                    };
+                    levelSelect.addEventListener('change', toggleContainers);
+                    // 初始调用一次
+                    toggleContainers();
+                }
+
+                // ★★★ 绑定管理员设置运势事件 ★★★
+                const setFortuneBtn = document.getElementById('adminSetFortuneBtn');
+                if (setFortuneBtn) {
+                    setFortuneBtn.addEventListener('click', async function () {
+                        const statusEl = document.getElementById('adminFortuneStatus');
+                        if (!statusEl) return;
+
+                        const dateInput = document.getElementById('adminFortuneDate');
+                        const levelSelect = document.getElementById('adminFortuneLevel');
+
+                        const gName1 = document.getElementById('adminFortuneGoodName1');
+                        const gDesc1 = document.getElementById('adminFortuneGoodDesc1');
+                        const gName2 = document.getElementById('adminFortuneGoodName2');
+                        const gDesc2 = document.getElementById('adminFortuneGoodDesc2');
+                        const bName1 = document.getElementById('adminFortuneBadName1');
+                        const bDesc1 = document.getElementById('adminFortuneBadDesc1');
+                        const bName2 = document.getElementById('adminFortuneBadName2');
+                        const bDesc2 = document.getElementById('adminFortuneBadDesc2');
+
+                        if (!dateInput || !levelSelect) return;
+
+                        const fortuneDate = dateInput.value;
+                        const fortuneLevel = levelSelect.value;
+
+                        const goodName1 = gName1?.value.trim() || '';
+                        const goodDesc1 = gDesc1?.value.trim() || '';
+                        const goodName2 = gName2?.value.trim() || '';
+                        const goodDesc2 = gDesc2?.value.trim() || '';
+                        const badName1 = bName1?.value.trim() || '';
+                        const badDesc1 = bDesc1?.value.trim() || '';
+                        const badName2 = bName2?.value.trim() || '';
+                        const badDesc2 = bDesc2?.value.trim() || '';
+
+                        if (!fortuneDate) {
+                            statusEl.textContent = '❌ 请选择日期';
+                            statusEl.style.color = '#e74c3c';
+                            return;
+                        }
+
+                        statusEl.textContent = '正在设置...';
+                        statusEl.style.color = '#888';
+
+                        try {
+                            await adminSetDailyFortune(
+                                fortuneDate, fortuneLevel,
+                                goodName1, goodDesc1,
+                                goodName2, goodDesc2,
+                                badName1, badDesc1,
+                                badName2, badDesc2
+                            );
+                            statusEl.textContent = '✅ 运势设置成功！页面将刷新...';
+                            statusEl.style.color = '#2ecc71';
+                            setTimeout(() => location.reload(), 1500);
+                        } catch (err) {
+                            statusEl.textContent = '❌ 设置失败：' + err.message;
+                            statusEl.style.color = '#e74c3c';
+                        }
+                    });
+                }
+            }
 
             // 系统默认头像（首字母 SVG，任意尺寸清晰缩放）
             function letterAvatar(name) {
@@ -2174,7 +3268,7 @@
                     return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="height:${height}px; width:auto;">`;
                 });
 
-                // ===== 专属语法（仅当 hasSpecialPrivilege = true） =====
+                // ===== 专属语法（仅当 isAdmin = true） =====
                 if (isAdmin) {
                     // 1. 管理员公告 [admin]内容[/admin]
                     processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
@@ -2656,16 +3750,16 @@
                 try {
                     let query = supabase.from('benben')
                         .select(`
-                *, 
-                profiles:user_number (
-                    username,
-                    is_admin,
-                    is_cheater,
-                    username_color,
-                    user_tag,
-                    avatar_url
-                )
-            `)
+                            *, 
+                            profiles:user_number (
+                                username,
+                                is_admin,
+                                is_cheater,
+                                username_color,
+                                user_tag,
+                                avatar_url
+                            )
+                        `)
                         .eq('is_deleted', false)
                         .order('created_at', { ascending: false })
                         .limit(20);
@@ -2766,28 +3860,17 @@
 
                     const prof = item.profiles || {};
                     const avatarUrl = prof.avatar_url || '';
-                    const isAdmin = prof.is_admin || false;
-                    const userTag = prof.user_tag || '';
-                    // 棕名以 is_cheater 为唯一真源；否则用 username_color，空则按 isAdmin 给默认值
-                    const color = prof.is_cheater ? '#AD8B00' : (isAdmin ? '#9D3DCF' : (prof.username_color || '#333'));
+                    const color = getUserDisplayColor(prof);
+                    const tagText = getUserTagDisplay(prof);
 
-                    // 生成用户标签（如果有自定义标签或管理员身份）
                     let labelHtml = '';
-                    if (userTag) {
-                        // 自定义标签，背景色跟随 color
-                        labelHtml =
-                            `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
-                    } else if (isAdmin) {
-                        // 管理员身份且无自定义标签，显示“管理员”标签，背景色同样跟随
-                        labelHtml =
-                            `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
+                    if (tagText) {
+                        labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
                     }
 
-                    // 用户名颜色直接使用 color
+                    // 用户名链接颜色直接使用 color
                     let userHtml = `<span class="benben-user"><a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
-                    if (labelHtml) {
-                        userHtml += labelHtml;
-                    }
+                    if (labelHtml) userHtml += labelHtml;
                     userHtml += `</span>`;
 
                     const benbenHtml = `
@@ -2981,7 +4064,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, can_speak, can_manage_users') // ← 增加此项
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, can_manage_posts, is_cheater, user_tag, avatar_url, username_color')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -3032,16 +4115,12 @@
                         const prof = userMap[post.author_id] || {};
                         const username = prof.username || '匿名';
                         const userNumber = prof.user_number || '';
-                        const isAdmin = prof.is_admin || false;
-                        const userTag = prof.user_tag || '';
+                        const color = getUserDisplayColor(prof);
+                        const tagText = getUserTagDisplay(prof);
 
-                        // ★★★ 完全复制犇犇的颜色和标签逻辑 ★★★
-                        const color = prof.is_cheater ? '#AD8B00' : (isAdmin ? '#9D3DCF' : (prof.username_color || '#2c3e50'));
                         let labelHtml = '';
-                        if (userTag) {
-                            labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
-                        } else if (isAdmin) {
-                            labelHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`;
+                        if (tagText) {
+                            labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
                         }
                         let userHtml = `<a href="/user/${userNumber}" class="benben-username" style="color: ${color};">${escapeHtml(username)}</a>`;
                         if (labelHtml) userHtml += labelHtml;
@@ -3184,6 +4263,9 @@
                         setupInfiniteScroll();
                         loadRecentPosts();
 
+                        // ★★★ 渲染打卡卡片 ★★★
+                        await renderPunchCard();
+
                         // 侧边栏折叠时滚动到顶部
                         const sidebar = document.querySelector('.nav-sidebar');
                         if (sidebar) {
@@ -3236,6 +4318,8 @@
 
                         stopUnreadPolling();
                         loadRecentPosts();
+                        // ★★★ 渲染打卡卡片（未登录） ★★★
+                        renderPunchCard();
                     }
                 } catch (err) {
                     console.error(err);
@@ -3244,6 +4328,8 @@
                     // ★★★ 出错时也隐藏犇犇模块，避免显示异常内容
                     const benbenModule = document.getElementById('benbenModule');
                     if (benbenModule) benbenModule.style.display = 'none';
+                    // 出错时也尝试渲染打卡卡片
+                    renderPunchCard();
                 }
                 // 页面加载后修正初始锚点
                 if (window.location.hash) {
