@@ -2517,10 +2517,6 @@
                                 const tip = document.createElement('div');
                                 tip.className = 'punch-tip';
                                 tip.style.cssText = 'background:#5eb95e20;color:#2c3e50;padding:4px 16px;border-radius:20px;font-size:14px;margin-top:8px;display:inline-block;';
-                                tip.textContent = '✅ 打卡成功！连续 ' + result.days + ' 天';
-                                const container2 = document.querySelector('.lg-small');
-                                if (container2) container2.appendChild(tip);
-                                setTimeout(() => { if (tip.parentNode) tip.remove(); }, 3000);
                             } else {
                                 alert(result.message || '打卡失败，请重试');
                             }
@@ -2750,7 +2746,7 @@
             </h2>
             <span class="lg-punch-result ${resultClass}" style="color:${resultColor};">§ ${fortune.label} §</span>
             ${contentHtml}
-            <div class="lg-small" style="text-align:center;border-top:1px solid #f0f2f5;padding-top:12px;margin-top:4px;">
+            <div class="lg-small" style="text-align:center;padding-top:12px;margin-top:4px;">
                 你已经在 <span class="brand-highlight">✨ Jason227</span> 连续打卡了 <strong>${days}</strong> 天
             </div>
 
