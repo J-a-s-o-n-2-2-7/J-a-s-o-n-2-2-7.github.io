@@ -2120,7 +2120,7 @@
             }
 
             function getDailySeed(userId) {
-                const today = new Date().toISOString().slice(0, 10);
+                const today = getTodayDateStr();  // ← 使用东八区日期
                 const base = userId || 'anonymous';
                 let hash = 0;
                 const str = base + today;
@@ -2142,91 +2142,50 @@
 
             // ===== 打卡数据库操作 =====
 
-            // 获取今天日期（YYYY-MM-DD 格式，用于数据库查询）
+            // 获取今天日期（东八区）
             function getTodayDateStr() {
                 const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
+                return new Intl.DateTimeFormat('en-CA', {
+                    timeZone: 'Asia/Shanghai',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }).format(now);
             }
 
-            // 获取昨天日期
+            // 获取昨天日期（东八区）
             function getYesterdayDateStr() {
-                const now = new Date();
-                now.setDate(now.getDate() - 1);
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
+                const todayStr = getTodayDateStr();
+                const dateObj = new Date(todayStr + 'T00:00:00+08:00');
+                dateObj.setDate(dateObj.getDate() - 1);
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
                 return `${year}-${month}-${day}`;
             }
 
-            // 从数据库获取当前用户的打卡记录
-            async function fetchPunchRecord(userNumber) {
-                if (!userNumber) return null;
-                try {
-                    const today = getTodayDateStr();
-                    const { data, error } = await supabase
-                        .from('punch_records')
-                        .select('punch_date, streak')
-                        .eq('user_number', userNumber)
-                        .eq('punch_date', today)
-                        .maybeSingle();
-                    if (error) throw error;
-                    return data;
-                } catch (err) {
-                    console.error('获取打卡记录失败:', err);
-                    return null;
-                }
-            }
-
-            // 获取当前用户的连续天数（从最新记录往前推算）
+            // 修改 fetchStreak 中的日期比较
             async function fetchStreak(userNumber) {
                 if (!userNumber) return 0;
                 try {
-                    // 获取该用户所有打卡记录，按日期降序
-                    const { data, error } = await supabase
-                        .from('punch_records')
-                        .select('punch_date, streak')
-                        .eq('user_number', userNumber)
-                        .order('punch_date', { ascending: false })
-                        .limit(1);
-                    if (error) throw error;
-                    if (!data || data.length === 0) return 0;
-
-                    // 检查最新记录是否是今天
-                    const today = getTodayDateStr();
-                    if (data[0].punch_date === today) {
-                        return data[0].streak;
-                    }
-
-                    // 检查最新记录是否是昨天（如果是，返回 streak + 1，但实际需要从今天重新计算）
-                    // 更准确的做法：从最新记录往前推，找出连续打卡天数
-                    // 但由于我们每次打卡都存储 streak，直接返回最新记录的 streak 可能不准确
-                    // 我们需要重新计算连续天数
-
-                    // 改为从数据库查询所有记录，在 JS 中计算
                     const { data: allData, error: allError } = await supabase
                         .from('punch_records')
                         .select('punch_date')
                         .eq('user_number', userNumber)
                         .order('punch_date', { ascending: false });
                     if (allError) throw allError;
-
                     if (!allData || allData.length === 0) return 0;
 
-                    // 从今天开始往前推，计算连续天数
-                    let streak = 0;
-                    const todayDate = new Date();
-                    todayDate.setHours(0, 0, 0, 0);
-
-                    // 创建一个 Set 存储所有打卡日期
                     const punchDates = new Set(allData.map(r => r.punch_date));
 
-                    // 从今天开始往前检查
-                    let checkDate = new Date(todayDate);
+                    // 从今天（东八区）开始往前推
+                    let streak = 0;
+                    let checkDate = new Date(getTodayDateStr() + 'T00:00:00+08:00');
                     while (true) {
-                        const dateStr = checkDate.toISOString().slice(0, 10);
+                        const year = checkDate.getFullYear();
+                        const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+                        const day = String(checkDate.getDate()).padStart(2, '0');
+                        const dateStr = `${year}-${month}-${day}`;
                         if (punchDates.has(dateStr)) {
                             streak++;
                             checkDate.setDate(checkDate.getDate() - 1);
@@ -2384,12 +2343,10 @@
                     throw new Error('无权限，需要秩序管理员权限');
                 }
 
-                // ★★★ 根据运势等级强制忽略字段 ★★★
+                // 根据运势等级强制忽略字段
                 if (fortuneLevel === '大吉') {
-                    // 大吉忽略忌
                     badName1 = badName2 = badDesc1 = badDesc2 = null;
                 } else if (fortuneLevel === '大凶') {
-                    // 大凶忽略宜
                     goodName1 = goodName2 = goodDesc1 = goodDesc2 = null;
                 }
 
@@ -2407,26 +2364,73 @@
                     set_by: currentProfile.user_number
                 };
 
+                console.log('[adminSetDailyFortune] 准备写入的数据:', insertData);
+
                 const { data: existing, error: checkError } = await supabase
                     .from('daily_fortune')
                     .select('id')
                     .eq('fortune_date', fortuneDate)
                     .maybeSingle();
 
-                if (checkError) throw checkError;
+                if (checkError) {
+                    console.error('[adminSetDailyFortune] 查询失败:', checkError);
+                    throw checkError;
+                }
 
+                let result;
                 if (existing) {
-                    const { error } = await supabase
+                    console.log('[adminSetDailyFortune] 更新已有记录, id:', existing.id);
+                    result = await supabase
                         .from('daily_fortune')
                         .update(insertData)
-                        .eq('id', existing.id);
-                    if (error) throw error;
+                        .eq('id', existing.id)
+                        .select();
                 } else {
-                    const { error } = await supabase
+                    console.log('[adminSetDailyFortune] 插入新记录');
+                    result = await supabase
                         .from('daily_fortune')
-                        .insert(insertData);
-                    if (error) throw error;
+                        .insert(insertData)
+                        .select();
                 }
+
+                if (result.error) {
+                    console.error('[adminSetDailyFortune] 操作失败:', result.error);
+                    throw result.error;
+                }
+
+                console.log('[adminSetDailyFortune] 操作成功，返回数据:', result.data);
+            }
+
+            // ===== 获取站点设置 =====
+            async function getSiteSetting(key, defaultValue) {
+                try {
+                    const { data, error } = await supabase
+                        .from('site_settings')
+                        .select('setting_value')
+                        .eq('setting_key', key)
+                        .maybeSingle();
+                    if (error) throw error;
+                    return data?.setting_value || defaultValue;
+                } catch (err) {
+                    console.error('获取设置失败:', err);
+                    return defaultValue;
+                }
+            }
+
+            // ===== 更新站点设置（仅管理员） =====
+            async function updateSiteSetting(key, value) {
+                if (!currentProfile || !currentProfile.can_manage_posts) {
+                    throw new Error('无权限，需要秩序管理员权限');
+                }
+                const { error } = await supabase
+                    .from('site_settings')
+                    .upsert({
+                        setting_key: key,
+                        setting_value: String(value),
+                        updated_by: currentProfile.user_number,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+                if (error) throw error;
             }
 
             // ===== 渲染打卡卡片（异步版本） =====
@@ -2447,17 +2451,14 @@
                     checkedIn = await isCheckedInToday(userNumber);
                 }
 
-                // 获取颜色和标签（与犇犇一致）
                 const color = getUserDisplayColor(profile);
                 const tagText = getUserTagDisplay(profile);
 
-                // 生成带颜色和标签的用户名 HTML
                 let userDisplayHtml = `<a href="/user/${userNumber}" target="_blank" class="benben-username" style="color: ${color};">${escapeHtml(username)}</a>`;
                 if (tagText) {
                     userDisplayHtml += `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
                 }
 
-                // 日期信息
                 const now = new Date();
                 const monthChinese = getMonthChinese(now);
                 const monthSize = getMonthSize(now);
@@ -2465,7 +2466,6 @@
                 const dayStr = String(now.getDate()).padStart(2, '0');
                 const weekday = getChineseWeekday(now);
 
-                // 倒计时
                 const cspRound1 = new Date(2026, 8, 18);
                 const cspRound2 = new Date(2026, 9, 30);
                 const days1 = daysUntil(cspRound1);
@@ -2473,8 +2473,8 @@
 
                 const hasCheckedIn = isLoggedIn && checkedIn;
 
-                // ---------- 未打卡模板 ----------
                 if (!hasCheckedIn) {
+                    // 未打卡模板（保持不变）
                     let buttonHtml = '';
                     let welcomeHtml = '';
                     if (isLoggedIn) {
@@ -2514,24 +2514,21 @@
                             const result = await doDatabaseCheckIn(currentProfile.user_number);
                             if (result.success) {
                                 await renderPunchCard();
-                                const tip = document.createElement('div');
-                                tip.className = 'punch-tip';
-                                tip.style.cssText = 'background:#5eb95e20;color:#2c3e50;padding:4px 16px;border-radius:20px;font-size:14px;margin-top:8px;display:inline-block;';
                             } else {
                                 alert(result.message || '打卡失败，请重试');
                             }
                         });
                     }
-
-                    if (isLoggedIn) {
-                        container.style.cursor = 'default';
-                    }
+                    if (isLoggedIn) container.style.cursor = 'default';
                     return;
                 }
 
                 // ---------- 已打卡模板 ----------
-                const todayStr = new Date().toISOString().slice(0, 10);
+                const todayStr = getTodayDateStr();  // ← 改为使用东八区
+                console.log('[renderPunchCard] 今日日期:', todayStr);
+
                 let adminFortune = await fetchDailyFortune(todayStr);
+                console.log('[renderPunchCard] 从数据库获取的运势设置:', adminFortune);
 
                 let fortune = null;
                 let goodItems = [];
@@ -2548,7 +2545,6 @@
                         cls: levelMap[adminFortune.fortune_level] || 'good'
                     };
 
-                    // ★★★ 收集管理员设置的宜（名称和描述都必须非空） ★★★
                     const adminGoodItems = [];
                     if (adminFortune.good_name && adminFortune.good_desc) {
                         adminGoodItems.push({ name: adminFortune.good_name, desc: adminFortune.good_desc });
@@ -2557,7 +2553,6 @@
                         adminGoodItems.push({ name: adminFortune.good_name2, desc: adminFortune.good_desc2 });
                     }
 
-                    // ★★★ 收集管理员设置的忌（名称和描述都必须非空） ★★★
                     const adminBadItems = [];
                     if (adminFortune.bad_name && adminFortune.bad_desc) {
                         adminBadItems.push({ name: adminFortune.bad_name, desc: adminFortune.bad_desc });
@@ -2566,17 +2561,16 @@
                         adminBadItems.push({ name: adminFortune.bad_name2, desc: adminFortune.bad_desc2 });
                     }
 
-                    // ★★★ 如果运势是大吉，强制忽略忌 ★★★
-                    // ★★★ 如果运势是大凶，强制忽略宜 ★★★
+                    console.log('[renderPunchCard] 管理员设置的宜:', adminGoodItems);
+                    console.log('[renderPunchCard] 管理员设置的忌:', adminBadItems);
+
                     const finalGoodItems = (fortune.label === '大凶') ? [] : adminGoodItems;
                     const finalBadItems = (fortune.label === '大吉') ? [] : adminBadItems;
 
-                    // 用于去重的 Set
                     const usedNames = new Set();
                     finalGoodItems.forEach(item => usedNames.add(item.name));
                     finalBadItems.forEach(item => usedNames.add(item.name));
 
-                    // 补齐宜（最多2个）
                     goodItems = [...finalGoodItems];
                     while (goodItems.length < 2 && fortune.label !== '大凶') {
                         const shuffled = [...ACTIVITIES];
@@ -2596,7 +2590,6 @@
                         if (candidate) {
                             goodItems.push(candidate);
                         } else {
-                            // 极端情况：所有活动都用过了，强行取第一个未使用的
                             for (const activity of shuffled) {
                                 if (!usedNames.has(activity.name)) {
                                     goodItems.push({ name: activity.name, desc: activity.good });
@@ -2607,7 +2600,6 @@
                         }
                     }
 
-                    // 补齐忌（最多2个）
                     badItems = [...finalBadItems];
                     while (badItems.length < 2 && fortune.label !== '大吉') {
                         const shuffled = [...ACTIVITIES];
@@ -2636,15 +2628,17 @@
                             }
                         }
                     }
+
+                    console.log('[renderPunchCard] 最终宜列表:', goodItems);
+                    console.log('[renderPunchCard] 最终忌列表:', badItems);
+
                 } else {
-                    // 原有的随机逻辑（无管理员设置）
+                    // 无管理员设置，使用随机逻辑（保持不变）
                     const userIdSeed = isLoggedIn ? (profile?.user_number || '') : getDeviceId();
                     const seed = getDailySeed(userIdSeed);
                     const rand = seededRandom(seed);
-
                     const fortuneIdx = Math.floor(rand() * FORTUNE_LEVELS.length);
                     fortune = FORTUNE_LEVELS[fortuneIdx];
-
                     const shuffled = [...ACTIVITIES];
                     for (let i = shuffled.length - 1; i > 0; i--) {
                         const j = Math.floor(rand() * (i + 1));
@@ -2655,7 +2649,6 @@
                     badItems = picked.slice(2, 4).map(a => ({ name: a.name, desc: a.bad }));
                 }
 
-                // 确定运势显示颜色
                 let resultColor = '';
                 let resultClass = '';
                 if (fortune.cls === 'great' || fortune.cls === 'good') {
@@ -2672,10 +2665,9 @@
                     resultClass = 'lg-fg-green';
                 }
 
-                // ★★★ 构建宜/忌显示内容 ★★★
+                // 构建显示内容（与原来一致，略）
                 let contentHtml = '';
                 if (fortune.label === '大吉') {
-                    // 大吉：左侧显示宜列表，右侧显示“万事皆宜”（占据忌的位置）
                     contentHtml = `
         <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
             <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
@@ -2693,7 +2685,6 @@
         </div>
     `;
                 } else if (fortune.label === '大凶') {
-                    // 大凶：左侧显示“诸事不宜”（占据宜的位置），右侧显示忌列表
                     contentHtml = `
         <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
             <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
@@ -2711,7 +2702,6 @@
         </div>
     `;
                 } else {
-                    // 正常显示2宜2忌
                     contentHtml = `
         <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
             <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
@@ -2736,7 +2726,6 @@
     `;
                 }
 
-                // ★★★ 判断是否为管理员 ★★★
                 const isAdmin = currentProfile && currentProfile.can_manage_posts === true;
 
                 let html = `
@@ -2750,12 +2739,11 @@
                 你已经在 <span class="brand-highlight">✨ Jason227</span> 连续打卡了 <strong>${days}</strong> 天
             </div>
 
-            <!-- ★★★ 管理员设置运势控件（支持2宜2忌，大吉/大凶特殊控制） ★★★ -->
             ${isAdmin ? `
             <div id="adminFortuneControl" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e0e0e0;">
                 <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
                     <label style="font-size:13px; color:#555;">日期：</label>
-                    <input type="date" id="adminFortuneDate" value="${new Date().toISOString().slice(0, 10)}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                    <input type="date" id="adminFortuneDate" value="${todayStr}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
                     
                     <label style="font-size:13px; color:#555;">运势：</label>
                     <select id="adminFortuneLevel" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
@@ -2802,7 +2790,7 @@
                 container.innerHTML = html;
                 container.style.cursor = 'default';
 
-                // ★★★ 动态控制宜/忌显示 ★★★
+                // 动态控制宜/忌显示
                 const levelSelect = document.getElementById('adminFortuneLevel');
                 if (levelSelect) {
                     const toggleContainers = () => {
@@ -2813,17 +2801,11 @@
                         if (val === '大吉') {
                             if (goodContainer) goodContainer.style.display = 'block';
                             if (badContainer) badContainer.style.display = 'none';
-                            if (tip) {
-                                tip.style.display = 'block';
-                                tip.style.color = '#333';
-                            }
+                            if (tip) { tip.style.display = 'block'; tip.style.color = '#333'; }
                         } else if (val === '大凶') {
                             if (goodContainer) goodContainer.style.display = 'none';
                             if (badContainer) badContainer.style.display = 'block';
-                            if (tip) {
-                                tip.style.display = 'block';
-                                tip.style.color = '#E74C3C';
-                            }
+                            if (tip) { tip.style.display = 'block'; tip.style.color = '#E74C3C'; }
                         } else {
                             if (goodContainer) goodContainer.style.display = 'block';
                             if (badContainer) badContainer.style.display = 'block';
@@ -2831,11 +2813,9 @@
                         }
                     };
                     levelSelect.addEventListener('change', toggleContainers);
-                    // 初始调用一次
                     toggleContainers();
                 }
 
-                // ★★★ 绑定管理员设置运势事件 ★★★
                 const setFortuneBtn = document.getElementById('adminSetFortuneBtn');
                 if (setFortuneBtn) {
                     setFortuneBtn.addEventListener('click', async function () {
@@ -2859,6 +2839,12 @@
                         const fortuneDate = dateInput.value;
                         const fortuneLevel = levelSelect.value;
 
+                        if (!fortuneDate) {
+                            statusEl.textContent = '❌ 请选择日期';
+                            statusEl.style.color = '#e74c3c';
+                            return;
+                        }
+
                         const goodName1 = gName1?.value.trim() || '';
                         const goodDesc1 = gDesc1?.value.trim() || '';
                         const goodName2 = gName2?.value.trim() || '';
@@ -2867,12 +2853,6 @@
                         const badDesc1 = bDesc1?.value.trim() || '';
                         const badName2 = bName2?.value.trim() || '';
                         const badDesc2 = bDesc2?.value.trim() || '';
-
-                        if (!fortuneDate) {
-                            statusEl.textContent = '❌ 请选择日期';
-                            statusEl.style.color = '#e74c3c';
-                            return;
-                        }
 
                         statusEl.textContent = '正在设置...';
                         statusEl.style.color = '#888';
@@ -2889,6 +2869,7 @@
                             statusEl.style.color = '#2ecc71';
                             setTimeout(() => location.reload(), 1500);
                         } catch (err) {
+                            console.error('[adminSetFortuneBtn] 设置失败:', err);
                             statusEl.textContent = '❌ 设置失败：' + err.message;
                             statusEl.style.color = '#e74c3c';
                         }
@@ -4067,27 +4048,47 @@
                 return data;
             }
 
-            // ---------- 加载近期讨论（用户名完全模仿犇犇） ----------
+            // ===== 加载近期讨论（含管理员双击修改数量） =====
             async function loadRecentPosts() {
                 const container = document.getElementById('recentPostsList');
                 if (!container) return;
 
                 try {
-                    // 查询帖子
+                    // 1. 读取显示数量
+                    const limit = parseInt(await getSiteSetting('recent_posts_limit', '20'));
+
+                    // 2. 更新卡片标题（仅管理员可见数字）
+                    const cardHeader = document.querySelector('#recentPostsCard .card-header');
+                    if (cardHeader) {
+                        const isAdmin = currentProfile && currentProfile.can_manage_posts === true;
+                        let headerHtml = '近期讨论';
+                        if (isAdmin) {
+                            headerHtml += ` <span id="recentPostsCountDisplay" style="font-size:14px; color:#999; cursor:pointer; margin-left:8px; font-weight:400; border-bottom:1px dashed #ddd; padding-bottom:1px;" title="双击修改显示数量">(${limit})</span>`;
+                        }
+                        cardHeader.innerHTML = headerHtml;
+                    }
+
+                    // 3. ★ 事件委托（绑定在卡片容器上，确保双击永远生效）
+                    const card = document.getElementById('recentPostsCard');
+                    if (card) {
+                        card.removeEventListener('dblclick', handleRecentPostsDblClick);
+                        card.addEventListener('dblclick', handleRecentPostsDblClick);
+                    }
+
+                    // 4. 查询帖子
                     const { data: posts, error } = await supabase
                         .from('posts')
                         .select('id, title, forum, created_at, author_id')
                         .order('created_at', { ascending: false })
-                        .limit(20);
+                        .limit(limit);
 
                     if (error) throw error;
-
                     if (!posts || posts.length === 0) {
                         container.innerHTML = '<div class="empty-state">没有更多讨论了</div>';
                         return;
                     }
 
-                    // 批量获取用户信息
+                    // 5. 获取作者信息
                     const authorIds = [...new Set(posts.map(p => p.author_id).filter(id => id))];
                     let userMap = {};
                     if (authorIds.length > 0) {
@@ -4100,12 +4101,14 @@
                         }
                     }
 
+                    // 6. 版块映射（请根据你的实际论坛配置修改）
                     const forumMap = {
                         siteaffairs: '站务版',
                         problem: '题目总版',
                         academics: '学术版'
                     };
 
+                    // 7. 生成 HTML
                     let html = '';
                     posts.forEach(post => {
                         const prof = userMap[post.author_id] || {};
@@ -4131,46 +4134,95 @@
                         const minutes = String(date.getMinutes()).padStart(2, '0');
                         const timeStr = `${month}-${day} ${hours}:${minutes}`;
 
-                        const initial = (username[0] || 'U').toUpperCase();
-                        const avatarSvg = `data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E${encodeURIComponent(initial)}%3C/text%3E%3C/svg%3E`;
-
-                        // 在 loadRecentPosts 函数中，找到帖子卡片生成的 HTML 部分，替换为以下内容：
-
-                        // 在 loadRecentPosts 函数中，将卡片 HTML 部分改为：
-
                         html += `
-                            <section class="post-card">
-                                <div class="post-card-body">
-                                    <div class="post-avatar">
-                                        <a href="/user/${userNumber}">
-                                            <img src="${prof.avatar_url || letterAvatar(username)}" alt="${escapeHtmlAttr(username)}" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">
-                                        </a>
-                                    </div>
-                                    <div class="post-info">
-                                        <a href="/discuss/${post.id}" class="post-title-link">
-                                            ${escapeHtml(post.title)}
-                                        </a>
-                                        <div class="post-meta-line">
-                                            <!-- 第一行：作者 + 版块（合并到同一个 span，空格自然存在） -->
-                                            <div class="post-meta-row1">
-                                                <span class="post-author-forum">${userHtml} In <a href="/discuss?forum=${forumLink}" class="forum-link"><span class="forum-name">${escapeHtml(forumName)}</span></a></span>
-                                            </div>
-                                            <!-- 第二行：时间 + 回复数 -->
-                                            <div class="post-meta-row2">
-                                                <span class="post-time-reply">@ ${timeStr} 0回复</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                <section class="post-card">
+                    <div class="post-card-body">
+                        <div class="post-avatar">
+                            <a href="/user/${userNumber}">
+                                <img src="${prof.avatar_url || letterAvatar(username)}" alt="${escapeHtmlAttr(username)}" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">
+                            </a>
+                        </div>
+                        <div class="post-info">
+                            <a href="/discuss/${post.id}" class="post-title-link">
+                                ${escapeHtml(post.title)}
+                            </a>
+                            <div class="post-meta-line">
+                                <div class="post-meta-row1">
+                                    <span class="post-author-forum">${userHtml} In <a href="/discuss?forum=${forumLink}" class="forum-link"><span class="forum-name">${escapeHtml(forumName)}</span></a></span>
                                 </div>
-                            </section>
-                        `;
+                                <div class="post-meta-row2">
+                                    <span class="post-time-reply">@ ${timeStr} 0回复</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
                     });
 
                     container.innerHTML = html;
 
+                    // 移除旧的底部控件（避免重复）
+                    const oldControl = document.getElementById('recentPostsAdminControl');
+                    if (oldControl) oldControl.remove();
+
                 } catch (err) {
                     console.error('加载近期讨论失败:', err);
-                    container.innerHTML = `<div class="empty-state" style="color:#e74c3c;">加载失败：${err.message || '未知错误'}，请刷新页面重试</div>`;
+                    container.innerHTML = `<div class="empty-state" style="color:#e74c3c;">加载失败：${err.message || '未知错误'}</div>`;
+                }
+            }
+
+            // ===== 事件委托处理函数（双击数字触发修改） =====
+            function handleRecentPostsDblClick(e) {
+                const target = e.target;
+                const display = target.closest('#recentPostsCountDisplay');
+                if (display) {
+                    e.stopPropagation(); // 防止冒泡到父级
+                    handleCountDblClick({ currentTarget: display });
+                }
+            }
+
+            // ===== 修改显示数量的核心函数 =====
+            async function handleCountDblClick(e) {
+                const el = e.currentTarget;
+                // 从显示内容中提取当前数字（如 "(20)" → 20）
+                const current = parseInt(el.textContent.replace(/[()]/g, ''));
+                const newVal = prompt('请输入显示数量（1-200）：', current);
+                if (newVal === null) return; // 用户取消
+                const val = parseInt(newVal);
+                if (isNaN(val) || val < 1 || val > 200) {
+                    alert('请输入 1-200 之间的数字');
+                    return;
+                }
+                try {
+                    // 调用设置更新函数（需要你已有的 updateSiteSetting）
+                    await updateSiteSetting('recent_posts_limit', val);
+                    alert('更新成功，正在刷新...');
+                    await loadRecentPosts(); // 刷新列表
+                } catch (err) {
+                    console.error('[handleCountDblClick] 更新失败:', err);
+                    alert('更新失败：' + err.message);
+                }
+            }
+
+            // ★★★ 双击数字的处理函数 ★★★
+            async function handleCountDblClick(e) {
+                const el = e.currentTarget;
+                const current = parseInt(el.textContent.replace(/[()]/g, ''));
+                const newVal = prompt('请输入显示数量（1-200）：', current);
+                if (newVal === null) return;
+                const val = parseInt(newVal);
+                if (isNaN(val) || val < 1 || val > 200) {
+                    alert('请输入 1-200 之间的数字');
+                    return;
+                }
+                try {
+                    await updateSiteSetting('recent_posts_limit', val);
+                    alert('更新成功，正在刷新...');
+                    await loadRecentPosts();
+                } catch (err) {
+                    console.error('[handleCountDblClick] 更新失败:', err);
+                    alert('更新失败：' + err.message);
                 }
             }
 
