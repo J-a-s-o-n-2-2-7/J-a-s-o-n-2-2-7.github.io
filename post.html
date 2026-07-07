@@ -2133,7 +2133,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users, username_color, user_tag, is_cheater')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, username_color, user_tag, is_cheater')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2318,7 +2318,7 @@
                 return newHtml;
             }
 
-            function renderContent(rawText, mentionMap, hasSpecialPrivilege, username, uniqueId) {
+            function renderContent(rawText, mentionMap, isAdmin = false, username = '用户', uniqueId = '') {
                 if (!rawText) return '';
                 rawText = rawText
                     .replace(/&gt;/g, '>')
@@ -2420,16 +2420,18 @@
                 processed = processed.replace(/\[\[TOC\]\]/g, '%%TOC_PLACEHOLDER%%');
                 processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
                 processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, '[[TOC]]');
-                if (hasSpecialPrivilege) {
-                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) =>
-                        `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`
-                    );
+                // ===== 专属语法（仅管理员可用） =====
+                if (isAdmin) {
+                    // 1. 管理员公告 [admin]内容[/admin]
+                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
+                        return `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`;
+                    });
+                    // 2. 彩虹文字 {rainbow}文字{rainbow}
                     processed = processed.replace(/\{rainbow\}([\s\S]*?)\{rainbow\}/g, (match, content) => {
                         const chars = content.split('');
                         const len = chars.length;
                         if (len === 0) return '';
-                        const startHue = 0,
-                            endHue = 300;
+                        const startHue = 0, endHue = 300;
                         let result = '';
                         for (let i = 0; i < len; i++) {
                             const hue = startHue + (endHue - startHue) * (i / (len - 1));
@@ -2437,9 +2439,10 @@
                         }
                         return `<span style="font-weight:bold;">${result}</span>`;
                     });
-                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) =>
-                        `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`
-                    );
+                    // 3. 签名 [sign]内容[/sign]
+                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) => {
+                        return `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`;
+                    });
                 }
                 let html = md.render(processed);
                 if (uniqueId) {
@@ -2798,7 +2801,7 @@
                 const rendered = renderContent(
                     text,
                     {},
-                    currentProfile?.special_privilege || false,
+                    currentProfile?.is_admin || false,
                     currentProfile?.username || '',
                     'preview-' + Date.now()
                 );
@@ -2993,8 +2996,7 @@
                     document.getElementById('replyInfo').style.display = 'block';
                     let renderedContent = '';
                     try {
-                        renderedContent = renderContent(post.content || '', {}, currentProfile?.special_privilege || false,
-                            currentProfile?.username || '', 'post-' + post.id);
+                        renderedContent = renderContent(post.content || '', {}, currentProfile?.is_admin || false, currentProfile?.username || '', 'post-' + post.id);
                     } catch (e) {
                         console.error('渲染内容失败:', e);
                         renderedContent = '<p style="color:red;">内容渲染出错，请检查格式。</p>';

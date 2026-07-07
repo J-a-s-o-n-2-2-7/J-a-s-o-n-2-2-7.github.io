@@ -1509,7 +1509,7 @@
             // ================================================================
             // 6. 核心渲染函数 renderContent
             // ================================================================
-            function renderContent(rawText, mentionMap, hasSpecialPrivilege, username) {
+            function renderContent(rawText, mentionMap, username) {
                 if (!rawText) return '';
                 rawText = rawText
                     .replace(/&gt;/g, '>')
@@ -1644,7 +1644,7 @@
                 processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
                 processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, '[[TOC]]');
 
-                if (hasSpecialPrivilege) {
+                if (isAdmin) {
                     processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, function (match, content) {
                         return '<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">' +
                             content + '</div></div></blockquote>';
@@ -1967,7 +1967,7 @@
             async function getProfile(userId) {
                 var { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege, username_color, user_tag')
+                    .select('user_number, username, is_admin, sername_color, user_tag')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2105,7 +2105,7 @@
                 var username = benben.profiles?.username || '用户';
                 var userNumber = benben.user_number;
                 var timeStr = formatTime(benben.created_at);
-                var hasSpecial = currentProfile?.special_privilege || false;
+                var currentIsAdmin = currentProfile?.is_admin || false;
                 var currentUsername = currentProfile?.username || '用户';
 
                 var prof = benben.profiles || {};
@@ -2121,7 +2121,7 @@
                     labelHtml = '<span class="user-tag-display" style="background-color: ' + color + ';">管理员</span>';
                 }
 
-                var contentHtml = renderContent(benben.content, mentionMap, hasSpecial, currentUsername);
+                var contentHtml = renderContent(benben.content, mentionMap, currentIsAdmin, currentUsername);
 
                 var mainHtml =
                     '<div class="benben-item">' +
@@ -2173,7 +2173,7 @@
                                 ';">管理员</span>';
                         }
 
-                        var rContentHtml = renderContent(reply.content, mentionMap, hasSpecial, currentUsername);
+                        var rContentHtml = renderContent(reply.content, mentionMap, currentIsAdmin, currentUsername);
 
                         return '<div class="reply-item">' +
                             '<div class="reply-avatar">' +
