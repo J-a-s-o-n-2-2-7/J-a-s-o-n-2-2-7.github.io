@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>私信 - ✨ Jason227</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
+    <style>
+        /* ===== 全局重置 & 基础样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== 头像下拉菜单 ===== */
+        .top-avatar-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .top-avatar-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 104px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+            padding: 6px;
+            display: none;
+            z-index: 300;
+        }
+
+        .top-avatar-wrap:hover .top-avatar-menu {
+            display: block;
+        }
+
+        .top-avatar-menu .auth-btn.logout {
+            display: block;
+            width: 100%;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            box-sizing: border-box;
+        }
+
+        .bell-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .bell-icon:hover {
+            color: #e74c3c;
+        }
+
+        .bell-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .bell-icon sup {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+        }
+
+        /* ===== 私信主布局 ===== */
+        .main-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .messages-container {
+            display: flex;
+            gap: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            min-height: 600px;
+            height: calc(100vh - 160px);
+            max-height: 800px;
+        }
+
+        /* ===== 左侧对话列表 ===== */
+        .conversation-list {
+            width: 340px;
+            min-width: 260px;
+            border-right: 1px solid #edf2f7;
+            display: flex;
+            flex-direction: column;
+            background: #fafbfc;
+            flex-shrink: 0;
+        }
+
+        .conversation-list-header {
+            padding: 14px 20px 10px;
+            border-bottom: 1px solid #edf2f7;
+            font-weight: 600;
+            font-size: 1.1rem;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .conversation-list-header .badge-count {
+            background: #e74c3c;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0 10px;
+            border-radius: 20px;
+            line-height: 22px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        /* ===== 搜索框（管理后台风格） ===== */
+        .search-area {
+            padding: 12px 16px 14px;
+            background: #fafbfc;
+            border-bottom: 1px solid #edf2f7;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .search-area .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dce1e8;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            padding: 0 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .search-area .search-wrapper:focus-within {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12);
+        }
+
+        .search-area .search-wrapper .search-icon {
+            color: #8a9aa8;
+            font-size: 15px;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-right: 4px;
+        }
+
+        .search-area .search-wrapper input {
+            border: none;
+            background: transparent;
+            padding: 9px 4px;
+            font-size: 14px;
+            flex: 1;
+            outline: none;
+            min-width: 0;
+            color: #2c3e50;
+        }
+
+        .search-area .search-wrapper input::placeholder {
+            color: #b0b8c0;
+            font-weight: 400;
+        }
+
+        .search-area .search-wrapper .clear-btn {
+            background: none;
+            border: none;
+            color: #b0b8c0;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            display: none;
+            flex-shrink: 0;
+            border-radius: 50%;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+
+        .search-area .search-wrapper .clear-btn:hover {
+            background: #f0f2f5;
+        }
+
+        .search-area .search-wrapper .clear-btn.visible {
+            display: block;
+        }
+
+        /* 搜索提示条（搜索结果数量） */
+        .search-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 4px 0;
+            font-size: 12px;
+            color: #8a9aa8;
+            min-height: 26px;
+        }
+
+        .search-meta .result-count {
+            font-weight: 500;
+        }
+
+        .search-meta .clear-search-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            transition: background 0.15s;
+            display: none;
+        }
+
+        .search-meta .clear-search-btn:hover {
+            background: #fef0ef;
+        }
+
+        .search-meta .clear-search-btn.visible {
+            display: inline-block;
+        }
+
+        /* ===== 对话列表 / 搜索结果列表 ===== */
+        .conversation-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 6px 0;
+        }
+
+        .conversation-items::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .conversation-items::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .conversation-items::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        /* 列表项（对话 & 搜索结果统一） */
+        .conv-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 0.12s;
+            border-left: 3px solid transparent;
+            gap: 12px;
+        }
+
+        .conv-item:hover {
+            background: #f0f2f5;
+        }
+
+        .conv-item.active {
+            background: #f0f2f5;
+            border-left-color: #e74c3c;
+        }
+
+        .conv-item .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #f0f2f5;
+        }
+
+        .conv-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conv-item .info .name {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .conv-item .info .name .unread-dot {
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .conv-item .info .last-msg {
+            font-size: 13px;
+            color: #8a9aa8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .conv-item .info .user-number-hint {
+            font-size: 11px;
+            color: #b0b8c0;
+            margin-top: 1px;
+        }
+
+        .conv-item .time {
+            font-size: 11px;
+            color: #b0b8c0;
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: 2px;
+        }
+
+        /* 空状态 */
+        .conv-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .conv-empty .empty-icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .conv-empty .empty-sub {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        /* 搜索结果中的"发起新对话"提示 */
+        .search-result-hint {
+            padding: 8px 20px 4px;
+            font-size: 12px;
+            color: #8a9aa8;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== 右侧聊天窗口 ===== */
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: white;
+        }
+
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        .chat-header .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f0f2f5;
+        }
+
+        .chat-header .name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .chat-header .status {
+            font-size: 13px;
+            color: #8a9aa8;
+            margin-left: auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #fafbfc;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .msg-bubble {
+            max-width: 72%;
+            padding: 10px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            word-break: break-word;
+            position: relative;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .msg-bubble.sent {
+            align-self: flex-end;
+            background: #e74c3c;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-bubble.received {
+            align-self: flex-start;
+            background: white;
+            color: #2c3e50;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .msg-bubble .msg-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 4px;
+            display: block;
+            text-align: right;
+        }
+
+        .msg-bubble.sent .msg-time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .msg-bubble.received .msg-time {
+            color: #999;
+        }
+
+        .msg-bubble .msg-read-status {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-left: 6px;
+        }
+
+        .msg-divider {
+            text-align: center;
+            font-size: 12px;
+            color: #b0b8c0;
+            padding: 12px 0 4px;
+            position: relative;
+        }
+
+        .msg-divider::before {
+            content: '';
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            top: 50%;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .msg-divider span {
+            background: #fafbfc;
+            padding: 0 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-empty {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b0b8c0;
+            font-size: 15px;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-empty .icon {
+            font-size: 48px;
+            opacity: 0.3;
+        }
+
+        /* ===== 输入区域 ===== */
+        .chat-input-area {
+            padding: 12px 20px 16px;
+            border-top: 1px solid #edf2f7;
+            display: flex;
+            gap: 12px;
+            background: white;
+            flex-shrink: 0;
+            align-items: flex-end;
+        }
+
+        .chat-input-area textarea {
+            flex: 1;
+            border: 1px solid #e5e5e5;
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 14px;
+            resize: none;
+            font-family: inherit;
+            min-height: 40px;
+            max-height: 120px;
+            transition: border-color 0.2s;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .chat-input-area textarea:focus {
+            border-color: #e74c3c;
+        }
+
+        .chat-input-area textarea:disabled {
+            background: #f5f6f8;
+            cursor: not-allowed;
+        }
+
+        .chat-input-area .send-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            height: 40px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-input-area .send-btn:hover {
+            background: #c0392b;
+        }
+
+        .chat-input-area .send-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* ===== 动画 ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 加载状态 ===== */
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+            gap: 12px;
+        }
+
+        .loading-state .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e9ecef;
+            border-top-color: #e74c3c;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== Toast 提示 ===== */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== 用户标签 ===== */
+        .user-tag-display {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 1px 9px;
+            color: #fff;
+            font-size: 10.5px;
+            font-weight: 600;
+            margin: 0 0 0 4px;
+            cursor: default;
+            vertical-align: middle;
+            line-height: 18px;
+        }
+
+        /* ===== 搜索高亮 ===== */
+        .search-highlight {
+            background: #fde8e8;
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 820px) {
+            .messages-container {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+                min-height: 500px;
+                border-radius: 12px;
+            }
+
+            .conversation-list {
+                width: 100%;
+                min-width: unset;
+                border-right: none;
+                border-bottom: 1px solid #edf2f7;
+                max-height: 280px;
+                flex-shrink: 0;
+            }
+
+            .chat-window {
+                min-height: 400px;
+                height: 60vh;
+                max-height: 600px;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .msg-bubble {
+                max-width: 85%;
+            }
+
+            .main-layout {
+                padding: 12px 12px 16px;
+            }
+
+            .topbar {
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .conversation-list-header {
+                padding: 12px 16px;
+                font-size: 1rem;
+            }
+
+            .conv-item {
+                padding: 10px 16px;
+            }
+
+            .chat-header {
+                padding: 12px 16px;
+            }
+
+            .chat-input-area {
+                padding: 8px 12px 12px;
+                gap: 8px;
+            }
+
+            .chat-input-area textarea {
+                font-size: 14px;
+                padding: 8px 14px;
+                min-height: 36px;
+            }
+
+            .chat-input-area .send-btn {
+                padding: 6px 16px;
+                font-size: 13px;
+                height: 36px;
+            }
+
+            .conv-item .info .name {
+                font-size: 14px;
+            }
+
+            .conv-item .info .last-msg {
+                font-size: 12px;
+            }
+
+            .search-area {
+                padding: 8px 12px 10px;
+            }
+
+            .search-area .search-wrapper input {
+                padding: 7px 4px;
+                font-size: 13px;
+            }
+
+            .search-meta {
+                font-size: 11px;
+                min-height: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-layout {
+                padding: 8px 6px 12px;
+            }
+
+            .conversation-list {
+                max-height: 200px;
+            }
+
+            .chat-window {
+                height: 50vh;
+                min-height: 320px;
+                max-height: 500px;
+            }
+
+            .msg-bubble {
+                max-width: 92%;
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+
+            .chat-messages {
+                padding: 12px;
+                gap: 6px;
+            }
+
+            .chat-header .name {
+                font-size: 14px;
+            }
+
+            .auth-buttons .auth-btn {
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+
+            .user-email {
+                font-size: 12px;
+            }
+
+            .conv-item .avatar {
+                width: 36px;
+                height: 36px;
+            }
+
+            .conv-item .info .name {
+                font-size: 13px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== 顶部导航 ===== -->
+    <div class="topbar">
+        <a href="/" class="logo">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons">
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
+        </div>
+    </div>
+
+    <!-- ===== 主布局 ===== -->
+    <div class="main-layout">
+        <div class="messages-container" id="messagesContainer">
+            <!-- 左侧对话列表 -->
+            <div class="conversation-list" id="conversationList">
+                <div class="conversation-list-header">
+                    <span>💬 私信</span>
+                    <span class="badge-count" id="totalUnreadBadge" style="display:none;">0</span>
+                </div>
+
+                <!-- ===== 搜索区域 ===== -->
+                <div class="search-area" id="searchArea">
+                    <div class="search-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="搜索用户名或编号..." autocomplete="off" />
+                        <button class="clear-btn" id="clearSearchBtn" aria-label="清空搜索">✕</button>
+                    </div>
+                    <div class="search-meta" id="searchMeta">
+                        <span class="result-count" id="resultCount"></span>
+                        <button class="clear-search-btn" id="clearSearchResultBtn">✕ 清除结果</button>
+                    </div>
+                </div>
+
+                <div class="conversation-items" id="conversationItems">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <span>加载对话列表...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧聊天窗口 -->
+            <div class="chat-window" id="chatWindow">
+                <div class="chat-header" id="chatHeader">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <img class="avatar" id="chatAvatar" src="" alt="头像" style="display:none;" />
+                        <span class="name" id="chatPartnerName">选择对话</span>
+                    </div>
+                    <span class="status" id="chatStatus"></span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-empty">
+                        <div class="icon">💬</div>
+                        <span>选择左侧对话开始聊天</span>
+                    </div>
+                </div>
+                <div class="chat-input-area" id="chatInputArea">
+                    <textarea id="messageInput" rows="1" placeholder="输入消息..." disabled></textarea>
+                    <button class="send-btn" id="sendBtn" disabled>发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div class="toast-message" id="toastMessage"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ================================================================
+            //  1. Supabase 客户端
+            // ================================================================
+            const supabase = window.supabase.createClient(
+                'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+            );
+
+            // ================================================================
+            //  2. 状态
+            // ================================================================
+            let currentUser = null;
+            let currentProfile = null;
+            let currentConversation = null;
+            let messages = [];
+            let conversations = [];
+            let unreadCount = 0;
+            let isLoading = false;
+            let isSending = false;
+            let messageSubscription = null;
+            let unreadTimer = null;
+            let searchTimeout = null;
+            let isSearchMode = false;
+            let searchResults = [];
+
+            // DOM 引用
+            const authButtons = document.getElementById('authButtons');
+            const conversationItems = document.getElementById('conversationItems');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatPartnerName = document.getElementById('chatPartnerName');
+            const chatAvatar = document.getElementById('chatAvatar');
+            const chatStatus = document.getElementById('chatStatus');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const totalUnreadBadge = document.getElementById('totalUnreadBadge');
+            const toast = document.getElementById('toastMessage');
+            const searchInput = document.getElementById('searchInput');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const clearSearchResultBtn = document.getElementById('clearSearchResultBtn');
+            const resultCount = document.getElementById('resultCount');
+            const searchMeta = document.getElementById('searchMeta');
+
+            // ================================================================
+            //  3. 工具函数
+            // ================================================================
+
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            function escapeHtmlAttr(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function highlightText(text, query) {
+                if (!query || !text) return escapeHtml(text);
+                const q = query.trim();
+                if (!q) return escapeHtml(text);
+                const escaped = escapeHtml(text);
+                const regex = new RegExp('(' + escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                return escaped.replace(regex, '<span class="search-highlight">$1</span>');
+            }
+
+            function formatTime(isoStr) {
+                const d = new Date(isoStr);
+                const now = new Date();
+                const isToday = d.toDateString() === now.toDateString();
+                const isYesterday = new Date(now.getTime() - 86400000).toDateString() === d.toDateString();
+                const hh = String(d.getHours()).padStart(2, '0');
+                const mm = String(d.getMinutes()).padStart(2, '0');
+                if (isToday) return '今天 ' + hh + ':' + mm;
+                if (isYesterday) return '昨天 ' + hh + ':' + mm;
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return month + '-' + day + ' ' + hh + ':' + mm;
+            }
+
+            function formatTimeShort(isoStr) {
+                const d = new Date(isoStr);
+                const now = new Date();
+                const diff = (now.getTime() - d.getTime()) / 1000;
+                if (diff < 60) return '刚刚';
+                if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+                if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+                if (diff < 172800) return '昨天';
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return month + '-' + day;
+            }
+
+            function getDisplayColor(profile) {
+                if (!profile) return '#e74c3c';
+                if (profile.is_cheater) return '#AD8B00';
+                if (profile.is_admin) return '#8E44AD';
+                return '#e74c3c';
+            }
+
+            function getUserTag(profile) {
+                if (!profile) return '';
+                if (profile.is_cheater) {
+                    if (profile.is_admin) return profile.user_tag || '管理员';
+                    return '作弊者';
+                }
+                return profile.user_tag || '';
+            }
+
+            function showToast(text, duration) {
+                duration = duration || 2000;
+                toast.textContent = text;
+                toast.classList.add('show');
+                clearTimeout(toast._hide);
+                toast._hide = setTimeout(function () {
+                    toast.classList.remove('show');
+                }, duration);
+            }
+
+            // ================================================================
+            //  4. 获取当前用户信息
+            // ================================================================
+            async function getProfile(userId) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, user_number, username, is_admin, can_speak, can_manage_users, can_manage_posts, is_cheater, user_tag, avatar_url, username_color')
+                    .eq('id', userId)
+                    .single();
+                if (error) return null;
+                return data;
+            }
+
+            // ================================================================
+            //  5. 私信核心操作
+            // ================================================================
+
+            async function fetchConversations() {
+                if (!currentProfile) return [];
+                const userId = currentProfile.id;
+
+                const { data: msgs, error } = await supabase
+                    .from('messages')
+                    .select(`
+                        id,
+                        sender_id,
+                        receiver_id,
+                        content,
+                        created_at,
+                        read,
+                        sender:profiles!messages_sender_id_fkey (id, user_number, username, avatar_url, is_admin, is_cheater, user_tag),
+                        receiver:profiles!messages_receiver_id_fkey (id, user_number, username, avatar_url, is_admin, is_cheater, user_tag)
+                    `)
+                    .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('获取消息失败:', error);
+                    return [];
+                }
+                if (!msgs || msgs.length === 0) return [];
+
+                const convMap = new Map();
+                for (const msg of msgs) {
+                    const isSender = msg.sender_id === userId;
+                    const other = isSender ? msg.receiver : msg.sender;
+                    if (!other) continue;
+                    const key = other.id;
+                    if (!convMap.has(key)) {
+                        convMap.set(key, {
+                            user_id: other.id,
+                            user_number: other.user_number,
+                            username: other.username || '用户',
+                            avatar_url: other.avatar_url || '',
+                            is_admin: other.is_admin || false,
+                            is_cheater: other.is_cheater || false,
+                            user_tag: other.user_tag || '',
+                            last_message: msg.content || '',
+                            last_message_time: msg.created_at,
+                            last_message_id: msg.id,
+                            unread_count: 0,
+                        });
+                    } else {
+                        const existing = convMap.get(key);
+                        if (new Date(msg.created_at) > new Date(existing.last_message_time)) {
+                            existing.last_message = msg.content || '';
+                            existing.last_message_time = msg.created_at;
+                            existing.last_message_id = msg.id;
+                        }
+                    }
+                    if (msg.sender_id === other.id && msg.receiver_id === userId && !msg.read) {
+                        const existing = convMap.get(key);
+                        if (existing) existing.unread_count = (existing.unread_count || 0) + 1;
+                    }
+                }
+
+                const result = Array.from(convMap.values());
+                result.sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time));
+
+                unreadCount = result.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                updateUnreadBadge();
+                return result;
+            }
+
+            async function fetchConversation(otherUserId) {
+                if (!currentProfile || !otherUserId) return [];
+                const userId = currentProfile.id;
+
+                const { data, error } = await supabase
+                    .from('messages')
+                    .select(`
+                        id,
+                        sender_id,
+                        receiver_id,
+                        content,
+                        created_at,
+                        read,
+                        sender:profiles!messages_sender_id_fkey (id, user_number, username, avatar_url),
+                        receiver:profiles!messages_receiver_id_fkey (id, user_number, username, avatar_url)
+                    `)
+                    .or(`and(sender_id.eq.${userId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${userId})`)
+                    .order('created_at', { ascending: true });
+
+                if (error) {
+                    console.error('获取对话详情失败:', error);
+                    return [];
+                }
+                if (!data) return [];
+
+                const unreadIds = data
+                    .filter(m => m.sender_id === otherUserId && m.receiver_id === userId && !m.read)
+                    .map(m => m.id);
+                if (unreadIds.length > 0) {
+                    await supabase.from('messages').update({ read: true }).in('id', unreadIds);
+                    if (currentConversation) {
+                        const conv = conversations.find(c => c.user_id === otherUserId);
+                        if (conv) conv.unread_count = 0;
+                        unreadCount = Math.max(0, unreadCount - unreadIds.length);
+                        updateUnreadBadge();
+                        renderList();
+                    }
+                }
+                return data;
+            }
+
+            async function sendMessage(receiverId, content) {
+                if (!currentProfile || !receiverId || !content.trim()) return null;
+                const trimmed = content.trim();
+                if (trimmed.length === 0) return null;
+                if (currentProfile.can_speak === false) {
+                    showToast('你已被禁言，无法发送私信', 2500);
+                    return null;
+                }
+
+                const { data, error } = await supabase
+                    .from('messages')
+                    .insert({
+                        sender_id: currentProfile.id,
+                        receiver_id: receiverId,
+                        content: trimmed,
+                        read: false,
+                    })
+                    .select(`
+                        id,
+                        sender_id,
+                        receiver_id,
+                        content,
+                        created_at,
+                        read,
+                        sender:profiles!messages_sender_id_fkey (id, user_number, username, avatar_url),
+                        receiver:profiles!messages_receiver_id_fkey (id, user_number, username, avatar_url)
+                    `)
+                    .single();
+
+                if (error) {
+                    console.error('发送消息失败:', error);
+                    showToast('发送失败，请重试', 2000);
+                    return null;
+                }
+                return data;
+            }
+
+            async function getUserInfoByIdentifier(identifier) {
+                if (!identifier) return null;
+                let { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, user_number, username, avatar_url, is_admin, is_cheater, user_tag')
+                    .eq('user_number', identifier)
+                    .maybeSingle();
+                if (data) return data;
+                const { data: data2, error: error2 } = await supabase
+                    .from('profiles')
+                    .select('id, user_number, username, avatar_url, is_admin, is_cheater, user_tag')
+                    .eq('id', identifier)
+                    .maybeSingle();
+                if (data2) return data2;
+                return null;
+            }
+
+            // ================================================================
+            //  6. 搜索用户（客户端过滤）
+            // ================================================================
+            async function searchUsers(query) {
+                if (!currentProfile) return [];
+                if (!query || query.trim().length < 1) return [];
+                const q = query.trim().toLowerCase();
+                const userId = currentProfile.id;
+
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, user_number, username, avatar_url, is_admin, is_cheater, user_tag')
+                    .neq('id', userId)
+                    .limit(1000);
+
+                if (error) {
+                    console.error('搜索用户失败:', error);
+                    return [];
+                }
+                return data.filter(user => {
+                    const username = (user.username || '').toLowerCase();
+                    const userNumber = String(user.user_number || '').toLowerCase();
+                    return username.includes(q) || userNumber.includes(q);
+                });
+            }
+
+            // ================================================================
+            //  7. 渲染函数（统一处理对话和搜索结果）
+            // ================================================================
+
+            function updateUnreadBadge() {
+                if (unreadCount > 0) {
+                    totalUnreadBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    totalUnreadBadge.style.display = 'inline-block';
+                } else {
+                    totalUnreadBadge.style.display = 'none';
+                }
+            }
+
+            // ★★★ 核心修复：统一渲染，使用 item.user_id（对话模式）或 item.id（搜索模式） ★★★
+            function renderList(items, isSearch = false, query = '') {
+                if (!conversationItems) return;
+
+                // 更新搜索元信息
+                if (isSearch) {
+                    const count = items ? items.length : 0;
+                    resultCount.textContent = count > 0 ? `找到 ${count} 个用户` : '未找到匹配用户';
+                    clearSearchResultBtn.classList.toggle('visible', isSearchMode);
+                } else {
+                    resultCount.textContent = '';
+                    clearSearchResultBtn.classList.remove('visible');
+                }
+
+                const listItems = items || [];
+
+                if (listItems.length === 0) {
+                    if (isSearch) {
+                        conversationItems.innerHTML = `
+                            <div class="conv-empty">
+                                <div class="empty-icon">🔍</div>
+                                <div>未找到相关用户</div>
+                                <div class="empty-sub">试试其他关键词</div>
+                            </div>
+                        `;
+                    } else {
+                        conversationItems.innerHTML = `
+                            <div class="conv-empty">
+                                <div class="empty-icon">📭</div>
+                                <div>还没有私信</div>
+                                <div class="empty-sub">搜索用户开始聊天吧</div>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+
+                let html = '';
+                if (isSearch) {
+                    html += `<div class="search-result-hint">搜索结果 · 点击用户开始聊天</div>`;
+                }
+
+                for (const item of listItems) {
+                    // ★★★ 关键修复：统一使用 user_id 字段，搜索时从 id 映射 ★★★
+                    const userId = item.user_id || item.id;
+                    const userNumber = item.user_number;
+                    const username = item.username || '用户';
+                    const avatarUrl = item.avatar_url || '';
+                    const isAdmin = item.is_admin || false;
+                    const isCheater = item.is_cheater || false;
+                    const userTag = item.user_tag || '';
+                    const unread = item.unread_count || 0;
+                    const lastMsg = item.last_message || '暂无消息';
+                    const lastTime = item.last_message_time || new Date().toISOString();
+
+                    const isActive = currentConversation && currentConversation.user_id === userId;
+                    const color = getDisplayColor({ is_admin: isAdmin, is_cheater: isCheater });
+                    const tag = getUserTag({ is_admin: isAdmin, is_cheater: isCheater, user_tag: userTag });
+                    const avatar = avatarUrl || letterAvatar(username);
+
+                    let nameHtml = `<span style="color:${color};">${highlightText(username, query)}</span>`;
+                    if (tag) {
+                        nameHtml += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tag)}</span>`;
+                    }
+
+                    let subHtml = '';
+                    let timeHtml = '';
+                    if (isSearch) {
+                        // 搜索模式：显示编号
+                        subHtml = `<div class="user-number-hint">编号 ${escapeHtml(String(userNumber || ''))}</div>`;
+                    } else {
+                        // 对话模式：显示最后消息
+                        const unreadDot = unread > 0 ? `<span class="unread-dot"></span>` : '';
+                        const timeStr = formatTimeShort(lastTime);
+                        subHtml = `<div class="last-msg">${escapeHtml(lastMsg)}</div>`;
+                        timeHtml = `<div class="time">${timeStr}</div>`;
+                        if (unread > 0) {
+                            nameHtml += ` ${unreadDot}`;
+                        }
+                    }
+
+                    html += `
+                        <div class="conv-item ${isActive ? 'active' : ''}" data-user-id="${userId}" data-user-number="${userNumber}">
+                            <img class="avatar" src="${avatar}" alt="${escapeHtmlAttr(username)}" onerror="this.onerror=null;this.src='${letterAvatar(username)}'" />
+                            <div class="info">
+                                <div class="name">${nameHtml}</div>
+                                ${subHtml}
+                            </div>
+                            ${timeHtml}
+                        </div>
+                    `;
+                }
+
+                conversationItems.innerHTML = html;
+
+                // 绑定点击事件
+                document.querySelectorAll('.conv-item').forEach(el => {
+                    el.addEventListener('click', function () {
+                        const userId = this.dataset.userId;
+                        const userNumber = this.dataset.userNumber;
+                        if (userId) {
+                            if (isSearchMode) {
+                                clearSearch();
+                            }
+                            openConversation(userId, userNumber);
+                        }
+                    });
+                });
+            }
+
+            function renderConversationList() {
+                if (isSearchMode) return;
+                renderList(conversations, false);
+            }
+
+            // ★★★ 修复：将搜索结果转换为统一格式，确保 user_id 字段存在 ★★★
+            function renderSearchResults(users, query) {
+                isSearchMode = true;
+                // 统一格式：确保每个对象都有 user_id（来自 id）
+                searchResults = users.map(u => ({
+                    user_id: u.id,
+                    id: u.id,
+                    user_number: u.user_number,
+                    username: u.username,
+                    avatar_url: u.avatar_url,
+                    is_admin: u.is_admin,
+                    is_cheater: u.is_cheater,
+                    user_tag: u.user_tag,
+                    unread_count: 0,
+                    last_message: '',
+                    last_message_time: new Date().toISOString(),
+                }));
+                renderList(searchResults, true, query);
+            }
+
+            function clearSearch() {
+                isSearchMode = false;
+                searchResults = [];
+                searchInput.value = '';
+                clearSearchBtn.classList.remove('visible');
+                resultCount.textContent = '';
+                clearSearchResultBtn.classList.remove('visible');
+                renderConversationList();
+            }
+
+            function renderMessages(messagesData) {
+                if (!chatMessages) return;
+                if (!messagesData || messagesData.length === 0) {
+                    chatMessages.innerHTML = `
+                        <div class="chat-empty">
+                            <div class="icon">💬</div>
+                            <span>还没有消息，打个招呼吧 👋</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                let lastDate = null;
+                const userId = currentProfile ? currentProfile.id : null;
+
+                for (const msg of messagesData) {
+                    const msgDate = new Date(msg.created_at).toDateString();
+                    if (lastDate !== msgDate) {
+                        lastDate = msgDate;
+                        const displayDate = new Date(msg.created_at);
+                        const today = new Date();
+                        const isToday = displayDate.toDateString() === today.toDateString();
+                        const isYesterday = new Date(today.getTime() - 86400000).toDateString() === displayDate
+                            .toDateString();
+                        let label = '';
+                        if (isToday) label = '今天';
+                        else if (isYesterday) label = '昨天';
+                        else {
+                            const m = String(displayDate.getMonth() + 1).padStart(2, '0');
+                            const d = String(displayDate.getDate()).padStart(2, '0');
+                            label = m + '-' + d;
+                        }
+                        html += `<div class="msg-divider"><span>${label}</span></div>`;
+                    }
+
+                    const isSent = msg.sender_id === userId;
+                    const timeStr = formatTime(msg.created_at);
+                    const readStatus = isSent ? (msg.read ? '已读' : '未读') : '';
+
+                    html += `
+                        <div class="msg-bubble ${isSent ? 'sent' : 'received'}">
+                            ${escapeHtml(msg.content || '')}
+                            <span class="msg-time">
+                                ${timeStr}
+                                ${readStatus ? `<span class="msg-read-status">${readStatus}</span>` : ''}
+                            </span>
+                        </div>
+                    `;
+                }
+
+                chatMessages.innerHTML = html;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function updateChatHeader(conv) {
+                if (!conv) {
+                    chatPartnerName.textContent = '选择对话';
+                    chatAvatar.style.display = 'none';
+                    chatStatus.textContent = '';
+                    return;
+                }
+
+                const color = getDisplayColor(conv);
+                const tag = getUserTag(conv);
+                const avatar = conv.avatar_url || letterAvatar(conv.username);
+
+                chatAvatar.src = avatar;
+                chatAvatar.style.display = 'block';
+                chatAvatar.onerror = function () {
+                    this.onerror = null;
+                    this.src = letterAvatar(conv.username);
+                };
+
+                let nameHtml = `<span style="color:${color};">${escapeHtml(conv.username)}</span>`;
+                if (tag) {
+                    nameHtml += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tag)}</span>`;
+                }
+                chatPartnerName.innerHTML = nameHtml;
+                chatStatus.textContent = '';
+            }
+
+            function setInputEnabled(enabled) {
+                if (enabled && currentProfile && currentProfile.can_speak !== false) {
+                    messageInput.disabled = false;
+                    sendBtn.disabled = false;
+                    messageInput.placeholder = '输入消息...';
+                } else if (currentProfile && currentProfile.can_speak === false) {
+                    messageInput.disabled = true;
+                    sendBtn.disabled = true;
+                    messageInput.placeholder = '你已被禁言';
+                } else {
+                    messageInput.disabled = true;
+                    sendBtn.disabled = true;
+                    messageInput.placeholder = '请先登录';
+                }
+            }
+
+            // ================================================================
+            //  8. 打开对话
+            // ================================================================
+            async function openConversation(userId, userNumber) {
+                if (!currentProfile) {
+                    showToast('请先登录', 1500);
+                    return;
+                }
+                if (userId === currentProfile.id) {
+                    showToast('不能和自己聊天', 1500);
+                    return;
+                }
+
+                let userInfo = conversations.find(c => c.user_id === userId);
+                if (!userInfo) {
+                    const profile = await getUserInfoByIdentifier(userNumber || userId);
+                    if (profile) {
+                        userInfo = {
+                            user_id: profile.id,
+                            user_number: profile.user_number,
+                            username: profile.username || '用户',
+                            avatar_url: profile.avatar_url || '',
+                            is_admin: profile.is_admin || false,
+                            is_cheater: profile.is_cheater || false,
+                            user_tag: profile.user_tag || '',
+                            last_message: '',
+                            last_message_time: new Date().toISOString(),
+                            last_message_id: '',
+                            unread_count: 0,
+                        };
+                        conversations.unshift(userInfo);
+                        renderConversationList();
+                    } else {
+                        showToast('用户不存在', 1500);
+                        return;
+                    }
+                }
+
+                currentConversation = userInfo;
+                updateChatHeader(userInfo);
+                setInputEnabled(true);
+
+                chatMessages.innerHTML =
+                    `<div class="loading-state"><div class="spinner"></div><span>加载消息...</span></div>`;
+                const msgs = await fetchConversation(userId);
+                messages = msgs || [];
+                renderMessages(messages);
+
+                const conv = conversations.find(c => c.user_id === userId);
+                if (conv) conv.unread_count = 0;
+                unreadCount = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                updateUnreadBadge();
+                renderConversationList();
+
+                document.querySelectorAll('.conv-item').forEach(el => {
+                    el.classList.toggle('active', el.dataset.userId === userId);
+                });
+
+                messageInput.focus();
+            }
+
+            // ================================================================
+            //  9. 发送消息逻辑
+            // ================================================================
+            async function handleSendMessage() {
+                if (isSending) return;
+                if (!currentProfile) {
+                    showToast('请先登录', 1500);
+                    return;
+                }
+                if (!currentConversation) {
+                    showToast('请先选择一个对话', 1500);
+                    return;
+                }
+                if (currentProfile.can_speak === false) {
+                    showToast('你已被禁言，无法发送消息', 2000);
+                    return;
+                }
+
+                const content = messageInput.value.trim();
+                if (!content) return;
+
+                isSending = true;
+                sendBtn.disabled = true;
+                sendBtn.textContent = '发送中...';
+
+                const result = await sendMessage(currentConversation.user_id, content);
+
+                if (result) {
+                    messageInput.value = '';
+                    messages.push(result);
+                    renderMessages(messages);
+
+                    const conv = conversations.find(c => c.user_id === currentConversation.user_id);
+                    if (conv) {
+                        conv.last_message = content;
+                        conv.last_message_time = result.created_at;
+                        conv.last_message_id = result.id;
+                    }
+                    renderConversationList();
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    showToast('发送失败，请重试', 2000);
+                }
+
+                isSending = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = '发送';
+                messageInput.focus();
+            }
+
+            // ================================================================
+            //  10. 实时消息订阅
+            // ================================================================
+            function setupRealtimeSubscription() {
+                if (messageSubscription) {
+                    supabase.removeChannel(messageSubscription);
+                    messageSubscription = null;
+                }
+                if (!currentProfile) return;
+                const userId = currentProfile.id;
+
+                messageSubscription = supabase
+                    .channel('messages-realtime')
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'messages',
+                        filter: `receiver_id=eq.${userId}`,
+                    }, async (payload) => {
+                        const newMsg = payload.new;
+                        if (currentConversation && newMsg.sender_id === currentConversation.user_id) {
+                            await supabase.from('messages').update({ read: true }).eq('id', newMsg.id);
+                            const msgs = await fetchConversation(currentConversation.user_id);
+                            messages = msgs || [];
+                            renderMessages(messages);
+                            const conv = conversations.find(c => c.user_id === currentConversation.user_id);
+                            if (conv) conv.unread_count = 0;
+                            unreadCount = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                            updateUnreadBadge();
+                            renderConversationList();
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        } else {
+                            await refreshConversations();
+                        }
+                    })
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'messages',
+                        filter: `sender_id=eq.${userId}`,
+                    }, async () => {
+                        await refreshConversations();
+                    })
+                    .subscribe();
+
+                supabase
+                    .channel('messages-read-updates')
+                    .on('postgres_changes', {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'messages',
+                        filter: `receiver_id=eq.${userId}`,
+                    }, async (payload) => {
+                        const updated = payload.new;
+                        if (currentConversation && updated.sender_id === currentConversation.user_id) {
+                            const msgs = await fetchConversation(currentConversation.user_id);
+                            messages = msgs || [];
+                            renderMessages(messages);
+                            const conv = conversations.find(c => c.user_id === currentConversation.user_id);
+                            if (conv) conv.unread_count = 0;
+                            unreadCount = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                            updateUnreadBadge();
+                            renderConversationList();
+                        }
+                    })
+                    .subscribe();
+            }
+
+            // ================================================================
+            //  11. 刷新对话列表
+            // ================================================================
+            async function refreshConversations() {
+                if (!currentProfile) return;
+                const newConvs = await fetchConversations();
+                conversations = newConvs;
+                if (!isSearchMode) {
+                    renderConversationList();
+                }
+                if (currentConversation) {
+                    const conv = conversations.find(c => c.user_id === currentConversation.user_id);
+                    if (conv) {
+                        currentConversation.unread_count = conv.unread_count || 0;
+                    }
+                }
+                unreadCount = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                updateUnreadBadge();
+            }
+
+            // ================================================================
+            //  12. 搜索逻辑
+            // ================================================================
+            function handleSearchInput() {
+                const query = searchInput.value.trim();
+                clearSearchBtn.classList.toggle('visible', query.length > 0);
+
+                if (!currentProfile) {
+                    resultCount.textContent = '请先登录';
+                    return;
+                }
+
+                if (searchTimeout) clearTimeout(searchTimeout);
+
+                if (query.length === 0) {
+                    clearSearch();
+                    return;
+                }
+
+                searchTimeout = setTimeout(async () => {
+                    resultCount.textContent = '搜索中...';
+                    const users = await searchUsers(query);
+                    renderSearchResults(users, query);
+                }, 250);
+            }
+
+            // ================================================================
+            //  13. 初始化/更新UI
+            // ================================================================
+            async function updateUI() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+
+                    if (session) {
+                        currentProfile = await getProfile(session.user.id);
+                        currentUser = session.user;
+
+                        if (currentProfile) {
+                            const { data: banData, error: banErr } = await supabase
+                                .from('profiles')
+                                .select('is_banned')
+                                .eq('id', session.user.id)
+                                .single();
+                            if (!banErr && banData && banData.is_banned === true) {
+                                await supabase.auth.signOut();
+                                location.reload();
+                                return;
+                            }
+                        }
+
+                        renderTopbar(true);
+
+                        conversations = await fetchConversations();
+                        renderConversationList();
+
+                        if (conversations.length > 0 && !currentConversation) {
+                            const first = conversations[0];
+                            await openConversation(first.user_id, first.user_number);
+                        } else if (conversations.length === 0) {
+                            chatMessages.innerHTML = `
+                                <div class="chat-empty">
+                                    <div class="icon">📭</div>
+                                    <span>还没有私信，搜索用户开始聊天吧</span>
+                                </div>
+                            `;
+                            chatPartnerName.textContent = '选择对话';
+                            chatAvatar.style.display = 'none';
+                            chatStatus.textContent = '';
+                            setInputEnabled(false);
+                        }
+
+                        setupRealtimeSubscription();
+                        startUnreadPolling();
+                        setInputEnabled(true);
+
+                    } else {
+                        currentProfile = null;
+                        currentUser = null;
+                        currentConversation = null;
+                        messages = [];
+                        conversations = [];
+
+                        renderTopbar(false);
+
+                        conversationItems.innerHTML = `
+                            <div class="conv-empty">
+                                <div class="empty-icon">🔒</div>
+                                <div>请登录查看私信</div>
+                                <div class="empty-sub">
+                                    <a href="/auth/login" style="color:#e74c3c;">去登录</a>
+                                </div>
+                            </div>
+                        `;
+
+                        chatMessages.innerHTML = `
+                            <div class="chat-empty">
+                                <div class="icon">🔒</div>
+                                <span>请登录后查看私信</span>
+                            </div>
+                        `;
+                        chatPartnerName.textContent = '未登录';
+                        chatAvatar.style.display = 'none';
+                        chatStatus.textContent = '';
+                        setInputEnabled(false);
+
+                        stopUnreadPolling();
+                        if (messageSubscription) {
+                            supabase.removeChannel(messageSubscription);
+                            messageSubscription = null;
+                        }
+                    }
+                } catch (err) {
+                    console.error('初始化失败:', err);
+                    showToast('加载失败，请刷新重试', 3000);
+                }
+            }
+
+            // ================================================================
+            //  14. 顶部导航渲染
+            // ================================================================
+            function renderTopbar(loggedIn) {
+                if (!authButtons) return;
+
+                if (loggedIn && currentProfile) {
+                    const displayName = currentProfile.username || currentUser?.email || '用户';
+                    const color = getDisplayColor(currentProfile);
+                    const tag = getUserTag(currentProfile);
+                    const avatar = currentProfile.avatar_url || letterAvatar(displayName);
+
+                    authButtons.innerHTML = '';
+
+                    const wrap = document.createElement('div');
+                    wrap.className = 'top-avatar-wrap';
+                    wrap.id = 'topAvatarWrap';
+
+                    const avLink = document.createElement('a');
+                    avLink.id = 'topAvatar';
+                    avLink.href = '/user/' + (currentProfile.user_number || '');
+                    avLink.title = displayName;
+                    avLink.style.cssText =
+                        'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+
+                    const img = document.createElement('img');
+                    img.alt = '头像';
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                    img.onerror = function () {
+                        this.onerror = null;
+                        this.src = letterAvatar(displayName);
+                    };
+                    img.src = avatar;
+                    avLink.appendChild(img);
+                    wrap.appendChild(avLink);
+
+                    const menu = document.createElement('div');
+                    menu.className = 'top-avatar-menu';
+                    menu.id = 'topAvatarMenu';
+
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.className = 'auth-btn logout';
+                    logoutBtn.textContent = '登出';
+                    logoutBtn.addEventListener('click', async function () {
+                        await supabase.auth.signOut();
+                        location.reload();
+                    });
+                    menu.appendChild(logoutBtn);
+                    wrap.appendChild(menu);
+                    authButtons.appendChild(wrap);
+
+                    const bell = document.createElement('a');
+                    bell.className = 'bell-icon';
+                    bell.href = '/user/notification';
+                    bell.innerHTML = `
+                        <svg viewBox="0 0 448 512" width="20" height="20">
+                            <path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/>
+                        </svg>
+                        <sup id="bell-badge" style="display:none;background-color:#e74c3c;">0</sup>
+                    `;
+                    authButtons.appendChild(bell);
+
+                    if (currentProfile.can_manage_users) {
+                        const gear = document.createElement('a');
+                        gear.href = '/admin/user';
+                        gear.title = '管理后台';
+                        gear.style.cssText =
+                            'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;color:#666;';
+                        gear.textContent = '⚙️';
+                        authButtons.appendChild(gear);
+                    }
+
+                    const items = authButtons.querySelectorAll('.top-avatar-wrap, .bell-icon, a[href="/admin/user"]');
+                    items.forEach(el => authButtons.appendChild(el));
+
+                    fetchUnreadCount();
+
+                } else {
+                    authButtons.innerHTML =
+                        `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                }
+            }
+
+            // ================================================================
+            //  15. 通知未读数
+            // ================================================================
+            async function fetchUnreadCount() {
+                if (!currentProfile) return;
+                try {
+                    const { count, error } = await supabase
+                        .from('notifications')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_number', currentProfile.user_number)
+                        .eq('read', false);
+                    if (!error && count !== null) {
+                        const badge = document.getElementById('bell-badge');
+                        if (badge) {
+                            if (count > 0) {
+                                badge.textContent = count > 99 ? '99+' : count;
+                                badge.style.display = 'inline-flex';
+                            } else {
+                                badge.style.display = 'none';
+                            }
+                        }
+                    }
+                } catch (err) { console.error(err); }
+            }
+
+            function startUnreadPolling() {
+                if (unreadTimer) clearInterval(unreadTimer);
+                unreadTimer = setInterval(() => {
+                    if (currentProfile && document.visibilityState === 'visible') {
+                        fetchUnreadCount();
+                    }
+                }, 30000);
+            }
+
+            function stopUnreadPolling() {
+                if (unreadTimer) {
+                    clearInterval(unreadTimer);
+                    unreadTimer = null;
+                }
+            }
+
+            // ================================================================
+            //  16. 绑定事件
+            // ================================================================
+            function bindEvents() {
+                sendBtn.addEventListener('click', handleSendMessage);
+
+                messageInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                    }
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                });
+
+                messageInput.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                });
+
+                document.addEventListener('visibilitychange', function () {
+                    if (document.visibilityState === 'visible' && currentProfile) {
+                        fetchUnreadCount();
+                        refreshConversations();
+                    }
+                });
+
+                searchInput.addEventListener('input', handleSearchInput);
+
+                clearSearchBtn.addEventListener('click', function () {
+                    clearSearch();
+                    searchInput.focus();
+                });
+
+                clearSearchResultBtn.addEventListener('click', function () {
+                    clearSearch();
+                    searchInput.focus();
+                });
+            }
+
+            // ================================================================
+            //  17. URL 参数处理
+            // ================================================================
+            async function handleUrlParams() {
+                const params = new URLSearchParams(window.location.search);
+                const to = params.get('to');
+                if (to && currentProfile) {
+                    const user = await getUserInfoByIdentifier(to);
+                    if (user && user.id !== currentProfile.id) {
+                        setTimeout(async () => {
+                            if (conversations.length === 0) {
+                                conversations = await fetchConversations();
+                                renderConversationList();
+                            }
+                            await openConversation(user.id, user.user_number);
+                        }, 500);
+                    } else if (user && user.id === currentProfile.id) {
+                        showToast('不能和自己聊天', 1500);
+                    } else {
+                        showToast('用户不存在', 1500);
+                    }
+                }
+            }
+
+            // ================================================================
+            //  18. 启动
+            // ================================================================
+            function init() {
+                bindEvents();
+
+                supabase.auth.getSession().then(async ({ data }) => {
+                    await updateUI();
+                    if (data.session) {
+                        await handleUrlParams();
+                    }
+                }).catch(err => {
+                    console.error('初始化失败:', err);
+                    updateUI();
+                });
+
+                supabase.auth.onAuthStateChange(async (event, session) => {
+                    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                        await updateUI();
+                        if (session) {
+                            await handleUrlParams();
+                        }
+                    }
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
