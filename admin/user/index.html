@@ -289,6 +289,107 @@
             margin-bottom: 20px;
         }
 
+        /* ===== 在线用户区域 ===== */
+        .online-section {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 18px;
+        }
+
+        .online-section .online-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .online-section .online-label .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #2ecc71;
+            border-radius: 50%;
+            animation: pulse-dot 1.6s infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .online-avatars {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            flex: 1;
+        }
+
+        .online-avatar-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #2c3e50;
+            text-decoration: none;
+            background: white;
+            padding: 4px 12px 4px 6px;
+            border-radius: 20px;
+            border: 1px solid #e9ecef;
+            transition: background 0.15s;
+        }
+
+        .online-avatar-item:hover {
+            background: #eafaf1;
+            border-color: #2ecc71;
+        }
+
+        .online-avatar-item img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f0f2f5;
+        }
+
+        .online-avatar-item .online-name {
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .online-count {
+            font-size: 14px;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .online-count strong {
+            color: #2c3e50;
+        }
+
+        .online-empty {
+            color: #aaa;
+            font-size: 14px;
+        }
+
         .search-bar {
             display: flex;
             gap: 12px;
@@ -550,7 +651,6 @@
             margin: 2px;
         }
 
-        /* 批量按钮样式 */
         .btn-sm.grant {
             background: #52C41A;
             color: #fff;
@@ -659,6 +759,19 @@
             background: #fdedec;
             color: #E74C3C;
             border-color: #E74C3C;
+        }
+
+        /* 新增：在线/离线标签颜色沿用 active-green / active-red */
+        .filter-tag.active-online {
+            background: #eafaf1;
+            color: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .filter-tag.active-offline {
+            background: #fdedec;
+            color: #e74c3c;
+            border-color: #e74c3c;
         }
 
         @media (max-width:800px) {
@@ -866,6 +979,53 @@
                 width: 16px;
             }
         }
+
+        /* 复选框自定义颜色 */
+        .row-checkbox {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            background: white;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .row-checkbox:checked {
+            background: #3498db;
+            border-color: #3498db;
+        }
+        .row-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            line-height: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .row-checkbox.online {
+            border-color: #2ecc71;
+            background: #2ecc71;
+        }
+        .row-checkbox.online:checked {
+            border-color: #3498db;
+            background: #3498db;
+        }
+        .row-checkbox.offline {
+            border-color: #e74c3c;
+            background: #e74c3c;
+        }
+        .row-checkbox.offline:checked {
+            border-color: #3498db;
+            background: #3498db;
+        }
+
     </style>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
@@ -1059,6 +1219,7 @@
             const COLOR_RED = '#e74c3c';
             const COLOR_PURPLE = '#8E44AD';
             const COLOR_BROWN = '#AD8B00';
+            const ONLINE_THRESHOLD = 300; // 5 分钟
 
             let currentUser = null,
                 currentProfile = null,
@@ -1097,16 +1258,22 @@
                 return COLOR_RED;
             }
 
+            // ---------- 在线判断 ----------
+            function isUserOnline(user) {
+                if (!user.last_seen) return false;
+                try {
+                    const last = new Date(user.last_seen);
+                    const now = new Date();
+                    return (now - last) <= ONLINE_THRESHOLD * 1000;
+                } catch { return false; }
+            }
+
             // ---------- 权限检查 ----------
             function canModifyUser(targetUser) {
                 if (!currentProfile) return false;
-                // user_number=1 的超级管理员可以修改任何人
                 if (currentProfile.user_number === 1 && currentProfile.is_super_admin) return true;
-                // 不能修改自己
                 if (targetUser.user_number === currentProfile.user_number) return false;
-                // 不能修改超级管理员
                 if (targetUser.is_super_admin) return false;
-                // 当前用户是管理员（can_manage_users 或 is_super_admin 且非1号）可修改普通用户
                 if (currentProfile.can_manage_users || currentProfile.is_super_admin) return true;
                 return false;
             }
@@ -1188,11 +1355,9 @@
                 let reason = null;
 
                 if (newCheater) {
-                    // 设为棕名需要原因
                     reason = await promptReason('学术不端');
                     if (!reason) return;
                 } else {
-                    // 取消棕名不需要原因，自动填充
                     reason = '取消学术不端';
                 }
 
@@ -1326,9 +1491,6 @@
                 }
             }
 
-            // ================================================================
-            //  批量修改单个用户（所有权限）
-            // ================================================================
             // ================================================================
             //  批量修改单个用户（所有权限）
             // ================================================================
@@ -1587,6 +1749,59 @@
             }
 
             // ================================================================
+            //  ====== 在线用户（概要） ======
+            // ================================================================
+            async function updateLastSeen() {
+                if (!currentUser) return;
+                try {
+                    await supabase
+                        .from('profiles')
+                        .update({ last_seen: new Date().toISOString() })
+                        .eq('id', currentUser.id);
+                } catch (err) { /* 静默 */ }
+            }
+
+            async function fetchOnlineUsers() {
+                if (!currentUser) return;
+                const cutoff = new Date(Date.now() - ONLINE_THRESHOLD * 1000).toISOString();
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('user_number, username, avatar_url, last_seen')
+                        .gt('last_seen', cutoff)
+                        .order('last_seen', { ascending: false });
+                    if (error) throw error;
+                    renderOnlineUsers(data || []);
+                } catch (err) { /* 静默 */ }
+            }
+
+            function renderOnlineUsers(users) {
+                const container = document.getElementById('onlineAvatars');
+                const countEl = document.getElementById('onlineCount');
+                if (!container) return;
+
+                countEl.innerHTML = `共 <strong>${users.length}</strong> 人`;
+
+                if (users.length === 0) {
+                    container.innerHTML = '<span class="online-empty">暂无在线用户</span>';
+                    return;
+                }
+
+                let html = '';
+                users.forEach(user => {
+                    const name = user.username || '用户';
+                    const avatar = user.avatar_url || letterAvatar(name);
+                    html += `
+                <a href="/user/${user.user_number}" class="online-avatar-item" title="${escapeHtmlAttr(name)}">
+                    <img src="${avatar}" alt="${escapeHtmlAttr(name)}" onerror="this.onerror=null;this.src='${letterAvatar(name)}'">
+                    <span class="online-name">${escapeHtml(name)}</span>
+                </a>
+            `;
+                });
+                container.innerHTML = html;
+            }
+
+            // ================================================================
             //  初始化
             // ================================================================
             async function init() {
@@ -1626,7 +1841,12 @@
                         window.location.href = '/';
                     });
 
+                    // 加载用户列表（包含 last_seen）
                     await loadUsers();
+
+                    // 在线用户概要
+                    await updateLastSeen();
+                    await fetchOnlineUsers();
 
                     searchInput.addEventListener('input', filterUsers);
                     document.querySelectorAll('.filter-tag').forEach(el => {
@@ -1644,13 +1864,13 @@
             }
 
             // ================================================================
-            //  加载用户
+            //  加载用户（包含 last_seen）
             // ================================================================
             async function loadUsers() {
                 try {
                     const { data, error } = await supabase.from('profiles')
                         .select(
-                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url, is_super_admin'
+                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url, is_super_admin, last_seen'
                         )
                         .order('user_number');
                     if (error) throw error;
@@ -1664,7 +1884,7 @@
             }
 
             // ================================================================
-            //  筛选状态
+            //  筛选状态（新增 online / offline）
             // ================================================================
             const filterStates = {
                 admin: 'off',
@@ -1672,7 +1892,7 @@
                 post_mgmt: 'off',
                 enter_site: 'off',
                 cheater: 'off',
-                speak: 'off'
+                speak: 'off',
             };
 
             function toggleFilterTag(key) {
@@ -1680,6 +1900,12 @@
                 if (current === 'off') filterStates[key] = 'has';
                 else if (current === 'has') filterStates[key] = 'no';
                 else if (current === 'no') filterStates[key] = 'off';
+                // 互斥：如果开启在线，则关闭离线；反之亦然
+                if (key === 'online' && filterStates[key] !== 'off') {
+                    filterStates['offline'] = 'off';
+                } else if (key === 'offline' && filterStates[key] !== 'off') {
+                    filterStates['online'] = 'off';
+                }
                 updateFilterTags();
                 filterUsers();
             }
@@ -1689,67 +1915,80 @@
                     const key = el.dataset.key;
                     const state = filterStates[key] || 'off';
                     el.className = 'filter-tag';
-                    if (state === 'has') el.classList.add('active-green');
-                    else if (state === 'no') el.classList.add('active-red');
+                    // 在线/离线用不同颜色
+                    if (state === 'has') {
+                        if (key === 'online') el.classList.add('active-online');
+                        else if (key === 'offline') el.classList.add('active-offline');
+                        else el.classList.add('active-green');
+                    } else if (state === 'no') {
+                        if (key === 'online') el.classList.add('active-offline'); // 红色表示“非在线”
+                        else if (key === 'offline') el.classList.add('active-online'); // 绿色表示“非离线”
+                        else el.classList.add('active-red');
+                    }
                     el.dataset.state = state;
                 });
             }
 
             // ================================================================
-            //  过滤函数
+            //  过滤函数（支持搜索“在线”/“离线”）
             // ================================================================
             function filterUsers() {
-                const keyword = searchInput.value.trim();
+                const keyword = searchInput.value.trim().toLowerCase();
+                // 判断是否专门搜索在线/离线
+                let extraOnlineFilter = null;
+                if (keyword === '在线') extraOnlineFilter = 'online';
+                else if (keyword === '离线') extraOnlineFilter = 'offline';
 
                 filteredUsers = allUsers.filter(user => {
                     let match = true;
 
-                    if (keyword) {
+                    // 文本匹配（如果关键词不是“在线/离线”则正常文本搜索）
+                    if (keyword && !extraOnlineFilter) {
                         const userNumber = String(user.user_number);
-                        const username = (user.username || '');
-                        const remark = (user.remark || '');
-                        const tag = (user.user_tag || '');
+                        const username = (user.username || '').toLowerCase();
+                        const remark = (user.remark || '').toLowerCase();
+                        const tag = (user.user_tag || '').toLowerCase();
                         const roleLabel = user.is_admin ? '管理员' : '普通用户';
+                        const onlineText = isUserOnline(user) ? '在线' : '离线';
 
                         if (userNumber !== keyword &&
                             username !== keyword &&
                             remark !== keyword &&
                             tag !== keyword &&
-                            roleLabel !== keyword) {
+                            roleLabel !== keyword &&
+                            onlineText !== keyword) {
                             match = false;
                         }
                     }
 
                     if (match) {
+                        // 处理 filter-tags
                         for (const key in filterStates) {
                             const state = filterStates[key];
                             if (state === 'off') continue;
 
                             let hasPermission = false;
                             switch (key) {
-                                case 'admin':
-                                    hasPermission = user.is_admin;
-                                    break;
-                                case 'user_mgmt':
-                                    hasPermission = user.can_manage_users;
-                                    break;
-                                case 'post_mgmt':
-                                    hasPermission = user.can_manage_posts;
-                                    break;
-                                case 'enter_site':
-                                    hasPermission = !user.is_banned;
-                                    break;
-                                case 'cheater':
-                                    hasPermission = user.is_cheater;
-                                    break;
-                                case 'speak':
-                                    hasPermission = user.can_speak !== false;
-                                    break;
+                                case 'admin': hasPermission = user.is_admin; break;
+                                case 'user_mgmt': hasPermission = user.can_manage_users; break;
+                                case 'post_mgmt': hasPermission = user.can_manage_posts; break;
+                                case 'enter_site': hasPermission = !user.is_banned; break;
+                                case 'cheater': hasPermission = user.is_cheater; break;
+                                case 'speak': hasPermission = user.can_speak !== false; break;
+                                case 'online': hasPermission = isUserOnline(user); break;
+                                case 'offline': hasPermission = !isUserOnline(user); break;
                             }
 
                             if (state === 'has' && !hasPermission) { match = false; break; }
                             if (state === 'no' && hasPermission) { match = false; break; }
                         }
+                    }
+
+                    // 额外处理搜索“在线/离线”
+                    if (match && extraOnlineFilter) {
+                        const isOnline = isUserOnline(user);
+                        if (extraOnlineFilter === 'online' && !isOnline) match = false;
+                        if (extraOnlineFilter === 'offline' && isOnline) match = false;
                     }
 
                     return match;
@@ -1758,7 +1997,7 @@
             }
 
             // ================================================================
-            //  渲染用户列表
+            //  渲染用户列表（新增状态列）
             // ================================================================
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
@@ -1790,6 +2029,10 @@
                     const isAdmin = user.is_admin;
                     const roleLabel = isAdmin ? '管理员' : '普通用户';
                     const userNameColor = getUserDisplayColor(user);
+                    const online = isUserOnline(user);
+                    const statusDotClass = online ? 'online' : 'offline';
+                    const statusText = online ? '在线' : '离线';
+                    const statusTextClass = online ? 'online' : 'offline';
 
                     // ---- 头像 ----
                     const username = user.username || '用户';
@@ -1871,23 +2114,26 @@
                     const normalLinksHtml = `${banHtml} | ${cheaterHtml} | ${speakHtml}`;
                     const normalHtml = `<div class="perm-group-line"><span class="perm-cat">普通权限</span>${normalLinksHtml}</div>`;
 
-                    // ---- 批量修改（在权限列末尾） ----
+                    // ---- 批量修改 ----
                     const batchCanEdit = canEdit && currentProfile && currentProfile.is_super_admin;
                     const batchHtml = batchCanEdit
                         ? `<span class="action-link green" style="cursor:pointer;font-weight:500;" data-action="batch-edit" data-user="${user.user_number}">批量修改</span>`
                         : `<span class="action-link green disabled" style="cursor:default;">批量修改</span>`;
                     const batchLineHtml = `<div class="perm-group-line"><span class="perm-cat">批量操作</span>${batchHtml}</div>`;
 
-                    // 权限顺序：普通权限 → 管理权限 → 批量操作
                     const permSummaryHtml = `${normalHtml}${mgmtHtml}${batchLineHtml}`;
 
                     // ---- 复选框 ----
                     const isDisabled = !canEdit;
+                    const statusClass = online ? 'online' : 'offline';  // 新增
+
+                    // ---- 状态列 ----
+                    const statusHtml = `<span class="status-dot ${statusDotClass}"></span>`;
 
                     html += `
             <tr>
                 <td class="check-col" data-label="选择">
-                    <input type="checkbox" class="row-checkbox" data-user="${user.user_number}" ${isDisabled ? 'disabled' : ''}>
+                    <input type="checkbox" class="row-checkbox ${statusClass}" data-user="${user.user_number}" ${isDisabled ? 'disabled' : ''}>
                 </td>
                 <td data-label="注册时间">${formatTime(user.created_at)}</td>
                 <td data-label="用户编号"><a href="/user/${user.user_number}" style="color:#2c3e50;text-decoration:none;" onmouseout="this.style.textDecoration='none'">${user.user_number}</a></td>
@@ -1903,8 +2149,7 @@
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ========== 事件绑定 ==========
-
+                // ========== 事件绑定（与之前相同） ==========
                 // 1. 用户名双击编辑
                 document.querySelectorAll('.username-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
