@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>管理名单 · Jason227</title>
   <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js@2">
   </script>
-  <!-- 保留原有扩展库，但不影响核心功能 -->
+  <!-- 保留扩展库 (不影响核心) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
   </script>
@@ -35,7 +35,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       background: #f5f7fa;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -43,7 +42,7 @@
       color: #1d1d1f;
     }
 
-    /* ===== 顶栏 (仿洛谷简洁感) ===== */
+    /* ===== 顶栏 (仿洛谷简洁) ===== */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -56,7 +55,6 @@
       z-index: 200;
       height: 52px;
     }
-
     .logo {
       font-size: 1.4rem;
       font-weight: 700;
@@ -65,13 +63,11 @@
       cursor: pointer;
       letter-spacing: -0.5px;
     }
-
     .auth-buttons {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
     .auth-btn {
       background: #e74c3c;
       color: #fff;
@@ -85,15 +81,9 @@
       display: inline-block;
       transition: background 0.2s;
     }
-    .auth-btn:hover {
-      background: #c0392b;
-    }
-    .auth-btn.logout {
-      background: #7f8c8d;
-    }
-    .auth-btn.logout:hover {
-      background: #5a6268;
-    }
+    .auth-btn:hover { background: #c0392b; }
+    .auth-btn.logout { background: #7f8c8d; }
+    .auth-btn.logout:hover { background: #5a6268; }
 
     .user-email {
       font-size: 14px;
@@ -101,9 +91,7 @@
       text-decoration: none;
       font-weight: 500;
     }
-    .user-email:hover {
-      text-decoration: underline;
-    }
+    .user-email:hover { text-decoration: underline; }
 
     .bell-icon {
       position: relative;
@@ -113,13 +101,8 @@
       color: #555;
       transition: color 0.2s;
     }
-    .bell-icon:hover {
-      color: #e74c3c;
-    }
-    .bell-icon svg {
-      width: 20px;
-      height: 20px;
-    }
+    .bell-icon:hover { color: #e74c3c; }
+    .bell-icon svg { width: 20px; height: 20px; }
     .bell-icon sup {
       position: absolute;
       top: -8px;
@@ -135,11 +118,10 @@
       align-items: center;
       justify-content: center;
       padding: 0 4px;
-      box-shadow: 0 1px 4px rgba(231, 76, 60, 0.3);
+      box-shadow: 0 1px 4px rgba(231,76,60,0.3);
       line-height: 1;
     }
 
-    /* 顶部头像包裹 */
     .top-avatar-wrap {
       position: relative;
       display: inline-flex;
@@ -153,14 +135,12 @@
       background: #fff;
       border: 1px solid #e9ecef;
       border-radius: 8px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.10);
       padding: 6px;
       display: none;
       z-index: 300;
     }
-    .top-avatar-wrap:hover .top-avatar-menu {
-      display: block;
-    }
+    .top-avatar-wrap:hover .top-avatar-menu { display: block; }
     .top-avatar-menu .auth-btn.logout {
       display: block;
       width: 100%;
@@ -178,14 +158,8 @@
       flex-shrink: 0;
       border: 1px solid #e9ecef;
     }
-    #topAvatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    #topAvatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    /* 管理后台齿轮 */
     #adminEntry {
       display: inline-flex;
       align-items: center;
@@ -197,11 +171,9 @@
       transition: color 0.2s;
       margin-right: 2px;
     }
-    #adminEntry:hover {
-      color: #e74c3c;
-    }
+    #adminEntry:hover { color: #e74c3c; }
 
-    /* ===== 侧边栏 (仿洛谷风格, 更干净) ===== */
+    /* ===== 侧边栏 ===== */
     .nav-sidebar {
       position: fixed;
       top: 52px;
@@ -247,16 +219,8 @@
       flex-shrink: 0;
       margin-right: 12px;
     }
-    .nav-icon svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
-    .nav-group ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+    .nav-icon svg { width: 20px; height: 20px; fill: currentColor; }
+    .nav-group ul { list-style: none; padding: 0; margin: 0; }
     .nav-group .group-title {
       padding: 8px 16px;
       font-size: 13px;
@@ -265,18 +229,9 @@
       cursor: default;
       margin-top: 4px;
     }
-    .nav-text {
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .nav-sidebar:hover .nav-text {
-      opacity: 1;
-    }
-    .divider {
-      height: 1px;
-      background: #ecf0f1;
-      margin: 6px 12px;
-    }
+    .nav-text { opacity: 0; transition: opacity 0.2s ease; }
+    .nav-sidebar:hover .nav-text { opacity: 1; }
+    .divider { height: 1px; background: #ecf0f1; margin: 6px 12px; }
     .nav-item.active {
       background: #f0f2f5;
       color: #e74c3c;
@@ -297,14 +252,8 @@
       flex-wrap: wrap;
       padding-top: 20px;
     }
-    .main-content {
-      flex: 2;
-      min-width: 260px;
-    }
-    .right-sidebar {
-      width: 280px;
-      align-self: start;
-    }
+    .main-content { flex: 2; min-width: 260px; }
+    .right-sidebar { width: 280px; align-self: start; }
 
     .card {
       background: #ffffff;
@@ -323,130 +272,97 @@
       color: #1d1d1f;
     }
 
-    /* ===== 管理名单卡片 ===== */
-    .admin-section {
-      margin-top: 8px;
+    /* ===== 管理名单 — 两列布局 ===== */
+    .admin-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
     }
-    .admin-section-title {
+    @media (max-width: 720px) {
+      .admin-two-col {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    .admin-col {
+      background: #f8f9fc;
+      border-radius: 12px;
+      padding: 16px 16px 12px;
+      border: 1px solid #edf2f7;
+    }
+    .admin-col-header {
       font-size: 1rem;
       font-weight: 600;
       color: #2c3e50;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9ecef;
       margin-bottom: 12px;
-      padding-left: 4px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
-    .admin-section-title .count {
+    .admin-col-header .count {
       font-size: 13px;
       font-weight: 400;
       color: #999;
     }
 
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
+    .admin-col-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .admin-card-item {
-      background: #fafbfc;
-      border-radius: 12px;
-      padding: 12px 14px;
-      border: 1px solid #edf2f7;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    /* 单个管理员条目 — 头像 + 用户名(紫色) + tag(紫色背景) */
+    .admin-entry {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: background 0.15s;
       cursor: default;
     }
-    .admin-card-item:hover {
-      border-color: #d0d7e0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      transform: translateY(-1px);
+    .admin-entry:hover {
+      background: #f0f2f5;
     }
-    .admin-card-item .avatar {
-      width: 40px;
-      height: 40px;
+    .admin-entry .avatar {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       overflow: hidden;
       flex-shrink: 0;
       background: #e9ecef;
       border: 1px solid #e9ecef;
     }
-    .admin-card-item .avatar img {
+    .admin-entry .avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .admin-card-item .info {
-      flex: 1;
-      min-width: 0;
-    }
-    .admin-card-item .info .name {
+    /* 用户名统一紫色 */
+    .admin-entry .name {
       font-weight: 600;
       font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex-wrap: wrap;
+      color: #8E44AD;
+      flex-shrink: 0;
     }
-    .admin-card-item .info .name .uid {
-      font-weight: 400;
-      font-size: 11px;
-      color: #aaa;
-    }
-    .admin-card-item .info .badge-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 6px;
-      margin-top: 4px;
-    }
-
-    /* ===== TAG 样式 — 仿洛谷「正方形/圆角矩形」风格 ===== */
-    .admin-card-item .info .badge-wrap .tag {
+    /* tag 统一紫色背景 + 白色文字 */
+    .admin-entry .tag {
       display: inline-block;
       font-size: 11px;
       font-weight: 500;
       padding: 0 10px;
       height: 22px;
       line-height: 22px;
-      border-radius: 4px;          /* 洛谷风格小圆角，偏方正 */
-      background: #eef2f6;
-      color: #4a5568;
-      transition: background 0.15s;
+      border-radius: 4px;
       white-space: nowrap;
+      flex-shrink: 0;
       border: 1px solid transparent;
-    }
-    /* 各颜色变体 (更接近洛谷tag) */
-    .admin-card-item .info .badge-wrap .tag.color-purple {
-      background: #e9d9f5;
-      color: #6c3b8a;
-    }
-    .admin-card-item .info .badge-wrap .tag.color-gold {
-      background: #fdf5d6;
-      color: #a67c00;
-    }
-    .admin-card-item .info .badge-wrap .tag.color-blue {
-      background: #d6e8ff;
-      color: #1a5a9c;
-    }
-    .admin-card-item .info .badge-wrap .tag.color-green {
-      background: #d4edda;
-      color: #1e6f3f;
-    }
-    .admin-card-item .info .badge-wrap .tag.color-red {
-      background: #fce4e4;
-      color: #b91c1c;
-    }
-    .admin-card-item .info .badge-wrap .tag.color-cyan {
-      background: #d5f0f5;
-      color: #0f6b7a;
-    }
-    .admin-card-item .info .badge-wrap .tag.color-gray {
-      background: #eef2f6;
-      color: #4a5568;
+      background: #8E44AD;
+      color: #ffffff;
     }
 
     .empty-state {
@@ -454,26 +370,14 @@
       padding: 40px 20px;
       color: #bbb;
       font-size: 15px;
-      grid-column: 1 / -1;
     }
-    .empty-state svg {
-      width: 48px;
-      height: 48px;
-      fill: #ddd;
-      margin-bottom: 12px;
-    }
+    .empty-state svg { width: 48px; height: 48px; fill: #ddd; margin-bottom: 12px; }
 
     /* ===== 右侧边栏 ===== */
-    .right-sidebar .card .card-header {
-      font-size: 1.1rem;
-    }
-    .right-sidebar .info-text {
-      font-size: 14px;
-      color: #444;
-      line-height: 1.7;
-    }
+    .right-sidebar .card .card-header { font-size: 1.1rem; }
+    .right-sidebar .info-text { font-size: 14px; color: #444; line-height: 1.7; }
 
-    /* ===== 响应式 (保留原逻辑 + 优化) ===== */
+    /* ===== 响应式 ===== */
     @media (max-width: 900px) {
       .main-layout { padding: 0 12px 12px 12px; }
       .nav-sidebar {
@@ -508,20 +412,17 @@
       .topbar { padding: 6px 12px; flex-wrap: wrap; gap: 4px; height: auto; min-height: 48px; }
       .logo { font-size: 1.2rem; }
       .card { padding: 14px 16px; }
-      .admin-grid { grid-template-columns: 1fr; }
+      .admin-two-col { grid-template-columns: 1fr; gap: 12px; }
+      .admin-col { padding: 12px 12px 10px; }
       .auth-buttons .auth-btn { padding: 4px 12px; font-size: 12px; }
       .user-email { font-size: 12px; }
       .nav-sidebar { grid-template-columns: 1fr 1fr; gap: 2px; padding: 6px; }
       .nav-item, .group-title { padding: 6px 10px; font-size: 12px; }
       .nav-icon { font-size: 14px; width: 18px; }
       #topAvatar { width: 28px; height: 28px; }
-    }
-    @media (max-width: 400px) {
-      .auth-buttons .auth-btn { padding: 3px 10px; font-size: 11px; }
-      .user-email { font-size: 11px; }
-      .nav-sidebar { grid-template-columns: 1fr 1fr; gap: 2px; padding: 4px; }
-      .nav-item, .group-title { padding: 4px 8px; font-size: 11px; }
-      .nav-icon { font-size: 12px; width: 16px; }
+      .admin-entry .avatar { width: 32px; height: 32px; }
+      .admin-entry .name { font-size: 13px; }
+      .admin-entry .tag { font-size: 10px; padding: 0 8px; height: 20px; line-height: 20px; }
     }
 
     footer {
@@ -533,7 +434,6 @@
     a { text-decoration: none; color: #e74c3c; }
     a:hover { text-decoration: underline; }
 
-    /* 回到顶部 */
     #back-to-top {
       display: none;
       position: fixed;
@@ -567,7 +467,7 @@
 
 <!-- ===== 主布局 ===== -->
 <div class="main-layout">
-  <!-- 侧边栏 (高亮管理名单) -->
+  <!-- 侧边栏 -->
   <div class="nav-sidebar">
     <div class="nav-group">
       <ul>
@@ -612,13 +512,13 @@
     </div>
   </div>
 
-  <!-- 内容 -->
+  <!-- ===== 内容区域 (两列布局) ===== -->
   <div class="content-wrapper">
     <div class="main-content">
       <div class="card">
         <div class="card-header">管理名单</div>
         <p style="font-size:14px; color:#555; margin-bottom:20px;">
-          此处列出拥有「用户管理」或「秩序管理」权限的管理员。数据实时同步。
+          此处列出拥有「用户管理」或「秩序管理」权限的管理员。
         </p>
         <div id="adminListContainer">
           <div class="empty-state">加载中...</div>
@@ -646,7 +546,6 @@
 <!-- ========== JavaScript ========== -->
 <script>
   (function() {
-    // Supabase 配置
     const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -654,82 +553,87 @@
     const container = document.getElementById('adminListContainer');
     const authButtons = document.getElementById('authButtons');
 
-    // 工具
     function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m)); }
     function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m] || m)); }
     function letterAvatar(name) {
       const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
       return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
     }
-    function getUserDisplayColor(user) {
-      if (user && user.is_cheater) return '#b7950b';
-      if (user && user.is_admin) return '#8E44AD';
-      return '#e74c3c';
-    }
-    function getUserTagDisplay(user) {
-      if (!user) return '';
-      if (user.is_cheater) return user.is_admin ? '管理员' : '作弊者';
-      return user.user_tag || '';
-    }
 
-    // 获取管理员
     async function fetchAdmins() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, user_number, username, avatar_url, user_tag, is_admin, is_cheater, can_manage_users, can_manage_posts')
+          .select('id, username, avatar_url, user_tag, is_admin, is_cheater, can_manage_users, can_manage_posts')
           .or('can_manage_users.eq.true,can_manage_posts.eq.true')
-          .order('user_number', { ascending: true });
+          .order('username', { ascending: true });
         if (error) throw error;
         return data || [];
       } catch (e) { console.error(e); return []; }
     }
 
-    // 渲染
     function renderAdmins(admins) {
       if (!admins || admins.length === 0) {
         container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><p>暂无管理员</p></div>`;
         return;
       }
+
       const userMgmt = admins.filter(u => u.can_manage_users === true);
       const postMgmt = admins.filter(u => u.can_manage_posts === true);
-      let html = '';
-      if (userMgmt.length) html += renderGroup('👤 用户管理', userMgmt, '用户管理');
-      if (postMgmt.length) html += renderGroup('⚖️ 秩序管理', postMgmt, '秩序管理');
+
+      let html = '<div class="admin-two-col">';
+
+      // 第一列：用户管理
+      html += `<div class="admin-col"><div class="admin-col-header">👤 用户管理 <span class="count">(${userMgmt.length})</span></div><div class="admin-col-list">`;
+      if (userMgmt.length === 0) {
+        html += `<div style="color:#999;font-size:13px;padding:8px 4px;">暂无</div>`;
+      } else {
+        for (const u of userMgmt) {
+          html += renderEntry(u);
+        }
+      }
+      html += `</div></div>`;
+
+      // 第二列：秩序管理
+      html += `<div class="admin-col"><div class="admin-col-header">⚖️ 秩序管理 <span class="count">(${postMgmt.length})</span></div><div class="admin-col-list">`;
+      if (postMgmt.length === 0) {
+        html += `<div style="color:#999;font-size:13px;padding:8px 4px;">暂无</div>`;
+      } else {
+        for (const u of postMgmt) {
+          html += renderEntry(u);
+        }
+      }
+      html += `</div></div>`;
+
+      html += '</div>';
       container.innerHTML = html;
     }
 
-    function renderGroup(title, users, permType) {
-      let cards = '';
-      for (const user of users) {
-        const avatarUrl = user.avatar_url || letterAvatar(user.username || '用户');
-        const name = user.username || '未命名';
-        const color = getUserDisplayColor(user);
-        const tagText = getUserTagDisplay(user);
-        let tagHtml = '';
-        if (tagText) {
-          const tagColor = user.is_cheater ? 'color-red' : (user.is_admin ? 'color-purple' : 'color-blue');
-          tagHtml = `<span class="tag ${tagColor}" style="background-color:${color};color:#fff;border:none;">${escapeHtml(tagText)}</span>`;
-        }
-        // 权限标签（正方形风格）
-        const permTag = `<span class="tag color-cyan">${permType}</span>`;
-        const adminTag = user.is_admin ? `<span class="tag color-purple">管理员</span>` : '';
-        const cheatTag = user.is_cheater ? `<span class="tag color-red">学术不端</span>` : '';
-
-        cards += `
-          <div class="admin-card-item">
-            <div class="avatar"><img src="${avatarUrl}" alt="${escapeHtmlAttr(name)}" loading="lazy" onerror="this.onerror=null;this.src='${letterAvatar(name)}'"></div>
-            <div class="info">
-              <div class="name"><span style="color:${color};">${escapeHtml(name)}</span><span class="uid">#${user.user_number}</span></div>
-              <div class="badge-wrap">${tagHtml}${permTag}${adminTag}${cheatTag}</div>
-            </div>
-          </div>
-        `;
+    function renderEntry(user) {
+      const avatarUrl = user.avatar_url || letterAvatar(user.username || '用户');
+      const name = user.username || '未命名';
+      // 优先使用 user_tag，其次 is_admin / is_cheater
+      let tagText = '';
+      if (user.user_tag) {
+        tagText = user.user_tag;
+      } else if (user.is_admin) {
+        tagText = '管理员';
+      } else if (user.is_cheater) {
+        tagText = '学术不端';
+      } else {
+        tagText = '成员';
       }
-      return `<div class="admin-section"><div class="admin-section-title">${title}<span class="count">(${users.length} 人)</span></div><div class="admin-grid">${cards}</div></div>`;
+      // 用户名紫色 + 标签紫色背景白色文字
+      return `
+        <div class="admin-entry">
+          <div class="avatar"><img src="${avatarUrl}" alt="${escapeHtmlAttr(name)}" loading="lazy" onerror="this.onerror=null;this.src='${letterAvatar(name)}'"></div>
+          <span class="name">${escapeHtml(name)}</span>
+          <span class="tag">${escapeHtml(tagText)}</span>
+        </div>
+      `;
     }
 
-    // ===== 顶栏 =====
+    // ===== 顶栏 (保留原有逻辑) =====
     let currentProfile = null;
     async function updateTopbar() {
       try {
@@ -787,7 +691,7 @@
       } catch (e) { const badge = document.getElementById('bell-badge'); if (badge) badge.style.display = 'none'; }
     }
 
-    // 顶部头像下拉菜单 (独立)
+    // 顶部头像下拉菜单
     (function avatarMenu() {
       const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const authBtns = document.querySelector('.topbar .auth-buttons');
