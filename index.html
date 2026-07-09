@@ -1824,6 +1824,217 @@
         #punchCard .punch-username-logo:hover {
             text-decoration: underline;
         }
+
+        /* ===== 管理员面板折叠按钮样式 ===== */
+        .fortune-admin-toggle-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 2px 12px;
+            border-radius: 20px;
+            transition: background 0.2s, color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .fortune-admin-toggle-btn:hover {
+            background: #f0f0f0;
+            color: #e74c3c;
+        }
+        .fortune-admin-toggle-btn:active {
+            transform: scale(0.96);
+        }
+        .admin-toggle-icon {
+            font-size: 11px;
+            transition: transform 0.25s ease;
+        }
+
+        /* ===== 广告轮播和管理面板样式 ===== */
+        #adSlider {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f0f2f5;
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #adSlider .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        #adSlider .slide {
+            flex: 0 0 100%;
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #adSlider .slide img {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        #adSlider .slide a {
+            display: block;
+            width: 100%;
+            text-decoration: none;
+        }
+
+        #adSlider .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            padding: 0 8px;
+            box-sizing: border-box;
+        }
+
+        #adSlider .slider-nav button {
+            pointer-events: auto;
+            background: rgba(0,0,0,0.4);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #adSlider .slider-nav button:hover {
+            background: rgba(0,0,0,0.7);
+        }
+
+        #adSlider .slider-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        #adSlider .slider-dots span {
+            pointer-events: auto;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        #adSlider .slider-dots span.active {
+            background: #e74c3c;
+            transform: scale(1.2);
+        }
+
+        /* 卡片内两栏适配 */
+        #punchCard .lg-punch {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        #punchCard .lg-punch .ad-col {
+            flex: 2;
+            min-width: 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        #punchCard .lg-punch .fortune-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ===== ★★★ 管理面板折叠箭头旋转动画 ★★★ ===== */
+        .ad-panel-arrow,
+        .fortune-panel-arrow {
+            display: inline-block;
+            font-size: 11px;
+            transition: transform 0.25s ease;
+            transform: rotate(0deg);
+        }
+
+        .ad-panel-arrow.rotated,
+        .fortune-panel-arrow.rotated {
+            transform: rotate(90deg);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            #punchCard .lg-punch {
+                flex-direction: column !important;
+            }
+            #punchCard .lg-punch .ad-col {
+                border-right: none !important;
+                padding-right: 0 !important;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+            #adSlider {
+                min-height: 120px;
+            }
+            #adSlider .slide {
+                min-height: 100px;
+            }
+            #adSlider .slide img {
+                max-height: 140px;
+            }
+        }
+
+        /* 响应式：小屏改为上下排列 */
+        @media (max-width: 700px) {
+            #punchCard .lg-punch {
+                flex-direction: column !important;
+            }
+            #punchCard .lg-punch .ad-col,
+            #punchCard .lg-punch .fortune-col {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+            }
+            #punchCard .lg-punch .lg-punch-result {
+                font-size: 2.8rem !important;
+            }
+            #adSlider {
+                min-height: 120px;
+            }
+            #adSlider .slide {
+                min-height: 100px;
+            }
+            #adSlider .slide img {
+                max-height: 140px;
+            }
+        }
+
         /* 响应式 */
         @media (max-width: 600px) {
             #punchCard .lg-index-calendar .lg-punch-big {
@@ -1840,6 +2051,19 @@
                 display: block;
                 margin-left: 0;
                 margin-top: 6px;
+            }
+        }
+        /* ===== 打卡卡片两栏响应式 ===== */
+        @media (max-width: 700px) {
+            #punchCard .lg-punch {
+                flex-direction: column !important;
+            }
+            #punchCard .lg-punch > div {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+            }
+            #punchCard .lg-punch .lg-punch-result {
+                font-size: 2.8rem !important;
             }
         }
     </style>
@@ -2445,7 +2669,45 @@
                 if (error) throw error;
             }
 
-            // ===== 渲染打卡卡片（异步版本） =====
+            // ===== 广告管理 API =====
+            async function fetchAds() {
+                try {
+                    const { data, error } = await supabase
+                        .from('ads')
+                        .select('*')
+                        .eq('enabled', true)
+                        .order('sort_order', { ascending: true });
+                    if (error) throw error;
+                    return data || [];
+                } catch (err) {
+                    console.error('获取广告失败:', err);
+                    return [];
+                }
+            }
+
+            async function addAd(title, imageUrl, linkUrl, sortOrder = 0) {
+                if (!currentProfile || !currentProfile.can_manage_posts) {
+                    throw new Error('无权限');
+                }
+                const { data, error } = await supabase
+                    .from('ads')
+                    .insert([{ title, image_url: imageUrl, link_url: linkUrl, sort_order: sortOrder }])
+                    .select();
+                if (error) throw error;
+                return data[0];
+            }
+
+            async function deleteAd(id) {
+                if (!currentProfile || !currentProfile.can_manage_posts) {
+                    throw new Error('无权限');
+                }
+                const { error } = await supabase
+                    .from('ads')
+                    .delete()
+                    .eq('id', id);
+                if (error) throw error;
+            }
+
             async function renderPunchCard() {
                 const container = document.getElementById('punchCardContent');
                 if (!container) return;
@@ -2485,8 +2747,8 @@
 
                 const hasCheckedIn = isLoggedIn && checkedIn;
 
+                // ===== 未打卡分支 =====
                 if (!hasCheckedIn) {
-                    // 未打卡模板（保持不变）
                     let buttonHtml = '';
                     let welcomeHtml = '';
                     if (isLoggedIn) {
@@ -2535,12 +2797,10 @@
                     return;
                 }
 
-                // ---------- 已打卡模板 ----------
-                const todayStr = getTodayDateStr();  // ← 改为使用东八区
-                console.log('[renderPunchCard] 今日日期:', todayStr);
+                // ===== 已打卡分支 =====
+                const todayStr = getTodayDateStr();
 
                 let adminFortune = await fetchDailyFortune(todayStr);
-                console.log('[renderPunchCard] 从数据库获取的运势设置:', adminFortune);
 
                 let fortune = null;
                 let goodItems = [];
@@ -2572,9 +2832,6 @@
                     if (adminFortune.bad_name2 && adminFortune.bad_desc2) {
                         adminBadItems.push({ name: adminFortune.bad_name2, desc: adminFortune.bad_desc2 });
                     }
-
-                    console.log('[renderPunchCard] 管理员设置的宜:', adminGoodItems);
-                    console.log('[renderPunchCard] 管理员设置的忌:', adminBadItems);
 
                     const finalGoodItems = (fortune.label === '大凶') ? [] : adminGoodItems;
                     const finalBadItems = (fortune.label === '大吉') ? [] : adminBadItems;
@@ -2640,12 +2897,7 @@
                             }
                         }
                     }
-
-                    console.log('[renderPunchCard] 最终宜列表:', goodItems);
-                    console.log('[renderPunchCard] 最终忌列表:', badItems);
-
                 } else {
-                    // 无管理员设置，使用随机逻辑（保持不变）
                     const userIdSeed = isLoggedIn ? (profile?.user_number || '') : getDeviceId();
                     const rand = splitmix32(getDailySeed(userIdSeed));
                     const fortuneIdx = Math.floor(rand() * FORTUNE_LEVELS.length);
@@ -2676,157 +2928,348 @@
                     resultClass = 'lg-fg-green';
                 }
 
-                // 构建显示内容（与原来一致，略）
                 let contentHtml = '';
                 if (fortune.label === '大吉') {
                     contentHtml = `
-        <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
-            <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
-                ${goodItems.map(item => `
-                    <div style="margin-bottom:10px;line-height:1.5;">
-                        <span class="lg-bold" style="color:#E74C3C;">宜：</span>
-                        <span style="color:#E74C3C;">${escapeHtml(item.name)}</span><br>
-                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
-                    </div>
-                `).join('')}
+<div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
+    <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
+        ${goodItems.map(item => `
+            <div style="margin-bottom:10px;line-height:1.5;">
+                <span class="lg-bold" style="color:#E74C3C;">宜：${escapeHtml(item.name)}</span><br>
+                <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
             </div>
-            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
-                <span class="lg-bold" style="color:#000;font-size:1rem;line-height:1.5;">万事皆宜</span>
-            </div>
-        </div>
-    `;
+        `).join('')}
+    </div>
+    <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+        <span class="lg-bold" style="color:#000;font-size:1rem;line-height:1.5;">万事皆宜</span>
+    </div>
+</div>
+`;
                 } else if (fortune.label === '大凶') {
                     contentHtml = `
-        <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
-            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
-                <span class="lg-bold" style="color:#E74C3C;font-size:1rem;line-height:1.5;">诸事不宜</span>
+<div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
+    <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+        <span class="lg-bold" style="color:#E74C3C;font-size:1rem;line-height:1.5;">诸事不宜</span>
+    </div>
+    <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+        ${badItems.map(item => `
+            <div style="margin-bottom:10px;line-height:1.5;">
+                <span class="lg-bold" style="color:#000000;">忌：</span>
+                <span style="color:#000000;">${escapeHtml(item.name)}</span><br>
+                <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
             </div>
-            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
-                ${badItems.map(item => `
-                    <div style="margin-bottom:10px;line-height:1.5;">
-                        <span class="lg-bold" style="color:#000000;">忌：</span>
-                        <span style="color:#000000;">${escapeHtml(item.name)}</span><br>
-                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
+        `).join('')}
+    </div>
+</div>
+`;
                 } else {
                     contentHtml = `
-        <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
-            <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
-                ${goodItems.map(item => `
-                    <div style="margin-bottom:10px;line-height:1.5;">
-                        <span class="lg-bold" style="color:#E74C3C;">宜：</span>
-                        <span style="color:#E74C3C;">${escapeHtml(item.name)}</span><br>
-                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
-                    </div>
-                `).join('')}
+<div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
+    <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
+        ${goodItems.map(item => `
+            <div style="margin-bottom:10px;line-height:1.5;">
+                <span class="lg-bold" style="color:#E74C3C;">宜：${escapeHtml(item.name)}</span><br>
+                <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
             </div>
-            <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
-                ${badItems.map(item => `
-                    <div style="margin-bottom:10px;line-height:1.5;">
-                        <span class="lg-bold" style="color:#000000;">忌：</span>
-                        <span style="color:#000000;">${escapeHtml(item.name)}</span><br>
-                        <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
-                    </div>
-                `).join('')}
+        `).join('')}
+    </div>
+    <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
+        ${badItems.map(item => `
+            <div style="margin-bottom:10px;line-height:1.5;">
+                <span class="lg-bold" style="color:#000000;">忌：${escapeHtml(item.name)}</span><br>
+                <span class="lg-small" style="display:block;margin-top:1px;padding-left:2px;">${escapeHtml(item.desc)}</span>
             </div>
-        </div>
-    `;
+        `).join('')}
+    </div>
+</div>
+`;
                 }
 
                 const isAdmin = currentProfile && currentProfile.can_manage_posts === true;
 
+                // ===== 加载广告数据 =====
+                let adItems = [];
+                if (isAdmin) {
+                    adItems = await fetchAds();
+                }
+
+                // ===== 生成轮播 HTML =====
+                let sliderHtml = '';
+                if (isAdmin && adItems.length > 0) {
+                    const slidesHtml = adItems.map((item, index) => `
+            <div class="slide" data-index="${index}">
+                <a href="${escapeHtmlAttr(item.link_url)}" target="_blank">
+                    <img src="${escapeHtmlAttr(item.image_url)}" alt="${escapeHtmlAttr(item.title)}" loading="lazy">
+                </a>
+            </div>
+        `).join('');
+
+                    const dotsHtml = adItems.map((_, index) => `
+            <span class="${index === 0 ? 'active' : ''}" data-index="${index}"></span>
+        `).join('');
+
+                    sliderHtml = `
+            <div id="adSlider" style="position:relative; width:100%; border-radius:12px; overflow:hidden; background:#f0f2f5; min-height:180px; display:flex; align-items:center; justify-content:center;">
+                <div class="slides" style="display:flex; transition: transform 0.5s ease-in-out; width:100%;">
+                    ${slidesHtml}
+                </div>
+                <div class="slider-nav" style="position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; pointer-events:none; padding:0 8px; box-sizing:border-box;">
+                    <button class="slider-prev" style="pointer-events:auto; background:rgba(0,0,0,0.4); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center;">‹</button>
+                    <button class="slider-next" style="pointer-events:auto; background:rgba(0,0,0,0.4); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center;">›</button>
+                </div>
+                <div class="slider-dots" style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px; pointer-events:none;">
+                    ${dotsHtml}
+                </div>
+            </div>
+        `;
+                }
+
+                // ===== 管理面板折叠状态（默认收起） =====
+                // ★★★ 广告管理面板折叠状态（默认关闭，不储存） ★★★
+                let isAdPanelCollapsed = true;  // 直接设为 true，永远折叠
+                // ★★★ 固定使用 ▶，通过 CSS 旋转控制方向 ★★★
+                const adPanelDisplay = isAdPanelCollapsed ? 'none' : 'block';
+                const adPanelBtnText = isAdPanelCollapsed ? '展开广告管理' : '收起广告管理';
+                const adPanelRotated = isAdPanelCollapsed ? '' : 'rotated';
+
+                // ★★★ 运势管理面板折叠状态（默认关闭，不储存） ★★★
+                let isFortunePanelCollapsed = true;  // 直接设为 true，永远折叠
+                const fortunePanelDisplay = isFortunePanelCollapsed ? 'none' : 'block';
+                const fortunePanelBtnText = isFortunePanelCollapsed ? '展开运势管理' : '收起运势管理';
+                const fortunePanelRotated = isFortunePanelCollapsed ? '' : 'rotated';
+
+                // ===== 构建 HTML =====
                 let html = `
-        <div class="lg-punch">
-            <h2 style="margin-bottom: 0">
+    <div class="lg-punch" style="display: flex; gap: 20px; align-items: stretch;">
+        <!-- 左侧广告栏 + 广告管理面板 -->
+        ${isAdmin ? `
+        <div class="ad-col" style="flex: 2; min-width: 0; display: flex; flex-direction: column; border-right: 1px solid #eee; padding-right: 16px;">
+            ${sliderHtml || '<div style="width:100%;display:flex;align-items:center;justify-content:center;background:#f9f9f9;border-radius:12px;padding:20px;color:#999;font-size:14px;min-height:100px;">没有更多广告了</div>'}
+            
+            <!-- 广告管理面板 -->
+            <div style="margin-top: 12px; padding-top: 12px;">
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                    <button class="ad-panel-toggle-btn" 
+                            style="background:none; border:none; color:#888; font-size:13px; cursor:pointer; padding:2px 16px; border-radius:20px; transition: background 0.2s, color 0.2s; display:inline-flex; align-items:center; gap:6px;">
+                        <!-- ★★★ 箭头固定为 ▶，通过 rotated 类控制旋转 ★★★ -->
+                        <span class="ad-panel-arrow ${adPanelRotated}" style="font-size:11px; transition: transform 0.25s ease; display:inline-block;">▶</span>
+                        <span class="ad-panel-text">${adPanelBtnText}</span>
+                    </button>
+                </div>
+                <div class="ad-panel-content" style="display: ${adPanelDisplay};">
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px;">
+                        <input type="text" id="adTitleInput" placeholder="标题" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:1; min-width:80px;">
+                        <input type="text" id="adImageInput" placeholder="图片URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
+                        <input type="text" id="adLinkInput" placeholder="链接URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
+                        <button id="addAdBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">添加</button>
+                    </div>
+                    <div id="adList" style="max-height:200px; overflow-y:auto; background:#f9f9f9; border-radius:8px; padding:8px;">
+                        <!-- 动态渲染 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        ` : ''}
+        <!-- 右侧运势内容 + 运势管理面板 -->
+        <div class="fortune-col" style="flex: ${isAdmin ? '1' : '1'}; min-width: 0; display: flex; flex-direction: column;">
+            <h2 style="margin-bottom: 0; font-size: 1.3rem; font-weight: 500; color: #333; text-align: center;">
                 ${userDisplayHtml} <span style="font-weight: bold;">的运势</span>
             </h2>
-            <span class="lg-punch-result ${resultClass}" style="color:${resultColor};">§ ${fortune.label} §</span>
+            <div style="text-align: center;">
+                <span class="lg-punch-result ${resultClass}" style="color:${resultColor}; font-size: 3.5rem; display: inline-block; margin-bottom: 4px;">§ ${fortune.label} §</span>
+            </div>
             ${contentHtml}
-            <div class="lg-small" style="text-align:center;padding-top:12px;margin-top:4px;">
+            <div class="lg-small" style="text-align:center;padding-top:8px;margin-top:4px;">
                 你已经在 <span class="brand-highlight">✨ Jason227</span> 连续打卡了 <strong>${days}</strong> 天
             </div>
 
+            <!-- 运势管理面板 -->
             ${isAdmin ? `
-            <div id="adminFortuneControl" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e0e0e0;">
-                <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
-                    <label style="font-size:13px; color:#555;">日期：</label>
-                    <input type="date" id="adminFortuneDate" value="${todayStr}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
-                    
-                    <label style="font-size:13px; color:#555;">运势：</label>
-                    <select id="adminFortuneLevel" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
-                        <option value="大吉">大吉</option>
-                        <option value="中吉" selected>中吉</option>
-                        <option value="小吉">小吉</option>
-                        <option value="中平">中平</option>
-                        <option value="凶">凶</option>
-                        <option value="大凶">大凶</option>
-                    </select>
+            <div style="margin-top: 12px; padding-top: 12px">
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                    <button class="fortune-panel-toggle-btn" 
+                            style="background:none; border:none; color:#888; font-size:13px; cursor:pointer; padding:2px 16px; border-radius:20px; transition: background 0.2s, color 0.2s; display:inline-flex; align-items:center; gap:6px;">
+                        <!-- ★★★ 箭头固定为 ▶，通过 rotated 类控制旋转 ★★★ -->
+                        <span class="fortune-panel-arrow ${fortunePanelRotated}" style="font-size:11px; transition: transform 0.25s ease; display:inline-block;">▶</span>
+                        <span class="fortune-panel-text">${fortunePanelBtnText}</span>
+                    </button>
                 </div>
-                <div id="adminGoodContainer" style="margin-bottom:4px;">
-                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
-                        <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
-                        <input type="text" id="adminFortuneGoodName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
-                        <input type="text" id="adminFortuneGoodDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
-                        
-                        <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
-                        <input type="text" id="adminFortuneGoodName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
-                        <input type="text" id="adminFortuneGoodDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                <div class="fortune-panel-content" style="display: ${fortunePanelDisplay};">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
+                        <label style="font-size:13px; color:#555;">日期：</label>
+                        <input type="date" id="adminFortuneDate" value="${todayStr}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                        <label style="font-size:13px; color:#555;">运势：</label>
+                        <select id="adminFortuneLevel" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                            <option value="大吉">大吉</option>
+                            <option value="中吉" selected>中吉</option>
+                            <option value="小吉">小吉</option>
+                            <option value="中平">中平</option>
+                            <option value="凶">凶</option>
+                            <option value="大凶">大凶</option>
+                        </select>
+                    </div>
+                    <div id="adminGoodContainer" style="margin-bottom:4px;">
+                        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
+                            <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
+                            <input type="text" id="adminFortuneGoodName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                            <input type="text" id="adminFortuneGoodDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                            <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
+                            <input type="text" id="adminFortuneGoodName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                            <input type="text" id="adminFortuneGoodDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                        </div>
+                    </div>
+                    <div id="adminBadContainer" style="margin-bottom:8px;">
+                        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
+                            <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
+                            <input type="text" id="adminFortuneBadName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                            <input type="text" id="adminFortuneBadDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                            <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
+                            <input type="text" id="adminFortuneBadName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                            <input type="text" id="adminFortuneBadDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                        </div>
+                    </div>
+                    <div id="adminSpecialTip" style="display:none; font-size:14px; color:#555; margin-bottom:8px; text-align:center;"></div>
+                    <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                        <button id="adminSetFortuneBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">设置全站运势</button>
+                        <span id="adminFortuneStatus" style="font-size:13px; color:#888; align-self:center;"></span>
                     </div>
                 </div>
-                <div id="adminBadContainer" style="margin-bottom:8px;">
-                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
-                        <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
-                        <input type="text" id="adminFortuneBadName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
-                        <input type="text" id="adminFortuneBadDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
-                        
-                        <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
-                        <input type="text" id="adminFortuneBadName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
-                        <input type="text" id="adminFortuneBadDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
-                    </div>
-                </div>
-                <div id="adminSpecialTip" style="display:none; font-size:14px; color:#555; margin-bottom:8px; text-align:center;"></div>
-                <div style="display:flex; justify-content:center;">
-                    <button id="adminSetFortuneBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">设置全站运势</button>
-                </div>
-                <div id="adminFortuneStatus" style="margin-top:6px; font-size:13px; color:#888; text-align:center;"></div>
             </div>
             ` : ''}
         </div>
+    </div>
     `;
 
                 container.innerHTML = html;
-                container.style.cursor = 'default';
 
-                // 动态控制宜/忌显示
-                const levelSelect = document.getElementById('adminFortuneLevel');
-                if (levelSelect) {
-                    const toggleContainers = () => {
-                        const val = levelSelect.value;
-                        const goodContainer = document.getElementById('adminGoodContainer');
-                        const badContainer = document.getElementById('adminBadContainer');
-                        const tip = document.getElementById('adminSpecialTip');
-                        if (val === '大吉') {
-                            if (goodContainer) goodContainer.style.display = 'block';
-                            if (badContainer) badContainer.style.display = 'none';
-                            if (tip) { tip.style.display = 'block'; tip.style.color = '#333'; }
-                        } else if (val === '大凶') {
-                            if (goodContainer) goodContainer.style.display = 'none';
-                            if (badContainer) badContainer.style.display = 'block';
-                            if (tip) { tip.style.display = 'block'; tip.style.color = '#E74C3C'; }
-                        } else {
-                            if (goodContainer) goodContainer.style.display = 'block';
-                            if (badContainer) badContainer.style.display = 'block';
-                            if (tip) tip.style.display = 'none';
+                // ===== 初始化轮播 =====
+                const slider = container.querySelector('#adSlider');
+                if (slider) {
+                    const slides = slider.querySelector('.slides');
+                    const totalSlides = slider.querySelectorAll('.slide').length;
+                    if (totalSlides > 1) {
+                        let currentIndex = 0;
+                        let autoPlayTimer = null;
+
+                        function goToSlide(index) {
+                            if (index < 0) index = totalSlides - 1;
+                            if (index >= totalSlides) index = 0;
+                            currentIndex = index;
+                            if (slides) {
+                                slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+                            }
+                            const dots = slider.querySelectorAll('.slider-dots span');
+                            dots.forEach((dot, i) => {
+                                dot.classList.toggle('active', i === currentIndex);
+                            });
                         }
-                    };
-                    levelSelect.addEventListener('change', toggleContainers);
-                    toggleContainers();
+
+                        function nextSlide() { goToSlide(currentIndex + 1); }
+                        function prevSlide() { goToSlide(currentIndex - 1); }
+
+                        function startAutoPlay() {
+                            if (autoPlayTimer) clearInterval(autoPlayTimer);
+                            autoPlayTimer = setInterval(nextSlide, 4000);
+                        }
+                        function stopAutoPlay() {
+                            if (autoPlayTimer) {
+                                clearInterval(autoPlayTimer);
+                                autoPlayTimer = null;
+                            }
+                        }
+                        function restartAutoPlay() {
+                            stopAutoPlay();
+                            startAutoPlay();
+                        }
+
+                        const prevBtn = slider.querySelector('.slider-prev');
+                        const nextBtn = slider.querySelector('.slider-next');
+                        if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); restartAutoPlay(); });
+                        if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); restartAutoPlay(); });
+
+                        const dots = slider.querySelectorAll('.slider-dots span');
+                        dots.forEach(dot => {
+                            dot.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                const index = parseInt(dot.dataset.index);
+                                goToSlide(index);
+                                restartAutoPlay();
+                            });
+                        });
+
+                        slider.addEventListener('mouseenter', stopAutoPlay);
+                        slider.addEventListener('mouseleave', startAutoPlay);
+
+                        let touchStartX = 0;
+                        slider.addEventListener('touchstart', (e) => {
+                            touchStartX = e.changedTouches[0].screenX;
+                            stopAutoPlay();
+                        });
+                        slider.addEventListener('touchend', (e) => {
+                            const touchEndX = e.changedTouches[0].screenX;
+                            const diff = touchStartX - touchEndX;
+                            if (Math.abs(diff) > 30) {
+                                if (diff > 0) nextSlide();
+                                else prevSlide();
+                            }
+                            startAutoPlay();
+                        });
+
+                        goToSlide(0);
+                        startAutoPlay();
+
+                        if (totalSlides <= 1) {
+                            const nav = slider.querySelector('.slider-nav');
+                            const dots2 = slider.querySelector('.slider-dots');
+                            if (nav) nav.style.display = 'none';
+                            if (dots2) dots2.style.display = 'none';
+                        }
+                    }
                 }
 
+                // ===== ★★★ 绑定广告管理面板折叠事件（使用旋转动画） ★★★ =====
+                const adPanelToggleBtn = container.querySelector('.ad-panel-toggle-btn');
+                const adPanelContent = container.querySelector('.ad-panel-content');
+                if (adPanelToggleBtn && adPanelContent) {
+                    adPanelToggleBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const isHidden = adPanelContent.style.display === 'none';
+                        const arrow = this.querySelector('.ad-panel-arrow');
+                        const text = this.querySelector('.ad-panel-text');
+                        if (isHidden) {
+                            adPanelContent.style.display = 'block';
+                            if (arrow) arrow.classList.add('rotated');
+                            if (text) text.textContent = '收起广告管理';
+                        } else {
+                            adPanelContent.style.display = 'none';
+                            if (arrow) arrow.classList.remove('rotated');
+                            if (text) text.textContent = '展开广告管理';
+                        }
+                    });
+                }
+
+                // ===== ★★★ 绑定运势管理面板折叠事件（使用旋转动画） ★★★ =====
+                const fortunePanelToggleBtn = container.querySelector('.fortune-panel-toggle-btn');
+                const fortunePanelContent = container.querySelector('.fortune-panel-content');
+                if (fortunePanelToggleBtn && fortunePanelContent) {
+                    fortunePanelToggleBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const isHidden = fortunePanelContent.style.display === 'none';
+                        const arrow = this.querySelector('.fortune-panel-arrow');
+                        const text = this.querySelector('.fortune-panel-text');
+                        if (isHidden) {
+                            fortunePanelContent.style.display = 'block';
+                            if (arrow) arrow.classList.add('rotated');
+                            if (text) text.textContent = '收起运势管理';
+                        } else {
+                            fortunePanelContent.style.display = 'none';
+                            if (arrow) arrow.classList.remove('rotated');
+                            if (text) text.textContent = '展开运势管理';
+                        }
+                    });
+                }
+
+                // ===== 绑定“设置全站运势”按钮 =====
                 const setFortuneBtn = document.getElementById('adminSetFortuneBtn');
                 if (setFortuneBtn) {
                     setFortuneBtn.addEventListener('click', async function () {
@@ -2876,7 +3319,7 @@
                                 badName1, badDesc1,
                                 badName2, badDesc2
                             );
-                            statusEl.textContent = '✅ 运势设置成功！页面将刷新...';
+                            statusEl.textContent = '✅ 设置成功！刷新中...';
                             statusEl.style.color = '#2ecc71';
                             setTimeout(() => location.reload(), 1500);
                         } catch (err) {
@@ -2886,6 +3329,337 @@
                         }
                     });
                 }
+
+                // ===== 动态控制宜/忌显示 =====
+                const levelSelect = document.getElementById('adminFortuneLevel');
+                if (levelSelect) {
+                    const toggleContainers = () => {
+                        const val = levelSelect.value;
+                        const goodContainer = document.getElementById('adminGoodContainer');
+                        const badContainer = document.getElementById('adminBadContainer');
+                        const tip = document.getElementById('adminSpecialTip');
+                        if (val === '大吉') {
+                            if (goodContainer) goodContainer.style.display = 'block';
+                            if (badContainer) badContainer.style.display = 'none';
+                            if (tip) { tip.style.display = 'block'; tip.style.color = '#333'; tip.textContent = '💡 大吉：自动忽略"忌"项'; }
+                        } else if (val === '大凶') {
+                            if (goodContainer) goodContainer.style.display = 'none';
+                            if (badContainer) badContainer.style.display = 'block';
+                            if (tip) { tip.style.display = 'block'; tip.style.color = '#E74C3C'; tip.textContent = '⚠️ 大凶：自动忽略"宜"项'; }
+                        } else {
+                            if (goodContainer) goodContainer.style.display = 'block';
+                            if (badContainer) badContainer.style.display = 'block';
+                            if (tip) tip.style.display = 'none';
+                        }
+                    };
+                    levelSelect.addEventListener('change', toggleContainers);
+                    toggleContainers();
+                }
+
+                // ===== 渲染广告列表 =====
+                if (isAdmin) {
+                    await renderAdListForPanel();
+                }
+
+                // ===== 绑定添加广告按钮 =====
+                if (isAdmin) {
+                    const addBtn = document.getElementById('addAdBtn');
+                    if (addBtn) {
+                        addBtn.removeEventListener('click', addBtn._listener);
+                        addBtn._listener = async function () {
+                            const titleInput = document.getElementById('adTitleInput');
+                            const imageInput = document.getElementById('adImageInput');
+                            const linkInput = document.getElementById('adLinkInput');
+                            const title = titleInput.value.trim();
+                            const imageUrl = imageInput.value.trim();
+                            const linkUrl = linkInput.value.trim();
+                            if (!title || !imageUrl || !linkUrl) {
+                                alert('请填写完整信息');
+                                return;
+                            }
+                            try {
+                                await addAd(title, imageUrl, linkUrl);
+                                titleInput.value = '';
+                                imageInput.value = '';
+                                linkInput.value = '';
+                                await renderAdListForPanel();
+                                await renderPunchCard();
+                            } catch (err) {
+                                alert('添加失败：' + err.message);
+                            }
+                        };
+                        addBtn.addEventListener('click', addBtn._listener);
+                    }
+                }
+
+                container.style.cursor = 'default';
+            }
+
+            // ===== 渲染管理面板（运势设置 + 广告管理） =====
+            async function renderAdminPanel(container) {
+                const placeholder = container.querySelector('#adminPanelPlaceholder');
+                if (!placeholder) return;
+
+                const todayStr = getTodayDateStr();
+                const isAdmin = currentProfile && currentProfile.can_manage_posts === true;
+                if (!isAdmin) return;
+
+                // 移除旧的管理面板
+                const oldPanel = document.getElementById('adminPanelContent');
+                if (oldPanel) oldPanel.remove();
+
+                // 获取管理面板折叠状态
+                const panelCollapsedKey = `admin_panel_collapsed_${currentProfile.user_number}`;
+                const isPanelCollapsed = localStorage.getItem(panelCollapsedKey) === 'true';
+
+                const panelHtml = `
+    <div id="adminPanelContent" style="margin-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; padding: 4px 0;" class="admin-panel-toggle">
+            <span style="font-weight: 600; font-size: 14px; color: #333;">⚙️ 管理面板</span>
+            <span style="font-size: 13px; color: #888; display: flex; align-items: center; gap: 4px;">
+                <span class="panel-toggle-text">${isPanelCollapsed ? '展开管理' : '收起管理'}</span>
+                <span class="panel-toggle-icon" style="font-size: 12px; transition: transform 0.25s;">${isPanelCollapsed ? '▶' : '▼'}</span>
+            </span>
+        </div>
+        <div class="panel-collapsible" style="display: ${isPanelCollapsed ? 'none' : 'block'};">
+            <!-- 运势设置 -->
+            <div style="margin-bottom: 16px; border-bottom: 1px solid #eee; padding-bottom: 16px;">
+                <div style="font-weight:600; font-size:14px; color:#333; margin-bottom:8px;">📅 运势设置</div>
+                <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
+                    <label style="font-size:13px; color:#555;">日期：</label>
+                    <input type="date" id="adminFortuneDate" value="${todayStr}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                    <label style="font-size:13px; color:#555;">运势：</label>
+                    <select id="adminFortuneLevel" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                        <option value="大吉">大吉</option>
+                        <option value="中吉" selected>中吉</option>
+                        <option value="小吉">小吉</option>
+                        <option value="中平">中平</option>
+                        <option value="凶">凶</option>
+                        <option value="大凶">大凶</option>
+                    </select>
+                </div>
+                <div id="adminGoodContainer" style="margin-bottom:4px;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
+                        <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
+                        <input type="text" id="adminFortuneGoodName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneGoodDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                        <label style="font-size:13px; color:#555; font-weight:600;">宜：</label>
+                        <input type="text" id="adminFortuneGoodName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneGoodDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                    </div>
+                </div>
+                <div id="adminBadContainer" style="margin-bottom:8px;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;">
+                        <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
+                        <input type="text" id="adminFortuneBadName1" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneBadDesc1" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                        <label style="font-size:13px; color:#555; font-weight:600;">忌：</label>
+                        <input type="text" id="adminFortuneBadName2" placeholder="事项" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:90px;">
+                        <input type="text" id="adminFortuneBadDesc2" placeholder="描述" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; width:140px;">
+                    </div>
+                </div>
+                <div id="adminSpecialTip" style="display:none; font-size:14px; color:#555; margin-bottom:8px; text-align:center;"></div>
+                <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                    <button id="adminSetFortuneBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">设置全站运势</button>
+                    <span id="adminFortuneStatus" style="font-size:13px; color:#888; align-self:center;"></span>
+                </div>
+            </div>
+
+            <!-- 广告管理 -->
+            <div>
+                <div style="font-weight:600; font-size:14px; color:#333; margin-bottom:8px;">📢 广告管理</div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px;">
+                    <input type="text" id="adTitleInput" placeholder="标题" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:1; min-width:80px;">
+                    <input type="text" id="adImageInput" placeholder="图片URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
+                    <input type="text" id="adLinkInput" placeholder="链接URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
+                    <button id="addAdBtn" class="am-btn am-btn-success" style="padding:4px 16px; font-size:13px; border-radius:40px; background:#5eb95e; color:#fff; border:none; cursor:pointer;">添加</button>
+                </div>
+                <div id="adList" style="max-height:200px; overflow-y:auto; background:#f9f9f9; border-radius:8px; padding:8px;">
+                    <!-- 动态渲染 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+                placeholder.insertAdjacentHTML('afterend', panelHtml);
+
+                // ===== 绑定管理面板折叠事件 =====
+                const panelToggle = document.querySelector('.admin-panel-toggle');
+                const panelCollapsible = document.querySelector('.panel-collapsible');
+                if (panelToggle && panelCollapsible) {
+                    panelToggle.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const isHidden = panelCollapsible.style.display === 'none';
+                        const icon = this.querySelector('.panel-toggle-icon');
+                        const text = this.querySelector('.panel-toggle-text');
+                        if (isHidden) {
+                            panelCollapsible.style.display = 'block';
+                            if (icon) icon.textContent = '▼';
+                            if (text) text.textContent = '收起管理';
+                            localStorage.setItem(panelCollapsedKey, 'false');
+                        } else {
+                            panelCollapsible.style.display = 'none';
+                            if (icon) icon.textContent = '▶';
+                            if (text) text.textContent = '展开管理';
+                            localStorage.setItem(panelCollapsedKey, 'true');
+                        }
+                    });
+                }
+
+                // ===== 绑定运势设置按钮 =====
+                const setFortuneBtn = document.getElementById('adminSetFortuneBtn');
+                if (setFortuneBtn) {
+                    setFortuneBtn.addEventListener('click', async function () {
+                        const statusEl = document.getElementById('adminFortuneStatus');
+                        if (!statusEl) return;
+
+                        const dateInput = document.getElementById('adminFortuneDate');
+                        const levelSelect = document.getElementById('adminFortuneLevel');
+
+                        const gName1 = document.getElementById('adminFortuneGoodName1');
+                        const gDesc1 = document.getElementById('adminFortuneGoodDesc1');
+                        const gName2 = document.getElementById('adminFortuneGoodName2');
+                        const gDesc2 = document.getElementById('adminFortuneGoodDesc2');
+                        const bName1 = document.getElementById('adminFortuneBadName1');
+                        const bDesc1 = document.getElementById('adminFortuneBadDesc1');
+                        const bName2 = document.getElementById('adminFortuneBadName2');
+                        const bDesc2 = document.getElementById('adminFortuneBadDesc2');
+
+                        if (!dateInput || !levelSelect) return;
+
+                        const fortuneDate = dateInput.value;
+                        const fortuneLevel = levelSelect.value;
+
+                        if (!fortuneDate) {
+                            statusEl.textContent = '❌ 请选择日期';
+                            statusEl.style.color = '#e74c3c';
+                            return;
+                        }
+
+                        const goodName1 = gName1?.value.trim() || '';
+                        const goodDesc1 = gDesc1?.value.trim() || '';
+                        const goodName2 = gName2?.value.trim() || '';
+                        const goodDesc2 = gDesc2?.value.trim() || '';
+                        const badName1 = bName1?.value.trim() || '';
+                        const badDesc1 = bDesc1?.value.trim() || '';
+                        const badName2 = bName2?.value.trim() || '';
+                        const badDesc2 = bDesc2?.value.trim() || '';
+
+                        statusEl.textContent = '正在设置...';
+                        statusEl.style.color = '#888';
+
+                        try {
+                            await adminSetDailyFortune(
+                                fortuneDate, fortuneLevel,
+                                goodName1, goodDesc1,
+                                goodName2, goodDesc2,
+                                badName1, badDesc1,
+                                badName2, badDesc2
+                            );
+                            statusEl.textContent = '✅ 设置成功！刷新中...';
+                            statusEl.style.color = '#2ecc71';
+                            setTimeout(() => location.reload(), 1500);
+                        } catch (err) {
+                            console.error('[adminSetFortuneBtn] 设置失败:', err);
+                            statusEl.textContent = '❌ 设置失败：' + err.message;
+                            statusEl.style.color = '#e74c3c';
+                        }
+                    });
+                }
+
+                // ===== 动态控制宜/忌显示 =====
+                const levelSelect = document.getElementById('adminFortuneLevel');
+                if (levelSelect) {
+                    const toggleContainers = () => {
+                        const val = levelSelect.value;
+                        const goodContainer = document.getElementById('adminGoodContainer');
+                        const badContainer = document.getElementById('adminBadContainer');
+                        const tip = document.getElementById('adminSpecialTip');
+                        if (val === '大吉') {
+                            if (goodContainer) goodContainer.style.display = 'block';
+                            if (badContainer) badContainer.style.display = 'none';
+                            if (tip) { tip.style.display = 'block'; tip.style.color = '#333'; tip.textContent = '💡 大吉：自动忽略"忌"项'; }
+                        } else if (val === '大凶') {
+                            if (goodContainer) goodContainer.style.display = 'none';
+                            if (badContainer) badContainer.style.display = 'block';
+                            if (tip) { tip.style.display = 'block'; tip.style.color = '#E74C3C'; tip.textContent = '⚠️ 大凶：自动忽略"宜"项'; }
+                        } else {
+                            if (goodContainer) goodContainer.style.display = 'block';
+                            if (badContainer) badContainer.style.display = 'block';
+                            if (tip) tip.style.display = 'none';
+                        }
+                    };
+                    levelSelect.addEventListener('change', toggleContainers);
+                    toggleContainers();
+                }
+
+                // ===== 渲染广告列表 =====
+                await renderAdListForPanel();
+
+                // ===== 绑定添加广告按钮 =====
+                const addBtn = document.getElementById('addAdBtn');
+                if (addBtn) {
+                    addBtn.removeEventListener('click', addBtn._listener);
+                    addBtn._listener = async function () {
+                        const titleInput = document.getElementById('adTitleInput');
+                        const imageInput = document.getElementById('adImageInput');
+                        const linkInput = document.getElementById('adLinkInput');
+                        const title = titleInput.value.trim();
+                        const imageUrl = imageInput.value.trim();
+                        const linkUrl = linkInput.value.trim();
+                        if (!title || !imageUrl || !linkUrl) {
+                            alert('请填写完整信息');
+                            return;
+                        }
+                        try {
+                            await addAd(title, imageUrl, linkUrl);
+                            titleInput.value = '';
+                            imageInput.value = '';
+                            linkInput.value = '';
+                            await renderAdListForPanel();
+                            await renderPunchCard();
+                        } catch (err) {
+                            alert('添加失败：' + err.message);
+                        }
+                    };
+                    addBtn.addEventListener('click', addBtn._listener);
+                }
+            }
+
+            // ===== 渲染广告列表（用于管理面板） =====
+            async function renderAdListForPanel() {
+                const listContainer = document.getElementById('adList');
+                if (!listContainer) return;
+                const ads = await fetchAds();
+                if (!ads.length) {
+                    listContainer.innerHTML = '<div style="color:#999; font-size:13px; text-align:center;">没有更多广告了</div>';
+                    return;
+                }
+                let html = '';
+                ads.forEach(ad => {
+                    html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #eee;">
+                <span style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px;">${escapeHtml(ad.title)}</span>
+                <button class="delete-ad-btn-panel" data-id="${ad.id}" style="background:#e74c3c; color:#fff; border:none; border-radius:40px; padding:4px 16px; font-size:13px; cursor:pointer; transition: background 0.2s;">删除</button>
+            </div>
+        `;
+                });
+                listContainer.innerHTML = html;
+
+                listContainer.querySelectorAll('.delete-ad-btn-panel').forEach(btn => {
+                    btn.addEventListener('click', async function () {
+                        const id = parseInt(this.dataset.id);
+                        if (!confirm('确定要删除该广告吗？')) return;
+                        try {
+                            await deleteAd(id);
+                            await renderAdListForPanel();
+                            await renderPunchCard();
+                        } catch (err) {
+                            alert('删除失败：' + err.message);
+                        }
+                    });
+                });
             }
 
             // 系统默认头像（首字母 SVG，任意尺寸清晰缩放）
@@ -4253,6 +5027,45 @@
                         cancel();
                     }
                 });
+            }
+
+            // ===== 广告管理 API =====
+            async function fetchAds() {
+                try {
+                    const { data, error } = await supabase
+                        .from('ads')
+                        .select('*')
+                        .eq('enabled', true)
+                        .order('sort_order', { ascending: true });
+                    if (error) throw error;
+                    return data || [];
+                } catch (err) {
+                    console.error('获取广告失败:', err);
+                    return [];
+                }
+            }
+
+            async function addAd(title, imageUrl, linkUrl, sortOrder = 0) {
+                if (!currentProfile || !currentProfile.can_manage_posts) {
+                    throw new Error('无权限');
+                }
+                const { data, error } = await supabase
+                    .from('ads')
+                    .insert([{ title, image_url: imageUrl, link_url: linkUrl, sort_order: sortOrder }])
+                    .select();
+                if (error) throw error;
+                return data[0];
+            }
+
+            async function deleteAd(id) {
+                if (!currentProfile || !currentProfile.can_manage_posts) {
+                    throw new Error('无权限');
+                }
+                const { error } = await supabase
+                    .from('ads')
+                    .delete()
+                    .eq('id', id);
+                if (error) throw error;
             }
 
             async function updateUI() {
