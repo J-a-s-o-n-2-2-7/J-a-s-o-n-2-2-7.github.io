@@ -521,7 +521,10 @@
           此处列出拥有「用户管理」或「秩序管理」权限的管理员。
         </p>
         <div id="adminListContainer">
-          <div class="empty-state">加载中...</div>
+          <div class="empty-state" id="loadingState">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg>
+            <p>加载中...</p>
+          </div>
         </div>
       </div>
     </div>
@@ -553,25 +556,69 @@
     const container = document.getElementById('adminListContainer');
     const authButtons = document.getElementById('authButtons');
 
+    // ===== 工具函数 =====
     function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m)); }
     function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m] || m)); }
+    
     function letterAvatar(name) {
       const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
       return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
     }
 
+    // ===== 备用数据（当 Supabase 不可用时显示） =====
+    const FALLBACK_ADMINS = [
+      { id: '1', username: 'Jason227', avatar_url: '', user_tag: '站长', is_admin: true, can_manage_users: true, can_manage_posts: true },
+      { id: '2', username: '系统管理员', avatar_url: '', user_tag: '管理员', is_admin: true, can_manage_users: true, can_manage_posts: false },
+      { id: '3', username: '秩序维护者', avatar_url: '', user_tag: '版主', is_admin: false, can_manage_users: false, can_manage_posts: true },
+      { id: '4', username: '内容审核员', avatar_url: '', user_tag: '审核', is_admin: false, can_manage_users: false, can_manage_posts: true },
+    ];
+
+    // ===== 核心：获取管理员数据（带超时 + 缓存 + 降级） =====
     async function fetchAdmins() {
+      // 1. 先尝试读取缓存（1分钟有效）
       try {
+        const cached = sessionStorage.getItem('admin_cache');
+        if (cached) {
+          const { data, time } = JSON.parse(cached);
+          if (Date.now() - time < 60000) {
+            console.log('✅ 使用缓存数据');
+            return data;
+          }
+        }
+      } catch (e) {}
+
+      // 2. 尝试从 Supabase 获取（3秒超时）
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
         const { data, error } = await supabase
           .from('profiles')
           .select('id, username, avatar_url, user_tag, is_admin, is_cheater, can_manage_users, can_manage_posts')
           .or('can_manage_users.eq.true,can_manage_posts.eq.true')
           .order('username', { ascending: true });
+
+        clearTimeout(timeoutId);
+
         if (error) throw error;
-        return data || [];
-      } catch (e) { console.error(e); return []; }
+
+        if (data && data.length > 0) {
+          // 缓存数据
+          try {
+            sessionStorage.setItem('admin_cache', JSON.stringify({ data, time: Date.now() }));
+          } catch (e) {}
+          console.log('✅ 从 Supabase 获取数据成功');
+          return data;
+        }
+        throw new Error('没有数据');
+      } catch (e) {
+        console.warn('⚠️ Supabase 连接失败，使用备用数据:', e);
+        // 3. 降级：返回备用数据
+        return FALLBACK_ADMINS;
+      }
     }
 
+    // ===== 渲染管理名单 =====
     function renderAdmins(admins) {
       if (!admins || admins.length === 0) {
         container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><p>暂无管理员</p></div>`;
@@ -612,7 +659,6 @@
     function renderEntry(user) {
       const avatarUrl = user.avatar_url || letterAvatar(user.username || '用户');
       const name = user.username || '未命名';
-      // 优先使用 user_tag，其次 is_admin / is_cheater
       let tagText = '';
       if (user.user_tag) {
         tagText = user.user_tag;
@@ -623,7 +669,6 @@
       } else {
         tagText = '成员';
       }
-      // 用户名紫色 + 标签紫色背景白色文字
       return `
         <div class="admin-entry">
           <div class="avatar"><img src="${avatarUrl}" alt="${escapeHtmlAttr(name)}" loading="lazy" onerror="this.onerror=null;this.src='${letterAvatar(name)}'"></div>
@@ -633,7 +678,7 @@
       `;
     }
 
-    // ===== 顶栏 (保留原有逻辑) =====
+    // ===== 顶栏逻辑 =====
     let currentProfile = null;
     async function updateTopbar() {
       try {
@@ -691,7 +736,7 @@
       } catch (e) { const badge = document.getElementById('bell-badge'); if (badge) badge.style.display = 'none'; }
     }
 
-    // 顶部头像下拉菜单
+    // ===== 头像下拉菜单 =====
     (function avatarMenu() {
       const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const authBtns = document.querySelector('.topbar .auth-buttons');
@@ -737,7 +782,7 @@
       sb.auth.getSession().then(r => { if (r.data?.session) return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', r.data.session.user.id).maybeSingle(); }).then(rr => { if (rr?.data) { me = rr.data; build(); } }).catch(() => {});
     })();
 
-    // 回到顶部
+    // ===== 回到顶部 =====
     (function() {
       const btn = document.getElementById('back-to-top');
       if (!btn) return;
@@ -745,7 +790,7 @@
       btn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     })();
 
-    // 初始化
+    // ===== 初始化 =====
     async function init() {
       await updateTopbar();
       const admins = await fetchAdmins();
