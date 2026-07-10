@@ -966,8 +966,25 @@
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            const params = new URLSearchParams(window.location.search);
-            const userNumber = params.get('id');
+            // 1. 优先从路径中提取（例如 /user/1）
+            let userNumber = null;
+            const pathMatch = window.location.pathname.match(/^\/user\/(\d+)/);
+            if (pathMatch) {
+                userNumber = pathMatch[1];
+            }
+
+            // 2. 如果路径中没有，再从查询参数中获取（兼容旧链接）
+            if (!userNumber) {
+                const params = new URLSearchParams(window.location.search);
+                userNumber = params.get('id');
+            }
+
+            // 3. 如果都没有，显示错误
+            if (!userNumber) {
+                document.getElementById('loadingPlaceholder').textContent = '❌ 无效的用户编号，请使用 /user/数字 或 ?id=数字 访问';
+                return;
+            }
+            
             const loadingEl = document.getElementById('loadingPlaceholder');
             const profileContainer = document.getElementById('userProfile');
 
