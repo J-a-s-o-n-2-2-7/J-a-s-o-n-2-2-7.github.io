@@ -351,6 +351,15 @@
       color: #8E44AD;
       flex-shrink: 0;
     }
+    .admin-entry .name a {
+      color: #8E44AD;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .admin-entry .name a:hover {
+      color: #6C3483;
+      text-decoration: underline;
+    }
     .admin-entry .tag {
       display: inline-block;
       font-size: 11px;
@@ -503,9 +512,9 @@
 
   // 备用数据
   const FALLBACK_ADMINS = [
-    { id: '1', username: 'Jason227', avatar_url: '', user_tag: '站长', is_admin: true, can_manage_users: true, can_manage_posts: true },
-    { id: '2', username: '系统管理员', avatar_url: '', user_tag: '管理员', is_admin: true, can_manage_users: true, can_manage_posts: false },
-    { id: '3', username: '秩序维护者', avatar_url: '', user_tag: '版主', is_admin: false, can_manage_users: false, can_manage_posts: true },
+    { id: '1', username: 'Jason227', avatar_url: '', user_tag: '站长', user_number: '1', is_admin: true, can_manage_users: true, can_manage_posts: true },
+    { id: '2', username: '系统管理员', avatar_url: '', user_tag: '管理员', user_number: '2', is_admin: true, can_manage_users: true, can_manage_posts: false },
+    { id: '3', username: '秩序维护者', avatar_url: '', user_tag: '版主', user_number: '3', is_admin: false, can_manage_users: false, can_manage_posts: true },
   ];
 
   function letterAvatar(name) {
@@ -530,7 +539,7 @@
       console.log('🌐 尝试从 Supabase 获取数据...');
       const { data, error, status, statusText } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url, user_tag, is_admin, can_manage_users, can_manage_posts')
+        .select('id, username, avatar_url, user_tag, user_number, is_admin, can_manage_users, can_manage_posts')
         .or('can_manage_users.eq.true,can_manage_posts.eq.true')
         .order('username', { ascending: true });
 
@@ -603,10 +612,16 @@
     } else {
       tagText = '成员';
     }
+
+    // 用户名链接到个人中心
+    const nameHtml = user.user_number
+      ? `<a href="/user/${user.user_number}" style="color:inherit;text-decoration:none;font-weight:600;">${escapeHtml(name)}</a>`
+      : `<span style="font-weight:600;">${escapeHtml(name)}</span>`;
+
     return `
       <div class="admin-entry">
         <div class="avatar"><img src="${avatarUrl}" alt="${escapeHtmlAttr(name)}" loading="lazy" onerror="this.onerror=null;this.src='${letterAvatar(name)}'"></div>
-        <span class="name">${escapeHtml(name)}</span>
+        <span class="name">${nameHtml}</span>
         <span class="tag">${escapeHtml(tagText)}</span>
       </div>
     `;
