@@ -1271,7 +1271,7 @@
             // ---------- 权限检查 ----------
             function canModifyUser(targetUser) {
                 if (!currentProfile) return false;
-                if (currentProfile.user_number === 1 && currentProfile.is_super_admin) return true;
+                if ((currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) return true;
                 if (targetUser.user_number === currentProfile.user_number) return false;
                 if (targetUser.is_super_admin) return false;
                 if (currentProfile.can_manage_users || currentProfile.is_super_admin) return true;
@@ -1435,7 +1435,7 @@
                 const allowedFields = ['is_super_admin', 'is_admin', 'can_manage_users', 'can_manage_posts'];
                 if (!allowedFields.includes(field)) return;
 
-                if (field === 'is_super_admin' && !(currentProfile.user_number === 1 && currentProfile.is_super_admin)) return;
+                if (field === 'is_super_admin' && !(currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) return;
 
                 const currentValue = targetUser[field] || false;
                 const newValue = !currentValue;
@@ -1509,7 +1509,7 @@
                     { key: 'can_manage_posts', label: '秩序管理', value: targetUser.can_manage_posts || false },
                 ];
 
-                if (currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin) {
+                if (currentProfile && (currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) {
                     permissions.push({ key: 'is_super_admin', label: '超级管理', value: targetUser.is_super_admin || false });
                 }
 
@@ -1822,7 +1822,7 @@
                     if (currentProfile) {
                         const adminOnlyBtns = ['batchGrantAdmin', 'batchRevokeAdmin', 'batchGrantUserMgmt', 'batchRevokeUserMgmt', 'batchGrantPostMgmt', 'batchRevokePostMgmt', 'batchGrantSuperAdmin', 'batchRevokeSuperAdmin'];
                         const isSuper = currentProfile.is_super_admin === true;
-                        const isNumberOne = currentProfile.user_number === 1 && currentProfile.is_super_admin;
+                        const isNumberOne = (currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin;
                         adminOnlyBtns.forEach(id => {
                             const btn = document.getElementById(id);
                             if (btn) {
@@ -2066,7 +2066,7 @@
 
                     // ---- 管理权限 ----
                     const mgmtPerms = [];
-                    if (currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin) {
+                    if (currentProfile && (currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) {
                         mgmtPerms.push({ name: '超级管理', field: 'is_super_admin', on: !!user.is_super_admin });
                     }
                     mgmtPerms.push(
@@ -2399,11 +2399,11 @@
             document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限', { can_speak: false }));
 
             document.getElementById('batchGrantSuperAdmin').addEventListener('click', async () => {
-                if (!currentProfile || currentProfile.user_number !== 1 || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (currentProfile.user_number !== 1 && currentProfile.user_number !== 4) || !currentProfile.is_super_admin) return;
                 await batchAction('批量授予超级管理权限', { is_super_admin: true });
             });
             document.getElementById('batchRevokeSuperAdmin').addEventListener('click', async () => {
-                if (!currentProfile || currentProfile.user_number !== 1 || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (currentProfile.user_number !== 1 && currentProfile.user_number !== 4) || !currentProfile.is_super_admin) return;
                 await batchAction('批量撤销超级管理权限', { is_super_admin: false });
             });
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
