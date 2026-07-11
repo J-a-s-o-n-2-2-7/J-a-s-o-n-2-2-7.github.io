@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -771,6 +772,7 @@
                                 </svg></span><span class="nav-text">文章广场</span></a></li>
                 </ul>
             </div>
+            <!-- 更多功能等省略，与用户现有代码一致 -->
         </div>
 
         <!-- ===== 内容区域 ===== -->
@@ -790,7 +792,7 @@
 
                 <!-- ===== 底部卡片：设置内容 ===== -->
                 <div class="card card-bottom">
-                    <!-- 头像行 -->
+                    <!-- 头像行（原样保留，不变） -->
                     <div class="form-row">
                         <span class="form-label">头像</span>
                         <div class="form-right">
@@ -949,7 +951,7 @@
             });
 
             // ==============================================================
-            // 3. 顶部栏 & 侧边栏逻辑 —— 修复用户名显示
+            // 3. 顶部栏 & 侧边栏逻辑
             // ==============================================================
             const authButtons = document.getElementById('authButtons');
 
@@ -1002,108 +1004,51 @@
                 }, 30000);
             }
 
-            // ----- 修复：可靠地获取并显示用户名 -----
-            async function renderUserInfo(user) {
-                // 优先使用传入的 user，否则从 session 获取
-                let sessionUser = user;
-                if (!sessionUser) {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) {
-                        authButtons.innerHTML = '<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>';
-                        return;
-                    }
-                    sessionUser = session.user;
-                }
+            async function updateUI() {
+                try {
+                    var { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        currentUser = session.user;
+                        currentProfile = await getProfile(session.user.id);
+                        if (currentProfile) {
+                            var { data: banData, error: banErr } = await supabase
+                                .from('profiles')
+                                .select('is_banned')
+                                .eq('id', session.user.id)
+                                .single();
+                            if (!banErr && banData && banData.is_banned === true) {
+                                await supabase.auth.signOut();
+                                location.reload();
+                                return;
+                            }
+                        }
 
-                // 获取 profile
-                let profile = await getProfile(sessionUser.id);
-                if (!profile) {
-                    // 若 profile 不存在，仅显示邮箱
-                    const email = sessionUser.email || '用户';
-                    authButtons.innerHTML = `
-                        <span class="user-email">${escapeHtmlAttr(email)}</span>
-                        <a href="/user/notification" class="bell-icon" style="color:#666;">...<sup id="bell-badge" style="display:none;">0</sup></a>
-                        <button id="logoutBtn" class="auth-btn logout">登出</button>
-                    `;
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', async function () {
+                        var displayName = currentProfile?.username || session.user.email || '用户';
+                        var html = '';
+                        if (currentProfile?.user_number) {
+                            html += '<a href="/user/' + currentProfile.user_number + '" class="user-email">' +
+                                escapeHtmlAttr(displayName) + '</a>';
+                        } else {
+                            html += '<span class="user-email">' + escapeHtmlAttr(displayName) + '</span>';
+                        }
+                        html +=
+                            '<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>';
+                        html += '<button id="logoutBtn" class="auth-btn logout">登出</button>';
+                        authButtons.innerHTML = html;
+                        document.getElementById('logoutBtn')?.addEventListener('click', async function () {
                             await supabase.auth.signOut();
                             location.reload();
                         });
-                    }
-                    return;
-                }
 
-                // 保存到全局
-                currentUser = sessionUser;
-                currentProfile = profile;
+                        await loadAvatarData();
+                        await fetchUnreadCount();
+                        startUnreadPolling();
 
-                // 展示名称：优先 username，其次邮箱，最后 '用户'
-                const displayName = profile.username || sessionUser.email || '用户';
-                const userNumber = profile.user_number || '';
-
-                let html = '';
-                if (userNumber) {
-                    html += `<a href="/user/${userNumber}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
-                } else {
-                    html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
-                }
-
-                // 通知铃铛 + 登出按钮
-                html += `
-                    <a href="/user/notification" class="bell-icon" style="color:#666;">
-                        <svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20">
-                            <path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path>
-                        </svg>
-                        <sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup>
-                    </a>
-                    <button id="logoutBtn" class="auth-btn logout">登出</button>
-                `;
-
-                authButtons.innerHTML = html;
-
-                // 登出事件
-                document.getElementById('logoutBtn')?.addEventListener('click', async function () {
-                    await supabase.auth.signOut();
-                    location.reload();
-                });
-
-                // 头像加载
-                if (profile.avatar_url) {
-                    avatarImg.src = profile.avatar_url;
-                } else {
-                    avatarImg.src = 'https://placehold.co/120';
-                }
-
-                // 未读通知
-                await fetchUnreadCount();
-                startUnreadPolling();
-
-                // 渲染洛谷绑定
-                renderLuoguBind();
-            }
-
-            // ----- 启动：检测登录状态 -----
-            async function initApp() {
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        // 先检查是否被封禁
-                        const { data: banData, error: banErr } = await supabase
-                            .from('profiles')
-                            .select('is_banned')
-                            .eq('id', session.user.id)
-                            .single();
-                        if (!banErr && banData && banData.is_banned === true) {
-                            await supabase.auth.signOut();
-                            location.reload();
-                            return;
-                        }
-                        await renderUserInfo(session.user);
+                        // 渲染洛谷绑定状态
+                        renderLuoguBind();
                     } else {
-                        // 未登录跳转
                         window.location.href = '/login';
+                        return;
                     }
                 } catch (err) {
                     console.error(err);
@@ -1113,7 +1058,7 @@
             }
 
             // ==============================================================
-            // 4. 洛谷绑定（保持不变）
+            // 4. 洛谷绑定（只输入 UID，从个人签名提取）
             // ==============================================================
             const luoguBindCard = document.getElementById('luoguBindCard');
             const luoguBindStatus = document.getElementById('luoguBindStatus');
@@ -1126,6 +1071,7 @@
             const luoguBindMsg = document.getElementById('luoguBindMsg');
 
             function getLuoguBindInfo() {
+                // 优先从 localStorage 读取缓存
                 const cached = localStorage.getItem('luogu_bind_status');
                 if (cached) {
                     try {
@@ -1186,6 +1132,7 @@
                 }
             }
 
+            // 开始绑定流程（生成挑战码）
             async function startBindProcess() {
                 if (luoguBindState.isGenerating) return;
                 luoguBindState.isGenerating = true;
@@ -1226,6 +1173,7 @@
                 }
             }
 
+            // 复制挑战码
             copyChallengeBtn.addEventListener('click', function () {
                 const code = challengeCodeDisplay.textContent;
                 if (code && code !== '等待生成') {
@@ -1256,8 +1204,10 @@
                 }
             });
 
+            // 验证绑定（只传 UID）
             verifyBindBtn.addEventListener('click', async function () {
                 const uid = luoguUidInput.value.trim();
+
                 if (!uid) {
                     showLuoguMsg('请输入洛谷 UID', 'error');
                     return;
@@ -1282,13 +1232,16 @@
                             'Authorization': 'Bearer ' + token,
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ luogu_uid: uid })
+                        body: JSON.stringify({
+                            luogu_uid: uid
+                        })
                     }
                     );
                     const data = await res.json();
                     if (!res.ok) {
                         throw new Error(data.error || '验证失败');
                     }
+                    // 更新 currentProfile
                     if (data.profile) {
                         currentProfile = { ...currentProfile, ...data.profile };
                     } else {
@@ -1312,6 +1265,7 @@
                 }
             });
 
+            // 取消绑定
             cancelBindBtn.addEventListener('click', function () {
                 luoguBindDetail.classList.remove('active');
                 luoguBindMsg.className = 'bind-msg';
@@ -1322,7 +1276,7 @@
             });
 
             // ==============================================================
-            // 5. 事件委托（洛谷动态按钮）
+            // 5. 事件委托（处理动态按钮）
             // ==============================================================
             const statusContainer = document.getElementById('luoguBindStatus');
             if (statusContainer) {
@@ -1364,9 +1318,9 @@
             }
 
             // ==============================================================
-            // 7. 启动应用
+            // 7. 启动
             // ==============================================================
-            initApp();
+            updateUI();
 
             document.addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'visible' && currentProfile) {
