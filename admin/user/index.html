@@ -1196,14 +1196,14 @@
                     if (!session) { window.location.href = '/login'; return false; }
                     const { data: profile, error } = await supabase
                         .from('profiles')
-                        .select('can_manage_users, user_number, is_super_admin')
+                        .select('can_manage_users, user_number, is_super_admin, is_admin')
                         .eq('id', session.user.id)
                         .single();
                     if (error || !profile) {
                         window.location.href = '/';
                         return false;
                     }
-                    if (profile.is_super_admin === true || profile.can_manage_users === true || profile.user_number === 4) {
+                    if (profile.is_super_admin === true || profile.is_admin === true || profile.user_number === 4) {
                         return true;
                     } else {
                         window.location.href = '/';
@@ -1430,12 +1430,12 @@
                 const targetUser = allUsers.find(u => u.user_number === userNumber);
                 if (!targetUser) return;
                 if (!canModifyUser(targetUser)) return;
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
 
                 const allowedFields = ['is_super_admin', 'is_admin', 'can_manage_users', 'can_manage_posts'];
                 if (!allowedFields.includes(field)) return;
 
-                if (field === 'is_super_admin' && !(currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) return;
+                if (field === 'is_super_admin' && (!((currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin))) return;
 
                 const currentValue = targetUser[field] || false;
                 const newValue = !currentValue;
@@ -1498,7 +1498,7 @@
                 const targetUser = allUsers.find(u => u.user_number === userNumber);
                 if (!targetUser) return;
                 if (!canModifyUser(targetUser)) return;
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
 
                 const permissions = [
                     { key: 'is_banned', label: '进入主站', value: targetUser.is_banned || false },
@@ -2407,27 +2407,27 @@
                 await batchAction('批量撤销超级管理权限', { is_super_admin: false });
             });
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予进入后台权限', { is_admin: true });
             });
             document.getElementById('batchRevokeAdmin').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销进入后台权限', { is_admin: false });
             });
             document.getElementById('batchGrantUserMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予用户管理权限', { can_manage_users: true });
             });
             document.getElementById('batchRevokeUserMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销用户管理权限', { can_manage_users: false });
             });
             document.getElementById('batchGrantPostMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予秩序管理权限', { can_manage_posts: true });
             });
             document.getElementById('batchRevokePostMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销秩序管理权限', { can_manage_posts: false });
             });
 
