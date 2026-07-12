@@ -4,37 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>管理名单 · Jason227</title>
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2">
-  </script>
-  <!-- 保留扩展库 (不影响核心) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
-  </script>
-
   <style>
     /* ===== 全局重置 & 基础 ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #f5f7fa;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -42,7 +14,7 @@
       color: #1d1d1f;
     }
 
-    /* ===== 顶栏 (仿洛谷简洁) ===== */
+    /* ===== 顶栏 ===== */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -63,6 +35,8 @@
       cursor: pointer;
       letter-spacing: -0.5px;
     }
+
+    /* 顶栏按钮样式 */
     .auth-buttons {
       display: flex;
       align-items: center;
@@ -98,7 +72,7 @@
       display: inline-flex;
       align-items: center;
       text-decoration: none;
-      color: #555;
+      color: #666;
       transition: color 0.2s;
     }
     .bell-icon:hover { color: #e74c3c; }
@@ -157,6 +131,8 @@
       overflow: hidden;
       flex-shrink: 0;
       border: 1px solid #e9ecef;
+      margin-left: 8px;
+      cursor: pointer;
     }
     #topAvatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
@@ -167,11 +143,56 @@
       line-height: 1;
       text-decoration: none;
       cursor: pointer;
-      color: #555;
+      color: #666;
       transition: color 0.2s;
-      margin-right: 2px;
+      margin-right: 8px;
     }
     #adminEntry:hover { color: #e74c3c; }
+
+    /* 头像菜单样式 */
+    .avatar-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      min-width: 120px;
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+      padding: 6px;
+      display: none;
+      z-index: 300;
+    }
+    .avatar-menu a {
+      display: block;
+      padding: 8px 12px;
+      color: #2c3e50;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+    .avatar-menu a:hover {
+      background: #f0f2f5;
+      color: #e74c3c;
+    }
+    .avatar-menu .divider-line {
+      height: 1px;
+      background: #ecf0f1;
+      margin: 6px 0;
+    }
+    .avatar-wrap:hover .avatar-menu {
+      display: block;
+    }
+
+    /* ===== 主布局 ===== */
+    .main-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px 20px 20px;
+      min-height: 100vh;
+    }
 
     /* ===== 侧边栏 ===== */
     .nav-sidebar {
@@ -238,22 +259,11 @@
       font-weight: 500;
     }
 
-    /* ===== 主布局 ===== */
-    .main-layout {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 20px 20px 20px;
-      min-height: 100vh;
-    }
+    /* 内容区域布局 */
     .content-wrapper {
       margin-left: 64px;
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
       padding-top: 20px;
     }
-    .main-content { flex: 2; min-width: 260px; }
-    .right-sidebar { width: 280px; align-self: start; }
 
     .card {
       background: #ffffff;
@@ -272,17 +282,11 @@
       color: #1d1d1f;
     }
 
-    /* ===== 管理名单 — 两列布局 ===== */
+    /* ===== 管理名单 - 两列布局 ===== */
     .admin-two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
-    }
-    @media (max-width: 720px) {
-      .admin-two-col {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
     }
 
     .admin-col {
@@ -314,7 +318,7 @@
       gap: 8px;
     }
 
-    /* 单个管理员条目 — 头像 + 用户名(紫色) + tag(紫色背景) */
+    /* 单个管理员条目 */
     .admin-entry {
       display: flex;
       align-items: center;
@@ -322,7 +326,6 @@
       padding: 6px 8px;
       border-radius: 8px;
       transition: background 0.15s;
-      cursor: default;
     }
     .admin-entry:hover {
       background: #f0f2f5;
@@ -342,14 +345,21 @@
       object-fit: cover;
       display: block;
     }
-    /* 用户名统一紫色 */
     .admin-entry .name {
       font-weight: 600;
       font-size: 14px;
       color: #8E44AD;
       flex-shrink: 0;
     }
-    /* tag 统一紫色背景 + 白色文字 */
+    .admin-entry .name a {
+      color: #8E44AD;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .admin-entry .name a:hover {
+      color: #6C3483;
+      text-decoration: underline;
+    }
     .admin-entry .tag {
       display: inline-block;
       font-size: 11px;
@@ -371,11 +381,6 @@
       color: #bbb;
       font-size: 15px;
     }
-    .empty-state svg { width: 48px; height: 48px; fill: #ddd; margin-bottom: 12px; }
-
-    /* ===== 右侧边栏 ===== */
-    .right-sidebar .card .card-header { font-size: 1.1rem; }
-    .right-sidebar .info-text { font-size: 14px; color: #444; line-height: 1.7; }
 
     /* ===== 响应式 ===== */
     @media (max-width: 900px) {
@@ -402,7 +407,6 @@
       .nav-sidebar:hover { width: 100%; }
       .nav-text { opacity: 1; }
       .content-wrapper { margin-left: 0; padding-top: 0; }
-      .right-sidebar { width: 100%; }
       .nav-item, .group-title { border-radius: 6px; margin: 1px 4px; }
       .group-title { grid-column: 1 / -1; background: #f5f7fa; border-radius: 6px; }
       .divider { display: none; }
@@ -414,58 +418,26 @@
       .card { padding: 14px 16px; }
       .admin-two-col { grid-template-columns: 1fr; gap: 12px; }
       .admin-col { padding: 12px 12px 10px; }
-      .auth-buttons .auth-btn { padding: 4px 12px; font-size: 12px; }
-      .user-email { font-size: 12px; }
       .nav-sidebar { grid-template-columns: 1fr 1fr; gap: 2px; padding: 6px; }
       .nav-item, .group-title { padding: 6px 10px; font-size: 12px; }
       .nav-icon { font-size: 14px; width: 18px; }
-      #topAvatar { width: 28px; height: 28px; }
       .admin-entry .avatar { width: 32px; height: 32px; }
       .admin-entry .name { font-size: 13px; }
       .admin-entry .tag { font-size: 10px; padding: 0 8px; height: 20px; line-height: 20px; }
     }
-
-    footer {
-      text-align: center;
-      padding: 24px;
-      color: #7f8c8d;
-      font-size: 13px;
-    }
-    a { text-decoration: none; color: #e74c3c; }
-    a:hover { text-decoration: underline; }
-
-    #back-to-top {
-      display: none;
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-      z-index: 999;
-      transition: opacity 0.3s, transform 0.2s;
-    }
-    #back-to-top:hover { background: #c0392b; transform: scale(1.08); }
-    @media (max-width: 600px) { #back-to-top { width: 40px; height: 40px; font-size: 18px; bottom: 20px; right: 20px; } }
   </style>
 </head>
 <body>
 
-<!-- ===== 顶栏 ===== -->
+<!-- 顶栏 -->
 <div class="topbar">
-  <a href="/" class="logo" style="text-decoration: none;">✨ Jason227</a>
+  <a href="/" class="logo" style="text-decoration: none; color: #e74c3c;">✨ Jason227</a>
   <div class="auth-buttons" id="authButtons">
     <span style="font-size:14px; color:#aaa;">加载中...</span>
   </div>
 </div>
 
-<!-- ===== 主布局 ===== -->
+<!-- 主内容 -->
 <div class="main-layout">
   <!-- 侧边栏 -->
   <div class="nav-sidebar">
@@ -473,7 +445,7 @@
       <ul>
         <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20" height="20" fill="currentColor"><path d="M240 6.1c9.1-8.2 22.9-8.2 32 0l232 208c9.9 8.8 10.7 24 1.8 33.9s-24 10.7-33.9 1.8l-8-7.2 0 205.3c0 35.3-28.7 64-64 64l-288 0c-35.3 0-64-28.7-64-64l0-205.3-8 7.2c-9.9 8.8-25 8-33.9-1.8s-8-25 1.8-33.9L240 6.1zm16 50.1L96 199.7 96 448c0 8.8 7.2 16 16 16l48 0 0-104c0-39.8 32.2-72 72-72l48 0c39.8 0 72 32.2 72 72l0 104 48 0c8.8 0 16-7.2 16-16l0-248.3-160-143.4zM208 464l96 0 0-104c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24l0 104z"/></svg></span><span class="nav-text">主页</span></a></li>
         <li><a class="nav-item" href="/problems"><span class="nav-icon"><svg viewBox="0 0 448 512" width="20" height="20" fill="currentColor"><path d="M88 0C39.4 0 0 39.4 0 88L0 432c0 44.2 35.8 80 80 80l344 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-8 0 0-76.1C435.3 375 448 353 448 328l0-256c0-39.8-32.2-72-72-72L88 0zM368 400l0 64-288 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l288 0zM80 352c-11.4 0-22.2 2.4-32 6.7L48 88c0-22.1 17.9-40 40-40l288 0c13.3 0 24 10.7 24 24l0 256c0 13.3-10.7 24-24 24L80 352zm48-200c0 13.3 10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0c-13.3 0-24 10.7-24 24zm24 72c-13.3 0-24 10.7-24 24s10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0z"/></svg></span><span class="nav-text">题库</span></a></li>
-        <li><a class="nav-item" href="/courses"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20" height="20" fill="currentColor"><path d="M318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2 48 19.8 0 168.5c0 53 86 96 192 96s192-43 192-96l0-168.5 81.2-33.4c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1zM144 384l0-148.7 113.2 46.6c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1L432 235.3 432 384c0 .1 0 .1 0 .3s-.1 .4-.3 .9c-.4 .9-1.3 2.7-3.4 5.2-4.4 5.2-12.6 11.9-26 18.6-26.8 13.4-67.1 23-114.3 23s-87.5-9.7-114.3-23c-13.4-6.7-21.6-13.4-26-18.6-2.1-2.5-3-4.3-3.4-5.2-.2-.5-.3-.8-.3-.9s0-.2 0-.3zM87.2 160L275.5 82.5c4-1.6 8.2-2.5 12.5-2.5s8.5 .8 12.5 2.5L488.8 160 300.5 237.5c-4 1.6-8.2 2.5-12.5 2.5s-8.5-.8-12.5-2.5L87.2 160z"/></svg></span><span class="nav-text">网校</span></a></li>
+        <li><a class="nav-item" href="/courses"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20" height="20" fill="currentColor"><path d="M318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2 48 19.8 0 168.5c0 53 86 96 192 96s192-43 192-96l0-168.5 81.2-33.4c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1zM144 384l0-148.7 113.2 46.6c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1L432 235.3 432 384c0 .1 0 .1 0 .3s-.1 .4-.3.9c-.4 .9-1.3 2.7-3.4 5.2-4.4 5.2-12.6 11.9-26 18.6-26.8 13.4-67.1 23-114.3 23s-87.5-9.7-114.3-23c-13.4-6.7-21.6-13.4-26-18.6-2.1-2.5-3-4.3-3.4-5.2-.2-.5-.3-.8-.3-.9s0-.2 0-.3zM87.2 160L275.5 82.5c4-1.6 8.2-2.5 12.5-2.5s8.5 .8 12.5 2.5L488.8 160 300.5 237.5c-4 1.6-8.2 2.5-12.5 2.5s-8.5-.8-12.5-2.5L87.2 160z"/></svg></span><span class="nav-text">网校</span></a></li>
         <li><a class="nav-item" href="/training"><span class="nav-icon"><svg viewBox="0 0 384 512" width="20" height="20" fill="currentColor"><path d="M152 96l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0 48c-37.1 0-67.6-28-71.6-64L64 80c-8.8 0-16 7.2-16 16l0 352c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-352c0-8.8-7.2-16-16-16l-16.4 0c-4 36-34.5 64-71.6 64l-80 0zM232 0c25 0 47 12.7 59.9 32L320 32c35.3 0 64 28.7 64 64l0 352c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l28.1 0C105 12.7 127 0 152 0l80 0zM171.2 193.1c8.2 6.7 9.5 18.8 2.8 27l-45.3 56c-3.7 4.5-9.2 7.1-15 7.1s-11.3-2.7-14.9-7.2L73.9 244.9c-6.6-8.3-5.3-20.4 3-27s20.4-5.3 27 3l10 12.5 30.3-37.5c6.7-8.2 18.8-9.5 27-2.8zM192 256c0-13.3 10.7-24 24-24l64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0c-13.3 0-24-10.7-24-24zm-16 96c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24zm-64-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></span><span class="nav-text">训练题单</span></a></li>
         <li><a class="nav-item" href="/contests"><span class="nav-icon"><svg viewBox="0 0 512 512" width="20" height="20" fill="currentColor"><path d="M488 56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24s24-10.7 24-24l0-400zM360 128c-13.3 0-24 10.7-24 24l0 304c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-13.3-10.7-24-24-24zM280 248c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 208c0 13.3 10.7 24 24 24s24-10.7 24-24l0-208zM152 320c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zM48 384c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48c0-13.3-10.7-24-24-24z"/></svg></span><span class="nav-text">比赛</span></a></li>
         <li><a class="nav-item" href="/submissions"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20" height="20" fill="currentColor"><path d="M352.4 54l0 138 138 0C473 124.6 419.9 71.4 352.4 54zm-144 210l0-173.1c-74.6 26.4-128 97.5-128 181.1 0 106 86 192 192 192 24.6 0 48-4.6 69.5-12.9L225 309.9c-10.7-12.9-16.6-29.2-16.6-45.9zm333.9-55.9c2.3 17.5-12.2 31.9-29.9 31.9l-176 0c-17.7 0-32-14.3-32-32l0-176c0-17.7 14.4-32.2 31.9-29.9 107 14.2 191.8 99 206 206zM256.4 66.7l0 197.3c0 5.6 2 11 5.5 15.3L394 438.7c11.7 14.1 9.2 35.4-6.9 44.1-34.1 18.6-73.2 29.2-114.7 29.2-132.5 0-240-107.5-240-240 0-115.5 81.5-211.9 190.2-234.8 18.1-3.8 33.8 11 33.8 29.5zM541.7 288c18.5 0 33.3 15.7 29.5 33.8-10.2 48.4-35 91.4-69.6 124.2-12.3 11.7-31.6 9.2-42.4-3.9L374.9 340.4c-17.3-20.9-2.4-52.4 24.6-52.4l142.2 0z"/></svg></span><span class="nav-text">评测记录</span></a></li>
@@ -512,293 +484,289 @@
     </div>
   </div>
 
-  <!-- ===== 内容区域 (两列布局) ===== -->
   <div class="content-wrapper">
-    <div class="main-content">
-      <div class="card">
-        <div class="card-header">管理名单</div>
-        <p style="font-size:14px; color:#555; margin-bottom:20px;">
-          此处列出拥有「用户管理」或「秩序管理」权限的管理员。
-        </p>
-        <div id="adminListContainer">
-          <div class="empty-state" id="loadingState">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg>
-            <p>加载中...</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="card">
+      <div class="card-header">管理名单</div>
+      <p style="font-size:14px; color:#555; margin-bottom:20px;">
+        此处列出拥有「用户管理」或「秩序管理」权限的管理员。
+      </p>
 
-    <div class="right-sidebar">
-      <div class="card">
-        <div class="card-header">管理概览</div>
-        <div class="info-text">
-          <p>当前页面展示所有具备管理权限的用户。</p>
-          <p style="margin-top:8px;">🔹 用户管理：可管理用户账号</p>
-          <p>🔹 秩序管理：可管理讨论区与内容</p>
-          <p style="margin-top:12px; color:#999; font-size:13px;">数据实时同步，刷新即更新。</p>
+      <div id="adminListContainer">
+        <div class="empty-state">
+          <p>正在加载管理员数据...</p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<button id="back-to-top" title="回到顶部">↑</button>
-<footer>© 2026 ✨ Jason227</footer>
-
-<!-- ========== JavaScript ========== -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-  (function() {
-    const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+(function() {
+  const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const container = document.getElementById('adminListContainer');
-    const authButtons = document.getElementById('authButtons');
+  const container = document.getElementById('adminListContainer');
+  const authButtons = document.getElementById('authButtons');
 
-    // ===== 工具函数 =====
-    function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m)); }
-    function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m] || m)); }
-    
-    function letterAvatar(name) {
-      const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-      return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+  // 备用数据
+  const FALLBACK_ADMINS = [
+    { id: '1', username: 'Jason227', avatar_url: '', user_tag: '站长', user_number: '1', is_admin: true, can_manage_users: true, can_manage_posts: true },
+    { id: '2', username: '系统管理员', avatar_url: '', user_tag: '管理员', user_number: '2', is_admin: true, can_manage_users: true, can_manage_posts: false },
+    { id: '3', username: '秩序维护者', avatar_url: '', user_tag: '版主', user_number: '3', is_admin: false, can_manage_users: false, can_manage_posts: true },
+  ];
+
+  function letterAvatar(name) {
+    const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m));
+  }
+
+  function escapeHtmlAttr(s) {
+    if (!s) return '';
+    return s.replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m] || m));
+  }
+
+  async function fetchAdmins() {
+    console.log('🔍 开始获取管理员数据...');
+
+    try {
+      console.log('🌐 尝试从 Supabase 获取数据...');
+      const { data, error, status, statusText } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, user_tag, user_number, is_admin, can_manage_users, can_manage_posts')
+        .or('can_manage_users.eq.true,can_manage_posts.eq.true')
+        .order('username', { ascending: true });
+
+      console.log('📥 Supabase 响应:', { status, statusText, error, dataCount: data ? data.length : 0 });
+
+      if (error) {
+        console.error('❌ Supabase 错误:', error);
+        throw error;
+      }
+
+      if (data && data.length > 0) {
+        console.log('✅ 成功获取', data.length, '条管理员数据');
+        return data;
+      }
+
+      console.warn('⚠️ 没有管理员数据');
+      throw new Error('没有数据');
+    } catch (e) {
+      console.error('❌ 获取失败:', e);
+      console.warn('⚠️ 使用备用数据');
+      return FALLBACK_ADMINS;
+    }
+  }
+
+  function renderAdmins(admins) {
+    if (!admins || admins.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>暂无管理员</p></div>';
+      return;
     }
 
-    // ===== 备用数据（当 Supabase 不可用时显示） =====
-    const FALLBACK_ADMINS = [
-      { id: '1', username: 'Jason227', avatar_url: '', user_tag: '站长', is_admin: true, can_manage_users: true, can_manage_posts: true },
-      { id: '2', username: '系统管理员', avatar_url: '', user_tag: '管理员', is_admin: true, can_manage_users: true, can_manage_posts: false },
-      { id: '3', username: '秩序维护者', avatar_url: '', user_tag: '版主', is_admin: false, can_manage_users: false, can_manage_posts: true },
-      { id: '4', username: '内容审核员', avatar_url: '', user_tag: '审核', is_admin: false, can_manage_users: false, can_manage_posts: true },
-    ];
+    const userMgmt = admins.filter(u => u.can_manage_users === true);
+    const postMgmt = admins.filter(u => u.can_manage_posts === true);
 
-    // ===== 核心：获取管理员数据（带超时 + 缓存 + 降级） =====
-    async function fetchAdmins() {
-      // 1. 先尝试读取缓存（1分钟有效）
-      try {
-        const cached = sessionStorage.getItem('admin_cache');
-        if (cached) {
-          const { data, time } = JSON.parse(cached);
-          if (Date.now() - time < 60000) {
-            console.log('✅ 使用缓存数据');
-            return data;
-          }
-        }
-      } catch (e) {}
+    let html = '<div class="admin-two-col">';
 
-      // 2. 尝试从 Supabase 获取（3秒超时）
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
+    // 用户管理
+    html += '<div class="admin-col"><div class="admin-col-header">👤 用户管理 <span class="count">(' + userMgmt.length + ')</span></div><div class="admin-col-list">';
+    if (userMgmt.length === 0) {
+      html += '<div style="color:#999;font-size:13px;padding:8px 4px;">暂无</div>';
+    } else {
+      userMgmt.forEach(u => {
+        html += renderEntry(u);
+      });
+    }
+    html += '</div></div>';
 
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, username, avatar_url, user_tag, is_admin, is_cheater, can_manage_users, can_manage_posts')
-          .or('can_manage_users.eq.true,can_manage_posts.eq.true')
-          .order('username', { ascending: true });
+    // 秩序管理
+    html += '<div class="admin-col"><div class="admin-col-header">⚖️ 秩序管理 <span class="count">(' + postMgmt.length + ')</span></div><div class="admin-col-list">';
+    if (postMgmt.length === 0) {
+      html += '<div style="color:#999;font-size:13px;padding:8px 4px;">暂无</div>';
+    } else {
+      postMgmt.forEach(u => {
+        html += renderEntry(u);
+      });
+    }
+    html += '</div></div>';
 
-        clearTimeout(timeoutId);
+    html += '</div>';
+    container.innerHTML = html;
+  }
 
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          // 缓存数据
-          try {
-            sessionStorage.setItem('admin_cache', JSON.stringify({ data, time: Date.now() }));
-          } catch (e) {}
-          console.log('✅ 从 Supabase 获取数据成功');
-          return data;
-        }
-        throw new Error('没有数据');
-      } catch (e) {
-        console.warn('⚠️ Supabase 连接失败，使用备用数据:', e);
-        // 3. 降级：返回备用数据
-        return FALLBACK_ADMINS;
-      }
+  function renderEntry(user) {
+    const avatarUrl = user.avatar_url || letterAvatar(user.username || '用户');
+    const name = user.username || '未命名';
+    let tagText = '';
+    if (user.user_tag) {
+      tagText = user.user_tag;
+    } else if (user.is_admin) {
+      tagText = '管理员';
+    } else {
+      tagText = '成员';
     }
 
-    // ===== 渲染管理名单 =====
-    function renderAdmins(admins) {
-      if (!admins || admins.length === 0) {
-        container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><p>暂无管理员</p></div>`;
-        return;
-      }
+    // 用户名链接到个人中心
+    const nameHtml = user.user_number
+      ? `<a href="/user/${user.user_number}" style="color:inherit;text-decoration:none;font-weight:600;">${escapeHtml(name)}</a>`
+      : `<span style="font-weight:600;">${escapeHtml(name)}</span>`;
 
-      const userMgmt = admins.filter(u => u.can_manage_users === true);
-      const postMgmt = admins.filter(u => u.can_manage_posts === true);
+    return `
+      <div class="admin-entry">
+        <div class="avatar"><img src="${avatarUrl}" alt="${escapeHtmlAttr(name)}" loading="lazy" onerror="this.onerror=null;this.src='${letterAvatar(name)}'"></div>
+        <span class="name">${nameHtml}</span>
+        <span class="tag">${escapeHtml(tagText)}</span>
+      </div>
+    `;
+  }
 
-      let html = '<div class="admin-two-col">';
+  // ===== 顶栏逻辑 =====
+  let currentProfile = null;
+  async function updateTopbar() {
+    console.log('🔐 更新顶栏...');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('📱 Session:', session ? '已登录' : '未登录');
 
-      // 第一列：用户管理
-      html += `<div class="admin-col"><div class="admin-col-header">👤 用户管理 <span class="count">(${userMgmt.length})</span></div><div class="admin-col-list">`;
-      if (userMgmt.length === 0) {
-        html += `<div style="color:#999;font-size:13px;padding:8px 4px;">暂无</div>`;
-      } else {
-        for (const u of userMgmt) {
-          html += renderEntry(u);
-        }
-      }
-      html += `</div></div>`;
+      if (session) {
+        // 获取用户profile，带超时保护
+        let profile = null;
+        let profileError = null;
 
-      // 第二列：秩序管理
-      html += `<div class="admin-col"><div class="admin-col-header">⚖️ 秩序管理 <span class="count">(${postMgmt.length})</span></div><div class="admin-col-list">`;
-      if (postMgmt.length === 0) {
-        html += `<div style="color:#999;font-size:13px;padding:8px 4px;">暂无</div>`;
-      } else {
-        for (const u of postMgmt) {
-          html += renderEntry(u);
-        }
-      }
-      html += `</div></div>`;
+        try {
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('查询超时')), 3000)
+          );
 
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
-    function renderEntry(user) {
-      const avatarUrl = user.avatar_url || letterAvatar(user.username || '用户');
-      const name = user.username || '未命名';
-      let tagText = '';
-      if (user.user_tag) {
-        tagText = user.user_tag;
-      } else if (user.is_admin) {
-        tagText = '管理员';
-      } else if (user.is_cheater) {
-        tagText = '学术不端';
-      } else {
-        tagText = '成员';
-      }
-      return `
-        <div class="admin-entry">
-          <div class="avatar"><img src="${avatarUrl}" alt="${escapeHtmlAttr(name)}" loading="lazy" onerror="this.onerror=null;this.src='${letterAvatar(name)}'"></div>
-          <span class="name">${escapeHtml(name)}</span>
-          <span class="tag">${escapeHtml(tagText)}</span>
-        </div>
-      `;
-    }
-
-    // ===== 顶栏逻辑 =====
-    let currentProfile = null;
-    async function updateTopbar() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const { data: profile, error } = await supabase
+          const queryPromise = supabase
             .from('profiles')
             .select('username, user_number, avatar_url, can_manage_users')
             .eq('id', session.user.id)
             .single();
-          if (error || !profile) {
-            authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
-            return;
-          }
-          currentProfile = profile;
-          const displayName = profile.username || session.user.email || '用户';
-          let html = '';
-          if (profile.user_number) {
-            html += `<a href="/user/${profile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
-          } else {
-            html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
-          }
-          if (profile.can_manage_users === true) {
-            html += `<a id="adminEntry" href="/admin/user" title="管理后台" style="display:inline-flex;align-items:center;font-size:20px;line-height:1;text-decoration:none;cursor:pointer;color:#555;transition:color 0.2s;margin-right:2px;">⚙️</a>`;
-          }
-          html += `
-            <a href="/user/notification" class="bell-icon">
-              <svg viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/></svg>
-              <sup id="bell-badge" style="display:none;">0</sup>
-            </a>
-            <button id="logoutBtn" class="auth-btn logout">登出</button>
-          `;
-          authButtons.innerHTML = html;
-          document.getElementById('logoutBtn')?.addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
-          await fetchUnreadCount();
-          if (window._unreadTimer) clearInterval(window._unreadTimer);
-          window._unreadTimer = setInterval(() => { if (document.visibilityState === 'visible') fetchUnreadCount(); }, 30000);
-        } else {
-          authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
-          if (window._unreadTimer) { clearInterval(window._unreadTimer); window._unreadTimer = null; }
-        }
-      } catch (e) { console.error(e); authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`; }
-    }
 
-    async function fetchUnreadCount() {
-      if (!currentProfile) return;
-      try {
-        const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_number', currentProfile.user_number).eq('read', false);
-        const badge = document.getElementById('bell-badge');
-        if (!badge) return;
+          const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+          profile = data;
+          profileError = error;
+        } catch (e) {
+          profileError = e;
+          console.warn('⚠️ Profile查询异常:', e.message);
+        }
+
+        console.log('👤 Profile:', profile ? '成功' : '失败');
+
+        currentProfile = profile;
+        const displayName = profile?.username || session.user.email || '用户';
+        const avatarUrl = profile?.avatar_url || letterAvatar(displayName);
+        let html = '';
+
+        // 管理后台入口
+        if (profile?.can_manage_users === true) {
+          html += `<a id="adminEntry" href="/admin/user" title="管理后台">⚙️</a>`;
+        }
+
+        // 通知铃铛
+        html += `
+          <a href="/user/notification" class="bell-icon">
+            <svg viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/></svg>
+            <sup id="bell-badge" style="display:none;">0</sup>
+          </a>
+        `;
+
+        // 头像（带悬停菜单）
+        html += `
+          <div class="avatar-wrap" style="position:relative;display:inline-flex;align-items:center;">
+            <a href="/user/${profile?.user_number || ''}" id="topAvatar" title="${escapeHtmlAttr(displayName)}">
+              <img src="${avatarUrl}" alt="${escapeHtmlAttr(displayName)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid #e9ecef;cursor:pointer;" onerror="this.onerror=null;this.src='${letterAvatar(displayName)}'">
+            </a>
+            <div class="avatar-menu">
+              <a href="/user/${profile?.user_number || ''}">个人主页</a>
+              <a href="/user/setting">设置</a>
+              <div class="divider-line"></div>
+              <a href="#" id="logoutLink">登出</a>
+            </div>
+          </div>
+        `;
+
+        authButtons.innerHTML = html;
+
+        // 绑定登出事件
+        document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
+          e.preventDefault();
+          await supabase.auth.signOut();
+          location.reload();
+        });
+
+        // 加载未读通知数量
+        await fetchUnreadCount();
+
+      } else {
+        // 未登录，显示登录/注册按钮
+        authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+      }
+
+      console.log('✅ 顶栏更新完成');
+    } catch (e) {
+      console.error('❌ 顶栏更新失败:', e);
+      authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+    }
+  }
+
+  // 获取未读通知数量
+  async function fetchUnreadCount() {
+    if (!currentProfile?.user_number) return;
+    try {
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_number', currentProfile.user_number)
+        .eq('read', false);
+
+      const badge = document.getElementById('bell-badge');
+      if (badge) {
         if (!error && count !== null && count > 0) {
           badge.textContent = count > 99 ? '99+' : count;
           badge.style.display = 'inline-flex';
-        } else { badge.style.display = 'none'; }
-      } catch (e) { const badge = document.getElementById('bell-badge'); if (badge) badge.style.display = 'none'; }
-    }
-
-    // ===== 头像下拉菜单 =====
-    (function avatarMenu() {
-      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const authBtns = document.querySelector('.topbar .auth-buttons');
-      if (!authBtns) return;
-      let me = null;
-      const mo = new MutationObserver(() => { if (me && authBtns.querySelector('.auth-btn.logout')) build(); });
-      mo.observe(authBtns, { childList: true });
-
-      function build() {
-        if (!me) return;
-        const ue = authBtns.querySelector('.user-email');
-        if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
-        let wrap = document.getElementById('topAvatarWrap');
-        if (!wrap) {
-          wrap = document.createElement('div');
-          wrap.id = 'topAvatarWrap';
-          wrap.className = 'top-avatar-wrap';
-          const av = document.createElement('a');
-          av.id = 'topAvatar';
-          av.href = '/user/' + (me.user_number || '');
-          av.title = me.username || '';
-          const img = document.createElement('img');
-          img.alt = '头像';
-          img.onerror = function() { this.onerror = null; this.src = letterAvatar(me.username); };
-          img.src = me.avatar_url || letterAvatar(me.username);
-          av.appendChild(img);
-          wrap.appendChild(av);
-          const menu = document.createElement('div');
-          menu.id = 'topAvatarMenu';
-          menu.className = 'top-avatar-menu';
-          wrap.appendChild(menu);
-          authBtns.appendChild(wrap);
+        } else {
+          badge.style.display = 'none';
         }
-        const menu = document.getElementById('topAvatarMenu');
-        const logoutEl = authBtns.querySelector('.auth-btn.logout');
-        if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
-        const gear = document.getElementById('adminEntry');
-        const bell = authBtns.querySelector('.bell-icon');
-        if (gear && bell && gear.nextSibling !== bell) authBtns.insertBefore(gear, bell);
-        if (wrap && bell && wrap.parentNode === authBtns) authBtns.insertBefore(wrap, bell.nextSibling);
       }
-
-      sb.auth.getSession().then(r => { if (r.data?.session) return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', r.data.session.user.id).maybeSingle(); }).then(rr => { if (rr?.data) { me = rr.data; build(); } }).catch(() => {});
-    })();
-
-    // ===== 回到顶部 =====
-    (function() {
-      const btn = document.getElementById('back-to-top');
-      if (!btn) return;
-      window.addEventListener('scroll', () => { btn.style.display = window.pageYOffset > 300 ? 'block' : 'none'; });
-      btn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    })();
-
-    // ===== 初始化 =====
-    async function init() {
-      await updateTopbar();
-      const admins = await fetchAdmins();
-      renderAdmins(admins);
+    } catch (e) {
+      console.warn('⚠️ 获取未读通知失败:', e);
     }
-    init();
-    window.addEventListener('beforeunload', () => { if (window._unreadTimer) clearInterval(window._unreadTimer); });
-  })();
+  }
+
+  async function init() {
+    console.log('🚀 页面初始化开始...');
+
+    // 并行执行顶栏更新和管理员数据获取
+    const [topbarResult, admins] = await Promise.allSettled([
+      updateTopbar(),
+      fetchAdmins()
+    ]);
+
+    if (topbarResult.status === 'rejected') {
+      console.warn('⚠️ 顶栏更新失败:', topbarResult.reason);
+    }
+
+    if (admins.status === 'fulfilled') {
+      console.log('🎨 开始渲染...');
+      renderAdmins(admins.value);
+      console.log('✅ 页面初始化完成');
+    } else {
+      console.error('❌ 获取管理员数据失败:', admins.reason);
+      renderAdmins(FALLBACK_ADMINS);
+    }
+  }
+
+  init();
+})();
 </script>
 </body>
 </html>
