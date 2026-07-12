@@ -6,28 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>用户管理 - ✨ Jason227</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* ========== 基础样式 ========== */
+        /* ========== 基础样式（与之前完全相同） ========== */
         * {
             margin: 0;
             padding: 0;
@@ -76,7 +66,7 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            transition: background 0.2s;
+            transition: background .2s;
         }
 
         .auth-btn:hover {
@@ -103,7 +93,7 @@
             align-items: center;
             text-decoration: none;
             color: #666;
-            transition: color 0.2s;
+            transition: color .2s;
         }
 
         .bell-icon:hover {
@@ -152,7 +142,7 @@
             border-radius: 0;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
             padding: 16px 0;
-            transition: width 0.3s ease;
+            transition: width .3s ease;
             overflow-y: auto;
             overflow-x: hidden;
             white-space: nowrap;
@@ -163,17 +153,9 @@
             width: 4px;
         }
 
-        .nav-sidebar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
         .nav-sidebar::-webkit-scrollbar-thumb {
             background: #ccc;
             border-radius: 4px;
-        }
-
-        .nav-sidebar::-webkit-scrollbar-thumb:hover {
-            background: #aaa;
         }
 
         .nav-sidebar:hover {
@@ -186,7 +168,7 @@
             font-size: 14px;
             color: #2c3e50;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background .2s, color .2s;
             display: flex;
             align-items: center;
             text-decoration: none;
@@ -229,28 +211,13 @@
             cursor: default;
         }
 
-        .nav-group .group-title:first-of-type {
-            border-top: none;
-            margin-top: 0;
-        }
-
         .nav-text {
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity .2s ease;
         }
 
         .nav-sidebar:hover .nav-text {
             opacity: 1;
-        }
-
-        .group-title {
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .group-title:first-of-type {
-            border-top: none;
-            margin-top: 0;
         }
 
         .divider {
@@ -289,7 +256,6 @@
             margin-bottom: 20px;
         }
 
-        /* ===== 在线用户区域 ===== */
         .online-section {
             background: #f8f9fc;
             border-radius: 12px;
@@ -352,7 +318,7 @@
             padding: 4px 12px 4px 6px;
             border-radius: 20px;
             border: 1px solid #e9ecef;
-            transition: background 0.15s;
+            transition: background .15s;
         }
 
         .online-avatar-item:hover {
@@ -519,6 +485,11 @@
             background: transparent;
         }
 
+        .action-link.pending {
+            border: 2px solid #f39c12;
+            background: #fef9e7;
+        }
+
         .perm-group-line {
             display: flex;
             flex-wrap: wrap;
@@ -618,7 +589,7 @@
         .username-display {
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background .15s;
         }
 
         .username-display:hover {
@@ -634,7 +605,7 @@
             font-weight: 600;
             margin: 0 0 0 8px;
             cursor: default;
-            transition: filter 0.15s;
+            transition: filter .15s;
             background-color: #8e44ad;
         }
 
@@ -671,6 +642,30 @@
             color: #fff;
             padding: 6px 16px;
             font-size: 13px;
+        }
+
+        .btn-sm.confirm {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: auto;
+            font-family: inherit;
+            font-weight: 500;
+        }
+        .btn-sm.confirm:hover {
+            background: #c0392b;
+        }
+        .btn-sm.confirm:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+        .btn-sm.confirm:disabled:hover {
+            background: #e74c3c;   /* 禁用时悬停不变色 */
         }
 
         .batch-bar {
@@ -737,7 +732,7 @@
             font-weight: 500;
             cursor: pointer;
             user-select: none;
-            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+            transition: background .2s, color .2s, border-color .2s, transform .1s;
             border: 2px solid transparent;
             background: #f0f2f5;
             color: #8a9aa8;
@@ -761,7 +756,6 @@
             border-color: #E74C3C;
         }
 
-        /* 新增：在线/离线标签颜色沿用 active-green / active-red */
         .filter-tag.active-online {
             background: #eafaf1;
             color: #2ecc71;
@@ -774,6 +768,63 @@
             border-color: #e74c3c;
         }
 
+        .row-checkbox {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            background: white;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .row-checkbox:checked {
+            background: #3498db;
+            border-color: #3498db;
+        }
+
+        .row-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") no-repeat center;
+            background-size: contain;
+        }
+
+        .row-checkbox.online:checked {
+            background: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .row-checkbox.offline:checked {
+            background: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .row-checkbox.online {
+            border-color: #2ecc71;
+            background: #2ecc71;
+        }
+
+        .row-checkbox.offline {
+            border-color: #e74c3c;
+            background: #e74c3c;
+        }
+
+        .row-checkbox:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        /* 响应式 */
         @media (max-width:800px) {
 
             table,
@@ -831,7 +882,7 @@
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width:900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
             }
@@ -883,12 +934,6 @@
                 text-decoration: none;
             }
 
-            .nav-sidebar a:hover {
-                text-decoration: none;
-                background: #f0f2f5;
-                color: #e74c3c;
-            }
-
             .nav-icon {
                 font-size: 16px;
                 width: 20px;
@@ -904,13 +949,9 @@
             .divider {
                 display: none;
             }
-
-            .nav-sidebar::-webkit-scrollbar {
-                width: 0;
-            }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width:600px) {
             .topbar {
                 padding: 10px 16px;
                 flex-wrap: wrap;
@@ -952,7 +993,7 @@
             }
         }
 
-        @media (max-width: 400px) {
+        @media (max-width:400px) {
             .auth-buttons .auth-btn {
                 padding: 4px 10px;
                 font-size: 11px;
@@ -979,56 +1020,8 @@
                 width: 16px;
             }
         }
-
-        /* 复选框自定义颜色 */
-        .row-checkbox {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            outline: none;
-            cursor: pointer;
-            background: white;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .row-checkbox:checked {
-            background: #3498db;
-            border-color: #3498db;
-        }
-        .row-checkbox:checked::after {
-            content: '✓';
-            color: white;
-            font-size: 12px;
-            line-height: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-        }
-        .row-checkbox.online {
-            border-color: #2ecc71;
-            background: #2ecc71;
-        }
-        .row-checkbox.online:checked {
-            border-color: #3498db;
-            background: #3498db;
-        }
-        .row-checkbox.offline {
-            border-color: #e74c3c;
-            background: #e74c3c;
-        }
-        .row-checkbox.offline:checked {
-            border-color: #3498db;
-            background: #3498db;
-        }
-
     </style>
-    <script src="https://unpkg.com/@supabase/supabase-js@2">
-    </script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -1036,15 +1029,7 @@
     <div class="topbar">
         <a href="/" class="logo">✨ Jason227</a>
         <div class="auth-buttons" id="authButtons">
-            <a href="/user/notification" class="bell-icon" id="bellLink">
-                <svg viewBox="0 0 448 512" width="20" height="20">
-                    <path fill="currentColor"
-                        d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z" />
-                </svg>
-                <sup id="bell-badge" style="display:none;">0</sup>
-            </a>
-            <span class="user-email" id="userDisplay">加载中...</span>
-            <button id="logoutBtn" class="auth-btn logout">登出</button>
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
         </div>
     </div>
 
@@ -1145,7 +1130,7 @@
                 <div class="card">
                     <div class="card-header">用户管理</div>
                     <div class="search-bar">
-                        <input type="text" id="searchInput">
+                        <input type="text" id="searchInput" placeholder="搜索用户...">
                         <span class="result-count" id="resultCount">共 0 位用户</span>
                     </div>
                     <div class="filter-tags" id="filterTags">
@@ -1155,6 +1140,7 @@
                         <span class="filter-tag" data-key="enter_site" data-state="off">进入主站</span>
                         <span class="filter-tag" data-key="cheater" data-state="off">学术不端</span>
                         <span class="filter-tag" data-key="speak" data-state="off">自由发言</span>
+                        <span class="filter-tag" data-key="status" data-state="off">状态</span>
                     </div>
                     <div class="table-wrap">
                         <div id="userList">
@@ -1187,46 +1173,38 @@
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // ================================================================
-            //  权限门禁
-            // ================================================================
+            // ===== 权限门禁 =====
             async function checkAccess() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (!session) { window.location.href = '/login'; return false; }
                     const { data: profile, error } = await supabase
                         .from('profiles')
-                        .select('can_manage_users, user_number, is_super_admin')
+                        .select('can_manage_users, user_number, is_super_admin, is_admin')
                         .eq('id', session.user.id)
                         .single();
-                    if (error || !profile) {
-                        window.location.href = '/';
-                        return false;
-                    }
-                    if (profile.is_super_admin === true || profile.can_manage_users === true || profile.user_number === 4) {
-                        return true;
-                    } else {
-                        window.location.href = '/';
-                        return false;
-                    }
-                } catch (err) {
-                    window.location.href = '/';
-                    return false;
-                }
+                    if (error || !profile) { window.location.href = '/'; return false; }
+                    if (profile.can_manage_users === true) return true;
+                    else { window.location.href = '/'; return false; }
+                } catch { window.location.href = '/'; return false; }
             }
 
-            // ---------- 颜色常量 ----------
+            // ===== 常量 =====
             const COLOR_RED = '#e74c3c';
             const COLOR_PURPLE = '#8E44AD';
             const COLOR_BROWN = '#AD8B00';
-            const ONLINE_THRESHOLD = 300; // 5 分钟
+            const ONLINE_THRESHOLD = 60;
 
+            // ===== 全局变量 =====
             let currentUser = null,
                 currentProfile = null,
                 allUsers = [],
-                filteredUsers = [];
+                filteredUsers = [],
+                onlineChannel = null;
+            // 暂存待修改权限
+            const pendingChanges = {};
+
             const userList = document.getElementById('userList');
-            const msgDiv = document.getElementById('msgDiv');
             const searchInput = document.getElementById('searchInput');
             const resultCount = document.getElementById('resultCount');
             const batchBar = document.getElementById('batchBar');
@@ -1234,7 +1212,7 @@
             const bellBadge = document.getElementById('bell-badge');
             const userDisplay = document.getElementById('userDisplay');
 
-            // ---------- 工具函数 ----------
+            // ===== 工具函数 =====
             function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
             function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
             function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
@@ -1242,72 +1220,46 @@
                 const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
                 return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
-
-            function isBrownColor(hex) {
-                if (!hex) return false;
-                return hex.toLowerCase() === COLOR_BROWN.toLowerCase();
-            }
-            function isPurpleColor(hex) {
-                if (!hex) return false;
-                return hex.toLowerCase() === COLOR_PURPLE.toLowerCase();
-            }
-
             function getUserDisplayColor(user) {
-                if (user.is_cheater) return COLOR_BROWN;
                 if (user.is_admin) return COLOR_PURPLE;
+                if (user.is_cheater) return COLOR_BROWN;
                 return COLOR_RED;
             }
-
-            // ---------- 在线判断 ----------
             function isUserOnline(user) {
                 if (!user.last_seen) return false;
-                try {
-                    const last = new Date(user.last_seen);
-                    const now = new Date();
-                    return (now - last) <= ONLINE_THRESHOLD * 1000;
-                } catch { return false; }
+                try { const last = new Date(user.last_seen); const now = new Date(); return (now - last) <= ONLINE_THRESHOLD * 1000; } catch { return false; }
             }
-
-            // ---------- 权限检查 ----------
             function canModifyUser(targetUser) {
                 if (!currentProfile) return false;
                 if (currentProfile.user_number === 1 && currentProfile.is_super_admin) return true;
                 if (targetUser.user_number === currentProfile.user_number) return false;
                 if (targetUser.is_super_admin) return false;
-                if (currentProfile.can_manage_users || currentProfile.is_super_admin) return true;
+                if (currentProfile.can_manage_users) return true;
                 return false;
             }
 
-            // ================================================================
-            //  日志（陶片）
-            // ================================================================
+            // ===== 日志 =====
             async function insertOstrakonLog(adminId, targetUserId, actionType, actionDetail, reason) {
                 if (!reason || reason.trim() === '') return;
                 try {
-                    await supabase
-                        .from('judgement_logs')
-                        .insert({
-                            admin_id: adminId,
-                            target_user_id: targetUserId,
-                            action_type: actionType,
-                            action_detail: actionDetail,
-                            reason: reason,
-                        });
+                    await supabase.from('judgement_logs').insert({
+                        admin_id: adminId,
+                        target_user_id: targetUserId,
+                        action_type: actionType,
+                        action_detail: actionDetail,
+                        reason: reason,
+                    });
                 } catch (err) { /* 静默 */ }
             }
-
             async function getCurrentAdminId() {
                 if (currentUser) return currentUser.id;
                 const { data: { user } } = await supabase.auth.getUser();
                 return user ? user.id : null;
             }
-
             async function promptReason(operationName) {
                 const { value: reason } = await Swal.fire({
                     title: `请输入 ${operationName} 的原因`,
-                    html: `
-            <textarea id="swal-textarea" class="swal2-textarea" placeholder="请输入操作原因（必填）..." rows="3" style="width:100%;max-width:460px;text-align:left;margin:0 auto;display:block;"></textarea>
-        `,
+                    html: `<textarea id="swal-textarea" class="swal2-textarea" placeholder="请输入操作原因（必填）..." rows="3" style="width:100%;max-width:460px;text-align:left;margin:0 auto;display:block;"></textarea>`,
                     showCancelButton: true,
                     confirmButtonText: '操作',
                     cancelButtonText: '取消',
@@ -1315,577 +1267,127 @@
                     preConfirm: () => {
                         const textarea = document.getElementById('swal-textarea');
                         const value = textarea ? textarea.value.trim() : '';
-                        if (!value) {
-                            Swal.showValidationMessage('原因不能为空！');
-                            return false;
-                        }
+                        if (!value) { Swal.showValidationMessage('原因不能为空！'); return false; }
                         return value;
                     }
                 });
                 return reason;
             }
 
-            // ---------- 通用更新 ----------
+            // ===== 通用更新 =====
             async function updateUserField(userNumber, updateData) {
                 try {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .update(updateData)
-                        .eq('user_number', userNumber)
-                        .select();
+                    const { data, error } = await supabase.from('profiles').update(updateData).eq('user_number', userNumber).select();
                     if (error) throw error;
                     if (data && data.length > 0) {
                         const target = allUsers.find(u => u.user_number === userNumber);
                         if (target) Object.assign(target, data[0]);
                     }
-                } catch (err) {
-                    // 静默
-                }
+                } catch (err) { /* 静默 */ }
             }
 
-            // ================================================================
-            //  学术不端切换
-            // ================================================================
-            async function toggleAcademicMisconduct(userNumber) {
-                const targetUser = allUsers.find(u => u.user_number === userNumber);
-                if (!targetUser) return;
-                if (!canModifyUser(targetUser)) return;
-
-                const newCheater = !targetUser.is_cheater;
-                let reason = null;
-
-                if (newCheater) {
-                    reason = await promptReason('学术不端');
-                    if (!reason) return;
+            // ===== 本地暂存切换（修正版） =====
+            function toggleLocalPermission(userNumber, field, currentValue) {
+                if (!pendingChanges[userNumber]) pendingChanges[userNumber] = {};
+                // 如果该字段已在暂存中，则移除（取消）
+                if (pendingChanges[userNumber][field] !== undefined) {
+                    delete pendingChanges[userNumber][field];
                 } else {
-                    reason = '取消学术不端';
+                    // 否则添加新值（取反）
+                    pendingChanges[userNumber][field] = !currentValue;
                 }
-
-                if (newCheater) {
-                    const updateData = {
-                        is_cheater: true,
-                        username_color: COLOR_BROWN
-                    };
-                    if (!targetUser.is_admin) {
-                        updateData.user_tag = '作弊者';
-                    }
-                    await updateUserField(userNumber, updateData);
-                } else {
-                    const updateData = { is_cheater: false };
-                    if (targetUser.is_admin) {
-                        updateData.username_color = COLOR_PURPLE;
-                    } else {
-                        updateData.user_tag = null;
-                        updateData.username_color = COLOR_RED;
-                    }
-                    await updateUserField(userNumber, updateData);
+                // 如果该用户没有待修改项了，删除键
+                if (Object.keys(pendingChanges[userNumber]).length === 0) {
+                    delete pendingChanges[userNumber];
                 }
-
-                const adminId = await getCurrentAdminId();
-                if (adminId) {
-                    await insertOstrakonLog(
-                        adminId,
-                        targetUser.id,
-                        newCheater ? 'brown_penalty' : 'unbrown_penalty',
-                        { action: newCheater ? 'set_cheater' : 'unset_cheater' },
-                        reason
-                    );
-                }
-                await loadUsers();
+                // 重新渲染列表
+                filterUsers();
             }
 
-            // ================================================================
-            //  自由发言切换
-            // ================================================================
-            async function toggleCanSpeak(userNumber) {
-                const targetUser = allUsers.find(u => u.user_number === userNumber);
-                if (!targetUser) return;
-                if (!canModifyUser(targetUser)) return;
-
-                const current = targetUser.can_speak !== false;
-                const newValue = !current;
-                const actionName = newValue ? '授予自由发言权限' : '撤销自由发言权限';
-                const reason = await promptReason(actionName);
-                if (!reason) return;
-
-                await updateUserField(userNumber, { can_speak: newValue });
-
-                const adminId = await getCurrentAdminId();
-                if (adminId) {
-                    await insertOstrakonLog(
-                        adminId,
-                        targetUser.id,
-                        newValue ? 'grant_perm' : 'revoke_perm',
-                        { permission: 'can_speak', new_value: newValue },
-                        reason
-                    );
-                }
-                await loadUsers();
-            }
-
-            // ================================================================
-            //  管理权限单权限切换
-            // ================================================================
-            async function toggleManagementPerm(userNumber, field) {
-                const targetUser = allUsers.find(u => u.user_number === userNumber);
-                if (!targetUser) return;
-                if (!canModifyUser(targetUser)) return;
-                if (!currentProfile || !currentProfile.is_super_admin) return;
-
-                const allowedFields = ['is_super_admin', 'is_admin', 'can_manage_users', 'can_manage_posts'];
-                if (!allowedFields.includes(field)) return;
-
-                if (field === 'is_super_admin' && !(currentProfile.user_number === 1 && currentProfile.is_super_admin)) return;
-
-                const currentValue = targetUser[field] || false;
-                const newValue = !currentValue;
-
-                const fieldNames = {
-                    is_super_admin: '超级管理',
-                    is_admin: '进入后台',
-                    can_manage_users: '用户管理',
-                    can_manage_posts: '秩序管理'
-                };
-                const fieldName = fieldNames[field] || field;
-                const actionName = newValue ? `授予${fieldName}权限` : `撤销${fieldName}权限`;
-                const reason = await promptReason(actionName);
-                if (!reason) return;
-
-                const updateObj = { [field]: newValue };
-
-                let autoGrantedAdmin = false;
-                if (newValue && (field === 'can_manage_users' || field === 'can_manage_posts')) {
-                    if (!targetUser.is_admin) {
-                        updateObj.is_admin = true;
-                        autoGrantedAdmin = true;
-                    }
-                }
-
-                if (field === 'is_admin' || (field === 'can_manage_users' || field === 'can_manage_posts') && updateObj.is_admin !== undefined) {
-                    const newAdmin = updateObj.is_admin !== undefined ? updateObj.is_admin : targetUser.is_admin;
-                    const currentTag = targetUser.user_tag || '';
-                    if (newAdmin) {
-                        updateObj.user_tag = (currentTag === '' || currentTag === '管理员') ? '管理员' : currentTag;
-                        updateObj.username_color = COLOR_PURPLE;
-                    } else {
-                        updateObj.user_tag = (currentTag === '管理员') ? null : currentTag;
-                        updateObj.username_color = COLOR_RED;
-                    }
-                }
-
-                try {
-                    await updateUserField(userNumber, updateObj);
-                    const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        await insertOstrakonLog(
-                            adminId,
-                            targetUser.id,
-                            newValue ? 'grant_perm' : 'revoke_perm',
-                            { permission: field, new_value: newValue, auto_granted_admin: autoGrantedAdmin },
-                            reason
-                        );
-                    }
-                    await loadUsers();
-                } catch (err) {
-                    // 静默
-                }
-            }
-
-            // ================================================================
-            //  批量修改单个用户（所有权限）
-            // ================================================================
-            async function batchEditUser(userNumber) {
-                const targetUser = allUsers.find(u => u.user_number === userNumber);
-                if (!targetUser) return;
-                if (!canModifyUser(targetUser)) return;
-                if (!currentProfile || !currentProfile.is_super_admin) return;
-
-                const permissions = [
-                    { key: 'is_banned', label: '进入主站', value: targetUser.is_banned || false },
-                    { key: 'is_cheater', label: '学术不端', value: targetUser.is_cheater || false },
-                    { key: 'can_speak', label: '自由发言', value: targetUser.can_speak !== false },
-                    { key: 'is_admin', label: '进入后台', value: targetUser.is_admin || false },
-                    { key: 'can_manage_users', label: '用户管理', value: targetUser.can_manage_users || false },
-                    { key: 'can_manage_posts', label: '秩序管理', value: targetUser.can_manage_posts || false },
-                ];
-
-                if (currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin) {
-                    permissions.push({ key: 'is_super_admin', label: '超级管理', value: targetUser.is_super_admin || false });
-                }
-
-                const checkboxHtml = permissions.map(p => {
-                    const checked = p.value ? 'checked' : '';
-                    return `<label style="display:inline-flex;align-items:center;gap:6px;margin:3px 16px 3px 0;font-size:14px;cursor:pointer;">
-            <input type="checkbox" id="batch-${p.key}" ${checked}>
-            ${p.label}
-            <span style="font-size:12px;color:#999;">(${p.value ? '已授予' : '已撤销'})</span>
-        </label>`;
-                }).join('');
-
-                const { value } = await Swal.fire({
-                    title: `批量修改 — ${escapeHtmlAttr(targetUser.username || '未命名')}`,
-                    html: `
-            <div style="display:flex;flex-direction:column;align-items:center;max-height:400px;overflow-y:auto;padding:4px 0;">
-                <div style="margin-bottom:8px;color:#666;font-size:13px;text-align:center;">勾选目标状态（勾=授予 / 不勾=撤销），确认后将批量更新。</div>
-                <div style="display:flex;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">${checkboxHtml}</div>
-                <textarea id="batch-reason" class="swal2-textarea" placeholder="请输入操作原因（必填）..." rows="3" style="width:100%;max-width:460px;text-align:left;margin:0 auto;display:block;"></textarea>
-            </div>
-        `,
-                    showCancelButton: true,
-                    confirmButtonText: '确认更新',
-                    cancelButtonText: '取消',
-                    width: 520,
-                    focusConfirm: false,
-                    preConfirm: () => {
-                        const reason = (document.getElementById('batch-reason').value || '').trim();
-                        if (!reason) { Swal.showValidationMessage('原因不能为空'); return false; }
-                        const updates = {};
-                        permissions.forEach(p => {
-                            const el = document.getElementById('batch-' + p.key);
-                            updates[p.key] = el.checked;
-                        });
-                        return { updates, reason };
-                    }
-                });
-
-                if (!value) return;
-
-                const { updates, reason } = value;
-
-                const hasChange = permissions.some(p => updates[p.key] !== p.value);
-                if (!hasChange) {
-                    Swal.fire({ icon: 'info', title: '没有任何变更', timer: 1200, showConfirmButton: false });
+            // ===== 确认修改 =====
+            async function applyUserChanges(userNumber) {
+                const changes = pendingChanges[userNumber];
+                if (!changes || Object.keys(changes).length === 0) {
+                    Swal.fire({ icon: 'info', title: '没有待修改的权限', timer: 1200 });
                     return;
                 }
+                const reason = await promptReason('确认修改权限');
+                if (!reason) return;
 
                 const updateObj = {};
-                let autoGrantedAdmin = false;
-
-                for (const p of permissions) {
-                    const newVal = updates[p.key];
-                    const oldVal = p.value;
-                    if (newVal !== oldVal) {
-                        updateObj[p.key] = newVal;
-                    }
+                let autoGrantAdmin = false;
+                for (const [field, value] of Object.entries(changes)) {
+                    updateObj[field] = value;
                 }
-
-                if (updates.can_manage_users || updates.can_manage_posts) {
-                    if (!targetUser.is_admin && !updates.is_admin) {
-                        updateObj.is_admin = true;
-                        autoGrantedAdmin = true;
-                    }
-                }
-
-                if (updateObj.is_admin !== undefined || updateObj.can_manage_users !== undefined || updateObj.can_manage_posts !== undefined) {
-                    const newAdmin = updateObj.is_admin !== undefined ? updateObj.is_admin : targetUser.is_admin;
-                    const currentTag = targetUser.user_tag || '';
-                    if (newAdmin) {
-                        updateObj.user_tag = (currentTag === '' || currentTag === '管理员') ? '管理员' : currentTag;
-                        updateObj.username_color = COLOR_PURPLE;
-                    } else {
-                        updateObj.user_tag = (currentTag === '管理员') ? null : currentTag;
-                        updateObj.username_color = COLOR_RED;
-                    }
-                }
-
-                if (updateObj.is_cheater !== undefined) {
-                    if (updateObj.is_cheater) {
-                        if (!targetUser.is_admin) {
-                            updateObj.user_tag = '作弊者';
-                        }
-                        updateObj.username_color = COLOR_BROWN;
-                    } else {
-                        if (targetUser.is_admin) {
-                            updateObj.username_color = COLOR_PURPLE;
-                        } else {
-                            updateObj.user_tag = null;
-                            updateObj.username_color = COLOR_RED;
-                        }
-                    }
+                const targetUser = allUsers.find(u => u.user_number === userNumber);
+                if ((updateObj.can_manage_users === true || updateObj.can_manage_posts === true) &&
+                    targetUser && !targetUser.is_admin) {
+                    updateObj.is_admin = true;
+                    autoGrantAdmin = true;
                 }
 
                 try {
                     await updateUserField(userNumber, updateObj);
                     const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        const changes = permissions.filter(p => updates[p.key] !== p.value).map(p => ({ permission: p.key, new_value: updates[p.key] }));
-                        await insertOstrakonLog(
-                            adminId,
-                            targetUser.id,
-                            'batch_update',
-                            { changes, auto_granted_admin: autoGrantedAdmin },
-                            reason
-                        );
-                    }
-                    await loadUsers();
-                } catch (err) {
-                    // 静默
-                }
-            }
-
-            // ================================================================
-            //  封禁切换
-            // ================================================================
-            async function toggleBan(userNumber) {
-                const targetUser = allUsers.find(u => u.user_number === userNumber);
-                if (!targetUser) return;
-                if (!canModifyUser(targetUser)) return;
-
-                const current = targetUser.is_banned || false;
-                const newValue = !current;
-                const actionName = newValue ? '撤销进入主站权限' : '授予进入主站权限';
-                const reason = await promptReason(actionName);
-                if (!reason) return;
-
-                await updateUserField(userNumber, { is_banned: newValue });
-
-                const adminId = await getCurrentAdminId();
-                if (adminId) {
-                    await insertOstrakonLog(
-                        adminId,
-                        targetUser.id,
-                        newValue ? 'ban' : 'unban',
-                        { permission: 'is_banned', new_value: newValue },
-                        reason
-                    );
-                }
-                await loadUsers();
-            }
-
-            // ================================================================
-            //  头像上传
-            // ================================================================
-            async function uploadAvatarForUser(userNumber, file) {
-                const targetUser = allUsers.find(u => u.user_number === userNumber);
-                if (!targetUser) throw new Error('用户不存在');
-                if (!canModifyUser(targetUser)) throw new Error('无权限');
-                if (!file.type.startsWith('image/')) throw new Error('请选择图片文件');
-
-                const fileExt = file.name.split('.').pop();
-                const filePath = targetUser.id + '/avatar_' + Date.now() + '.' + fileExt;
-
-                const { error: uploadError } = await supabase.storage
-                    .from('avatars')
-                    .upload(filePath, file, { upsert: true });
-                if (uploadError) throw new Error('上传失败: ' + uploadError.message);
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('avatars')
-                    .getPublicUrl(filePath);
-
-                await updateUserField(userNumber, { avatar_url: publicUrl });
-                return publicUrl;
-            }
-
-            // ================================================================
-            //  批量操作
-            // ================================================================
-            async function batchAction(actionName, updateObj) {
-                const ids = JSON.parse(batchBar.dataset.selected || '[]');
-                if (ids.length === 0) return;
-                const targetUsers = ids.map(id => allUsers.find(u => u.user_number === id)).filter(u => u && canModifyUser(u));
-                if (targetUsers.length === 0) return;
-                const filteredIds = targetUsers.map(u => u.user_number);
-                const reason = await promptReason(actionName);
-                if (!reason) return;
-
-                try {
-                    const { data: users, error: fetchErr } = await supabase
-                        .from('profiles')
-                        .select('user_number, id')
-                        .in('user_number', filteredIds);
-                    if (fetchErr) throw fetchErr;
-
-                    const { error } = await supabase.from('profiles').update(updateObj).in('user_number', filteredIds);
-                    if (error) throw error;
-
-                    for (const uid of filteredIds) {
-                        const target = allUsers.find(u => u.user_number === uid);
-                        if (target) Object.assign(target, updateObj);
-                    }
-
-                    const adminId = await getCurrentAdminId();
-                    if (adminId) {
-                        let actionType = 'grant_perm';
-                        let field = Object.keys(updateObj)[0];
-                        let newValue = updateObj[field];
-                        if (field === 'is_banned') actionType = newValue ? 'ban' : 'unban';
-                        else actionType = newValue ? 'grant_perm' : 'revoke_perm';
-                        for (const user of users) {
+                    if (adminId && targetUser) {
+                        for (const [field, value] of Object.entries(changes)) {
                             await insertOstrakonLog(
                                 adminId,
-                                user.id,
-                                actionType,
-                                { permission: field, new_value: newValue },
+                                targetUser.id,
+                                value ? 'grant_perm' : 'revoke_perm',
+                                { permission: field, new_value: value, auto_granted_admin: autoGrantAdmin },
                                 reason
                             );
                         }
                     }
-
-                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    delete pendingChanges[userNumber];
                     await loadUsers();
                 } catch (err) {
-                    // 静默
+                    Swal.fire({ icon: 'error', title: '更新失败', text: err.message });
                 }
             }
 
-            // ================================================================
-            //  通知未读数
-            // ================================================================
-            async function fetchUnreadCount() {
-                if (!currentProfile) return;
-                try {
-                    const { count, error } = await supabase.from('notifications').select('*', {
-                        count: 'exact',
-                        head: true
-                    }).eq('user_number', currentProfile.user_number).eq('read', false);
-                    if (!error && count !== null) {
-                        if (count > 0) {
-                            bellBadge.textContent = count > 99 ? '99+' : count;
-                            bellBadge.style.display = 'inline-flex';
-                        } else { bellBadge.style.display = 'none'; }
-                    }
-                } catch (err) { /* 静默 */ }
-            }
-
-            // ================================================================
-            //  ====== 在线用户（概要） ======
-            // ================================================================
-            async function updateLastSeen() {
-                if (!currentUser) return;
-                try {
-                    await supabase
-                        .from('profiles')
-                        .update({ last_seen: new Date().toISOString() })
-                        .eq('id', currentUser.id);
-                } catch (err) { /* 静默 */ }
-            }
-
-            async function fetchOnlineUsers() {
-                if (!currentUser) return;
-                const cutoff = new Date(Date.now() - ONLINE_THRESHOLD * 1000).toISOString();
-                try {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('user_number, username, avatar_url, last_seen')
-                        .gt('last_seen', cutoff)
-                        .order('last_seen', { ascending: false });
-                    if (error) throw error;
-                    renderOnlineUsers(data || []);
-                } catch (err) { /* 静默 */ }
-            }
-
-            function renderOnlineUsers(users) {
+            // ===== 更新在线概览 =====
+            function updateOnlineSummary() {
                 const container = document.getElementById('onlineAvatars');
                 const countEl = document.getElementById('onlineCount');
-                if (!container) return;
-
-                countEl.innerHTML = `共 <strong>${users.length}</strong> 人`;
-
-                if (users.length === 0) {
+                if (!container || !countEl) return;
+                const onlineUsers = allUsers.filter(u => isUserOnline(u));
+                countEl.innerHTML = `共 <strong>${onlineUsers.length}</strong> 人`;
+                if (onlineUsers.length === 0) {
                     container.innerHTML = '<span class="online-empty">暂无在线用户</span>';
                     return;
                 }
-
                 let html = '';
-                users.forEach(user => {
+                onlineUsers.forEach(user => {
                     const name = user.username || '用户';
                     const avatar = user.avatar_url || letterAvatar(name);
-                    html += `
-                <a href="/user/${user.user_number}" class="online-avatar-item" title="${escapeHtmlAttr(name)}">
-                    <img src="${avatar}" alt="${escapeHtmlAttr(name)}" onerror="this.onerror=null;this.src='${letterAvatar(name)}'">
-                    <span class="online-name">${escapeHtml(name)}</span>
-                </a>
-            `;
+                    html += `<a href="/user/${user.user_number}" class="online-avatar-item" title="${escapeHtmlAttr(name)}">
+                        <img src="${avatar}" alt="${escapeHtmlAttr(name)}" onerror="this.onerror=null;this.src='${letterAvatar(name)}'">
+                        <span class="online-name">${escapeHtml(name)}</span>
+                    </a>`;
                 });
                 container.innerHTML = html;
             }
 
-            // ================================================================
-            //  初始化
-            // ================================================================
-            async function init() {
-                const hasAccess = await checkAccess();
-                if (!hasAccess) return;
-
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) { window.location.href = '/login'; return; }
-                    currentUser = session.user;
-                    const { data: profile, error: profileError } = await supabase.from('profiles')
-                        .select('user_number, username, can_manage_users, is_super_admin')
-                        .eq('id', currentUser.id)
-                        .single();
-                    if (profileError || !profile) { window.location.href = '/'; return; }
-                    currentProfile = profile;
-
-                    if (currentProfile) {
-                        const adminOnlyBtns = ['batchGrantAdmin', 'batchRevokeAdmin', 'batchGrantUserMgmt', 'batchRevokeUserMgmt', 'batchGrantPostMgmt', 'batchRevokePostMgmt', 'batchGrantSuperAdmin', 'batchRevokeSuperAdmin'];
-                        const isSuper = currentProfile.is_super_admin === true;
-                        const isNumberOne = currentProfile.user_number === 1 && currentProfile.is_super_admin;
-                        adminOnlyBtns.forEach(id => {
-                            const btn = document.getElementById(id);
-                            if (btn) {
-                                if (id.includes('SuperAdmin')) {
-                                    btn.style.display = isNumberOne ? 'inline-block' : 'none';
-                                } else {
-                                    btn.style.display = isSuper ? 'inline-block' : 'none';
-                                }
-                            }
-                        });
-                    }
-
-                    userDisplay.textContent = profile.username || currentUser.email;
-                    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-                        await supabase.auth.signOut();
-                        window.location.href = '/';
-                    });
-
-                    // 加载用户列表（包含 last_seen）
-                    await loadUsers();
-
-                    // 在线用户概要
-                    await updateLastSeen();
-                    await fetchOnlineUsers();
-
-                    searchInput.addEventListener('input', filterUsers);
-                    document.querySelectorAll('.filter-tag').forEach(el => {
-                        el.addEventListener('click', function () {
-                            const key = this.dataset.key;
-                            toggleFilterTag(key);
-                        });
-                    });
-
-                    await fetchUnreadCount();
-                    setInterval(fetchUnreadCount, 30000);
-                } catch (err) {
-                    window.location.href = '/';
-                }
-            }
-
-            // ================================================================
-            //  加载用户（包含 last_seen）
-            // ================================================================
+            // ===== 加载用户 =====
             async function loadUsers() {
                 try {
                     const { data, error } = await supabase.from('profiles')
-                        .select(
-                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url, is_super_admin, last_seen'
-                        )
+                        .select('id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url, is_super_admin, last_seen')
                         .order('user_number');
                     if (error) throw error;
                     allUsers = data;
                     Object.keys(filterStates).forEach(k => filterStates[k] = 'off');
                     updateFilterTags();
                     filterUsers();
+                    updateOnlineSummary();
                 } catch (err) {
                     userList.innerHTML = `<div class="error">加载用户失败：${err.message}</div>`;
                 }
             }
 
-            // ================================================================
-            //  筛选状态（新增 online / offline）
-            // ================================================================
+            // ===== 筛选状态 =====
             const filterStates = {
                 admin: 'off',
                 user_mgmt: 'off',
@@ -1893,112 +1395,87 @@
                 enter_site: 'off',
                 cheater: 'off',
                 speak: 'off',
+                status: 'off'
             };
-
             function toggleFilterTag(key) {
+                if (key === 'status') {
+                    const current = filterStates[key] || 'off';
+                    if (current === 'off') filterStates[key] = 'online';
+                    else if (current === 'online') filterStates[key] = 'offline';
+                    else if (current === 'offline') filterStates[key] = 'off';
+                    updateFilterTags();
+                    filterUsers();
+                    return;
+                }
                 const current = filterStates[key] || 'off';
                 if (current === 'off') filterStates[key] = 'has';
                 else if (current === 'has') filterStates[key] = 'no';
                 else if (current === 'no') filterStates[key] = 'off';
-                // 互斥：如果开启在线，则关闭离线；反之亦然
-                if (key === 'online' && filterStates[key] !== 'off') {
-                    filterStates['offline'] = 'off';
-                } else if (key === 'offline' && filterStates[key] !== 'off') {
-                    filterStates['online'] = 'off';
-                }
                 updateFilterTags();
                 filterUsers();
             }
-
             function updateFilterTags() {
                 document.querySelectorAll('.filter-tag').forEach(el => {
                     const key = el.dataset.key;
                     const state = filterStates[key] || 'off';
                     el.className = 'filter-tag';
-                    // 在线/离线用不同颜色
-                    if (state === 'has') {
-                        if (key === 'online') el.classList.add('active-online');
-                        else if (key === 'offline') el.classList.add('active-offline');
-                        else el.classList.add('active-green');
-                    } else if (state === 'no') {
-                        if (key === 'online') el.classList.add('active-offline'); // 红色表示“非在线”
-                        else if (key === 'offline') el.classList.add('active-online'); // 绿色表示“非离线”
-                        else el.classList.add('active-red');
+                    if (state === 'has') el.classList.add('active-green');
+                    else if (state === 'no') el.classList.add('active-red');
+                    else if (key === 'status') {
+                        if (state === 'online') el.classList.add('active-online');
+                        else if (state === 'offline') el.classList.add('active-offline');
                     }
                     el.dataset.state = state;
                 });
             }
 
-            // ================================================================
-            //  过滤函数（支持搜索“在线”/“离线”）
-            // ================================================================
+            // ===== 过滤 =====
             function filterUsers() {
                 const keyword = searchInput.value.trim().toLowerCase();
-                // 判断是否专门搜索在线/离线
-                let extraOnlineFilter = null;
-                if (keyword === '在线') extraOnlineFilter = 'online';
-                else if (keyword === '离线') extraOnlineFilter = 'offline';
-
                 filteredUsers = allUsers.filter(user => {
                     let match = true;
-
-                    // 文本匹配（如果关键词不是“在线/离线”则正常文本搜索）
-                    if (keyword && !extraOnlineFilter) {
+                    if (keyword) {
                         const userNumber = String(user.user_number);
                         const username = (user.username || '').toLowerCase();
                         const remark = (user.remark || '').toLowerCase();
                         const tag = (user.user_tag || '').toLowerCase();
                         const roleLabel = user.is_admin ? '管理员' : '普通用户';
-                        const onlineText = isUserOnline(user) ? '在线' : '离线';
-
-                        if (userNumber !== keyword &&
-                            username !== keyword &&
-                            remark !== keyword &&
-                            tag !== keyword &&
-                            roleLabel !== keyword &&
-                            onlineText !== keyword) {
+                        if (userNumber !== keyword && username !== keyword && remark !== keyword && tag !== keyword && roleLabel !== keyword) {
                             match = false;
                         }
                     }
-
                     if (match) {
-                        // 处理 filter-tags
                         for (const key in filterStates) {
                             const state = filterStates[key];
                             if (state === 'off') continue;
-
                             let hasPermission = false;
-                            switch (key) {
-                                case 'admin': hasPermission = user.is_admin; break;
-                                case 'user_mgmt': hasPermission = user.can_manage_users; break;
-                                case 'post_mgmt': hasPermission = user.can_manage_posts; break;
-                                case 'enter_site': hasPermission = !user.is_banned; break;
-                                case 'cheater': hasPermission = user.is_cheater; break;
-                                case 'speak': hasPermission = user.can_speak !== false; break;
-                                case 'online': hasPermission = isUserOnline(user); break;
-                                case 'offline': hasPermission = !isUserOnline(user); break;
+                            if (key === 'status') {
+                                if (state === 'online') hasPermission = isUserOnline(user);
+                                else if (state === 'offline') hasPermission = !isUserOnline(user);
+                            } else {
+                                switch (key) {
+                                    case 'admin': hasPermission = user.is_admin; break;
+                                    case 'user_mgmt': hasPermission = user.can_manage_users; break;
+                                    case 'post_mgmt': hasPermission = user.can_manage_posts; break;
+                                    case 'enter_site': hasPermission = !user.is_banned; break;
+                                    case 'cheater': hasPermission = user.is_cheater; break;
+                                    case 'speak': hasPermission = user.can_speak !== false; break;
+                                }
+                                if (state === 'has' && !hasPermission) { match = false; break; }
+                                if (state === 'no' && hasPermission) { match = false; break; }
                             }
-
-                            if (state === 'has' && !hasPermission) { match = false; break; }
-                            if (state === 'no' && hasPermission) { match = false; break; }
+                            if (key === 'status') {
+                                if (state === 'online' && !hasPermission) { match = false; break; }
+                                if (state === 'offline' && !hasPermission) { match = false; break; }
+                            }
                         }
                     }
-
-                    // 额外处理搜索“在线/离线”
-                    if (match && extraOnlineFilter) {
-                        const isOnline = isUserOnline(user);
-                        if (extraOnlineFilter === 'online' && !isOnline) match = false;
-                        if (extraOnlineFilter === 'offline' && isOnline) match = false;
-                    }
-
                     return match;
                 });
                 renderUserList();
             }
 
-            // ================================================================
-            //  渲染用户列表（新增状态列）
-            // ================================================================
+            // ===== 渲染 =====
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
                     userList.innerHTML = '<div class="loading-text">没有找到匹配的用户</div>';
@@ -2008,22 +1485,22 @@
                 }
                 resultCount.textContent = `共 ${filteredUsers.length} 位用户`;
                 let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
-                    <th>注册时间</th>
-                    <th>用户编号</th>
-                    <th>头像</th>
-                    <th>用户名</th>
-                    <th>标签</th>
-                    <th>备注名</th>
-                    <th>用户类型</th>
-                    <th>权限</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="check-col"><input type="checkbox" id="selectAll" title="全选"></th>
+                            <th>注册时间</th>
+                            <th>用户编号</th>
+                            <th>头像</th>
+                            <th>用户名</th>
+                            <th>标签</th>
+                            <th>备注名</th>
+                            <th>用户类型</th>
+                            <th>权限</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
                 for (const user of filteredUsers) {
                     const isSelf = currentProfile.user_number === user.user_number;
                     const isAdmin = user.is_admin;
@@ -2032,25 +1509,16 @@
                     const online = isUserOnline(user);
                     const statusDotClass = online ? 'online' : 'offline';
                     const statusText = online ? '在线' : '离线';
-                    const statusTextClass = online ? 'online' : 'offline';
 
-                    // ---- 头像 ----
                     const username = user.username || '用户';
                     const avatarUrl = user.avatar_url || '';
                     const avatarImgSrc = avatarUrl || letterAvatar(username);
                     const avatarHtml = `<img class="avatar-image" data-user="${user.user_number}" src="${avatarImgSrc}" alt="${escapeHtmlAttr(username)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#f0f2f5;display:block;cursor:pointer;" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">`;
 
-                    // ---- 标签 ----
                     let tagDisplay = '';
-                    if (user.is_cheater) {
-                        if (user.is_admin) {
-                            tagDisplay = user.user_tag || '管理员';
-                        } else {
-                            tagDisplay = '作弊者';
-                        }
-                    } else {
-                        tagDisplay = user.user_tag || '';
-                    }
+                    if (user.is_admin) tagDisplay = user.user_tag || '管理员';
+                    else if (user.is_cheater) tagDisplay = '作弊者';
+                    else tagDisplay = user.user_tag || '';
                     let tagCellHtml = '';
                     if (tagDisplay) {
                         tagCellHtml = `<span class="user-tag-display" style="background-color:${userNameColor};">${escapeHtmlAttr(tagDisplay)}</span>`;
@@ -2058,13 +1526,43 @@
                         tagCellHtml = `<span style="color:#bbb;font-size:13px;">无</span>`;
                     }
 
-                    const userNameHtml = `
-            <span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>
-        `;
-
+                    const userNameHtml = `<span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>`;
                     const remarkDisplay = user.remark || '';
 
-                    // ---- 管理权限 ----
+                    // ---- 权限部分 ----
+                    const canEdit = canModifyUser(user);
+                    const pending = pendingChanges[user.user_number] || {};
+
+                    // 普通权限
+                    const isBanned = user.is_banned || false;
+                    const banPending = pending.is_banned !== undefined;
+                    const banVal = banPending ? pending.is_banned : isBanned;
+                    const banColor = banVal ? 'red' : 'green';
+                    const banLabel = '进入主站';
+                    const banHtml = canEdit ?
+                        `<span class="action-link ${banColor} ${banPending ? 'pending' : ''}" style="cursor:pointer;" data-action="toggle-local" data-user="${user.user_number}" data-field="is_banned" data-current="${isBanned}">${banLabel}</span>` :
+                        `<span class="action-link ${banColor} disabled" style="cursor:default;">${banLabel}</span>`;
+
+                    const isCheater = user.is_cheater || false;
+                    const cheaterPending = pending.is_cheater !== undefined;
+                    const cheaterVal = cheaterPending ? pending.is_cheater : isCheater;
+                    const cheaterColor = cheaterVal ? 'green' : 'red';
+                    const cheaterHtml = canEdit ?
+                        `<span class="action-link ${cheaterColor} ${cheaterPending ? 'pending' : ''}" style="cursor:pointer;" data-action="toggle-local" data-user="${user.user_number}" data-field="is_cheater" data-current="${isCheater}">学术不端</span>` :
+                        `<span class="action-link ${cheaterColor} disabled" style="cursor:default;">学术不端</span>`;
+
+                    const canSpeak = user.can_speak !== false;
+                    const speakPending = pending.can_speak !== undefined;
+                    const speakVal = speakPending ? pending.can_speak : canSpeak;
+                    const speakColor = speakVal ? 'green' : 'red';
+                    const speakHtml = canEdit ?
+                        `<span class="action-link ${speakColor} ${speakPending ? 'pending' : ''}" style="cursor:pointer;" data-action="toggle-local" data-user="${user.user_number}" data-field="can_speak" data-current="${canSpeak}">自由发言</span>` :
+                        `<span class="action-link ${speakColor} disabled" style="cursor:default;">自由发言</span>`;
+
+                    const normalLinksHtml = `${banHtml} | ${cheaterHtml} | ${speakHtml}`;
+                    const normalHtml = `<div class="perm-group-line"><span class="perm-cat">普通权限</span>${normalLinksHtml}</div>`;
+
+                    // 管理权限
                     const mgmtPerms = [];
                     if (currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin) {
                         mgmtPerms.push({ name: '超级管理', field: 'is_super_admin', on: !!user.is_super_admin });
@@ -2074,89 +1572,62 @@
                         { name: '用户管理', field: 'can_manage_users', on: !!user.can_manage_users },
                         { name: '秩序管理', field: 'can_manage_posts', on: !!user.can_manage_posts }
                     );
-
-                    const mgmtLinksHtml = mgmtPerms
-                        .map(p => {
-                            const color = p.on ? 'green' : 'red';
-                            const canEdit = currentProfile && currentProfile.is_super_admin && canModifyUser(user);
-                            if (canEdit) {
-                                return `<span class="action-link ${color}" style="cursor:pointer;" data-action="toggle-mgmt" data-user="${user.user_number}" data-field="${p.field}">${p.name}</span>`;
-                            } else {
-                                return `<span class="action-link ${color} disabled" style="cursor:default;">${p.name}</span>`;
-                            }
-                        })
-                        .join(' | ');
+                    const mgmtLinksHtml = mgmtPerms.map(p => {
+                        const pVal = pending[p.field] !== undefined ? pending[p.field] : p.on;
+                        const color = pVal ? 'green' : 'red';
+                        const pendingClass = pending[p.field] !== undefined ? 'pending' : '';
+                        const canEditThis = canEdit && (p.field !== 'is_super_admin' || (currentProfile.user_number === 1 && currentProfile.is_super_admin));
+                        if (canEditThis) {
+                            return `<span class="action-link ${color} ${pendingClass}" style="cursor:pointer;" data-action="toggle-local" data-user="${user.user_number}" data-field="${p.field}" data-current="${p.on}">${p.name}</span>`;
+                        } else {
+                            return `<span class="action-link ${color} disabled" style="cursor:default;">${p.name}</span>`;
+                        }
+                    }).join(' | ');
                     const mgmtHtml = `<div class="perm-group-line"><span class="perm-cat">管理权限</span>${mgmtLinksHtml}</div>`;
 
-                    // ---- 普通权限 ----
-                    const canEdit = canModifyUser(user);
+                    // 确认按钮（无撤销按钮）
+                    const hasPending = pendingChanges[user.user_number] && Object.keys(pendingChanges[user.user_number]).length > 0;
+                    const pendingButtonsHtml = `
+                        <div class="perm-group-line" style="margin-top:4px;">
+                            <button class="btn-sm confirm" data-action="apply-changes" data-user="${user.user_number}" ${!hasPending ? 'disabled' : ''}>确认修改</button>
+                        </div>
+                    `;
 
-                    const isBanned = user.is_banned || false;
-                    const banLabel = '进入主站';
-                    const banColor = isBanned ? 'red' : 'green';
-                    const banHtml = canEdit
-                        ? `<span class="action-link ${banColor}" style="cursor:pointer;" data-action="toggle-ban" data-user="${user.user_number}">${banLabel}</span>`
-                        : `<span class="action-link ${banColor} disabled" style="cursor:default;">${banLabel}</span>`;
-
-                    const isCheater = user.is_cheater || false;
-                    const cheaterLabel = '学术不端';
-                    const cheaterColor = isCheater ? 'green' : 'red';
-                    const cheaterHtml = canEdit
-                        ? `<span class="action-link ${cheaterColor}" style="cursor:pointer;" data-action="toggle-misconduct" data-user="${user.user_number}">${cheaterLabel}</span>`
-                        : `<span class="action-link ${cheaterColor} disabled" style="cursor:default;">${cheaterLabel}</span>`;
-
-                    const canSpeak = user.can_speak !== false;
-                    const speakColor = canSpeak ? 'green' : 'red';
-                    const speakHtml = canEdit
-                        ? `<span class="action-link ${speakColor}" style="cursor:pointer;" data-action="toggle-speak" data-user="${user.user_number}">自由发言</span>`
-                        : `<span class="action-link ${speakColor} disabled" style="cursor:default;">自由发言</span>`;
-
-                    const normalLinksHtml = `${banHtml} | ${cheaterHtml} | ${speakHtml}`;
-                    const normalHtml = `<div class="perm-group-line"><span class="perm-cat">普通权限</span>${normalLinksHtml}</div>`;
-
-                    // ---- 批量修改 ----
-                    const batchCanEdit = canEdit && currentProfile && currentProfile.is_super_admin;
-                    const batchHtml = batchCanEdit
-                        ? `<span class="action-link green" style="cursor:pointer;font-weight:500;" data-action="batch-edit" data-user="${user.user_number}">批量修改</span>`
-                        : `<span class="action-link green disabled" style="cursor:default;">批量修改</span>`;
-                    const batchLineHtml = `<div class="perm-group-line"><span class="perm-cat">批量操作</span>${batchHtml}</div>`;
-
-                    const permSummaryHtml = `${normalHtml}${mgmtHtml}${batchLineHtml}`;
+                    const permSummaryHtml = `${normalHtml}${mgmtHtml}${pendingButtonsHtml}`;
 
                     // ---- 复选框 ----
                     const isDisabled = !canEdit;
-                    const statusClass = online ? 'online' : 'offline';  // 新增
-
-                    // ---- 状态列 ----
-                    const statusHtml = `<span class="status-dot ${statusDotClass}"></span>`;
+                    const statusClass = online ? 'online' : 'offline';
 
                     html += `
-            <tr>
-                <td class="check-col" data-label="选择">
-                    <input type="checkbox" class="row-checkbox ${statusClass}" data-user="${user.user_number}" ${isDisabled ? 'disabled' : ''}>
-                </td>
-                <td data-label="注册时间">${formatTime(user.created_at)}</td>
-                <td data-label="用户编号"><a href="/user/${user.user_number}" style="color:#2c3e50;text-decoration:none;" onmouseout="this.style.textDecoration='none'">${user.user_number}</a></td>
-                <td data-label="头像">${avatarHtml}</td>
-                <td data-label="用户名">${userNameHtml}</td>
-                <td data-label="标签" class="tag-cell" data-user="${user.user_number}" data-current="${escapeHtmlAttr(tagDisplay)}" data-cheater="${user.is_cheater}">${tagCellHtml}</td>
-                <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
-                <td data-label="用户类型">${roleLabel}</td>
-                <td data-label="权限">${permSummaryHtml}</td>
-            </tr>
-        `;
+                    <tr>
+                        <td class="check-col" data-label="选择">
+                            <input type="checkbox" class="row-checkbox ${statusClass}" data-user="${user.user_number}" ${isDisabled ? 'disabled' : ''}>
+                        </td>
+                        <td data-label="注册时间">${formatTime(user.created_at)}</td>
+                        <td data-label="用户编号"><a href="/user/${user.user_number}" style="color:#2c3e50;text-decoration:none;" onmouseout="this.style.textDecoration='none'">${user.user_number}</a></td>
+                        <td data-label="头像">${avatarHtml}</td>
+                        <td data-label="用户名">${userNameHtml}</td>
+                        <td data-label="标签" class="tag-cell" data-user="${user.user_number}" data-current="${escapeHtmlAttr(tagDisplay)}" data-cheater="${user.is_cheater}">${tagCellHtml}</td>
+                        <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
+                        <td data-label="用户类型">${roleLabel}</td>
+                        <td data-label="权限">${permSummaryHtml}</td>
+                    </tr>
+                    `;
                 }
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ========== 事件绑定（与之前相同） ==========
+                // ===== 绑定事件 =====
                 // 1. 用户名双击编辑
                 document.querySelectorAll('.username-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
+                        const uid = parseInt(this.dataset.user);
+                        const targetUser = allUsers.find(u => u.user_number === uid);
+                        if (!targetUser || !canModifyUser(targetUser)) return;
                         enterEditModeUsername(this);
                     });
-
                     async function enterEditModeUsername(el) {
                         const uid = parseInt(el.dataset.user);
                         const current = el.dataset.current || el.textContent.trim();
@@ -2170,26 +1641,14 @@
                         input.select();
                         const save = async () => {
                             const val = input.value.trim();
-                            if (val === current) {
-                                el.textContent = current;
-                                el.dataset.current = current;
-                                return;
-                            }
+                            if (val === current) { el.textContent = current; el.dataset.current = current; return; }
                             if (!val) return;
-                            try {
-                                await updateUserField(uid, { username: val });
-                                await loadUsers();
-                            } catch (err) {
-                                // 静默
-                            }
+                            try { await updateUserField(uid, { username: val }); await loadUsers(); } catch (err) { /* 静默 */ }
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
                             if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-                            if (e.key === 'Escape') {
-                                el.textContent = current;
-                                el.dataset.current = current;
-                            }
+                            if (e.key === 'Escape') { el.textContent = current; el.dataset.current = current; }
                         });
                     }
                 });
@@ -2199,6 +1658,8 @@
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
+                        const targetUser = allUsers.find(u => u.user_number === uid);
+                        if (!targetUser || !canModifyUser(targetUser)) return;
                         const cur = this.dataset.value || '';
                         const input = document.createElement('input');
                         input.type = 'text';
@@ -2210,26 +1671,13 @@
                         input.select();
                         const save = async () => {
                             const val = input.value.trim();
-                            if (val === cur) {
-                                this.textContent = cur || '-';
-                                this.dataset.value = cur;
-                                return;
-                            }
-                            try {
-                                await updateUserField(uid, { remark: val });
-                                await loadUsers();
-                            } catch (err) {
-                                // 静默
-                            }
+                            if (val === cur) { this.textContent = cur || '-'; this.dataset.value = cur; return; }
+                            try { await updateUserField(uid, { remark: val }); await loadUsers(); } catch (err) { /* 静默 */ }
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
                             if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-                            if (e.key === 'Escape') {
-                                const p = this.parentNode;
-                                p.textContent = cur || '-';
-                                p.dataset.value = cur;
-                            }
+                            if (e.key === 'Escape') { const p = this.parentNode; p.textContent = cur || '-'; p.dataset.value = cur; }
                         });
                     });
                 });
@@ -2239,6 +1687,8 @@
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
+                        const targetUser = allUsers.find(u => u.user_number === uid);
+                        if (!targetUser || !canModifyUser(targetUser)) return;
                         const isCheater = this.dataset.cheater === 'true';
                         if (isCheater) return;
                         const current = this.dataset.current || '';
@@ -2250,47 +1700,26 @@
                         this.appendChild(input);
                         input.focus();
                         input.select();
-
                         const save = async () => {
                             let val = input.value.trim();
                             const targetUser = allUsers.find(u => u.user_number === uid);
-                            if (targetUser && targetUser.is_admin && val === '') {
-                                val = '管理员';
-                            }
-                            if (val === current) {
-                                renderTagCell(this, uid, current);
-                                return;
-                            }
-                            try {
-                                await updateUserField(uid, { user_tag: val || null });
-                                await loadUsers();
-                            } catch (err) {
-                                renderTagCell(this, uid, current);
-                            }
+                            if (targetUser && targetUser.is_admin && val === '') val = '管理员';
+                            if (val === current) { renderTagCell(this, uid, current); return; }
+                            try { await updateUserField(uid, { user_tag: val || null }); await loadUsers(); } catch (err) { renderTagCell(this, uid, current); }
                         };
-
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
                             if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-                            if (e.key === 'Escape') {
-                                renderTagCell(el, uid, current);
-                            }
+                            if (e.key === 'Escape') { renderTagCell(el, uid, current); }
                         });
                     });
                 });
-
                 function renderTagCell(el, uid, tagValue) {
                     const targetUser = allUsers.find(u => u.user_number === uid);
-                    if (!targetUser) {
-                        el.textContent = tagValue || '-';
-                        el.dataset.current = tagValue || '';
-                        return;
-                    }
+                    if (!targetUser) { el.textContent = tagValue || '-'; el.dataset.current = tagValue || ''; return; }
                     const color = getUserDisplayColor(targetUser);
                     let display = tagValue || '';
-                    if (targetUser.is_cheater) {
-                        display = '作弊者';
-                    }
+                    if (targetUser.is_cheater) display = '作弊者';
                     if (display) {
                         el.innerHTML = `<span class="user-tag-display" style="background-color:${color};">${escapeHtmlAttr(display)}</span>`;
                     } else {
@@ -2300,43 +1729,22 @@
                     el.dataset.cheater = targetUser.is_cheater ? 'true' : 'false';
                 }
 
-                // 4. 权限操作事件
-                document.querySelectorAll('[data-action="toggle-mgmt"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
+                // 4. 本地权限切换事件
+                document.querySelectorAll('[data-action="toggle-local"]').forEach(el => {
+                    el.addEventListener('click', function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const field = this.dataset.field;
-                        await toggleManagementPerm(uid, field);
-                    });
-                });
-                document.querySelectorAll('[data-action="toggle-ban"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        await toggleBan(uid);
-                    });
-                });
-                document.querySelectorAll('[data-action="toggle-misconduct"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        await toggleAcademicMisconduct(uid);
-                    });
-                });
-                document.querySelectorAll('[data-action="toggle-speak"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
-                        e.stopPropagation();
-                        const uid = parseInt(this.dataset.user);
-                        await toggleCanSpeak(uid);
+                        const currentVal = this.dataset.current === 'true'; // 字符串转布尔
+                        toggleLocalPermission(uid, field, currentVal);
                     });
                 });
 
-                // 5. 批量修改
-                document.querySelectorAll('[data-action="batch-edit"]').forEach(el => {
-                    el.addEventListener('click', async function (e) {
-                        e.stopPropagation();
+                // 5. 确认修改按钮事件
+                document.querySelectorAll('[data-action="apply-changes"]').forEach(el => {
+                    el.addEventListener('click', function () {
                         const uid = parseInt(this.dataset.user);
-                        await batchEditUser(uid);
+                        applyUserChanges(uid);
                     });
                 });
 
@@ -2357,13 +1765,14 @@
                             const file = this.files[0];
                             if (!file) { this.remove(); return; }
                             try {
-                                await uploadAvatarForUser(uid, file);
+                                const fileExt = file.name.split('.').pop();
+                                const filePath = targetUser.id + '/avatar_' + Date.now() + '.' + fileExt;
+                                const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+                                if (uploadError) throw uploadError;
+                                const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+                                await updateUserField(uid, { avatar_url: publicUrl });
                                 await loadUsers();
-                            } catch (err) {
-                                // 静默
-                            } finally {
-                                this.remove();
-                            }
+                            } catch (err) { /* 静默 */ } finally { this.remove(); }
                         });
                         input.click();
                     });
@@ -2381,7 +1790,7 @@
                 updateBatchBar();
             }
 
-            // ---------- 批量栏状态 ----------
+            // ===== 批量栏 =====
             function updateBatchBar() {
                 const checked = document.querySelectorAll('.row-checkbox:checked:not(:disabled)');
                 const count = checked.length;
@@ -2392,12 +1801,41 @@
                 batchBar.dataset.selected = JSON.stringify(ids);
             }
 
-            // ---------- 批量按钮事件 ----------
-            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('授予进入主站权限', { is_banned: false }));
-            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('撤销进入主站权限', { is_banned: true }));
-            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('授予自由发言权限', { can_speak: true }));
-            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('撤销自由发言权限', { can_speak: false }));
+            // ===== 批量操作 =====
+            async function batchAction(actionName, updateObj) {
+                const ids = JSON.parse(batchBar.dataset.selected || '[]');
+                if (ids.length === 0) return;
+                const targetUsers = ids.map(id => allUsers.find(u => u.user_number === id)).filter(u => u && canModifyUser(u));
+                if (targetUsers.length === 0) return;
+                const filteredIds = targetUsers.map(u => u.user_number);
+                const reason = await promptReason(actionName);
+                if (!reason) return;
+                try {
+                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number, id').in('user_number', filteredIds);
+                    if (fetchErr) throw fetchErr;
+                    const { error } = await supabase.from('profiles').update(updateObj).in('user_number', filteredIds);
+                    if (error) throw error;
+                    const adminId = await getCurrentAdminId();
+                    if (adminId) {
+                        let actionType = 'grant_perm';
+                        let field = Object.keys(updateObj)[0];
+                        let newValue = updateObj[field];
+                        if (field === 'is_banned') actionType = newValue ? 'ban' : 'unban';
+                        else actionType = newValue ? 'grant_perm' : 'revoke_perm';
+                        for (const user of users) {
+                            await insertOstrakonLog(adminId, user.id, actionType, { permission: field, new_value: newValue }, reason);
+                        }
+                    }
+                    document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
+                    await loadUsers();
+                } catch (err) { /* 静默 */ }
+            }
 
+            // ===== 批量按钮事件 =====
+            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('批量授予进入主站权限', { is_banned: false }));
+            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('批量撤销进入主站权限', { is_banned: true }));
+            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('批量授予自由发言权限', { can_speak: true }));
+            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('批量撤销自由发言权限', { can_speak: false }));
             document.getElementById('batchGrantSuperAdmin').addEventListener('click', async () => {
                 if (!currentProfile || currentProfile.user_number !== 1 || !currentProfile.is_super_admin) return;
                 await batchAction('批量授予超级管理权限', { is_super_admin: true });
@@ -2407,37 +1845,188 @@
                 await batchAction('批量撤销超级管理权限', { is_super_admin: false });
             });
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予进入后台权限', { is_admin: true });
             });
             document.getElementById('batchRevokeAdmin').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销进入后台权限', { is_admin: false });
             });
             document.getElementById('batchGrantUserMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予用户管理权限', { can_manage_users: true });
             });
             document.getElementById('batchRevokeUserMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销用户管理权限', { can_manage_users: false });
             });
             document.getElementById('batchGrantPostMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予秩序管理权限', { can_manage_posts: true });
             });
             document.getElementById('batchRevokePostMgmt').addEventListener('click', async () => {
-                if (!currentProfile || !currentProfile.is_super_admin) return;
+                if (!currentProfile || (!currentProfile.can_manage_users && !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销秩序管理权限', { can_manage_posts: false });
             });
 
-            // ---------- 启动 ----------
+            // ===== 通知未读数 =====
+            async function fetchUnreadCount() {
+                const bellBadge = document.getElementById('bell-badge');
+                if (!bellBadge) return;
+                if (!currentProfile) return;
+                try {
+                    const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_number', currentProfile.user_number).eq('read', false);
+                    if (!error && count !== null) {
+                        if (count > 0) { bellBadge.textContent = count > 99 ? '99+' : count; bellBadge.style.display = 'inline-flex'; } else { bellBadge.style.display = 'none'; }
+                    }
+                } catch (err) { /* 静默 */ }
+            }
+
+            // ===== 更新 last_seen =====
+            async function updateLastSeen() {
+                if (!currentUser) return;
+                try { await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id); } catch (err) { /* 静默 */ }
+            }
+
+            // ===== 初始化 =====
+            async function init() {
+                const hasAccess = await checkAccess();
+                if (!hasAccess) return;
+
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) { window.location.href = '/login'; return; }
+                    currentUser = session.user;
+                    const { data: profile, error: profileError } = await supabase.from('profiles')
+                        .select('user_number, username, can_manage_users, is_super_admin')
+                        .eq('id', currentUser.id)
+                        .single();
+                    if (profileError || !profile) { window.location.href = '/'; return; }
+                    currentProfile = profile;
+
+                    // 控制管理员权限按钮显示
+                    if (currentProfile) {
+                        const adminOnlyBtns = ['batchGrantAdmin', 'batchRevokeAdmin', 'batchGrantUserMgmt', 'batchRevokeUserMgmt', 'batchGrantPostMgmt', 'batchRevokePostMgmt', 'batchGrantSuperAdmin', 'batchRevokeSuperAdmin'];
+                        const isSuper = currentProfile.is_super_admin === true;
+                        const isNumberOne = currentProfile.user_number === 1 && currentProfile.is_super_admin;
+                        adminOnlyBtns.forEach(id => {
+                            const btn = document.getElementById(id);
+                            if (btn) {
+                                if (id.includes('SuperAdmin')) {
+                                    btn.style.display = isNumberOne ? 'inline-block' : 'none';
+                                } else {
+                                    btn.style.display = isSuper ? 'inline-block' : 'none';
+                                }
+                            }
+                        });
+                    }
+
+                    // 构建完整顶栏
+                    const displayName = profile.username || currentUser.email;
+                    const userNumber = profile.user_number || '';
+                    let authHtml = '';
+
+                    if (userNumber) {
+                        authHtml += `<a href="/user/${userNumber}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
+                    } else {
+                        authHtml += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
+                    }
+
+                    authHtml += `
+    <a href="/user/notification" class="bell-icon" style="color:#666;">
+        <svg viewBox="0 0 448 512" width="20" height="20">
+            <path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/>
+        </svg>
+        <sup id="bell-badge" style="display:none;">0</sup>
+    </a>
+    <button id="logoutBtn" class="auth-btn logout">登出</button>
+`;
+
+                    authButtons.innerHTML = authHtml;
+
+                    // 绑定登出事件
+                    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                        await supabase.auth.signOut();
+                        window.location.href = '/';
+                    });
+
+                    // 获取通知未读数（需要重新获取 bell-badge 引用）
+                    const bellBadge = document.getElementById('bell-badge');
+                    // 原有的 fetchUnreadCount 函数需要更新 bellBadge 引用
+
+                    await updateLastSeen();
+                    await loadUsers();
+
+                    // 搜索事件
+                    searchInput.addEventListener('input', filterUsers);
+                    document.querySelectorAll('.filter-tag').forEach(el => {
+                        el.addEventListener('click', function () {
+                            const key = this.dataset.key;
+                            toggleFilterTag(key);
+                        });
+                    });
+
+                    await fetchUnreadCount();
+                    setInterval(fetchUnreadCount, 30000);
+
+                    // ===== Realtime 订阅 =====
+                    if (currentUser) {
+                        const channel = supabase
+                            .channel('profiles-online')
+                            .on('postgres_changes', {
+                                event: 'UPDATE',
+                                schema: 'public',
+                                table: 'profiles',
+                            }, (payload) => {
+                                const updated = payload.new;
+                                const localUser = allUsers.find(u => u.id === updated.id);
+                                if (localUser) {
+                                    localUser.last_seen = updated.last_seen;
+                                    updateOnlineSummary();
+                                    // 只更新该行的复选框样式
+                                    const row = document.querySelector(`tr:has(.row-checkbox[data-user="${updated.user_number}"])`);
+                                    if (row) {
+                                        const cb = row.querySelector('.row-checkbox');
+                                        if (cb) {
+                                            const online = isUserOnline(updated);
+                                            cb.className = `row-checkbox ${online ? 'online' : 'offline'}`;
+                                        }
+                                    }
+                                }
+                            })
+                            .subscribe((status) => {
+                                if (status === 'SUBSCRIBED') console.log('✅ Realtime 在线状态已激活');
+                            });
+                    }
+
+                    // 保底：每30秒更新自己的 last_seen
+                    setInterval(async () => {
+                        if (currentUser) {
+                            try { await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id); } catch (e) { /* 静默 */ }
+                        }
+                    }, 30000);
+
+                    // ===== 侧边栏鼠标离开时滚动回顶部（模仿主页） =====
+                    const sidebar = document.querySelector('.nav-sidebar');
+                    if (sidebar) {
+                        sidebar.addEventListener('mouseleave', function () {
+                            if (window.innerWidth > 900) {
+                                this.scrollTop = 0;
+                            }
+                        });
+                    }
+
+                } catch (err) {
+                    window.location.href = '/';
+                }
+            }
+
             init();
         })();
     </script>
 
     <script>
-        /* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
+        /* 顶栏右上角头像菜单（与原来一致） */
         (function () {
             if (!window.supabase || document.getElementById('topAvatarWrap')) return;
             var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
