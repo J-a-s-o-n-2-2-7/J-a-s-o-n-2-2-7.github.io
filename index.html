@@ -130,6 +130,61 @@
             line-height: 1;
         }
 
+        /* ===== 底部栏（借鉴 zyxOT 结构） ===== */
+        .bottombar {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .bottombar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;   /* 顶部对齐 */
+            flex-wrap: wrap;
+            gap: 8px 20px;
+        }
+
+        .bottombar-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;                  /* 左侧各项目间距 */
+        }
+
+        .bottombar-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;     /* 右对齐 */
+            gap: 2px;
+        }
+
+        .bottombar-meta {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .bottombar a {
+            text-decoration: none;
+        }
+
+        .bottombar .brand-highlight {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        /* 确保 By 行与左侧第一行顶部对齐 */
+        #contributorsLine {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
         /* ========== 主布局 ========== */
         .main-layout {
             max-width: 1400px;
@@ -1745,7 +1800,7 @@
             color: #2c3e50;
             font-weight: 700;
         }
-        #punchCard .brand-highlight {
+        .brand-highlight {
             color: #e74c3c;
             font-weight: 700;
         }
@@ -1881,6 +1936,14 @@
             overflow: hidden;
         }
 
+        #adSlider .slides {
+            overflow: hidden !important;
+            flex-wrap: nowrap !important;
+        }
+        #adSlider .slide {
+            flex-shrink: 0 !important;
+        }
+
         #adSlider .slide img {
             width: 100%;
             height: auto;
@@ -1942,14 +2005,16 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.5);
+            background: #7B7B7B;
             cursor: pointer;
-            transition: background 0.3s, transform 0.3s;
+        }
+
+        #adSlider .slider-dots span:hover {
+            background: #4B4B4B;
         }
 
         #adSlider .slider-dots span.active {
             background: #e74c3c;
-            transform: scale(1.2);
         }
 
         /* 卡片内两栏适配 */
@@ -2223,10 +2288,136 @@
     </div>
     <button id="back-to-top" title="回到顶部"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s;">↑</button>
-    <footer>© 2026 ✨ Jason227</footer>
-
+    <footer class="bottombar">
+        <div class="bottombar-inner">
+            <!-- ===== 左侧：版权 + 备案 + 时间 ===== -->
+            <div class="bottombar-left">
+                <div>
+                    © <span id="currentYear"></span>
+                    <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>
+                </div>
+                <div class="bottombar-meta">
+                    <a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io"
+                        style="color:#bbb; text-decoration:none;">GitHub</a>
+                    <span style="color:#bbb;"> · </span>
+                    <a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io/graphs/contributors"
+                        style="color:#bbb; text-decoration:none;">项目贡献者</a>
+                    <span style="color:#bbb;"> · </span>
+                    <a href="https://icp.gov.moe/?keyword=20268322" target="_blank"
+                        style="color:#bbb; text-decoration:none;">萌ICP备20268322号</a>
+                </div>
+                <div class="bottombar-meta" id="serverTime">
+                    服务器时间: <span id="timeDisplay">加载中...</span>
+                </div>
+                <div class="bottombar-meta" id="uptime">
+                    本网站已运行 <span id="uptimeDisplay">0</span> 秒
+                </div>
+            </div>
+    
+            <!-- ===== 右侧：贡献者（By 行） ===== -->
+            <div class="bottombar-right">
+                <div id="contributorsLine">
+                    <!-- 由 JavaScript 动态渲染 -->
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
     <script>
         (function () {
+            // 更新时间显示
+            function updateServerTime() {
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const str = now.getFullYear() + '-' +
+                    pad(now.getMonth() + 1) + '-' +
+                    pad(now.getDate()) + ' ' +
+                    pad(now.getHours()) + ':' +
+                    pad(now.getMinutes()) + ':' +
+                    pad(now.getSeconds());
+                document.getElementById('timeDisplay').textContent = str;
+            }
+            updateServerTime();
+            setInterval(updateServerTime, 1000); // 每秒更新
+
+            // 1. 动态年份
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // 2. 实时服务器时间（客户端本地时间，模拟）
+            function updateServerTime() {
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const str = now.getFullYear() + '-' +
+                    pad(now.getMonth() + 1) + '-' +
+                    pad(now.getDate()) + ' ' +
+                    pad(now.getHours()) + ':' +
+                    pad(now.getMinutes()) + ':' +
+                    pad(now.getSeconds());
+                document.getElementById('timeDisplay').textContent = str;
+            }
+            updateServerTime();
+            setInterval(updateServerTime, 1000);
+
+            // 3. 已运行秒数（从 2026-06-01 17:48:56 开始）
+            const startTime = new Date('2026-06-01T17:48:56').getTime();
+            function updateUptime() {
+                const now = Date.now();
+                const diffSec = Math.floor((now - startTime) / 1000);
+                document.getElementById('uptimeDisplay').textContent = diffSec;
+            }
+            updateUptime();
+            setInterval(updateUptime, 1000);
+
+            // 渲染贡献者（底部栏 By 行）
+            async function renderContributors() {
+                const container = document.getElementById('contributorsLine');
+                if (!container) return;
+
+                // 硬编码贡献者 user_number（可改为从配置读取）
+                const userIds = [1, 10, 4]; // Jason227, brian_zheng, luogu_LiuShaRui
+
+                try {
+                    const { data: users, error } = await supabase
+                        .from('profiles')
+                        .select('user_number, username, user_tag, username_color, is_admin, is_cheater')
+                        .in('user_number', userIds);
+
+                    if (error) throw error;
+
+                    if (!users || users.length === 0) {
+                        container.innerHTML = `<span style="color:#bbb;">By 未知用户 for <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a></span>`;
+                        return;
+                    }
+
+                    // 构建 user_map 以便按顺序输出
+                    const userMap = {};
+                    users.forEach(u => { userMap[u.user_number] = u; });
+
+                    const parts = [];
+                    userIds.forEach(id => {
+                        const user = userMap[id];
+                        if (!user) return;
+                        const color = getUserDisplayColor(user);
+                        const tagText = getUserTagDisplay(user);
+
+                        // ★ 关键改动：使用与“近期讨论”相同的类名，不用内联样式
+                        let link = `<a href="/user/${user.user_number}" class="benben-username" style="color:${color};">${escapeHtml(user.username)}</a>`;
+                        if (tagText) {
+                            link += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                        }
+                        parts.push(link);
+                    });
+
+                    const joined = parts.join(' <span style="color:#bbb;">&amp;</span> ');
+                    container.innerHTML = `<span style="color:#bbb;">By </span>${joined}<span style="color:#bbb;"> for </span><a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>`;
+                } catch (err) {
+                    console.error('渲染贡献者失败:', err);
+                    container.innerHTML = `<span style="color:#bbb;">By 加载失败 for <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a></span>`;
+                }
+            }
+
             if (!window._supabaseClient) {
                 window._supabaseClient = window.supabase.createClient(
                     'https://nosikdfacxkuaxfrmoqn.supabase.co',
@@ -2723,23 +2914,28 @@
                 const username = profile?.username || '游客';
                 const userNumber = profile?.user_number || '';
                 const isLoggedIn = !!profile;
+                const isAdmin = profile?.can_manage_posts === true;
 
+                // ===== 1. 获取广告数据（所有用户） =====
+                const adItems = await fetchAds();
+
+                // ===== 2. 获取打卡相关数据 =====
                 let days = 0;
                 let checkedIn = false;
-
                 if (isLoggedIn && userNumber) {
                     days = await fetchStreak(userNumber);
                     checkedIn = await isCheckedInToday(userNumber);
                 }
 
+                // ===== 3. 构建用户显示信息 =====
                 const color = getUserDisplayColor(profile);
                 const tagText = getUserTagDisplay(profile);
-
                 let userDisplayHtml = `<a href="/user/${userNumber}" target="_blank" class="benben-username" style="color: ${color};">${escapeHtml(username)}</a>`;
                 if (tagText) {
                     userDisplayHtml += `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
                 }
 
+                // ===== 4. 日历与倒计时数据 =====
                 const now = new Date();
                 const monthChinese = getMonthChinese(now);
                 const monthSize = getMonthSize(now);
@@ -2752,10 +2948,12 @@
                 const days1 = daysUntil(cspRound1);
                 const days2 = daysUntil(cspRound2);
 
-                const hasCheckedIn = isLoggedIn && checkedIn;
+                // ===== 5. 根据打卡状态生成主内容（右侧） =====
+                let mainHtml = '';
+                let mainExtra = ''; // 用于额外按钮或信息
 
-                // ===== 未打卡分支 =====
-                if (!hasCheckedIn) {
+                if (!checkedIn) {
+                    // ---------- 未打卡 ----------
                     let buttonHtml = '';
                     let welcomeHtml = '';
                     if (isLoggedIn) {
@@ -2763,181 +2961,156 @@
                         welcomeHtml = `<p style="font-weight: 700; font-size: 1.2rem; margin-bottom: 8px;">欢迎回来，${userDisplayHtml}</p>`;
                     }
 
-                    let html = `
-            <div class="lg-punch">
-                ${welcomeHtml}
-                <div class="lg-index-calendar">
-                    <div class="lg-punch-left">
-                        ${monthChineseFull.split('').map(ch => `<span>${ch}</span>`).join('')}
-                    </div>
-                    <span class="lg-punch-big">${dayStr}</span>
-                    <div class="lg-punch-right">
-                        ${weekday.split('').map(ch => `<span>${ch}</span>`).join('')}
-                    </div>
+                    mainHtml = `
+            ${welcomeHtml}
+            <div class="lg-index-calendar">
+                <div class="lg-punch-left">
+                    ${monthChineseFull.split('').map(ch => `<span>${ch}</span>`).join('')}
                 </div>
-                <div class="lg-small">
-                    距 <strong>CSP-J/S 2026 第一轮</strong> 还剩 <strong>${days1} 天</strong><br>
-                    距 <strong>CSP-J/S 2026 第二轮</strong> 还剩 <strong>${days2} 天</strong><br>
-                    ${buttonHtml}
+                <span class="lg-punch-big">${dayStr}</span>
+                <div class="lg-punch-right">
+                    ${weekday.split('').map(ch => `<span>${ch}</span>`).join('')}
                 </div>
             </div>
+            <div class="lg-small">
+                距 <strong>CSP-J/S 2026 第一轮</strong> 还剩 <strong>${days1} 天</strong><br>
+                距 <strong>CSP-J/S 2026 第二轮</strong> 还剩 <strong>${days2} 天</strong><br>
+                ${buttonHtml}
+            </div>
         `;
-                    container.innerHTML = html;
+                } else {
+                    // ---------- 已打卡 ----------
+                    const todayStr = getTodayDateStr();
+                    let adminFortune = await fetchDailyFortune(todayStr);
 
-                    const punchBtn = document.getElementById('punchActionBtn');
-                    if (punchBtn) {
-                        punchBtn.addEventListener('click', async function (e) {
-                            e.stopPropagation();
-                            if (!currentProfile) {
-                                window.location.href = '/auth/login';
-                                return;
+                    let fortune = null;
+                    let goodItems = [];
+                    let badItems = [];
+
+                    if (adminFortune) {
+                        const levelMap = {
+                            '大吉': 'good', '中吉': 'good', '小吉': 'good',
+                            '中平': 'bad',
+                            '凶': 'terrible', '大凶': 'terrible'
+                        };
+                        fortune = {
+                            label: adminFortune.fortune_level,
+                            cls: levelMap[adminFortune.fortune_level] || 'good'
+                        };
+
+                        const adminGoodItems = [];
+                        if (adminFortune.good_name && adminFortune.good_desc) {
+                            adminGoodItems.push({ name: adminFortune.good_name, desc: adminFortune.good_desc });
+                        }
+                        if (adminFortune.good_name2 && adminFortune.good_desc2) {
+                            adminGoodItems.push({ name: adminFortune.good_name2, desc: adminFortune.good_desc2 });
+                        }
+                        const adminBadItems = [];
+                        if (adminFortune.bad_name && adminFortune.bad_desc) {
+                            adminBadItems.push({ name: adminFortune.bad_name, desc: adminFortune.bad_desc });
+                        }
+                        if (adminFortune.bad_name2 && adminFortune.bad_desc2) {
+                            adminBadItems.push({ name: adminFortune.bad_name2, desc: adminFortune.bad_desc2 });
+                        }
+
+                        const finalGoodItems = (fortune.label === '大凶') ? [] : adminGoodItems;
+                        const finalBadItems = (fortune.label === '大吉') ? [] : adminBadItems;
+
+                        const usedNames = new Set();
+                        finalGoodItems.forEach(item => usedNames.add(item.name));
+                        finalBadItems.forEach(item => usedNames.add(item.name));
+
+                        goodItems = [...finalGoodItems];
+                        while (goodItems.length < 2 && fortune.label !== '大凶') {
+                            const shuffled = [...ACTIVITIES];
+                            const rand = splitmix32(getDailySeed(isLoggedIn ? (profile?.user_number || '') : getDeviceId()));
+                            for (let i = shuffled.length - 1; i > 0; i--) {
+                                const j = Math.floor(rand() * (i + 1));
+                                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
                             }
-                            const result = await doDatabaseCheckIn(currentProfile.user_number);
-                            if (result.success) {
-                                await renderPunchCard();
+                            let candidate = null;
+                            for (const activity of shuffled) {
+                                if (!usedNames.has(activity.name)) {
+                                    candidate = { name: activity.name, desc: activity.good };
+                                    usedNames.add(activity.name);
+                                    break;
+                                }
+                            }
+                            if (candidate) {
+                                goodItems.push(candidate);
                             } else {
-                                alert(result.message || '打卡失败，请重试');
-                            }
-                        });
-                    }
-                    if (isLoggedIn) container.style.cursor = 'default';
-                    return;
-                }
-
-                // ===== 已打卡分支 =====
-                const todayStr = getTodayDateStr();
-
-                let adminFortune = await fetchDailyFortune(todayStr);
-
-                let fortune = null;
-                let goodItems = [];
-                let badItems = [];
-
-                if (adminFortune) {
-                    const levelMap = {
-                        '大吉': 'good', '中吉': 'good', '小吉': 'good',
-                        '中平': 'bad',
-                        '凶': 'terrible', '大凶': 'terrible'
-                    };
-                    fortune = {
-                        label: adminFortune.fortune_level,
-                        cls: levelMap[adminFortune.fortune_level] || 'good'
-                    };
-
-                    const adminGoodItems = [];
-                    if (adminFortune.good_name && adminFortune.good_desc) {
-                        adminGoodItems.push({ name: adminFortune.good_name, desc: adminFortune.good_desc });
-                    }
-                    if (adminFortune.good_name2 && adminFortune.good_desc2) {
-                        adminGoodItems.push({ name: adminFortune.good_name2, desc: adminFortune.good_desc2 });
-                    }
-
-                    const adminBadItems = [];
-                    if (adminFortune.bad_name && adminFortune.bad_desc) {
-                        adminBadItems.push({ name: adminFortune.bad_name, desc: adminFortune.bad_desc });
-                    }
-                    if (adminFortune.bad_name2 && adminFortune.bad_desc2) {
-                        adminBadItems.push({ name: adminFortune.bad_name2, desc: adminFortune.bad_desc2 });
-                    }
-
-                    const finalGoodItems = (fortune.label === '大凶') ? [] : adminGoodItems;
-                    const finalBadItems = (fortune.label === '大吉') ? [] : adminBadItems;
-
-                    const usedNames = new Set();
-                    finalGoodItems.forEach(item => usedNames.add(item.name));
-                    finalBadItems.forEach(item => usedNames.add(item.name));
-
-                    goodItems = [...finalGoodItems];
-                    while (goodItems.length < 2 && fortune.label !== '大凶') {
-                        const shuffled = [...ACTIVITIES];
-                        const rand = splitmix32(getDailySeed(isLoggedIn ? (profile?.user_number || '') : getDeviceId()));
-                        for (let i = shuffled.length - 1; i > 0; i--) {
-                            const j = Math.floor(rand() * (i + 1));
-                            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                        }
-                        let candidate = null;
-                        for (const activity of shuffled) {
-                            if (!usedNames.has(activity.name)) {
-                                candidate = { name: activity.name, desc: activity.good };
-                                usedNames.add(activity.name);
-                                break;
+                                for (const activity of shuffled) {
+                                    if (!usedNames.has(activity.name)) {
+                                        goodItems.push({ name: activity.name, desc: activity.good });
+                                        usedNames.add(activity.name);
+                                        break;
+                                    }
+                                }
                             }
                         }
-                        if (candidate) {
-                            goodItems.push(candidate);
-                        } else {
+
+                        badItems = [...finalBadItems];
+                        while (badItems.length < 2 && fortune.label !== '大吉') {
+                            const shuffled = [...ACTIVITIES];
+                            const rand = splitmix32(getDailySeed(isLoggedIn ? (profile?.user_number || '') : getDeviceId()));
+                            for (let i = shuffled.length - 1; i > 0; i--) {
+                                const j = Math.floor(rand() * (i + 1));
+                                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                            }
+                            let candidate = null;
                             for (const activity of shuffled) {
                                 if (!usedNames.has(activity.name)) {
-                                    goodItems.push({ name: activity.name, desc: activity.good });
+                                    candidate = { name: activity.name, desc: activity.bad };
                                     usedNames.add(activity.name);
                                     break;
                                 }
                             }
+                            if (candidate) {
+                                badItems.push(candidate);
+                            } else {
+                                for (const activity of shuffled) {
+                                    if (!usedNames.has(activity.name)) {
+                                        badItems.push({ name: activity.name, desc: activity.bad });
+                                        usedNames.add(activity.name);
+                                        break;
+                                    }
+                                }
+                            }
                         }
-                    }
-
-                    badItems = [...finalBadItems];
-                    while (badItems.length < 2 && fortune.label !== '大吉') {
+                    } else {
+                        const userIdSeed = isLoggedIn ? (profile?.user_number || '') : getDeviceId();
+                        const rand = splitmix32(getDailySeed(userIdSeed));
+                        const fortuneIdx = Math.floor(rand() * FORTUNE_LEVELS.length);
+                        fortune = FORTUNE_LEVELS[fortuneIdx];
                         const shuffled = [...ACTIVITIES];
-                        const rand = splitmix32(getDailySeed(isLoggedIn ? (profile?.user_number || '') : getDeviceId()));
                         for (let i = shuffled.length - 1; i > 0; i--) {
                             const j = Math.floor(rand() * (i + 1));
                             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
                         }
-                        let candidate = null;
-                        for (const activity of shuffled) {
-                            if (!usedNames.has(activity.name)) {
-                                candidate = { name: activity.name, desc: activity.bad };
-                                usedNames.add(activity.name);
-                                break;
-                            }
-                        }
-                        if (candidate) {
-                            badItems.push(candidate);
-                        } else {
-                            for (const activity of shuffled) {
-                                if (!usedNames.has(activity.name)) {
-                                    badItems.push({ name: activity.name, desc: activity.bad });
-                                    usedNames.add(activity.name);
-                                    break;
-                                }
-                            }
-                        }
+                        const picked = shuffled.slice(0, 4);
+                        goodItems = picked.slice(0, 2).map(a => ({ name: a.name, desc: a.good }));
+                        badItems = picked.slice(2, 4).map(a => ({ name: a.name, desc: a.bad }));
                     }
-                } else {
-                    const userIdSeed = isLoggedIn ? (profile?.user_number || '') : getDeviceId();
-                    const rand = splitmix32(getDailySeed(userIdSeed));
-                    const fortuneIdx = Math.floor(rand() * FORTUNE_LEVELS.length);
-                    fortune = FORTUNE_LEVELS[fortuneIdx];
-                    const shuffled = [...ACTIVITIES];
-                    for (let i = shuffled.length - 1; i > 0; i--) {
-                        const j = Math.floor(rand() * (i + 1));
-                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+
+                    let resultColor = '';
+                    let resultClass = '';
+                    if (fortune.cls === 'great' || fortune.cls === 'good') {
+                        resultColor = '#E74C3C';
+                        resultClass = 'lg-fg-red';
+                    } else if (fortune.cls === 'bad') {
+                        resultColor = '#5EB95E';
+                        resultClass = 'lg-fg-green';
+                    } else if (fortune.cls === 'terrible') {
+                        resultColor = '#000000';
+                        resultClass = 'lg-fg-black';
+                    } else {
+                        resultColor = '#5EB95E';
+                        resultClass = 'lg-fg-green';
                     }
-                    const picked = shuffled.slice(0, 4);
-                    goodItems = picked.slice(0, 2).map(a => ({ name: a.name, desc: a.good }));
-                    badItems = picked.slice(2, 4).map(a => ({ name: a.name, desc: a.bad }));
-                }
 
-                let resultColor = '';
-                let resultClass = '';
-                if (fortune.cls === 'great' || fortune.cls === 'good') {
-                    resultColor = '#E74C3C';
-                    resultClass = 'lg-fg-red';
-                } else if (fortune.cls === 'bad') {
-                    resultColor = '#5EB95E';
-                    resultClass = 'lg-fg-green';
-                } else if (fortune.cls === 'terrible') {
-                    resultColor = '#000000';
-                    resultClass = 'lg-fg-black';
-                } else {
-                    resultColor = '#5EB95E';
-                    resultClass = 'lg-fg-green';
-                }
-
-                let contentHtml = '';
-                if (fortune.label === '大吉') {
-                    contentHtml = `
+                    let contentHtml = '';
+                    if (fortune.label === '大吉') {
+                        contentHtml = `
 <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
     <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
         ${goodItems.map(item => `
@@ -2952,8 +3125,8 @@
     </div>
 </div>
 `;
-                } else if (fortune.label === '大凶') {
-                    contentHtml = `
+                    } else if (fortune.label === '大凶') {
+                        contentHtml = `
 <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
     <div class="am-u-sm-6" style="flex:1 1 200px;min-width:140px;">
         <span class="lg-bold" style="color:#E74C3C;font-size:1rem;line-height:1.5;">诸事不宜</span>
@@ -2969,8 +3142,8 @@
     </div>
 </div>
 `;
-                } else {
-                    contentHtml = `
+                    } else {
+                        contentHtml = `
 <div class="am-g" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin:6px 0 10px;">
     <div class="am-u-sm-6 lg-fg-red" style="flex:1 1 200px;min-width:140px;">
         ${goodItems.map(item => `
@@ -2990,95 +3163,9 @@
     </div>
 </div>
 `;
-                }
+                    }
 
-                const isAdmin = currentProfile && currentProfile.can_manage_posts === true;
-
-                // ===== 加载广告数据 =====
-                let adItems = [];
-                if (isAdmin) {
-                    adItems = await fetchAds();
-                }
-
-                // ===== 生成轮播 HTML =====
-                let sliderHtml = '';
-                if (isAdmin && adItems.length > 0) {
-                    const slidesHtml = adItems.map((item, index) => `
-            <div class="slide" data-index="${index}">
-                <a href="${escapeHtmlAttr(item.link_url)}" target="_blank">
-                    <img src="${escapeHtmlAttr(item.image_url)}" alt="${escapeHtmlAttr(item.title)}" loading="lazy">
-                </a>
-            </div>
-        `).join('');
-
-                    const dotsHtml = adItems.map((_, index) => `
-            <span class="${index === 0 ? 'active' : ''}" data-index="${index}"></span>
-        `).join('');
-
-                    sliderHtml = `
-            <div id="adSlider" style="position:relative; width:100%; border-radius:12px; overflow:hidden; background:#f0f2f5; min-height:180px; display:flex; align-items:center; justify-content:center;">
-                <div class="slides" style="display:flex; transition: transform 0.5s ease-in-out; width:100%;">
-                    ${slidesHtml}
-                </div>
-                <div class="slider-nav" style="position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; pointer-events:none; padding:0 8px; box-sizing:border-box;">
-                    <button class="slider-prev" style="pointer-events:auto; background:rgba(0,0,0,0.4); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center;">‹</button>
-                    <button class="slider-next" style="pointer-events:auto; background:rgba(0,0,0,0.4); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center;">›</button>
-                </div>
-                <div class="slider-dots" style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px; pointer-events:none;">
-                    ${dotsHtml}
-                </div>
-            </div>
-        `;
-                }
-
-                // ===== 管理面板折叠状态（默认收起） =====
-                // ★★★ 广告管理面板折叠状态（默认关闭，不储存） ★★★
-                let isAdPanelCollapsed = true;  // 直接设为 true，永远折叠
-                // ★★★ 固定使用 ▶，通过 CSS 旋转控制方向 ★★★
-                const adPanelDisplay = isAdPanelCollapsed ? 'none' : 'block';
-                const adPanelBtnText = isAdPanelCollapsed ? '展开广告管理' : '收起广告管理';
-                const adPanelRotated = isAdPanelCollapsed ? '' : 'rotated';
-
-                // ★★★ 运势管理面板折叠状态（默认关闭，不储存） ★★★
-                let isFortunePanelCollapsed = true;  // 直接设为 true，永远折叠
-                const fortunePanelDisplay = isFortunePanelCollapsed ? 'none' : 'block';
-                const fortunePanelBtnText = isFortunePanelCollapsed ? '展开运势管理' : '收起运势管理';
-                const fortunePanelRotated = isFortunePanelCollapsed ? '' : 'rotated';
-
-                // ===== 构建 HTML =====
-                let html = `
-    <div class="lg-punch" style="display: flex; gap: 20px; align-items: stretch;">
-        <!-- 左侧广告栏 + 广告管理面板 -->
-        ${isAdmin ? `
-        <div class="ad-col" style="flex: 2; min-width: 0; display: flex; flex-direction: column; border-right: 1px solid #eee; padding-right: 16px;">
-            ${sliderHtml || '<div style="width:100%;display:flex;align-items:center;justify-content:center;background:#f9f9f9;border-radius:12px;padding:20px;color:#999;font-size:14px;min-height:100px;">没有更多广告了</div>'}
-            
-            <!-- 广告管理面板 -->
-            <div style="margin-top: 12px; padding-top: 12px;">
-                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                    <button class="ad-panel-toggle-btn" 
-                            style="background:none; border:none; color:#888; font-size:13px; cursor:pointer; padding:2px 16px; border-radius:20px; transition: background 0.2s, color 0.2s; display:inline-flex; align-items:center; gap:6px;">
-                        <!-- ★★★ 箭头固定为 ▶，通过 rotated 类控制旋转 ★★★ -->
-                        <span class="ad-panel-arrow ${adPanelRotated}" style="font-size:11px; transition: transform 0.25s ease; display:inline-block;">▶</span>
-                        <span class="ad-panel-text">${adPanelBtnText}</span>
-                    </button>
-                </div>
-                <div class="ad-panel-content" style="display: ${adPanelDisplay};">
-                    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px;">
-                        <input type="text" id="adTitleInput" placeholder="标题" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:1; min-width:80px;">
-                        <input type="text" id="adImageInput" placeholder="图片URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
-                        <input type="text" id="adLinkInput" placeholder="链接URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
-                        <button id="addAdBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">添加</button>
-                    </div>
-                    <div id="adList" style="max-height:200px; overflow-y:auto; background:#f9f9f9; border-radius:8px; padding:8px;">
-                        <!-- 动态渲染 -->
-                    </div>
-                </div>
-            </div>
-        </div>
-        ` : ''}
-        <!-- 右侧运势内容 + 运势管理面板 -->
-        <div class="fortune-col" style="flex: ${isAdmin ? '1' : '1'}; min-width: 0; display: flex; flex-direction: column;">
+                    mainHtml = `
             <h2 style="margin-bottom: 0; font-size: 1.3rem; font-weight: 500; color: #333; text-align: center;">
                 ${userDisplayHtml} <span style="font-weight: bold;">的运势</span>
             </h2>
@@ -3089,14 +3176,96 @@
             <div class="lg-small" style="text-align:center;padding-top:8px;margin-top:4px;">
                 你已经在 <span class="brand-highlight">✨ Jason227</span> 连续打卡了 <strong>${days}</strong> 天
             </div>
+        `;
+                }
 
-            <!-- 运势管理面板 -->
-            ${isAdmin ? `
+                // ===== 6. 构建广告栏（始终可见） =====
+                let sliderHtml = '';
+                if (adItems.length > 0) {
+                    const slidesHtml = adItems.map((item, index) => `
+        <div class="slide" data-index="${index}" style="background: transparent;">
+            <a href="${escapeHtmlAttr(item.link_url)}" target="_blank">
+                <img src="${escapeHtmlAttr(item.image_url)}" alt="${escapeHtmlAttr(item.title)}" loading="lazy">
+            </a>
+        </div>
+    `).join('');
+
+                    const dotsHtml = adItems.map((_, index) => `
+        <span class="${index === 0 ? 'active' : ''}" data-index="${index}"></span>
+    `).join('');
+
+                    sliderHtml = `
+        <div id="adSlider" style="position:relative; width:100%; overflow:hidden; min-height:180px; display:flex; align-items:center; justify-content:center; background: transparent;">
+            <div class="slides" style="display:flex; transition: transform 0.5s ease-in-out; width:100%;">
+                ${slidesHtml}
+            </div>
+            <div class="slider-nav" style="position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; pointer-events:none; padding:0 8px; box-sizing:border-box;">
+                <button class="slider-prev" style="pointer-events:auto; background:rgba(0,0,0,0.4); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center;">‹</button>
+                <button class="slider-next" style="pointer-events:auto; background:rgba(0,0,0,0.4); color:#fff; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center;">›</button>
+            </div>
+            <div class="slider-dots" style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px; pointer-events:none;">
+                ${dotsHtml}
+            </div>
+        </div>
+    `;
+                } else {
+                    sliderHtml = `<div style="width:100%;display:flex;align-items:center;justify-content:center;padding:20px;color:#999;font-size:14px;min-height:100px;">没有更多广告了</div>`;
+                }
+
+                // 广告列开始
+                let adColumnHtml = `
+        <div class="ad-col" style="flex: 2; min-width: 0; display: flex; flex-direction: column; padding-right: 16px;">
+            ${sliderHtml}
+    `;
+
+                // 管理面板（仅管理员）
+                if (isAdmin) {
+                    // 读取折叠状态
+                    const isPanelCollapsed = true;
+                    const panelDisplay = isPanelCollapsed ? 'none' : 'block';
+                    const panelBtnText = isPanelCollapsed ? '展开广告管理' : '收起广告管理';
+                    const panelRotated = isPanelCollapsed ? '' : 'rotated';
+
+                    adColumnHtml += `
+            <div style="margin-top: 12px; padding-top: 12px;">
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                    <button class="ad-panel-toggle-btn" 
+                            style="background:none; border:none; color:#888; font-size:13px; cursor:pointer; padding:2px 16px; border-radius:20px; transition: background 0.2s, color 0.2s; display:inline-flex; align-items:center; gap:6px;">
+                        <span class="ad-panel-arrow ${panelRotated}" style="font-size:11px; transition: transform 0.25s ease; display:inline-block;">▶</span>
+                        <span class="ad-panel-text">${panelBtnText}</span>
+                    </button>
+                </div>
+                <div class="ad-panel-content" style="display: ${panelDisplay};">
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px;">
+                        <input type="text" id="adTitleInput" placeholder="标题" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:1; min-width:80px;">
+                        <input type="text" id="adImageInput" placeholder="图片URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
+                        <input type="text" id="adLinkInput" placeholder="链接URL" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:2; min-width:120px;">
+                        <button id="addAdBtn" class="am-btn am-btn-warning" style="padding:6px 16px; font-size:14px; border-radius:40px;">添加</button>
+                    </div>
+                    <div id="adList" style="max-height:200px; overflow-y:auto; background:#f9f9f9; border-radius:8px; padding:8px;">
+                        <!-- 由 renderAdListForPanel 填充 -->
+                    </div>
+                </div>
+            </div>
+        `;
+                }
+
+                // 关闭广告列
+                adColumnHtml += `</div>`;
+
+                // ===== 7. 运势管理面板（仅管理员） =====
+                let rightExtraHtml = '';
+                if (isAdmin) {
+                    const isFortunePanelCollapsed = true;
+                    const fortunePanelDisplay = isFortunePanelCollapsed ? 'none' : 'block';
+                    const fortunePanelBtnText = isFortunePanelCollapsed ? '展开运势管理' : '收起运势管理';
+                    const fortunePanelRotated = isFortunePanelCollapsed ? '' : 'rotated';
+
+                    rightExtraHtml = `
             <div style="margin-top: 12px; padding-top: 12px">
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
                     <button class="fortune-panel-toggle-btn" 
                             style="background:none; border:none; color:#888; font-size:13px; cursor:pointer; padding:2px 16px; border-radius:20px; transition: background 0.2s, color 0.2s; display:inline-flex; align-items:center; gap:6px;">
-                        <!-- ★★★ 箭头固定为 ▶，通过 rotated 类控制旋转 ★★★ -->
                         <span class="fortune-panel-arrow ${fortunePanelRotated}" style="font-size:11px; transition: transform 0.25s ease; display:inline-block;">▶</span>
                         <span class="fortune-panel-text">${fortunePanelBtnText}</span>
                     </button>
@@ -3104,7 +3273,7 @@
                 <div class="fortune-panel-content" style="display: ${fortunePanelDisplay};">
                     <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
                         <label style="font-size:13px; color:#555;">日期：</label>
-                        <input type="date" id="adminFortuneDate" value="${todayStr}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
+                        <input type="date" id="adminFortuneDate" value="${getTodayDateStr()}" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
                         <label style="font-size:13px; color:#555;">运势：</label>
                         <select id="adminFortuneLevel" style="padding:4px 8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
                             <option value="大吉">大吉</option>
@@ -3142,41 +3311,138 @@
                     </div>
                 </div>
             </div>
-            ` : ''}
+        `;
+                }
+
+                // ===== 8. 最终拼装 =====
+                let finalHtml = `
+        <div class="lg-punch" style="display: flex; gap: 20px; align-items: stretch;">
+            ${adColumnHtml}
+            <div class="fortune-col" style="flex: ${isAdmin ? '1' : '1'}; min-width: 0; display: flex; flex-direction: column;">
+                ${mainHtml}
+                ${rightExtraHtml}
+            </div>
         </div>
-    </div>
     `;
 
-                container.innerHTML = html;
+                container.innerHTML = finalHtml;
 
-                // ===== 初始化轮播 =====
+                // ===== 9. 事件绑定 =====
+
+                // 9.1 未打卡时的打卡按钮
+                const punchBtn = document.getElementById('punchActionBtn');
+                if (punchBtn) {
+                    punchBtn.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        if (!currentProfile) {
+                            window.location.href = '/auth/login';
+                            return;
+                        }
+                        const result = await doDatabaseCheckIn(currentProfile.user_number);
+                        if (result.success) {
+                            await renderPunchCard();
+                        } else {
+                            alert(result.message || '打卡失败，请重试');
+                        }
+                    });
+                }
+
+                // ===== 广告轮播初始化（修正版） =====
                 const slider = container.querySelector('#adSlider');
                 if (slider) {
                     const slides = slider.querySelector('.slides');
-                    const totalSlides = slider.querySelectorAll('.slide').length;
-                    if (totalSlides > 1) {
+                    const originalSlides = slides.querySelectorAll('.slide');
+                    const originalCount = originalSlides.length;
+
+                    if (originalCount > 0) {
+                        // 1. 克隆第一张并追加到末尾（用于无缝循环）
+                        const firstClone = originalSlides[0].cloneNode(true);
+                        slides.appendChild(firstClone);
+                        const totalSlides = originalCount + 1;
+
+                        // 2. 设置 slides 容器宽度为 100%（父容器宽度），不要放大
+                        slides.style.display = 'flex';
+                        slides.style.width = '100%';          // 保持为父容器宽度
+                        slides.style.transition = 'transform 0.5s ease-in-out';
+
+                        // 3. 每个 slide 宽度为 100%，且不允许收缩
+                        slides.querySelectorAll('.slide').forEach((slide) => {
+                            slide.style.flex = '0 0 100%';    // flex-basis: 100%，flex-shrink: 0
+                            slide.style.boxSizing = 'border-box';
+                        });
+
                         let currentIndex = 0;
+                        let isTransitioning = false;
                         let autoPlayTimer = null;
 
-                        function goToSlide(index) {
-                            if (index < 0) index = totalSlides - 1;
-                            if (index >= totalSlides) index = 0;
-                            currentIndex = index;
-                            if (slides) {
-                                slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+                        // 4. 跳转到指定索引（移动距离 = -index * 100%）
+                        function goToSlide(index, animate = true) {
+                            if (isTransitioning) return;
+                            if (index < 0) index = originalCount - 1;
+                            if (index >= originalCount) index = 0;
+
+                            const offset = -index * 100;       // 每个 slide 宽度为 100%
+                            if (!animate) {
+                                slides.style.transition = 'none';
+                            } else {
+                                slides.style.transition = 'transform 0.5s ease-in-out';
                             }
+                            slides.style.transform = `translateX(${offset}%)`;
+                            if (!animate) {
+                                void slides.offsetHeight;      // 强制回流
+                                slides.style.transition = 'transform 0.5s ease-in-out';
+                            }
+                            currentIndex = index;
+                            // 更新小圆点
                             const dots = slider.querySelectorAll('.slider-dots span');
-                            dots.forEach((dot, i) => {
-                                dot.classList.toggle('active', i === currentIndex);
-                            });
+                            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
                         }
 
-                        function nextSlide() { goToSlide(currentIndex + 1); }
-                        function prevSlide() { goToSlide(currentIndex - 1); }
+                        // 5. 下一张（无缝循环）
+                        function nextSlide() {
+                            if (isTransitioning) return;
+                            const next = currentIndex + 1;
+                            if (next === originalCount) {
+                                // 切换到克隆的第一张（即第 originalCount 张）
+                                const cloneOffset = -originalCount * 100;
+                                slides.style.transition = 'transform 0.5s ease-in-out';
+                                slides.style.transform = `translateX(${cloneOffset}%)`;
+                                isTransitioning = true;
+                                const onFinish = () => {
+                                    slides.removeEventListener('transitionend', onFinish);
+                                    slides.style.transition = 'none';
+                                    slides.style.transform = 'translateX(0%)';
+                                    void slides.offsetHeight;
+                                    slides.style.transition = 'transform 0.5s ease-in-out';
+                                    currentIndex = 0;
+                                    const dots = slider.querySelectorAll('.slider-dots span');
+                                    dots.forEach((dot, i) => dot.classList.toggle('active', i === 0));
+                                    isTransitioning = false;
+                                };
+                                slides.addEventListener('transitionend', onFinish);
+                                // 临时高亮第一张
+                                const dots = slider.querySelectorAll('.slider-dots span');
+                                dots.forEach((dot, i) => dot.classList.toggle('active', i === 0));
+                            } else {
+                                goToSlide(next, true);
+                            }
+                        }
 
+                        // 6. 上一张
+                        function prevSlide() {
+                            if (isTransitioning) return;
+                            if (currentIndex === 0) {
+                                // 快速回到最后一张真实广告（无动画）
+                                goToSlide(originalCount - 1, false);
+                            } else {
+                                goToSlide(currentIndex - 1, true);
+                            }
+                        }
+
+                        // 7. 自动播放（5秒间隔）
                         function startAutoPlay() {
                             if (autoPlayTimer) clearInterval(autoPlayTimer);
-                            autoPlayTimer = setInterval(nextSlide, 4000);
+                            autoPlayTimer = setInterval(nextSlide, 5000);
                         }
                         function stopAutoPlay() {
                             if (autoPlayTimer) {
@@ -3189,24 +3455,28 @@
                             startAutoPlay();
                         }
 
+                        // 8. 绑定按钮事件
                         const prevBtn = slider.querySelector('.slider-prev');
                         const nextBtn = slider.querySelector('.slider-next');
                         if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); restartAutoPlay(); });
                         if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); restartAutoPlay(); });
 
+                        // 9. 绑定小圆点点击
                         const dots = slider.querySelectorAll('.slider-dots span');
-                        dots.forEach(dot => {
+                        dots.forEach((dot, idx) => {
                             dot.addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                const index = parseInt(dot.dataset.index);
-                                goToSlide(index);
+                                if (isTransitioning) return;
+                                goToSlide(idx, true);
                                 restartAutoPlay();
                             });
                         });
 
+                        // 10. 鼠标悬停控制
                         slider.addEventListener('mouseenter', stopAutoPlay);
                         slider.addEventListener('mouseleave', startAutoPlay);
 
+                        // 11. 触摸滑动
                         let touchStartX = 0;
                         slider.addEventListener('touchstart', (e) => {
                             touchStartX = e.changedTouches[0].screenX;
@@ -3222,10 +3492,12 @@
                             startAutoPlay();
                         });
 
-                        goToSlide(0);
+                        // 12. 初始化显示第一张
+                        goToSlide(0, false);
                         startAutoPlay();
 
-                        if (totalSlides <= 1) {
+                        // 如果只有一张广告，隐藏导航和圆点
+                        if (originalCount <= 1) {
                             const nav = slider.querySelector('.slider-nav');
                             const dots2 = slider.querySelector('.slider-dots');
                             if (nav) nav.style.display = 'none';
@@ -3234,7 +3506,7 @@
                     }
                 }
 
-                // ===== ★★★ 绑定广告管理面板折叠事件（使用旋转动画） ★★★ =====
+                // 9.3 广告管理面板折叠（仅管理员）
                 const adPanelToggleBtn = container.querySelector('.ad-panel-toggle-btn');
                 const adPanelContent = container.querySelector('.ad-panel-content');
                 if (adPanelToggleBtn && adPanelContent) {
@@ -3255,7 +3527,7 @@
                     });
                 }
 
-                // ===== ★★★ 绑定运势管理面板折叠事件（使用旋转动画） ★★★ =====
+                // 9.4 运势管理面板折叠（仅管理员）
                 const fortunePanelToggleBtn = container.querySelector('.fortune-panel-toggle-btn');
                 const fortunePanelContent = container.querySelector('.fortune-panel-content');
                 if (fortunePanelToggleBtn && fortunePanelContent) {
@@ -3276,7 +3548,7 @@
                     });
                 }
 
-                // ===== 绑定“设置全站运势”按钮 =====
+                // 9.5 设置运势按钮（仅管理员）
                 const setFortuneBtn = document.getElementById('adminSetFortuneBtn');
                 if (setFortuneBtn) {
                     setFortuneBtn.addEventListener('click', async function () {
@@ -3337,7 +3609,7 @@
                     });
                 }
 
-                // ===== 动态控制宜/忌显示 =====
+                // 9.6 宜/忌动态控制（仅管理员）
                 const levelSelect = document.getElementById('adminFortuneLevel');
                 if (levelSelect) {
                     const toggleContainers = () => {
@@ -3363,13 +3635,10 @@
                     toggleContainers();
                 }
 
-                // ===== 渲染广告列表 =====
+                // 9.7 广告列表渲染和添加按钮（仅管理员）
                 if (isAdmin) {
                     await renderAdListForPanel();
-                }
 
-                // ===== 绑定添加广告按钮 =====
-                if (isAdmin) {
                     const addBtn = document.getElementById('addAdBtn');
                     if (addBtn) {
                         addBtn.removeEventListener('click', addBtn._listener);
@@ -3399,6 +3668,7 @@
                     }
                 }
 
+                // 光标样式
                 container.style.cursor = 'default';
             }
 
@@ -4840,7 +5110,7 @@
                 return data;
             }
 
-            // ===== 加载近期讨论（含管理员双击修改数量） =====
+            // ===== 加载近期讨论（含管理员双击修改数量 + 真实回复数） =====
             async function loadRecentPosts() {
                 const container = document.getElementById('recentPostsList');
                 if (!container) return;
@@ -4860,7 +5130,7 @@
                         cardHeader.innerHTML = headerHtml;
                     }
 
-                    // 3. ★ 事件委托（绑定在卡片容器上，确保双击永远生效）
+                    // 3. 事件委托（绑定在卡片容器上）
                     const card = document.getElementById('recentPostsCard');
                     if (card) {
                         card.removeEventListener('dblclick', handleRecentPostsDblClick);
@@ -4880,7 +5150,23 @@
                         return;
                     }
 
-                    // 5. 获取作者信息
+                    // 5. ★★★ 批量获取每个帖子的回复数（手动统计，不使用 .group） ★★★
+                    const postIds = posts.map(p => p.id);
+                    let replyCountMap = {};
+                    if (postIds.length > 0) {
+                        const { data: allComments, error: allCommentsError } = await supabase
+                            .from('comments')
+                            .select('post_id')
+                            .in('post_id', postIds);
+
+                        if (!allCommentsError && allComments) {
+                            allComments.forEach(c => {
+                                replyCountMap[c.post_id] = (replyCountMap[c.post_id] || 0) + 1;
+                            });
+                        }
+                    }
+
+                    // 6. 获取作者信息
                     const authorIds = [...new Set(posts.map(p => p.author_id).filter(id => id))];
                     let userMap = {};
                     if (authorIds.length > 0) {
@@ -4893,14 +5179,14 @@
                         }
                     }
 
-                    // 6. 版块映射（请根据你的实际论坛配置修改）
+                    // 7. 版块映射
                     const forumMap = {
                         siteaffairs: '站务版',
                         problem: '题目总版',
                         academics: '学术版'
                     };
 
-                    // 7. 生成 HTML
+                    // 8. 生成 HTML
                     let html = '';
                     posts.forEach(post => {
                         const prof = userMap[post.author_id] || {};
@@ -4926,6 +5212,10 @@
                         const minutes = String(date.getMinutes()).padStart(2, '0');
                         const timeStr = `${month}-${day} ${hours}:${minutes}`;
 
+                        // ★★★ 真实回复数 ★★★
+                        const replyCount = replyCountMap[post.id] || 0;
+                        const replyText = replyCount === 0 ? '0回复' : `${replyCount}回复`;
+
                         html += `
                 <section class="post-card">
                     <div class="post-card-body">
@@ -4943,7 +5233,7 @@
                                     <span class="post-author-forum">${userHtml} In <a href="/discuss?forum=${forumLink}" class="forum-link"><span class="forum-name">${escapeHtml(forumName)}</span></a></span>
                                 </div>
                                 <div class="post-meta-row2">
-                                    <span class="post-time-reply">@ ${timeStr} 0回复</span>
+                                    <span class="post-time-reply">@ ${timeStr} ${replyText}</span>
                                 </div>
                             </div>
                         </div>
@@ -4954,7 +5244,7 @@
 
                     container.innerHTML = html;
 
-                    // 移除旧的底部控件（避免重复）
+                    // 移除旧的底部控件
                     const oldControl = document.getElementById('recentPostsAdminControl');
                     if (oldControl) oldControl.remove();
 
@@ -5168,6 +5458,9 @@
 
                         // ★★★ 渲染打卡卡片 ★★★
                         await renderPunchCard();
+
+                        // 在 updateUI 内部，登录或未登录分支均可调用
+                        await renderContributors();
 
                         // 侧边栏折叠时滚动到顶部
                         const sidebar = document.querySelector('.nav-sidebar');
