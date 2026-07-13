@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 渲染器 · 独立调用示例</title>
+
+    <!-- 1. 加载外部依赖 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <!-- 2. 加载本渲染器 -->
+    <link rel="stylesheet" href="markdown-renderer.css">
+    <script src="markdown-renderer.js"></script>
+
+    <style>
+        /* 仅用于演示页面布局，不干扰渲染样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 48px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 16px;
+            margin-bottom: 28px;
+            color: #0f172a;
+        }
+
+        .demo-section {
+            margin-top: 32px;
+            border-top: 1px solid #eef2f6;
+            padding-top: 28px;
+        }
+
+        .demo-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .demo-section h2 small {
+            font-weight: 400;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-left: 12px;
+        }
+
+        .render-target {
+            padding: 20px 24px;
+            background: #fafbfc;
+            border-radius: 16px;
+            border: 1px solid #eef2f6;
+        }
+
+        .footnote-info {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 12px 20px;
+            border-radius: 8px;
+        }
+
+        .footnote-info code {
+            background: #e2e8f0;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📦 Markdown 渲染器 · 独立调用示例</h1>
+        <p style="color:#64748b; margin-bottom: 24px;">
+            本页面展示了 <strong>markdown-renderer.css</strong> 和 <strong>markdown-renderer.js</strong> 的用法。
+            所有渲染逻辑已打包，其他页面只需引入这两个文件即可获得相同渲染能力。
+        </p>
+
+        <!-- 示例 1：基础 Markdown -->
+        <div class="demo-section">
+            <h2>📝 基础 Markdown <small>标题 · 列表 · 粗斜体 · 链接 · 图片</small></h2>
+            <div class="render-target">
+                <div class="benben-text" id="demo1"></div>
+            </div>
+        </div>
+
+        <!-- 示例 2：LaTeX 公式 -->
+        <div class="demo-section">
+            <h2>📐 LaTeX 公式 <small>行内 + 块级</small></h2>
+            <div class="render-target">
+                <div class="benben-text" id="demo2"></div>
+            </div>
+        </div>
+
+        <!-- 示例 3：代码块 + 行号 + 复制 -->
+        <div class="demo-section">
+            <h2>💻 代码块 <small>行号 · 高亮 · 一键复制</small></h2>
+            <div class="render-target">
+                <div class="benben-text" id="demo3"></div>
+            </div>
+        </div>
+
+        <!-- 示例 4：折叠框 + 表格 + 任务列表 -->
+        <div class="demo-section">
+            <h2>📂 折叠框 · 表格 · 任务列表 <small>嵌套 details · 对齐</small></h2>
+            <div class="render-target">
+                <div class="benben-text" id="demo4"></div>
+            </div>
+        </div>
+
+        <!-- 示例 5：Mermaid 图表 -->
+        <div class="demo-section">
+            <h2>📊 Mermaid 图表 <small>流程图 / 时序图</small></h2>
+            <div class="render-target">
+                <div class="benben-text" id="demo5"></div>
+            </div>
+        </div>
+
+        <!-- 示例 6：扩展语法 -->
+        <div class="demo-section">
+            <h2>✨ 扩展语法 <small>删除线 · 高亮 · 键盘按键 · 上/下标 · 目录</small></h2>
+            <div class="render-target">
+                <div class="benben-text" id="demo6"></div>
+            </div>
+        </div>
+
+        <div class="footnote-info">
+            ⚡ 所有渲染由 <code>markdown-renderer.js</code> 中的 <code>renderContent()</code> 驱动，
+            样式由 <code>markdown-renderer.css</code> 提供。<br>
+            支持：KaTeX · markdown-it 全家桶 · Mermaid · DOMPurify · 代码复制 · 目录生成 · 嵌套折叠框。
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var renderContent = window.renderContent;
+            if (!renderContent) {
+                console.error('❌ markdown-renderer.js 未正确加载');
+                document.querySelectorAll('.benben-text').forEach(function (el) {
+                    el.innerHTML = '<p style="color:#e74c3c;">渲染器加载失败，请检查控制台。</p>';
+                });
+                return;
+            }
+
+            // 示例数据
+            var demos = {
+                demo1: '# 欢迎使用 Markdown 渲染器\n\n这是一段 **粗体** 和 *斜体* 文本，支持 ~~删除线~~ 和 ==高亮==。\n\n- 无序列表项 1\n- 无序列表项 2\n  - 嵌套项 2.1\n  - 嵌套项 2.2\n\n1. 有序列表第一项\n2. 有序列表第二项\n\n[点击访问 GitHub](https://github.com)\n\n![示例图片](https://picsum.photos/400/200?random=1)',
+                demo2: '行内公式：$E = mc^2$ 是质能方程。\n\n块级公式：\n\n$$\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n$$\n\n矩阵：\n\n$$\n\\begin{pmatrix}\na & b \\\\\nc & d\n\\end{pmatrix}\n$$',
+                demo3: '```javascript line-numbers lines=3-5\n// 带行号和高亮范围的代码\nfunction greet(name) {\n  const msg = `Hello, ${name}!`;\n  console.log(msg);\n  return msg;\n}\n\n// 调用示例\ngreet(\'World\');\n```\n\n```python\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nprint([fibonacci(i) for i in range(10)])\n```',
+                demo4: ':::info [📘 信息折叠框] {open}\n这里是默认展开的 info 类型折叠框。\n可以放任意 Markdown 内容。\n:::\n\n:::success [✅ 成功提示]\n这是 success 类型，左侧竖线为绿色。\n:::\n\n| 姓名   | 年龄 | 城市     |\n|--------|------|----------|\n| 张三   | 25   | 北京     |\n| 李四   | 30   | 上海     |\n\n- [x] 已完成任务\n- [ ] 待办任务',
+                demo5: '```mermaid\ngraph TD\n    A[开始] --> B{判断条件}\n    B -->|是| C[执行操作1]\n    B -->|否| D[执行操作2]\n    C --> E[结束]\n    D --> E\n```\n\n```mermaid\nsequenceDiagram\n    participant 用户\n    participant 前端\n    用户->>前端: 点击按钮\n    前端-->>用户: 渲染页面\n```',
+                demo6: '[[TOC]]\n\n## 删除线\n~~这段文字被删除了~~\n\n## 高亮标记\n==重要内容== 需要特别注意\n\n## 键盘按键\n请按 [[Ctrl]] + [[C]] 复制。\n\n## 上标 / 下标\nH^2^O 是水（上标），CO~2~ 是二氧化碳（下标）。\n\n## 脚注\n这里有一个脚注[^1]。\n\n[^1]: 这是脚注的内容。'
+            };
+
+            Object.keys(demos).forEach(function (id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                var raw = demos[id];
+                var html = renderContent(raw, {}, false, '演示用户', 'demo-' + id);
+                el.innerHTML = html;
+            });
+
+            // 手动触发 Mermaid 渲染
+            if (typeof mermaid !== 'undefined') {
+                setTimeout(function () {
+                    mermaid.run({ nodes: document.querySelectorAll('.mermaid') })
+                        .catch(function (err) { console.warn('Mermaid 渲染警告:', err); });
+                }, 300);
+            }
+
+            // 复制按钮事件（委托）
+            document.addEventListener('click', function (e) {
+                var btn = e.target.closest('.copy-code-btn');
+                if (btn && typeof window.copyCode === 'function') {
+                    e.preventDefault();
+                    window.copyCode(btn);
+                }
+            });
+
+            console.log('✅ 所有示例渲染完成！');
+        })();
+    </script>
+</body>
+
+</html>

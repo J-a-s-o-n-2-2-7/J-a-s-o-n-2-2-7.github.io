@@ -1,0 +1,618 @@
+/* ============================================================
+   markdown-renderer.css
+   完整提取自 ✨ Jason227 主页的渲染样式
+   仅包含 .benben-text 容器内的样式（标题、代码、表格、折叠框等）
+   ============================================================ */
+
+/* ----- 内容容器基类 ----- */
+.benben-text {
+    line-height: 1.6;
+    word-break: break-word;
+    white-space: normal;
+}
+
+/* ----- 锚点偏移（避免被顶部栏遮挡） ----- */
+.benben-text h1,
+.benben-text h2,
+.benben-text h3,
+.benben-text h4,
+.benben-text h5,
+.benben-text h6,
+.benben-text .footnote-ref,
+.benben-text .footnotes li,
+.benben-text .footnote-backref {
+    scroll-margin-top: 60px;
+}
+
+/* ----- 管理员公告（专属语法） ----- */
+.benben-text blockquote.admin-public-comment {
+    margin: 1em 0;
+    padding: 8px 16px;
+    border-left: 4px solid #e74c3c;
+    background: #fef9f9;
+    border-radius: 0 6px 6px 0;
+}
+
+.benben-text blockquote.admin-public-comment>p {
+    color: #e74c3c;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.benben-text blockquote.admin-public-comment .lfe-marked {
+    color: #333;
+    line-height: 1.7;
+}
+
+.benben-text blockquote.admin-public-comment .lfe-marked p:last-child {
+    margin-bottom: 0;
+}
+
+.benben-text blockquote.admin-public-comment .lfe-marked code {
+    background: rgba(231, 76, 60, 0.06);
+}
+
+/* ----- 签名区块 ----- */
+.benben-text .signature-block {
+    border-left: 4px solid #e74c3c;
+    padding-left: 16px;
+    margin: 0.75em 0;
+    font-style: italic;
+}
+
+.benben-text .signature-name {
+    text-align: right;
+    color: #e74c3c;
+    font-weight: bold;
+    font-style: normal;
+    margin-top: 4px;
+}
+
+/* ----- Mermaid 图表 ----- */
+.benben-text .mermaid {
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 0.75em 0;
+    overflow-x: auto;
+}
+
+/* ----- 目录 ----- */
+.benben-text .toc {
+    margin: 1em 0;
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-left: 4px solid #e74c3c;
+}
+
+.benben-text .toc ul {
+    list-style: none;
+    padding-left: 1.5em;
+    margin: 0.3em 0;
+}
+
+.benben-text .toc li {
+    margin: 0.2em 0;
+}
+
+.benben-text .toc a {
+    color: #333;
+    text-decoration: none;
+}
+
+.benben-text .toc a:hover {
+    color: #e74c3c;
+    text-decoration: underline;
+}
+
+/* ----- 列表 ----- */
+.benben-text ul,
+.benben-text ol {
+    margin: 0.75em 0 0.75em 1.5em;
+    padding-left: 0.5em;
+}
+
+.benben-text ul.contains-task-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.benben-text ul.contains-task-list li.task-list-item {
+    list-style-type: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+}
+
+.benben-text ul.contains-task-list input[type="checkbox"] {
+    margin-top: 0.6em;
+    flex-shrink: 0;
+}
+
+/* ----- 定义列表 ----- */
+.benben-text dl {
+    margin: 0.75em 0;
+    padding-left: 0.5em;
+}
+
+.benben-text dt {
+    font-weight: bold;
+    margin-top: 0.5em;
+}
+
+.benben-text dd {
+    margin-left: 1.5em;
+    color: #555;
+}
+
+/* ----- 键盘按键 ----- */
+.benben-text kbd {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #f7f7f7;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    font-size: 0.9em;
+    font-family: inherit;
+}
+
+/* ----- 列表项间距 ----- */
+.benben-text li {
+    margin-bottom: 0.5em;
+    line-height: 1.6;
+}
+
+/* ----- 标题 ----- */
+.benben-text h1,
+.benben-text h2 {
+    border-bottom: 1px solid #D8D8D8;
+    margin: 1em 0;
+}
+
+.benben-text h3,
+.benben-text h4,
+.benben-text h5,
+.benben-text h6 {
+    margin: 1em 0;
+}
+
+/* ----- 段落、引用块 ----- */
+.benben-text p {
+    margin: 0 0 1em 0;
+}
+
+.benben-text blockquote p {
+    margin: 0 0 1em 0;
+}
+
+.benben-text blockquote {
+    margin: 1em 0;
+    padding: 8px 16px;
+    border-left: 4px solid #EEEEEE;
+    white-space: normal;
+}
+
+.benben-text blockquote blockquote {
+    margin-right: -0.01em;
+}
+
+/* ----- 内联代码 ----- */
+.benben-text code {
+    background: #FAFAFA;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* ----- 代码块 ----- */
+.benben-text pre {
+    background: #FAFAFA;
+    padding: 12px 0;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0.75em 0;
+}
+
+.benben-text pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: 14px;
+    white-space: pre-wrap;
+    display: block;
+}
+
+/* ----- 带行号代码块 ----- */
+.code-line {
+    display: flex;
+    align-items: stretch;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 14px;
+    padding: 0 12px;
+}
+
+.code-line .line-number {
+    display: inline-block;
+    min-width: 3ch;
+    text-align: right;
+    margin-right: 8px;
+    white-space: nowrap;
+    border-right: 1px solid #D3D4D5;
+    padding-right: 8px;
+    padding: 0 8px 0 0;
+    color: #9D9D9F;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    pointer-events: none;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    z-index: 1;
+}
+
+.code-line .code-text {
+    flex: 1;
+    display: inline;
+    white-space: pre-wrap;
+}
+
+.code-highlight-line {
+    background-color: #f0f0f0;
+}
+
+/* ----- 代码块容器（复制按钮定位） ----- */
+.code-block-wrapper {
+    position: relative;
+    margin: 0.75em 0;
+}
+
+/* ----- 文件名标签 ----- */
+.code-filename {
+    font-size: 13px;
+    color: #555;
+    background: #f0f2f5;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid #e8e8e8;
+    border-bottom: none;
+    font-family: 'Courier New', monospace;
+    display: inline-block;
+    margin-top: 0.75em;
+    margin-bottom: -1px;
+}
+
+/* ----- 复制按钮 ----- */
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, border-color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+}
+
+.code-block-wrapper:hover .copy-code-btn {
+    opacity: 1;
+}
+
+.copy-code-btn:hover {
+    background: #DDD;
+    border-color: #ccc;
+}
+
+.copy-code-btn .svg-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* ----- 复制成功 Toast（仿 SweetAlert2） ----- */
+.swal2-toast-copy {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 9999;
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+    transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-width: 200px;
+    box-sizing: border-box;
+}
+
+.swal2-toast-copy.show {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+}
+
+.swal2-icon-success-copy {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.swal2-icon-success-copy .swal2-success-ring {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 32px;
+    height: 32px;
+    border: 4px solid rgba(165, 220, 134, 0.3);
+    border-radius: 50%;
+    box-sizing: content-box;
+}
+
+.swal2-icon-success-copy .swal2-success-fix {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 10px;
+    height: 14px;
+    background: #fff;
+    transform: rotate(-45deg);
+    z-index: 1;
+}
+
+.swal2-icon-success-copy .swal2-success-line-tip {
+    position: absolute;
+    top: 13px;
+    left: 4px;
+    width: 10px;
+    height: 4px;
+    background: #a5dc86;
+    transform: rotate(45deg);
+    border-radius: 2px;
+}
+
+.swal2-icon-success-copy .swal2-success-line-long {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 16px;
+    height: 4px;
+    background: #a5dc86;
+    transform: rotate(-45deg);
+    border-radius: 2px;
+}
+
+@keyframes animate-success-tip {
+    0% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+
+    54% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+
+    70% {
+        width: 50px;
+        left: -8px;
+        top: 37px;
+    }
+
+    84% {
+        width: 17px;
+        left: 21px;
+        top: 48px;
+    }
+
+    100% {
+        width: 10px;
+        left: 4px;
+        top: 13px;
+    }
+}
+
+@keyframes animate-success-long {
+    0% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+
+    65% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+
+    84% {
+        width: 55px;
+        left: -5px;
+        top: 15px;
+    }
+
+    100% {
+        width: 16px;
+        left: 10px;
+        top: 10px;
+    }
+}
+
+.swal2-title-copy {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ----- 图片、水平线 ----- */
+.benben-text img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0.5em 0;
+}
+
+.benben-text hr {
+    margin: 1em 0;
+}
+
+/* ----- 代码块选中样式 ----- */
+.benben-text pre .code-text::-moz-selection,
+.benben-text pre .line-number::-moz-selection {
+    background: #E5E5E6;
+    color: inherit;
+}
+
+.benben-text pre .code-text::selection,
+.benben-text pre .line-number::selection {
+    background: #E5E5E6;
+    color: inherit;
+}
+
+.benben-text pre .code-highlight-line .code-text::-moz-selection {
+    background: #DCDCDD;
+    color: inherit;
+}
+
+.benben-text pre .code-highlight-line .code-text::selection {
+    background: #DCDCDD;
+    color: inherit;
+}
+
+/* ----- 表格 ----- */
+.benben-text table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.75em 0;
+}
+
+.benben-text th,
+.benben-text td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.benben-text th {
+    background: #F7F7F7;
+    font-weight: bold;
+}
+
+.benben-text .align-center {
+    text-align: center;
+}
+
+.benben-text .align-right {
+    text-align: right;
+}
+
+.benben-text .align-center img {
+    display: block;
+    margin: 0.5em auto;
+}
+
+.benben-text .align-right img {
+    display: block;
+    margin: 0.5em 0 0.5em auto;
+}
+
+/* ----- 折叠框（details / summary） ----- */
+.benben-text details {
+    margin: 1em 0;
+    padding: 8px 16px;
+    border: none;
+    border-left: 4px solid #cccccc;
+    background: transparent;
+}
+
+.benben-text details.info {
+    border-left-color: #3498DB;
+}
+
+.benben-text details.success {
+    border-left-color: #52C41A;
+}
+
+.benben-text details.warning {
+    border-left-color: #FFC116;
+}
+
+.benben-text details.error {
+    border-left-color: #E74C3C;
+}
+
+.benben-text summary {
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+}
+
+.benben-text summary::-webkit-details-marker {
+    display: none;
+}
+
+.benben-text summary::after {
+    content: "▶";
+    font-size: 12px;
+    color: #888;
+    transition: transform 0.2s ease;
+    margin-left: 8px;
+    flex-shrink: 0;
+    display: inline-block !important;
+}
+
+.benben-text details[open]>summary::after {
+    transform: rotate(90deg) !important;
+}
+
+.benben-text details[open] summary {
+    margin-bottom: 0.5em;
+}
+
+/* 标题和三角形颜色跟随类别 */
+.benben-text details.info summary,
+.benben-text details.info summary::after {
+    color: #3498DB;
+}
+
+.benben-text details.success summary,
+.benben-text details.success summary::after {
+    color: #52C41A;
+}
+
+.benben-text details.warning summary,
+.benben-text details.warning summary::after {
+    color: #FFC116;
+}
+
+.benben-text details.error summary,
+.benben-text details.error summary::after {
+    color: #E74C3C;
+}
