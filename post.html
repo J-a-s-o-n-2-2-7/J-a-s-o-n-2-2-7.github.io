@@ -2133,7 +2133,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, can_speak, can_manage_users, username_color, user_tag, is_cheater')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, username_color, user_tag, is_cheater, avatar_url')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -2718,7 +2718,7 @@
                     .from('posts')
                     .select(`
                         id, forum, title, content, author_id, created_at, updated_at, is_deleted,
-                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin, is_cheater )
+                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin, is_cheater, avatar_url )
                     `)
                     .eq('id', postId)
                     .eq('is_deleted', false)
@@ -2729,6 +2729,7 @@
                     ...postData,
                     authorName: postData.profiles?.username || '匿名用户',
                     authorId: postData.profiles?.user_number || '',
+                    authorAvatarUrl: postData.profiles?.avatar_url || null,
                 };
             }
 
@@ -2742,7 +2743,7 @@
                     .from('comments')
                     .select(`
                         id, content, author_id, created_at,
-                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin, is_cheater )
+                        profiles:author_id ( username, user_number, username_color, user_tag, is_admin, is_cheater, avatar_url )
                     `, { count: 'exact' })
                     .eq('post_id', postId)
                     .order('created_at', { ascending: true })
@@ -2755,6 +2756,7 @@
                     usernameColor: c.profiles?.is_cheater ? '#AD8B00' : (c.profiles?.username_color || (c.profiles?.is_admin ? '#9b59b6' : '#2c3e50')),
                     userTag: c.profiles?.user_tag || '',
                     isAdmin: c.profiles?.is_admin || false,
+                    avatarUrl: c.profiles?.avatar_url || null,
                 }));
                 return { comments, count: count || 0 };
             }
@@ -2980,6 +2982,7 @@
                     const isAdmin = prof.is_admin || false;
                     const userTag = prof.user_tag || '';
                     const color = prof.is_cheater ? '#AD8B00' : (prof.username_color || (isAdmin ? '#9b59b6' : '#2c3e50'));
+                    const avatarUrl = prof.avatar_url || post.authorAvatarUrl || null;
                     const avatarLetter = getAvatarLetter(username);
                     let userTagHtml = '';
                     if (userTag) {
@@ -3006,7 +3009,7 @@
                             <h1 class="post-detail-title">${escapeHtml(post.title)}</h1>
                             <div class="post-detail-header">
                                 <div class="post-detail-avatar">
-                                    <img src="${letterAvatar(username)}" alt="${escapeHtml(username)}" style="width:48px;height:48px;border-radius:50%;display:block;">
+                                    <img src="${avatarUrl || letterAvatar(username)}" alt="${escapeHtml(username)}" style="width:48px;height:48px;border-radius:50%;display:block;" onerror="this.src='${letterAvatar(username)}'">
                                 </div>
                                 <div class="post-detail-info">
                                     <div class="post-detail-author-line">${userHtml}${userTagHtml}</div>
@@ -3020,13 +3023,13 @@
                     document.getElementById('postContent').style.display = 'block';
                     const authorCard = document.getElementById('authorCard');
                     if (authorCard) {
-                        const avatarImg = letterAvatar(username);
+                        const avatarImg = avatarUrl || letterAvatar(username);
                         const avatarSize = '40px';
                         authorCard.innerHTML = `
                             <div class="author-row" style="display:flex;align-items:center;gap:12px;justify-content:center;padding:4px 0;">
                                 <span class="author-label" style="font-size:13px;color:#8a9aa8;flex-shrink:0;">创建者</span>
                                 <div class="author-info" style="display:flex;align-items:center;gap:5px;flex:1;justify-content:flex-start;min-width:0;">
-                                    <img src="${avatarImg}" alt="${escapeHtml(username)}" style="width:${avatarSize};height:${avatarSize};border-radius:50%;display:block;flex-shrink:0;">
+                                    <img src="${avatarImg}" alt="${escapeHtml(username)}" style="width:${avatarSize};height:${avatarSize};border-radius:50%;display:block;flex-shrink:0;" onerror="this.src='${letterAvatar(username)}'">
                                     <div class="author-name-group" style="display:flex;align-items:center;gap:5px;min-width:0;">
                                         <a href="/user/${userNumber}" class="post-detail-author" style="color:${color};white-space:nowrap;">${escapeHtml(username)}</a>
                                         ${userTagHtml}
@@ -3106,7 +3109,7 @@
                 let html = '';
                 comments.forEach(c => {
                     const timeStr = formatTime(c.created_at);
-                    const avatarImg = letterAvatar(c.authorName);
+                    const avatarImg = c.avatarUrl || letterAvatar(c.authorName);
                     const usernameColor = c.usernameColor || '#2c3e50';
                     const userTag = c.userTag || '';
                     let tagHtml = '';
@@ -3116,7 +3119,7 @@
                         <div class="comment-item">
                             <div class="comment-header">
                                 <div class="comment-header-left">
-                                    <div class="comment-avatar"><a href="/user/${c.authorId}"><img src="${avatarImg}" alt="${escapeHtml(c.authorName)}"></a></div>
+                                    <div class="comment-avatar"><a href="/user/${c.authorId}"><img src="${avatarImg}" alt="${escapeHtml(c.authorName)}" onerror="this.src='${letterAvatar(c.authorName)}'"></a></div>
                                     <a class="comment-username" href="/user/${c.authorId}" style="color: ${usernameColor};">${escapeHtml(c.authorName)}</a>
                                     ${tagHtml}
                                     <span class="comment-time">回复于 ${timeStr}</span>
