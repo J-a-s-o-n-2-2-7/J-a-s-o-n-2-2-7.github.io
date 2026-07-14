@@ -1,0 +1,130 @@
+<footer class="bottombar">
+	<div class="bottombar-inner">
+		<div class="bottombar-left">
+			<div>
+				© <span id="currentYear"></span>
+				<a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>
+			</div>
+			<div class="bottombar-meta">
+				<a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io"
+					style="color:#bbb; text-decoration:none;">GitHub</a>
+				<span style="color:#bbb;"> · </span>
+				<a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io/graphs/contributors"
+					style="color:#bbb; text-decoration:none;">项目贡献者</a>
+				<span style="color:#bbb;"> · </span>
+				<a href="https://icp.gov.moe/?keyword=20268322" target="_blank"
+					style="color:#bbb; text-decoration:none;">萌ICP备20268322号</a>
+			</div>
+			<div class="bottombar-meta" id="serverTime">
+				服务器时间: <span id="timeDisplay">加载中...</span>
+			</div>
+			<div class="bottombar-meta" id="uptime">
+				本网站已运行 <span id="uptimeDisplay">0</span> 秒
+			</div>
+		</div>
+
+		<!-- ===== 右侧：贡献者（By 行） ===== -->
+		<div class="bottombar-right">
+			<div id="contributorsLine">
+				<!-- 由 JavaScript 动态渲染 -->
+			</div>
+		</div>
+	</div>
+</footer>
+
+<script>
+	document.getElementById('currentYear').textContent = new Date().getFullYear();
+	
+	(function () {
+		// 更新时间显示
+		function updateServerTime() {
+			const now = new Date();
+			const pad = n => String(n).padStart(2, '0');
+			const str = now.getFullYear() + '-' +
+				pad(now.getMonth() + 1) + '-' +
+				pad(now.getDate()) + ' ' +
+				pad(now.getHours()) + ':' +
+				pad(now.getMinutes()) + ':' +
+				pad(now.getSeconds());
+			document.getElementById('timeDisplay').textContent = str;
+		}
+		updateServerTime();
+		setInterval(updateServerTime, 1000); // 每秒更新
+
+		// 1. 动态年份
+		document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+		// 2. 实时服务器时间（客户端本地时间，模拟）
+		function updateServerTime() {
+			const now = new Date();
+			const pad = n => String(n).padStart(2, '0');
+			const str = now.getFullYear() + '-' +
+				pad(now.getMonth() + 1) + '-' +
+				pad(now.getDate()) + ' ' +
+				pad(now.getHours()) + ':' +
+				pad(now.getMinutes()) + ':' +
+				pad(now.getSeconds());
+			document.getElementById('timeDisplay').textContent = str;
+		}
+		updateServerTime();
+		setInterval(updateServerTime, 1000);
+
+		// 3. 已运行秒数（从 2026-06-01 17:48:56 开始）
+		const startTime = new Date('2026-06-01T17:48:56').getTime();
+		function updateUptime() {
+			const now = Date.now();
+			const diffSec = Math.floor((now - startTime) / 1000);
+			document.getElementById('uptimeDisplay').textContent = diffSec;
+		}
+		updateUptime();
+		setInterval(updateUptime, 1000);
+
+		// 渲染贡献者（底部栏 By 行）
+		async function renderContributors() {
+			const container = document.getElementById('contributorsLine');
+			if (!container) return;
+
+			// 硬编码贡献者 user_number（可改为从配置读取）
+			const userIds = [1, 10, 4]; // Jason227, brian_zheng, luogu_LiuShaRui
+
+			try {
+				const { data: users, error } = await supabase
+					.from('profiles')
+					.select('user_number, username, user_tag, username_color, is_admin, is_cheater')
+					.in('user_number', userIds);
+
+				if (error) throw error;
+
+				if (!users || users.length === 0) {
+					container.innerHTML = `<span style="color:#bbb;">By 未知用户 for <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a></span>`;
+					return;
+				}
+
+				// 构建 user_map 以便按顺序输出
+				const userMap = {};
+				users.forEach(u => { userMap[u.user_number] = u; });
+
+				const parts = [];
+				userIds.forEach(id => {
+					const user = userMap[id];
+					if (!user) return;
+					const color = getUserDisplayColor(user);
+					const tagText = getUserTagDisplay(user);
+
+					// ★ 关键改动：使用与“近期讨论”相同的类名，不用内联样式
+					let link = `<a href="/user/${user.user_number}" class="benben-username" style="color:${color};">${escapeHtml(user.username)}</a>`;
+					if (tagText) {
+						link += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+					}
+					parts.push(link);
+				});
+
+				const joined = parts.join(' <span style="color:#bbb;">&amp;</span> ');
+				container.innerHTML = `<span style="color:#bbb;">By </span>${joined}<span style="color:#bbb;"> for </span><a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>`;
+			} catch (err) {
+				console.error('渲染贡献者失败:', err);
+				container.innerHTML = `<span style="color:#bbb;">By 加载失败 for <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a></span>`;
+			}
+		}
+	});
+</script>
