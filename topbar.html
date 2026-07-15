@@ -1,0 +1,244 @@
+<!-- ============================================================ -->
+<!-- 文件名：topbar.html（纯模板，不含业务逻辑）                    -->
+<!-- 说明：包含顶部栏的 HTML 结构和样式，占位符由 JS 填充           -->
+<!-- ============================================================ -->
+
+<style>
+    /* ===== 顶部栏样式（完全自包含，无需额外 CSS） ===== */
+    .topbar-component {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 12px 24px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .topbar-component .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #e74c3c;
+        text-decoration: none;
+    }
+
+    .topbar-component .auth-buttons {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .topbar-component .auth-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 6px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.2s;
+    }
+
+    .topbar-component .auth-btn:hover {
+        background: #c0392b;
+        text-decoration: none;
+    }
+
+    .topbar-component .auth-btn.logout {
+        background: #7f8c8d;
+    }
+
+    .topbar-component .auth-btn.logout:hover {
+        background: #5a6a6a;
+    }
+
+    .topbar-component .bell-icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: #666;
+        transition: color 0.2s;
+    }
+
+    .topbar-component .bell-icon:hover {
+        color: #e74c3c;
+    }
+
+    .topbar-component .bell-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .topbar-component .bell-icon sup {
+        position: absolute;
+        top: -8px;
+        right: -12px;
+        background-color: #e74c3c;
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        line-height: 1;
+    }
+
+    /* 头像下拉菜单 */
+    .topbar-component .top-avatar-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .topbar-component .top-avatar-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        min-width: 104px;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+        padding: 6px;
+        display: none;
+        z-index: 300;
+    }
+
+    .topbar-component .top-avatar-wrap:hover .top-avatar-menu {
+        display: block;
+    }
+
+    .topbar-component .top-avatar-menu .auth-btn.logout {
+        display: block;
+        width: 100%;
+        text-align: center;
+        border-radius: 6px;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+
+    .topbar-component .top-avatar-menu .top-avatar-menu-link {
+        display: block;
+        padding: 6px 12px;
+        color: #2c3e50;
+        font-size: 13px;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background 0.15s;
+    }
+
+    .topbar-component .top-avatar-menu .top-avatar-menu-link:hover {
+        background: #f0f2f5;
+        text-decoration: none;
+    }
+
+    .topbar-component .avatar-img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .topbar-component .admin-gear {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        margin-left: 8px;
+        color: #666;
+        text-decoration: none;
+        font-size: 18px;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .topbar-component .admin-gear:hover {
+        color: #e74c3c;
+    }
+
+    /* 显示/隐藏辅助 */
+    .topbar-component .hidden {
+        display: none !important;
+    }
+
+    @media (max-width: 600px) {
+        .topbar-component {
+            padding: 10px 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .topbar-component .logo {
+            font-size: 1.2rem;
+        }
+
+        .topbar-component .auth-btn {
+            padding: 4px 14px;
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .topbar-component .auth-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+        }
+    }
+</style>
+
+<!-- ===== HTML 骨架（占位符，由 JS 动态填充） ===== -->
+<div class="topbar-component" id="topbarRoot">
+    <!-- Logo -->
+    <a href="/" class="logo">✨ Jason227</a>
+
+    <!-- 右侧按钮区域 -->
+    <div class="auth-buttons" id="topbarAuthContainer">
+        <!-- 未登录状态（默认显示） -->
+        <div id="topbarLoggedOut">
+            <a href="/auth/login" class="auth-btn">登录</a>
+            <a href="/auth/register" class="auth-btn">注册</a>
+        </div>
+
+        <!-- 登录状态（默认隐藏） -->
+        <div id="topbarLoggedIn" class="hidden">
+            <!-- 头像 + 下拉菜单 -->
+            <div class="top-avatar-wrap">
+                <a href="#" id="topbarProfileLink">
+                    <img id="topbarAvatarImg" src="" alt="头像" class="avatar-img">
+                </a>
+                <div class="top-avatar-menu">
+                    <a href="#" id="topbarProfileLink2" class="top-avatar-menu-link">👤 个人主页</a>
+                    <button id="topbarLogoutBtn" class="auth-btn logout">登出</button>
+                </div>
+            </div>
+
+            <!-- 通知铃铛 -->
+            <a href="/user/notification" class="bell-icon" id="topbarBell">
+                <svg viewBox="0 0 448 512" width="20" height="20">
+                    <path fill="currentColor"
+                        d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z">
+                    </path>
+                </svg>
+                <sup id="bell-badge" class="hidden">0</sup>
+            </a>
+
+            <!-- 管理员入口（默认隐藏） -->
+            <a href="/admin/user" title="进入管理后台" class="admin-gear hidden" id="topbarAdminGear">⚙️</a>
+        </div>
+    </div>
+</div>
