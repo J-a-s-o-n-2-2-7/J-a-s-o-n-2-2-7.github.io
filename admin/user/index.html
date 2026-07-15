@@ -1251,6 +1251,51 @@
                     });
                 } catch (err) { /* 静默 */ }
             }
+
+            // ===== 分析权限变更类型 =====
+            function analyzePermissionChanges(changes) {
+                const normalPerms = ['can_speak'];
+                const adminPerms = ['is_super_admin', 'is_admin', 'can_manage_users', 'can_manage_posts'];
+
+                let normalGrants = [];
+                let normalRevokes = [];
+                let adminGrants = [];
+                let adminRevokes = [];
+
+                for (const [field, value] of Object.entries(changes)) {
+                    const changeInfo = { permission: field, new_value: value };
+
+                    // 特殊处理 is_banned 字段（逻辑是反的）
+                    if (field === 'is_banned') {
+                        // is_banned: false = 授予进入主站权限
+                        // is_banned: true = 撤销进入主站权限
+                        if (value === false) {
+                            normalGrants.push(changeInfo);
+                        } else {
+                            normalRevokes.push(changeInfo);
+                        }
+                    } else if (normalPerms.includes(field)) {
+                        if (value === true) {
+                            normalGrants.push(changeInfo);
+                        } else {
+                            normalRevokes.push(changeInfo);
+                        }
+                    } else if (adminPerms.includes(field)) {
+                        if (value === true) {
+                            adminGrants.push(changeInfo);
+                        } else {
+                            adminRevokes.push(changeInfo);
+                        }
+                    }
+                }
+
+                return {
+                    normalGrants,
+                    normalRevokes,
+                    adminGrants,
+                    adminRevokes
+                };
+            }
             async function getCurrentAdminId() {
                 if (currentUser) return currentUser.id;
                 const { data: { user } } = await supabase.auth.getUser();
@@ -1314,6 +1359,97 @@
                 const reason = await promptReason('确认修改权限');
                 if (!reason) return;
 
+                // 检查是否只有 is_cheater 或 is_banned 字段变更
+                const onlyCheaterChange = Object.keys(changes).length === 1 && changes.is_cheater !== undefined;
+                const onlyBannedChange = Object.keys(changes).length === 1 && changes.is_banned !== undefined;
+
+                // 分析权限变更类型
+                const { normalGrants, normalRevokes, adminGrants, adminRevokes } = analyzePermissionChanges(changes);
+
+                // 判断是否有普通权限和管理权限的变更
+                const hasNormalChanges = normalGrants.length > 0 || normalRevokes.length > 0;
+                const hasAdminChanges = adminGrants.length > 0 || adminRevokes.length > 0;
+
+                // 如果同时有普通权限和管理权限的变更，则拒绝
+                if (hasNormalChanges && hasAdminChanges) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '无效操作',
+                        text: '不能同时修改普通权限和管理权限，请分别操作'
+                    });
+                    return;
+                }
+
+                // 确定操作类型和标签
+                let actionType = '';
+                let actionLabel = '';
+                let actionDetail = {};
+
+                // 特殊处理：只有学术不端标记变更
+                if (onlyCheaterChange) {
+                    actionType = changes.is_cheater ? 'brown_penalty' : 'unbrown';
+                    actionLabel = changes.is_cheater ? '棕名惩罚' : '解除棕名';
+                    actionDetail = {
+                        changes: [{ permission: 'is_cheater', new_value: changes.is_cheater }],
+                        category: 'cheater'
+                    };
+                }
+                // 特殊处理：只有进入主站权限变更
+                else if (onlyBannedChange) {
+                    if (changes.is_banned === false) {
+                        // 授予进入主站权限
+                        actionType = 'unban';
+                        actionLabel = '授予权限';
+                        actionDetail = {
+                            changes: [{ permission: 'is_banned', new_value: false }],
+                            category: 'normal'
+                        };
+                    } else {
+                        // 撤销进入主站权限（用户封禁）
+                        actionType = 'ban';
+                        actionLabel = '用户封禁';
+                        actionDetail = {
+                            changes: [{ permission: 'is_banned', new_value: true }],
+                            category: 'normal'
+                        };
+                    }
+                }
+                else if (hasNormalChanges) {
+                    if (normalGrants.length > 0 && normalRevokes.length === 0) {
+                        // 全是普通权限的授予
+                        actionType = 'grant_normal';
+                        actionLabel = '授予权限';
+                        actionDetail = {
+                            changes: normalGrants,
+                            category: 'normal'
+                        };
+                    } else if (normalRevokes.length > 0 && normalGrants.length === 0) {
+                        // 全是普通权限的撤销
+                        actionType = 'revoke_normal';
+                        actionLabel = '撤销权限';
+                        actionDetail = {
+                            changes: normalRevokes,
+                            category: 'normal'
+                        };
+                    } else {
+                        // 既有普通权限的授予又有撤销
+                        actionType = 'ostracism';
+                        actionLabel = '陶片放逐';
+                        actionDetail = {
+                            changes: [...normalGrants, ...normalRevokes],
+                            category: 'normal'
+                        };
+                    }
+                } else if (hasAdminChanges) {
+                    // 全是管理权限的变更
+                    actionType = 'admin_rotation';
+                    actionLabel = '管理轮换';
+                    actionDetail = {
+                        changes: [...adminGrants, ...adminRevokes],
+                        category: 'admin'
+                    };
+                }
+
                 const updateObj = {};
                 let autoGrantAdmin = false;
                 for (const [field, value] of Object.entries(changes)) {
@@ -1330,18 +1466,24 @@
                     await updateUserField(userNumber, updateObj);
                     const adminId = await getCurrentAdminId();
                     if (adminId && targetUser) {
-                        for (const [field, value] of Object.entries(changes)) {
-                            await insertOstrakonLog(
-                                adminId,
-                                targetUser.id,
-                                value ? 'grant_perm' : 'revoke_perm',
-                                { permission: field, new_value: value, auto_granted_admin: autoGrantAdmin },
-                                reason
-                            );
-                        }
+                        // 记录一条合并的日志
+                        await insertOstrakonLog(
+                            adminId,
+                            targetUser.id,
+                            actionType,
+                            actionDetail,
+                            reason
+                        );
                     }
                     delete pendingChanges[userNumber];
                     await loadUsers();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '修改成功',
+                        text: `${actionLabel}操作已完成`,
+                        timer: 1500
+                    });
                 } catch (err) {
                     Swal.fire({ icon: 'error', title: '更新失败', text: err.message });
                 }
@@ -1817,13 +1959,52 @@
                     if (error) throw error;
                     const adminId = await getCurrentAdminId();
                     if (adminId) {
-                        let actionType = 'grant_perm';
-                        let field = Object.keys(updateObj)[0];
-                        let newValue = updateObj[field];
-                        if (field === 'is_banned') actionType = newValue ? 'ban' : 'unban';
-                        else actionType = newValue ? 'grant_perm' : 'revoke_perm';
+                        const field = Object.keys(updateObj)[0];
+                        const newValue = updateObj[field];
+
+                        // 分析权限类型
+                        const normalPerms = ['can_speak'];
+                        const adminPerms = ['is_super_admin', 'is_admin', 'can_manage_users', 'can_manage_posts'];
+
+                        let actionType = '';
+                        let actionDetail = {};
+
+                        // 特殊处理 is_banned 字段（逻辑是反的）
+                        if (field === 'is_banned') {
+                            // is_banned: false = 授予进入主站权限
+                            // is_banned: true = 撤销进入主站权限（用户封禁）
+                            if (newValue === false) {
+                                actionType = 'unban';  // 使用unban类型，左上角显示"授予权限"
+                            } else {
+                                actionType = 'ban';     // 使用ban类型，左上角显示"用户封禁"
+                            }
+                            actionDetail = {
+                                changes: [{ permission: field, new_value: newValue }],
+                                category: 'normal'
+                            };
+                        } else if (normalPerms.includes(field)) {
+                            // 普通权限
+                            actionType = newValue ? 'grant_normal' : 'revoke_normal';
+                            actionDetail = {
+                                changes: [{ permission: field, new_value: newValue }],
+                                category: 'normal'
+                            };
+                        } else if (adminPerms.includes(field)) {
+                            // 管理权限
+                            actionType = 'admin_rotation';
+                            actionDetail = {
+                                changes: [{ permission: field, new_value: newValue }],
+                                category: 'admin'
+                            };
+                        } else {
+                            // 未知权限，使用旧格式
+                            if (field === 'is_banned') actionType = newValue ? 'ban' : 'unban';
+                            else actionType = newValue ? 'grant_perm' : 'revoke_perm';
+                            actionDetail = { permission: field, new_value: newValue };
+                        }
+
                         for (const user of users) {
-                            await insertOstrakonLog(adminId, user.id, actionType, { permission: field, new_value: newValue }, reason);
+                            await insertOstrakonLog(adminId, user.id, actionType, actionDetail, reason);
                         }
                     }
                     document.querySelectorAll('.row-checkbox:checked').forEach(cb => cb.checked = false);
