@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown 渲染器 · 独立调用示例</title>
+    <title>📝 Markdown 实时渲染器</title>
 
-    <!-- 1. 加载外部依赖 -->
+    <!-- KaTeX CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
+    <!-- 第三方依赖（同步加载） -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
@@ -17,15 +17,21 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <!-- DOMPurify -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 
-    <!-- 2. 加载本渲染器 -->
-    <link rel="stylesheet" href="markdown-renderer.css">
-    <script src="markdown-renderer.js"></script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
+    <!-- KaTeX JS（使用 defer，确保在 DOM 解析后执行） -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <!-- 自定义渲染器（也使用 defer，并放在 KaTeX 之后，保证执行顺序） -->
+    <link rel="stylesheet" href="./markdown-renderer.css">
+    <script defer src="./markdown-renderer.js"></script>
+
+    <!-- ===== 页面布局样式 ===== -->
     <style>
-        /* 仅用于演示页面布局，不干扰渲染样式 */
         * {
             margin: 0;
             padding: 0;
@@ -33,186 +39,342 @@
         }
 
         body {
-            background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-            line-height: 1.6;
-            padding: 40px 20px;
-            color: #1e293b;
+            background: #f5f7fa;
+            padding: 20px;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 24px;
-            padding: 40px 48px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        .app-header {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        h1 {
-            font-size: 28px;
+        .app-header h1 {
+            font-size: 1.8rem;
             font-weight: 700;
-            border-bottom: 2px solid #e74c3c;
-            padding-bottom: 16px;
-            margin-bottom: 28px;
-            color: #0f172a;
+            color: #e74c3c;
         }
 
-        .demo-section {
-            margin-top: 32px;
-            border-top: 1px solid #eef2f6;
-            padding-top: 28px;
+        .app-header .actions {
+            display: flex;
+            gap: 12px;
         }
 
-        .demo-section h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-
-        .demo-section h2 small {
-            font-weight: 400;
+        .app-header .actions button {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
             font-size: 14px;
-            color: #94a3b8;
-            margin-left: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .render-target {
-            padding: 20px 24px;
-            background: #fafbfc;
+        .app-header .actions button:hover {
+            background: #c0392b;
+        }
+
+        .app-header .actions button.secondary {
+            background: #7f8c8d;
+        }
+
+        .app-header .actions button.secondary:hover {
+            background: #5d6d7e;
+        }
+
+        .app-body {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .editor-pane,
+        .preview-pane {
+            flex: 1 1 45%;
+            min-width: 320px;
+            background: #fff;
             border-radius: 16px;
-            border: 1px solid #eef2f6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .footnote-info {
-            margin-top: 24px;
-            font-size: 13px;
-            color: #94a3b8;
-            background: #f1f5f9;
+        .pane-header {
             padding: 12px 20px;
-            border-radius: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 1px solid #edf2f7;
+            background: #fafbfc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .footnote-info code {
-            background: #e2e8f0;
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-size: 12px;
+        .pane-header .info {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: 400;
+        }
+
+        .editor-pane textarea {
+            width: 100%;
+            height: 70vh;
+            padding: 20px;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+            background: #fff;
+            color: #2c3e50;
+            tab-size: 4;
+        }
+
+        .preview-pane .preview-content {
+            padding: 20px 24px;
+            overflow-y: auto;
+            height: 70vh;
+            background: #fff;
+        }
+
+        .preview-pane .preview-content .benben-text {
+            min-height: 100%;
+        }
+
+        .footer {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            color: #bbb;
+            font-size: 13px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            padding-top: 16px;
+        }
+
+        @media (max-width: 700px) {
+
+            .editor-pane,
+            .preview-pane {
+                flex: 1 1 100%;
+                min-width: auto;
+            }
+
+            .editor-pane textarea,
+            .preview-pane .preview-content {
+                height: 50vh;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>📦 Markdown 渲染器 · 独立调用示例</h1>
-        <p style="color:#64748b; margin-bottom: 24px;">
-            本页面展示了 <strong>markdown-renderer.css</strong> 和 <strong>markdown-renderer.js</strong> 的用法。
-            所有渲染逻辑已打包，其他页面只需引入这两个文件即可获得相同渲染能力。
-        </p>
 
-        <!-- 示例 1：基础 Markdown -->
-        <div class="demo-section">
-            <h2>📝 基础 Markdown <small>标题 · 列表 · 粗斜体 · 链接 · 图片</small></h2>
-            <div class="render-target">
-                <div class="benben-text" id="demo1"></div>
+    <div class="app-header">
+        <h1>📝 Markdown 实时渲染</h1>
+        <div class="actions">
+            <button id="loadSampleBtn">加载示例</button>
+            <button id="clearBtn" class="secondary">清空</button>
+        </div>
+    </div>
+
+    <div class="app-body">
+        <!-- 编辑器 -->
+        <div class="editor-pane">
+            <div class="pane-header">
+                <span>✏️ Markdown 源码</span>
+                <span class="info" id="charCount">0 字符</span>
+            </div>
+            <textarea id="mdEditor" placeholder="在此输入 Markdown 内容..."></textarea>
+        </div>
+        <!-- 预览 -->
+        <div class="preview-pane">
+            <div class="pane-header">
+                <span>👁️ 实时预览</span>
+                <span class="info" id="wordCount">0 词</span>
+            </div>
+            <div class="preview-content" id="previewContainer">
+                <div class="benben-text" id="renderedContent">
+                    <p style="color:#999;text-align:center;padding:40px 0;">输入 Markdown 后自动渲染</p>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- 示例 2：LaTeX 公式 -->
-        <div class="demo-section">
-            <h2>📐 LaTeX 公式 <small>行内 + 块级</small></h2>
-            <div class="render-target">
-                <div class="benben-text" id="demo2"></div>
-            </div>
-        </div>
-
-        <!-- 示例 3：代码块 + 行号 + 复制 -->
-        <div class="demo-section">
-            <h2>💻 代码块 <small>行号 · 高亮 · 一键复制</small></h2>
-            <div class="render-target">
-                <div class="benben-text" id="demo3"></div>
-            </div>
-        </div>
-
-        <!-- 示例 4：折叠框 + 表格 + 任务列表 -->
-        <div class="demo-section">
-            <h2>📂 折叠框 · 表格 · 任务列表 <small>嵌套 details · 对齐</small></h2>
-            <div class="render-target">
-                <div class="benben-text" id="demo4"></div>
-            </div>
-        </div>
-
-        <!-- 示例 5：Mermaid 图表 -->
-        <div class="demo-section">
-            <h2>📊 Mermaid 图表 <small>流程图 / 时序图</small></h2>
-            <div class="render-target">
-                <div class="benben-text" id="demo5"></div>
-            </div>
-        </div>
-
-        <!-- 示例 6：扩展语法 -->
-        <div class="demo-section">
-            <h2>✨ 扩展语法 <small>删除线 · 高亮 · 键盘按键 · 上/下标 · 目录</small></h2>
-            <div class="render-target">
-                <div class="benben-text" id="demo6"></div>
-            </div>
-        </div>
-
-        <div class="footnote-info">
-            ⚡ 所有渲染由 <code>markdown-renderer.js</code> 中的 <code>renderContent()</code> 驱动，
-            样式由 <code>markdown-renderer.css</code> 提供。<br>
-            支持：KaTeX · markdown-it 全家桶 · Mermaid · DOMPurify · 代码复制 · 目录生成 · 嵌套折叠框。
-        </div>
+    <div class="footer">
+        ✨ 支持 KaTeX、Mermaid、任务列表、脚注、折叠框、代码复制等扩展语法
     </div>
 
     <script>
         (function () {
-            var renderContent = window.renderContent;
-            if (!renderContent) {
-                console.error('❌ markdown-renderer.js 未正确加载');
-                document.querySelectorAll('.benben-text').forEach(function (el) {
-                    el.innerHTML = '<p style="color:#e74c3c;">渲染器加载失败，请检查控制台。</p>';
-                });
-                return;
-            }
+            function init() {
+                const editor = document.getElementById('mdEditor');
+                const preview = document.getElementById('renderedContent');
+                const charCount = document.getElementById('charCount');
+                const wordCount = document.getElementById('wordCount');
+                const loadSampleBtn = document.getElementById('loadSampleBtn');
+                const clearBtn = document.getElementById('clearBtn');
 
-            // 示例数据
-            var demos = {
-                demo1: '# 欢迎使用 Markdown 渲染器\n\n这是一段 **粗体** 和 *斜体* 文本，支持 ~~删除线~~ 和 ==高亮==。\n\n- 无序列表项 1\n- 无序列表项 2\n  - 嵌套项 2.1\n  - 嵌套项 2.2\n\n1. 有序列表第一项\n2. 有序列表第二项\n\n[点击访问 GitHub](https://github.com)\n\n![示例图片](https://picsum.photos/400/200?random=1)',
-                demo2: '行内公式：$E = mc^2$ 是质能方程。\n\n块级公式：\n\n$$\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n$$\n\n矩阵：\n\n$$\n\\begin{pmatrix}\na & b \\\\\nc & d\n\\end{pmatrix}\n$$',
-                demo3: '```javascript line-numbers lines=3-5\n// 带行号和高亮范围的代码\nfunction greet(name) {\n  const msg = `Hello, ${name}!`;\n  console.log(msg);\n  return msg;\n}\n\n// 调用示例\ngreet(\'World\');\n```\n\n```python\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nprint([fibonacci(i) for i in range(10)])\n```',
-                demo4: ':::info [📘 信息折叠框] {open}\n这里是默认展开的 info 类型折叠框。\n可以放任意 Markdown 内容。\n:::\n\n:::success [✅ 成功提示]\n这是 success 类型，左侧竖线为绿色。\n:::\n\n| 姓名   | 年龄 | 城市     |\n|--------|------|----------|\n| 张三   | 25   | 北京     |\n| 李四   | 30   | 上海     |\n\n- [x] 已完成任务\n- [ ] 待办任务',
-                demo5: '```mermaid\ngraph TD\n    A[开始] --> B{判断条件}\n    B -->|是| C[执行操作1]\n    B -->|否| D[执行操作2]\n    C --> E[结束]\n    D --> E\n```\n\n```mermaid\nsequenceDiagram\n    participant 用户\n    participant 前端\n    用户->>前端: 点击按钮\n    前端-->>用户: 渲染页面\n```',
-                demo6: '[[TOC]]\n\n## 删除线\n~~这段文字被删除了~~\n\n## 高亮标记\n==重要内容== 需要特别注意\n\n## 键盘按键\n请按 [[Ctrl]] + [[C]] 复制。\n\n## 上标 / 下标\nH^2^O 是水（上标），CO~2~ 是二氧化碳（下标）。\n\n## 脚注\n这里有一个脚注[^1]。\n\n[^1]: 这是脚注的内容。'
-            };
-
-            Object.keys(demos).forEach(function (id) {
-                var el = document.getElementById(id);
-                if (!el) return;
-                var raw = demos[id];
-                var html = renderContent(raw, {}, false, '演示用户', 'demo-' + id);
-                el.innerHTML = html;
-            });
-
-            // 手动触发 Mermaid 渲染
-            if (typeof mermaid !== 'undefined') {
-                setTimeout(function () {
-                    mermaid.run({ nodes: document.querySelectorAll('.mermaid') })
-                        .catch(function (err) { console.warn('Mermaid 渲染警告:', err); });
-                }, 300);
-            }
-
-            // 复制按钮事件（委托）
-            document.addEventListener('click', function (e) {
-                var btn = e.target.closest('.copy-code-btn');
-                if (btn && typeof window.copyCode === 'function') {
-                    e.preventDefault();
-                    window.copyCode(btn);
+                // 检查 MarkdownRenderer 是否可用
+                if (typeof MarkdownRenderer === 'undefined') {
+                    preview.innerHTML = `
+                        <div style="color:#e74c3c;padding:20px;">
+                            ❌ MarkdownRenderer 未加载<br>
+                            请确保 <code>markdown-renderer.js</code> 文件存在且路径正确。
+                        </div>
+                    `;
+                    return;
                 }
-            });
 
-            console.log('✅ 所有示例渲染完成！');
+                // 示例文本
+                const sampleText = `# 欢迎使用 Markdown 实时渲染器
+
+## 功能演示
+
+### 1. 基础语法
+
+- **加粗** 和 *斜体*
+- 有序列表：
+  1. 第一项
+  2. 第二项
+- 链接：[GitHub](https://github.com)
+- 图片：![示例图片](https://via.placeholder.com/150)
+
+### 2. 代码块
+
+\`\`\`javascript:hello.js
+console.log('Hello, Markdown!');
+\`\`\`
+
+支持行号 \`line-numbers\` 和高亮行 \`lines=2-3\`：
+
+\`\`\`python line-numbers lines=2-3
+def greet(name):
+    print(f"Hello, {name}!")
+    return True
+\`\`\`
+
+### 3. LaTeX 公式
+
+行内公式：$E = mc^2$
+
+块级公式：
+$$ \int_{0}^{1} x^2 dx = \frac{1}{3} $$
+
+### 4. 任务列表
+
+- [x] 已完成任务
+- [ ] 待办任务
+- [ ] 另一个待办
+
+### 5. 脚注
+
+这是带脚注的文字[^1]。
+
+[^1]: 这是脚注内容。
+
+### 6. 折叠框
+
+:::info [点击展开详情]
+这里是折叠框的内容，支持 **Markdown** 语法。
+:::
+
+:::success {open}
+这个默认展开。
+:::
+
+### 7. 表格
+
+| 列1 | 列2 |
+|-----|-----|
+| A   | B   |
+| C   | D   |
+
+### 8. Mermaid 图表
+
+\`\`\`mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+\`\`\`
+
+### 9. 其他扩展
+
+- 删除线：~~删除~~
+- 高亮：==高亮==
+- 插入：++插入++
+- 上标：^上标^，下标：~下标~
+- 键盘按键：[[Ctrl]] + [[C]]
+
+### 10. @提及（需传入映射，此处仅演示）
+
+@jason
+
+---
+
+**尽情体验吧！**`;
+
+                // 渲染函数
+                function render() {
+                    const text = editor.value;
+                    const options = {
+                        isAdmin: true,
+                        username: '当前用户',
+                        mentionMap: { 'jason': 1, 'admin': 2 },
+                        uniqueId: 'preview'
+                    };
+                    try {
+                        const html = MarkdownRenderer.render(text, options);
+                        preview.innerHTML = html;
+                        // 触发 Mermaid 渲染
+                        if (typeof mermaid !== 'undefined') {
+                            try {
+                                mermaid.run({ nodes: preview.querySelectorAll('.mermaid') });
+                            } catch (e) { /* 忽略 */ }
+                        }
+                        // 更新统计
+                        const chars = text.length;
+                        charCount.textContent = chars + ' 字符';
+                        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+                        wordCount.textContent = words + ' 词';
+                    } catch (e) {
+                        preview.innerHTML = `<p style="color:red;">渲染出错: ${e.message}</p>`;
+                    }
+                }
+
+                // 绑定事件
+                editor.addEventListener('input', render);
+                loadSampleBtn.addEventListener('click', function () {
+                    editor.value = sampleText;
+                    render();
+                });
+                clearBtn.addEventListener('click', function () {
+                    editor.value = '';
+                    render();
+                });
+
+                // 初始加载示例
+                editor.value = sampleText;
+                render();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
         })();
     </script>
 </body>

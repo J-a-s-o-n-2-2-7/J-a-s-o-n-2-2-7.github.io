@@ -5,34 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>帖子详情 - ✨ Jason227</title>
-    <!-- 与主页完全一致的依赖 -->
+
+    <!-- ===== 第三方依赖（与主页一致） ===== -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
-    </script>
-    <!-- Font Awesome（主页未用，但保留因为原帖子详情页用了） -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <!-- ===== 自定义渲染器（外部引用） ===== -->
+    <link rel="stylesheet" href="./markdown-renderer.css">
+    <script defer src="./markdown-renderer.js"></script>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- Supabase -->
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
 
+    <!-- ===== 页面样式（仅保留布局和业务样式，删除所有与 Markdown 渲染相关的样式） ===== -->
     <style>
-        /* ========== 基础样式（与主页完全一致） ========== */
+        /* ========== 基础样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -133,7 +139,7 @@
             line-height: 1;
         }
 
-        /* ========== 侧边栏（与主页完全一致） ========== */
+        /* ========== 侧边栏 ========== */
         .nav-sidebar {
             position: fixed;
             top: 50px;
@@ -238,7 +244,7 @@
             opacity: 1;
         }
 
-        /* ========== 内容区域（帖子详情专用） ========== */
+        /* ========== 内容区域 ========== */
         .content-wrapper {
             margin-left: 64px;
             padding-top: 16px;
@@ -448,11 +454,6 @@
             font-size: 15px;
             line-height: 1.8;
             color: #1a2632;
-        }
-
-        .post-body .lfe-marked {
-            padding: 0;
-            border-top: none;
         }
 
         .comment-section {
@@ -692,18 +693,20 @@
         }
 
         .cs-editor {
-            font-family: inherit;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #1a2632;
+            font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #6C6C6C;
             outline: none;
             resize: none;
             border: none;
             width: 100%;
             height: 100%;
-            background: transparent;
             min-height: 200px;
             padding: 12px 16px;
+            tab-size: 4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .cs-editor:focus {
@@ -715,15 +718,14 @@
         }
 
         .cs-viewer {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #404040;
             padding: 12px 16px;
             overflow-y: auto;
-            background: #fafbfc;
-            font-size: 14px;
-            line-height: 1.7;
-            color: #1a2632;
         }
 
-        .cs-viewer .lfe-marked {
+        .cs-viewer .benben-text {
             padding: 0;
         }
 
@@ -763,43 +765,79 @@
             color: #e74c3c;
         }
 
+        /* ===== EasyMDE 编辑器（CodeMirror）中标题行样式 ===== */
+        .CodeMirror .cm-header {
+            font-weight: 700 !important;
+            text-decoration: underline !important;
+            color: #404040 !important;      /* 保持编辑器文字颜色 */
+        }
+
+        /* 单个 $ 数学公式高亮为 #994400 */
+        .CodeMirror .custom-math-inline {
+            color: #994400 !important;
+        }
+
+        /* 所有链接相关部分（包括标记符号、文字、URL）都加下划线 */
+        .CodeMirror .cm-link,
+        .CodeMirror .cm-url,
+        .CodeMirror .cm-formatting-link,
+        .CodeMirror .cm-formatting-link-string {
+            text-decoration: underline !important;
+        }
+
+        /* URL 部分（括号内的地址）显示为主题色（红色） */
+        .CodeMirror .cm-url {
+            color: #e74c3c !important;
+        }
+
+        /* 链接文字、方括号、圆括号保持普通文本颜色（继承编辑器默认颜色） */
+        .CodeMirror .cm-link,
+        .CodeMirror .cm-formatting-link,
+        .CodeMirror .cm-formatting-link-string {
+            color: inherit !important;
+        }
+
         .reply-bottom {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;          /* 窄屏自动换行，宽屏强制一行 */
             padding: 12px 16px;
             background: #fff;
             border-top: 1px solid #e9ecef;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
-        .reply-bottom-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .reply-bottom-left .captcha-input {
-            padding: 6px 12px;
-            border: 1px solid #dce3ea;
-            border-radius: 6px;
-            font-size: 13px;
+        .reply-bottom .captcha-input {
+            flex: 1 1 140px;          /* 可伸缩，最小宽度 140px */
+            min-width: 120px;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: inherit;
-            background: #fafbfc;
-            transition: border 0.15s;
-            width: 180px;
+            background: #f9fafb;
+            transition: border 0.15s, box-shadow 0.15s, background 0.15s;
         }
 
-        .reply-bottom-left .captcha-input:focus {
+        .reply-bottom .captcha-input:focus {
             outline: none;
             border-color: #e74c3c;
-            background: #fff;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: #ffffff;
+        }
+
+        .reply-bottom canvas {
+            flex: 0 0 120px;          /* 固定宽度 */
+            height: 44px;
+            cursor: pointer;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
         }
 
         .reply-bottom .btn-submit {
-            padding: 8px 24px;
+            flex: 0 0 auto;           /* 不伸缩，宽度由内容撑开 */
+            padding: 10px 24px;
             border-radius: 8px;
             border: none;
             font-size: 14px;
@@ -811,6 +849,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap;      /* 防止按钮文字换行 */
         }
 
         .reply-bottom .btn-submit:hover {
@@ -824,6 +863,44 @@
 
         .reply-bottom .btn-submit i {
             font-size: 13px;
+        }
+
+        /* ===== 与登录页一致的验证码输入框样式 ===== */
+        .captcha-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .captcha-row .captcha-input {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #f9fafb;
+            transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+        }
+
+        .captcha-row .captcha-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+            background: #ffffff;
+        }
+
+        .captcha-row canvas {
+            cursor: pointer;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            flex-shrink: 0;
+            width: 120px;
+            height: 44px;
         }
 
         .lfe-caption {
@@ -955,496 +1032,7 @@
             font-size: 12px;
         }
 
-        /* ===== 预览区 Markdown 样式（完整复制自主页 .benben-text） ===== */
-        .cs-viewer .lfe-marked h1,
-        .cs-viewer .lfe-marked h2,
-        .cs-viewer .lfe-marked h3,
-        .cs-viewer .lfe-marked h4,
-        .cs-viewer .lfe-marked h5,
-        .cs-viewer .lfe-marked h6,
-        .cs-viewer .lfe-marked .footnote-ref,
-        .cs-viewer .lfe-marked .footnotes li,
-        .cs-viewer .lfe-marked .footnote-backref {
-            scroll-margin-top: 60px;
-        }
-
-        .cs-viewer .lfe-marked blockquote.admin-public-comment {
-            margin: 1em 0;
-            padding: 8px 16px;
-            border-left: 4px solid #e74c3c;
-            background: #fef9f9;
-            border-radius: 0 6px 6px 0;
-        }
-
-        .cs-viewer .lfe-marked blockquote.admin-public-comment>p {
-            color: #e74c3c;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .cs-viewer .lfe-marked blockquote.admin-public-comment .lfe-marked {
-            color: #333;
-            line-height: 1.7;
-        }
-
-        .cs-viewer .lfe-marked blockquote.admin-public-comment .lfe-marked p:last-child {
-            margin-bottom: 0;
-        }
-
-        .cs-viewer .lfe-marked .signature-block {
-            border-left: 4px solid #e74c3c;
-            padding-left: 16px;
-            margin: 0.75em 0;
-            font-style: italic;
-        }
-
-        .cs-viewer .lfe-marked .signature-name {
-            text-align: right;
-            color: #e74c3c;
-            font-weight: bold;
-            font-style: normal;
-            margin-top: 4px;
-        }
-
-        .cs-viewer .lfe-marked .mermaid {
-            background: #fafafa;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 0.75em 0;
-            overflow-x: auto;
-        }
-
-        .cs-viewer .lfe-marked .toc {
-            margin: 1em 0;
-            padding: 8px 16px;
-            background: #f8f9fa;
-            border-left: 4px solid #e74c3c;
-        }
-
-        .cs-viewer .lfe-marked .toc ul {
-            list-style: none;
-            padding-left: 1.5em;
-            margin: 0.3em 0;
-        }
-
-        .cs-viewer .lfe-marked .toc li {
-            margin: 0.2em 0;
-        }
-
-        .cs-viewer .lfe-marked .toc a {
-            color: #333;
-            text-decoration: none;
-        }
-
-        .cs-viewer .lfe-marked .toc a:hover {
-            color: #e74c3c;
-            text-decoration: underline;
-        }
-
-        .cs-viewer .lfe-marked ul,
-        .cs-viewer .lfe-marked ol {
-            margin: 0.75em 0 0.75em 1.5em;
-            padding-left: 0.5em;
-        }
-
-        .cs-viewer .lfe-marked ul.contains-task-list {
-            list-style-type: none;
-            padding-left: 0;
-            margin-left: 0;
-        }
-
-        .cs-viewer .lfe-marked ul.contains-task-list li.task-list-item {
-            list-style-type: none;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5em;
-        }
-
-        .cs-viewer .lfe-marked ul.contains-task-list input[type="checkbox"] {
-            margin-top: 0.6em;
-            flex-shrink: 0;
-        }
-
-        .cs-viewer .lfe-marked dl {
-            margin: 0.75em 0;
-            padding-left: 0.5em;
-        }
-
-        .cs-viewer .lfe-marked dt {
-            font-weight: bold;
-            margin-top: 0.5em;
-        }
-
-        .cs-viewer .lfe-marked dd {
-            margin-left: 1.5em;
-            color: #555;
-        }
-
-        .cs-viewer .lfe-marked kbd {
-            display: inline-block;
-            padding: 2px 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #f7f7f7;
-            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-            font-size: 0.9em;
-            font-family: inherit;
-        }
-
-        .cs-viewer .lfe-marked li {
-            margin-bottom: 0.5em;
-            line-height: 1.6;
-        }
-
-        .cs-viewer .lfe-marked h1,
-        .cs-viewer .lfe-marked h2 {
-            border-bottom: 1px solid #D8D8D8;
-            margin: 1em 0;
-        }
-
-        .cs-viewer .lfe-marked h3,
-        .cs-viewer .lfe-marked h4,
-        .cs-viewer .lfe-marked h5,
-        .cs-viewer .lfe-marked h6 {
-            margin: 1em 0;
-        }
-
-        .cs-viewer .lfe-marked p {
-            margin: 0 0 1em 0;
-        }
-
-        .cs-viewer .lfe-marked blockquote p {
-            margin: 0 0 1em 0;
-        }
-
-        .cs-viewer .lfe-marked blockquote {
-            margin: 1em 0;
-            padding: 8px 16px;
-            border-left: 4px solid #EEEEEE;
-            white-space: normal;
-        }
-
-        .cs-viewer .lfe-marked blockquote blockquote {
-            margin-right: -0.01em;
-        }
-
-        .cs-viewer .lfe-marked code {
-            background: #FAFAFA;
-            padding: 5px 5px;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        .cs-viewer .lfe-marked pre {
-            background: #FAFAFA;
-            padding: 12px 0;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 0.75em 0;
-        }
-
-        .cs-viewer .lfe-marked pre code {
-            background: transparent;
-            padding: 0;
-            color: inherit;
-            font-size: 14px;
-            white-space: pre-wrap;
-            display: block;
-        }
-
-        .cs-viewer .lfe-marked .code-line {
-            display: flex;
-            align-items: stretch;
-            white-space: pre-wrap;
-            line-height: 1.6;
-            font-size: 14px;
-            padding: 0 12px;
-        }
-
-        .cs-viewer .lfe-marked .code-line .line-number {
-            display: inline-block;
-            min-width: 3ch;
-            text-align: right;
-            margin-right: 8px;
-            white-space: nowrap;
-            border-right: 1px solid #D3D4D5;
-            padding-right: 8px;
-            padding: 0 8px 0 0;
-            color: #9D9D9F;
-            user-select: none !important;
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            pointer-events: none;
-            font-family: 'Courier New', monospace;
-            position: relative;
-            z-index: 1;
-        }
-
-        .cs-viewer .lfe-marked .code-line .code-text {
-            flex: 1;
-            display: inline;
-            white-space: pre-wrap;
-        }
-
-        .cs-viewer .lfe-marked .code-highlight-line {
-            background-color: #f0f0f0;
-        }
-
-        .cs-viewer .lfe-marked .code-block-wrapper {
-            position: relative;
-            margin: 0.75em 0;
-        }
-
-        .cs-viewer .lfe-marked .code-filename {
-            font-size: 13px;
-            color: #555;
-            background: #f0f2f5;
-            padding: 4px 12px;
-            border-radius: 6px 6px 0 0;
-            border: 1px solid #e8e8e8;
-            border-bottom: none;
-            font-family: 'Courier New', monospace;
-            display: inline-block;
-            margin-top: 0.75em;
-            margin-bottom: -1px;
-        }
-
-        .cs-viewer .lfe-marked .copy-code-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: none;
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 13px;
-            color: #333;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s, border-color 0.2s, background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            z-index: 10;
-        }
-
-        .cs-viewer .lfe-marked .code-block-wrapper:hover .copy-code-btn {
-            opacity: 1;
-        }
-
-        .cs-viewer .lfe-marked .copy-code-btn:hover {
-            background: #DDD;
-            border-color: #ccc;
-        }
-
-        .cs-viewer .lfe-marked .copy-code-btn .svg-icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        .cs-viewer .lfe-marked img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0.5em 0;
-        }
-
-        .cs-viewer .lfe-marked hr {
-            margin: 1em 0;
-        }
-
-        .cs-viewer .lfe-marked pre .code-text::-moz-selection,
-        .cs-viewer .lfe-marked pre .line-number::-moz-selection {
-            background: #E5E5E6;
-            color: inherit;
-        }
-
-        .cs-viewer .lfe-marked pre .code-text::selection,
-        .cs-viewer .lfe-marked pre .line-number::selection {
-            background: #E5E5E6;
-            color: inherit;
-        }
-
-        .cs-viewer .lfe-marked pre .code-highlight-line .code-text::-moz-selection {
-            background: #DCDCDD;
-            color: inherit;
-        }
-
-        .cs-viewer .lfe-marked pre .code-highlight-line .code-text::selection {
-            background: #DCDCDD;
-            color: inherit;
-        }
-
-        .cs-viewer .lfe-marked table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 0.75em 0;
-        }
-
-        .cs-viewer .lfe-marked th,
-        .cs-viewer .lfe-marked td {
-            border: 1px solid #dddddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .cs-viewer .lfe-marked th {
-            background: #F7F7F7;
-            font-weight: bold;
-        }
-
-        .cs-viewer .lfe-marked .align-center {
-            text-align: center;
-        }
-
-        .cs-viewer .lfe-marked .align-right {
-            text-align: right;
-        }
-
-        .cs-viewer .lfe-marked .align-center img {
-            display: block;
-            margin: 0.5em auto;
-        }
-
-        .cs-viewer .lfe-marked .align-right img {
-            display: block;
-            margin: 0.5em 0 0.5em auto;
-        }
-
-        .cs-viewer .lfe-marked details {
-            margin: 1em 0;
-            padding: 8px 16px;
-            border: none;
-            border-left: 4px solid #cccccc;
-            background: transparent;
-        }
-
-        .cs-viewer .lfe-marked details.info {
-            border-left-color: #3498DB;
-        }
-
-        .cs-viewer .lfe-marked details.success {
-            border-left-color: #52C41A;
-        }
-
-        .cs-viewer .lfe-marked details.warning {
-            border-left-color: #FFC116;
-        }
-
-        .cs-viewer .lfe-marked details.error {
-            border-left-color: #E74C3C;
-        }
-
-        .cs-viewer .lfe-marked details summary::after {
-            content: "▶";
-            font-size: 12px;
-            color: #888;
-            transition: transform 0.2s ease;
-            margin-left: 8px;
-            flex-shrink: 0;
-            display: inline-block !important;
-        }
-
-        .cs-viewer .lfe-marked details[open]>summary::after {
-            transform: rotate(90deg) !important;
-        }
-
-        .cs-viewer .lfe-marked summary {
-            font-weight: bold;
-            cursor: pointer;
-            outline: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            list-style: none;
-        }
-
-        .cs-viewer .lfe-marked summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .cs-viewer .lfe-marked summary::after {
-            content: "▶";
-            font-size: 12px;
-            color: #888;
-            transition: transform 0.2s ease;
-            margin-left: 8px;
-            flex-shrink: 0;
-            display: inline-block !important;
-        }
-
-        .cs-viewer .lfe-marked details[open]>summary::after {
-            transform: rotate(90deg) !important;
-        }
-
-        .cs-viewer .lfe-marked details[open] summary {
-            margin-bottom: 0.5em;
-        }
-
-        .cs-viewer .lfe-marked details.info summary,
-        .cs-viewer .lfe-marked details.info summary::after {
-            color: #3498DB;
-        }
-
-        .cs-viewer .lfe-marked details.success summary,
-        .cs-viewer .lfe-marked details.success summary::after {
-            color: #52C41A;
-        }
-
-        .cs-viewer .lfe-marked details.warning summary,
-        .cs-viewer .lfe-marked details.warning summary::after {
-            color: #FFC116;
-        }
-
-        .cs-viewer .lfe-marked details.error summary,
-        .cs-viewer .lfe-marked details.error summary::after {
-            color: #E74C3C;
-        }
-
-        .swal2-toast-copy {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #fff;
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            z-index: 9999;
-            opacity: 0;
-            transform: scale(0.8) translateY(-20px);
-            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            min-width: 200px;
-            box-sizing: border-box;
-        }
-
-        .swal2-toast-copy.show {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            pointer-events: auto;
-        }
-
-        .swal2-toast-copy .success-icon {
-            flex-shrink: 0;
-        }
-
-        .swal2-title-copy {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        /* ===== 响应式（与主页一致） ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 900px) {
             .nav-sidebar {
                 position: relative;
@@ -1544,36 +1132,53 @@
             }
 
             .cs-content {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .cs-zone-half:first-child {
-                border-right: none;
-                border-bottom: 1px solid #e9ecef;
+                flex-direction: row;          /* 恢复水平排列 */
+                height: 280px;                /* 固定高度，避免撑乱 */
+                overflow: hidden;             /* 防止内容溢出 */
             }
 
             .cs-zone-half {
-                min-height: 150px;
+                flex: 1 1 50%;                /* 各占一半宽度 */
+                min-width: 0;                 /* 允许收缩 */
+                padding: 8px 12px;
+                min-height: 200px;
+                overflow-y: auto;             /* 内部滚动 */
+            }
+
+            .cs-zone-half:first-child {
+                border-right: 1px solid #e9ecef;  /* 保留左右分隔线 */
+                border-bottom: none;              /* 去掉底部分隔线 */
             }
 
             .reply-bottom {
-                flex-direction: column;
-                align-items: stretch;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
             }
 
-            .reply-bottom-left {
-                flex-direction: column;
-                align-items: stretch;
+            .reply-bottom .captcha-input {
+                flex: 1 1 80px;
+                min-width: 60px;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .reply-bottom canvas {
+                flex: 0 0 90px;
+                height: 36px;
+            }
+
+            .reply-bottom .btn-submit {
+                flex: 0 0 auto;
+                padding: 6px 14px;
+                font-size: 12px;
+                white-space: nowrap;
             }
 
             .reply-bottom-left .captcha-input {
                 width: 100%;
-            }
-
-            .reply-bottom .btn-submit {
-                width: 100%;
-                justify-content: center;
             }
         }
 
@@ -1677,13 +1282,35 @@
                 padding: 6px 16px;
                 font-size: 13px;
             }
+
+            .reply-bottom {
+                gap: 6px;
+                padding: 6px 10px;
+            }
+
+            .reply-bottom .captcha-input {
+                flex: 1 1 60px;
+                min-width: 50px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .reply-bottom canvas {
+                flex: 0 0 75px;
+                height: 32px;
+            }
+
+            .reply-bottom .btn-submit {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ===== 顶部栏（与主页完全一致，直接复制） ===== -->
+    <!-- ===== 顶部栏（与主页一致） ===== -->
     <div class="topbar">
         <a href="/" class="logo" style="text-decoration: none; color: #e74c3c;">✨ Jason227</a>
         <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
@@ -1693,8 +1320,10 @@
     <div class="main-layout"
         style="max-width:1400px;margin:0 auto;padding:0 20px 20px 20px;position:relative;min-height:100vh;">
 
-        <!-- ===== 侧边栏（与主页完全一致，直接复制） ===== -->
+        <!-- ===== 侧边栏（与主页一致） ===== -->
         <div class="nav-sidebar">
+            <!-- 与主页完全相同的侧边栏内容，此处省略以节省篇幅，实际使用时需完整保留 -->
+            <!-- 为保持完整，我们仍保留侧边栏代码（复制自主页） -->
             <!-- ===== 主菜单 第一部分（主页 ~ 评测记录） ===== -->
             <div class="nav-group">
                 <ul>
@@ -1731,7 +1360,7 @@
                 </ul>
             </div>
 
-            <!-- ★ 分割线 ①：评测记录 ↔ 讨论区 -->
+            <!-- 分割线 -->
             <div class="divider"></div>
 
             <!-- ===== 主菜单 第二部分（讨论区、文章广场） ===== -->
@@ -1750,10 +1379,10 @@
                 </ul>
             </div>
 
-            <!-- ★ 分割线 ②：文章广场 ↔ 更多功能 -->
+            <!-- 分割线 -->
             <div class="divider"></div>
 
-            <!-- ===== 更多功能（无图标） ===== -->
+            <!-- ===== 更多功能 ===== -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
                 <ul>
@@ -1774,10 +1403,10 @@
                 </ul>
             </div>
 
-            <!-- ★ 分割线 ③：工单/反馈 ↔ 相关链接 -->
+            <!-- 分割线 -->
             <div class="divider"></div>
 
-            <!-- ===== 相关链接（无图标） ===== -->
+            <!-- ===== 相关链接 ===== -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
                 <ul>
@@ -1837,7 +1466,7 @@
                         <div id="replyEditorContainer" style="display:none;">
                             <div class="reply-editor">
                                 <div class="editor-title"><i class="fas fa-pencil-alt"></i> 编辑回复</div>
-                                <!-- 工具栏（已包含在代码中，省略……） -->
+                                <!-- 工具栏 -->
                                 <div class="cs-toolbar" id="editorToolbar">
                                     <!-- 标题组 -->
                                     <span class="cs-toolbar-group">
@@ -1951,7 +1580,7 @@
                                         <span class="cs-toolbar-tool" data-action="task" title="任务列表">
                                             <svg viewBox="0 0 512 512">
                                                 <path fill="currentColor"
-                                                    d="M153.8 72.1c8.9-9.9 8.1-25-1.8-33.9s-25-8.1-33.9 1.8L63.1 101.1 41 79C31.6 69.7 16.4 69.7 7 79s-9.4 24.6 0 33.9l40 40c4.7 4.7 11 7.2 17.6 7s12.8-3 17.2-7.9l72-80zm0 160c8.9-9.9 8.1-25-1.8-33.9s-25-8.1-33.9 1.8L63.1 261.1 41 239c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l40 40c4.7 4.7 11 7.2 17.6 7s12.8-3 17.2-7.9l72-80zM216 120l272 0c13.3 0 24-10.7 24-24s-10.7-24-24-24L216 72c-13.3 0-24 10.7-24 24s10.7 24 24 24zM192 256c0 13.3 10.7 24 24 24l272 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-272 0c-13.3 0-24 10.7-24 24zM160 416c0 13.3 10.7 24 24 24l304 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-304 0c-13.3 0-24 10.7-24 24zm-64 0a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+                                                    d="M153.8 72.1c8.9-9.9 8.1-25-1.8-33.9s-25-8.1-33.9 1.8L63.1 101.1 41 79C31.6 69.7 16.4 69.7 7 79s-9.4 24.6 0 33.9l40 40c4.7 4.7 11 7.2 17.6 7s12.8-3 17.2-7.9l72-80zm0 160c8.9-9.9 8.1-25-1.8-33.9s-25-8.1-33.9 1.8L63.1 261.1 41 239c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l40 40c4.7 4.7 11 7.2 17.6 7s12.8-3 17.2-7.9l72-80zM216 120l272 0c13.3 0 24-10.7 24-24s-10.7-24-24-24L216 72c-13.3 0-24 10.7-24 24s10.7 24 24 24zM192 256c0 13.3 10.7 24 24 24l272 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-272 0c-13.3 0-24-10.7-24 24zM160 416c0 13.3 10.7 24 24 24l304 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-304 0c-13.3 0-24-10.7-24 24zm-64 0a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
                                             </svg>
                                             <span class="cs-tooltip">任务列表</span>
                                         </span>
@@ -2010,12 +1639,10 @@
                                 </div>
                                 <div class="cs-content" id="editorContent">
                                     <div class="cs-zone-half" style="padding:0;">
-                                        <textarea class="cs-editor" id="replyInput"
-                                            placeholder="在此输入回复内容，支持 Markdown 语法…"></textarea>
+                                        <textarea class="cs-editor" id="replyInput"></textarea>
                                     </div>
                                     <div class="cs-zone-half cs-viewer" id="previewPane">
-                                        <div class="lfe-marked" id="previewContent">
-                                            <p style="color:#b0b8c4;">预览区域，输入内容后将实时渲染</p>
+                                        <div class="benben-text" id="previewContent">
                                         </div>
                                     </div>
                                 </div>
@@ -2026,18 +1653,10 @@
                                         <button class="cs-footer-button" id="scrollToTopEditor">回到顶部</button>
                                     </div>
                                 </div>
-                                <p class="lfe-caption">希望更丰富的展现？阅读 <a
-                                        href="https://help.luogu.com.cn/rules/academic/handbook/markdown"
-                                        target="_blank">Markdown 使用帮助</a>、<a
-                                        href="https://help.luogu.com.cn/rules/academic/handbook/latex"
-                                        target="_blank">KaTeX 文档</a>。</p>
                                 <div class="reply-bottom">
-                                    <div class="reply-bottom-left">
-                                        <input class="captcha-input" id="captchaInput" placeholder="点击获取图形验证码"
-                                            type="text">
-                                    </div>
-                                    <button class="btn-submit" id="submitReplyBtn"><i class="fas fa-paper-plane"></i>
-                                        发表</button>
+                                    <input class="captcha-input" id="captchaInput" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
+                                    <canvas id="captchaCanvas" width="120" height="44"></canvas>
+                                    <button class="btn-submit" id="submitReplyBtn">发表</button>
                                 </div>
                             </div>
                         </div>
@@ -2056,6 +1675,9 @@
 
     <footer>© 2026 <span class="brand-highlight">✨ Jason227</span></footer>
 
+    <!-- ================================================================ -->
+    <!-- 业务脚本（仅保留页面功能，删除所有内联Markdown渲染函数，改为调用外部库） -->
+    <!-- ================================================================ -->
     <script>
         (function () {
             'use strict';
@@ -2075,6 +1697,54 @@
             let totalComments = 0;
             let totalPages = 1;
             let unreadTimer = null;
+
+            // ===== 图形验证码（与登录页一致） =====
+            let currentCaptcha = '';
+            const captchaCanvas = document.getElementById('captchaCanvas');
+            const captchaCtx = captchaCanvas.getContext('2d');
+
+            function generateCaptcha() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+                let captcha = '';
+                for (let i = 0; i < 5; i++) captcha += chars[Math.floor(Math.random() * chars.length)];
+                currentCaptcha = captcha.toUpperCase();
+
+                captchaCtx.clearRect(0, 0, captchaCanvas.width, captchaCanvas.height);
+                captchaCtx.fillStyle = '#f9fafb';
+                captchaCtx.fillRect(0, 0, captchaCanvas.width, captchaCanvas.height);
+
+                // 干扰线
+                for (let i = 0; i < 10; i++) {
+                    captchaCtx.beginPath();
+                    captchaCtx.moveTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
+                    captchaCtx.lineTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
+                    captchaCtx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
+                    captchaCtx.stroke();
+                }
+                // 噪点
+                for (let i = 0; i < 100; i++) {
+                    captchaCtx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
+                    captchaCtx.fillRect(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height, 1, 1);
+                }
+                // 扭曲字符
+                for (let i = 0; i < currentCaptcha.length; i++) {
+                    captchaCtx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
+                    captchaCtx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
+                    const x = 12 + i * 20 + Math.random() * 6;
+                    const y = 30 + Math.random() * 8;
+                    captchaCtx.save();
+                    captchaCtx.translate(x, y);
+                    captchaCtx.rotate((Math.random() - 0.5) * 0.4);
+                    captchaCtx.fillText(currentCaptcha[i], 0, 0);
+                    captchaCtx.restore();
+                }
+            }
+
+            // 点击 Canvas 刷新验证码
+            captchaCanvas.addEventListener('click', () => {
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
+            });
 
             // ===== 工具函数 =====
             function escapeHtml(str) {
@@ -2121,14 +1791,6 @@
                     encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
 
-            // ===== markdown-it 初始化 =====
-            const md = window.markdownit({ html: true, linkify: true, typographer: true });
-            md.use(window.markdownitTaskLists);
-            md.use(window.markdownitEmoji);
-            md.use(window.markdownitFootnote);
-            md.use(window.markdownitDeflist);
-            md.use(window.markdownitAbbr);
-
             // ===== 获取用户画像 =====
             async function getProfile(userId) {
                 const { data, error } = await supabase
@@ -2141,464 +1803,7 @@
             }
 
             // ============================================================
-            // 完整 Markdown 渲染引擎（与主页完全一致）
-            // ============================================================
-            function preprocessLuoguSyntax(text) {
-                text = text.replace(/!\[\]\(bilibili:([^)]+)\)/g, (match, param) => {
-                    let bvid = '',
-                        aid = '',
-                        extraParams = '';
-                    const queryIndex = param.indexOf('?');
-                    let base = param;
-                    if (queryIndex !== -1) {
-                        base = param.substring(0, queryIndex);
-                        extraParams = param.substring(queryIndex);
-                        extraParams = extraParams.replace(/^\?/, '&');
-                    }
-                    const lowerBase = base.toLowerCase();
-                    if (lowerBase.startsWith('bv')) bvid = base;
-                    else if (lowerBase.startsWith('av')) aid = base.substring(2);
-                    else if (/^\d+$/.test(base)) aid = base;
-                    else return match;
-                    let embedUrl = 'https://player.bilibili.com/player.html?';
-                    if (bvid) embedUrl += `bvid=${bvid}`;
-                    else if (aid) embedUrl += `aid=${aid}`;
-                    if (extraParams) embedUrl += extraParams;
-                    if (!extraParams.includes('page=')) embedUrl += '&page=1';
-                    return `<iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`;
-                });
-                text = text.replace(/!\[\]\(embed:([^)]+)\)/g, (match, url) =>
-                    `<iframe src="${url}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
-                );
-                text = text.replace(/\[bilibili\](BV[a-zA-Z0-9]+)\[\/bilibili\]/g, (m, bvid) =>
-                    `<iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; height:360px;"></iframe>`
-                );
-                text = text.replace(/:::align\{center\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_CENTER%%$1%%ALIGN_END%%');
-                text = text.replace(/:::align\{right\}\s*([\s\S]*?)\n:::/gm, '%%ALIGN_RIGHT%%$1%%ALIGN_END%%');
-                return text;
-            }
-
-            function parseNestedDetails(text) {
-                const lines = text.split('\n');
-                const output = [];
-                const stack = [];
-                const roots = [];
-                let i = 0;
-                while (i < lines.length) {
-                    const rawLine = lines[i];
-                    const trimmed = rawLine.trim();
-                    let startMatch = null;
-                    if (trimmed.startsWith(':::')) {
-                        let colonsCount = 0;
-                        while (colonsCount < trimmed.length && trimmed[colonsCount] === ':') colonsCount++;
-                        if (colonsCount >= 3) {
-                            const rest = trimmed.slice(colonsCount).trim();
-                            const typeMatch = rest.match(/^([a-zA-Z0-9]+)/);
-                            if (typeMatch) {
-                                const type = typeMatch[1];
-                                let title = '',
-                                    openAttr = '';
-                                let remaining = rest.slice(type.length).trim();
-                                const titleMatch = remaining.match(/^\[([^\]]*)\]/);
-                                if (titleMatch) {
-                                    title = titleMatch[1];
-                                    remaining = remaining.slice(titleMatch[0].length).trim();
-                                }
-                                remaining = remaining.trim();
-                                if (remaining.startsWith('{open}')) {
-                                    openAttr = ' open';
-                                    remaining = remaining.slice(6).trim();
-                                }
-                                if (!remaining) startMatch = { colonsCount, type, title, openAttr };
-                            }
-                        }
-                    }
-                    if (startMatch && ['info', 'success', 'warning', 'error'].includes(startMatch.type)) {
-                        const node = {
-                            type: startMatch.type, title: startMatch.title, openAttr: startMatch.openAttr,
-                            colonsCount: startMatch.colonsCount, contentLines: [], children: []
-                        };
-                        stack.push(node);
-                        i++;
-                        continue;
-                    }
-                    let endMatch = null;
-                    if (trimmed.startsWith(':::')) {
-                        let colonsCount = 0;
-                        while (colonsCount < trimmed.length && trimmed[colonsCount] === ':') colonsCount++;
-                        if (colonsCount >= 3 && trimmed.slice(colonsCount).trim() === '') endMatch = { colonsCount };
-                    }
-                    if (endMatch && stack.length > 0) {
-                        const top = stack[stack.length - 1];
-                        if (endMatch.colonsCount === top.colonsCount) {
-                            const node = stack.pop();
-                            if (stack.length === 0) {
-                                const idx = roots.length;
-                                roots.push(node);
-                                output.push(`%%DETAILS_ROOT_${idx}%%`);
-                            } else {
-                                stack[stack.length - 1].children.push(
-                                    node);
-                            }
-                            i++;
-                            continue;
-                        }
-                    }
-                    if (stack.length > 0) stack[stack.length - 1].contentLines.push(rawLine);
-                    else output.push(rawLine);
-                    i++;
-                }
-                while (stack.length > 0) {
-                    const node = stack.pop(); const idx = roots.length;
-                    roots.push(node);
-                    output.push(`%%DETAILS_ROOT_${idx}%%`);
-                }
-                return { roots, output: output.join('\n') };
-            }
-
-            function renderLatex(text) {
-                if (!text) return '';
-                text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
-                    let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-                    try { return `<div style="text-align:center;margin:8px 0;">${katex.renderToString(realMath, { displayMode: true, throwOnError: false })}</div>`; } catch (
-                    e) { return match; }
-                });
-                text = text.replace(/\$([^$]+?)\$/g, (match, math) => {
-                    let realMath = math.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-                    try { return katex.renderToString(realMath, { throwOnError: false }); } catch (e) { return match; }
-                });
-                return text;
-            }
-
-            function renderDetailsNode(node) {
-                let content = node.contentLines.join('\n');
-                content = renderLatex(content);
-                const renderedContent = md.render(content);
-                let title = renderLatex(node.title);
-                const renderedTitle = md.renderInline(title);
-                const childrenHtml = node.children.map(child => renderDetailsNode(child)).join('');
-                const openAttr = node.openAttr && node.openAttr.trim() === 'open' ? ' open' : '';
-                return `<details class="${escapeHtmlAttr(node.type)}"${openAttr}><summary>${renderedTitle}</summary>${renderedContent}${childrenHtml}</details>`;
-            }
-
-            function generateTOC(htmlText, uniqueId) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-                const body = doc.body;
-                const headers = body.querySelectorAll('h1, h2, h3, h4, h5, h6');
-                if (headers.length === 0) return htmlText;
-                let idCounter = 0;
-                const tocItems = [];
-                headers.forEach((el, index) => {
-                    let id = el.getAttribute('id');
-                    if (!id) {
-                        id = uniqueId ? `${uniqueId}-toc-${idCounter++}` : `toc-${idCounter++}`;
-                        el.setAttribute('id', id);
-                    }
-                    const text = el.textContent.trim();
-                    tocItems.push({ level: parseInt(el.tagName[1]), id, text });
-                });
-                if (tocItems.length === 0) return htmlText;
-                let tocHtml = '<div class="toc"><ul>';
-                let currentLevel = 0;
-                for (const item of tocItems) {
-                    const level = item.level;
-                    if (level > currentLevel) { for (let j = 0; j < level - currentLevel; j++) tocHtml += '<ul>'; } else if (
-                        level < currentLevel) { for (let j = 0; j < currentLevel - level; j++) tocHtml += '</ul>'; }
-                    tocHtml += `<li><a href="#${item.id}">${item.text}</a></li>`;
-                    currentLevel = level;
-                }
-                while (currentLevel > 1) {
-                    tocHtml += '</ul>';
-                    currentLevel--;
-                }
-                tocHtml += '</ul></div>';
-                let newHtml = body.innerHTML;
-                newHtml = newHtml.replace(/\[\[TOC\]\]/g, tocHtml);
-                return newHtml;
-            }
-
-            function renderContent(rawText, mentionMap, isAdmin = false, username = '用户', uniqueId = '') {
-                if (!rawText) return '';
-                rawText = rawText
-                    .replace(/&gt;/g, '>')
-                    .replace(/&lt;/g, '<')
-                    .replace(/&quot;/g, '"')
-                    .replace(/&#39;/g, "'")
-                    .replace(/&amp;/g, '&');
-                const { roots, output } = parseNestedDetails(rawText);
-                rawText = output;
-                const detailRoots = roots;
-                const mermaidBlocks = [];
-                rawText = rawText.replace(/```mermaid\s*([\s\S]*?)```/g, (match, code) => {
-                    const idx = mermaidBlocks.length;
-                    mermaidBlocks.push(code.trim());
-                    return `%%MERMAID_${idx}%%`;
-                });
-                const lines = rawText.split('\n');
-                const blocks = [];
-                let processedLines = [];
-                let inFence = false,
-                    fenceContent = [],
-                    blockIdx = 0;
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
-                    const prefixMatch = line.match(/^(>\s*)+/);
-                    const prefix = prefixMatch ? prefixMatch[0] : '';
-                    const cleanLine = line.replace(/^(>\s?)+/, '');
-                    if (!inFence && cleanLine.startsWith('```')) {
-                        inFence = true;
-                        fenceContent = [cleanLine];
-                        processedLines.push(prefix + `%%BLOCK${blockIdx}%%`);
-                    } else if (inFence) {
-                        fenceContent.push(cleanLine);
-                        if (cleanLine.trim() === '```') {
-                            inFence = false;
-                            const content = fenceContent.join('\n');
-                            const firstLine = fenceContent[0] || '';
-                            let lang = '',
-                                filename = '';
-                            if (firstLine.startsWith('```')) {
-                                const params = firstLine.slice(3).trim();
-                                const parts = params.split(/\s+/);
-                                const firstPart = parts[0] || '';
-                                if (firstPart.includes(':')) {
-                                    const [langPart, ...fileParts] = firstPart.split(':');
-                                    lang = langPart;
-                                    filename = fileParts.join(':');
-                                } else lang = firstPart;
-                            }
-                            blocks.push({ type: 'fence', content, filename, lang });
-                            blockIdx++;
-                        }
-                    } else processedLines.push(line);
-                }
-                if (inFence && fenceContent.length > 0) {
-                    const content = fenceContent.join('\n');
-                    const firstLine = fenceContent[0] || '';
-                    let lang = '',
-                        filename = '';
-                    if (firstLine.startsWith('```')) {
-                        const params = firstLine.slice(3).trim();
-                        const parts = params.split(/\s+/);
-                        const firstPart = parts[0] || '';
-                        if (firstPart.includes(':')) {
-                            const [langPart, ...fileParts] = firstPart.split(':');
-                            lang = langPart;
-                            filename = fileParts.join(':');
-                        } else lang = firstPart;
-                    }
-                    blocks.push({ type: 'fence', content, filename, lang });
-                    blockIdx++;
-                }
-                let processed = processedLines.join('\n');
-                processed = processed.replace(/`([^`]+)`/g, (match, code) => {
-                    if (/^%%BLOCK\d+%%$/.test(match)) return match;
-                    const idx = blocks.length;
-                    const safeCode = code.replace(/\n/g, '&#10;');
-                    blocks.push({ type: 'inline', content: safeCode });
-                    return `%%BLOCK${idx}%%`;
-                });
-                processed = preprocessLuoguSyntax(processed);
-                processed = renderLatex(processed);
-                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x(\d*)\)/g, (match, alt, url, width, height) => {
-                    const style = `width:${width}px;${height ? ` height:${height}px;` : ''}`;
-                    return `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="${style}">`;
-                });
-                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*(\d+)x\)/g, (match, alt, url, width) =>
-                    `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="width:${width}px; height:auto;">`
-                );
-                processed = processed.replace(/!\[([^\]]*)\]\(([^)]+?)\s*=\s*x(\d+)\)/g, (match, alt, url, height) =>
-                    `<img alt="${escapeHtmlAttr(alt)}" src="${escapeHtmlAttr(url)}" style="height:${height}px; width:auto;">`
-                );
-                processed = processed.replace(/~~([^~]+)~~/g, '<del>$1</del>');
-                processed = processed.replace(/==([^=]+)==/g, '<mark>$1</mark>');
-                processed = processed.replace(/\+\+([^+]+)\+\+/g, '<ins>$1</ins>');
-                processed = processed.replace(/(?<![:\-])--([^-]+)--(?![:\-])/g, '<small>$1</small>');
-                processed = processed.replace(/(?<![\[\^])\^([^^]+)\^(?![\]])/g, '<sup>$1</sup>');
-                processed = processed.replace(/~([^~]+)~/g, '<sub>$1</sub>');
-                processed = processed.replace(/\[\[TOC\]\]/g, '%%TOC_PLACEHOLDER%%');
-                processed = processed.replace(/\[\[([^\]]+)\]\]/g, '<kbd>$1</kbd>');
-                processed = processed.replace(/%%TOC_PLACEHOLDER%%/g, '[[TOC]]');
-                // ===== 专属语法（仅管理员可用） =====
-                if (isAdmin) {
-                    // 1. 管理员公告 [admin]内容[/admin]
-                    processed = processed.replace(/\[admin\]([\s\S]*?)\[\/admin\]/g, (match, content) => {
-                        return `<blockquote class="admin-public-comment"><p>管理组提示：</p><div class="lfe-marked-wrap"><div class="lfe-marked">${content}</div></div></blockquote>`;
-                    });
-                    // 2. 彩虹文字 {rainbow}文字{rainbow}
-                    processed = processed.replace(/\{rainbow\}([\s\S]*?)\{rainbow\}/g, (match, content) => {
-                        const chars = content.split('');
-                        const len = chars.length;
-                        if (len === 0) return '';
-                        const startHue = 0, endHue = 300;
-                        let result = '';
-                        for (let i = 0; i < len; i++) {
-                            const hue = startHue + (endHue - startHue) * (i / (len - 1));
-                            result += `<span style="color:hsl(${hue}, 100%, 50%);">${chars[i]}</span>`;
-                        }
-                        return `<span style="font-weight:bold;">${result}</span>`;
-                    });
-                    // 3. 签名 [sign]内容[/sign]
-                    processed = processed.replace(/\[sign\]([\s\S]*?)\[\/sign\]/g, (match, content) => {
-                        return `<div class="signature-block">${content}<div class="signature-name">—— ✨ Jason227 高贵的用户：${escapeHtmlAttr(username)}</div></div>`;
-                    });
-                }
-                let html = md.render(processed);
-                if (uniqueId) {
-                    html = html.replace(/\bid="(fn|fnref)(\d+)"/g, `id="${uniqueId}-$1$2"`);
-                    html = html.replace(/href="#(fn|fnref)(\d+)"/g, `href="#${uniqueId}-$1$2"`);
-                }
-                html = generateTOC(html, uniqueId);
-                html = html.replace(/%%MERMAID_(\d+)%%/g, (match, idx) => {
-                    const code = mermaidBlocks[parseInt(idx)];
-                    if (!code) return match;
-                    return `<div class="mermaid">${code}</div>`;
-                });
-                html = html.replace(/%%DETAILS_ROOT_(\d+)%%/g, (match, idx) => {
-                    const node = detailRoots[parseInt(idx)];
-                    if (!node) return match;
-                    return renderDetailsNode(node);
-                });
-                html = html.replace(/%%ALIGN_CENTER%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
-                    const rendered = md.render(content);
-                    return `<div class="align-center">${rendered}</div>`;
-                });
-                html = html.replace(/%%ALIGN_RIGHT%%([\s\S]*?)%%ALIGN_END%%/g, (match, content) => {
-                    const rendered = md.render(content);
-                    return `<div class="align-right">${rendered}</div>`;
-                });
-                html = html.replace(/“/g, '"').replace(/”/g, '"');
-                html = html.replace(/%%BLOCK(\d+)%%/g, (match, idx) => {
-                    let block = blocks[parseInt(idx)];
-                    if (!block) return '';
-                    if (block.type === 'inline') return `<code>${escapeHtml(block.content)}</code>`;
-                    const lines = block.content.split('\n');
-                    const firstLine = lines[0];
-                    let lang = '',
-                        showLineNumbers = false,
-                        showHighlight = false,
-                        highlightLines = null;
-                    if (firstLine.startsWith('```')) {
-                        const params = firstLine.slice(3).trim();
-                        const parts = params.split(/\s+/);
-                        lang = parts[0] || '';
-                        if (params.includes('line-numbers')) showLineNumbers = true;
-                        const linesMatch = params.match(/lines=(\d+)-(\d+)/);
-                        if (linesMatch) {
-                            showHighlight = true;
-                            highlightLines = { start: parseInt(linesMatch[1]), end: parseInt(linesMatch[2]) };
-                        }
-                    }
-                    let codeContent = lines.slice(1, -1).join('\n');
-                    let titleHtml = '';
-                    if (block.filename) titleHtml = `<div class="code-filename">${escapeHtml(block.filename)}</div>`;
-                    let codeHtml = '';
-                    const codeLines = codeContent.split('\n');
-                    if (codeLines.length > 0 && codeLines[codeLines.length - 1] === '') codeLines.pop();
-                    const totalLines = codeLines.length;
-                    const maxDigits = String(totalLines).length;
-                    codeHtml = `<pre><code>`;
-                    for (let i = 0; i < totalLines; i++) {
-                        const lineNum = i + 1;
-                        const lineContent = codeLines[i] || ' ';
-                        let lineClass = '';
-                        if (showHighlight && highlightLines && lineNum >= highlightLines.start && lineNum <= highlightLines
-                            .end) lineClass = ' code-highlight-line';
-                        codeHtml += `<div class="code-line${lineClass}">`;
-                        if (showLineNumbers) codeHtml +=
-                            `<span class="line-number" style="min-width:${maxDigits + 1}ch;">${lineNum}</span>`;
-                        codeHtml += `<span class="code-text">${escapeHtml(lineContent)}</span>`;
-                        codeHtml += `</div>`;
-                    }
-                    codeHtml += `</code></pre>`;
-                    return `
-                ${titleHtml}
-                <div class="code-block-wrapper">
-                    <button class="copy-code-btn" data-copy-btn title="复制代码">
-                        <svg class="svg-icon" viewBox="0 0 448 512" aria-hidden="true">
-                            <path d="M192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-200.6c0-17.4-7.1-34.1-19.7-46.2L370.6 17.8C358.7 6.4 342.8 0 326.3 0L192 0zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-16-64 0 0 16-192 0 0-256 16 0 0-64-16 0z"/>
-                        </svg>
-                    </button>
-                    ${codeHtml}
-                </div>
-                `;
-                });
-                html = html.replace(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g, (match, username) => {
-                    const uid = mentionMap && mentionMap[username];
-                    if (uid) return `@<a href="/user/${uid}" class="mention-link" style="color:#e74c3c; text-decoration:none;">${escapeHtmlAttr(username)}</a>`;
-                    return match;
-                });
-                html = html.replace(/<p><\/p>\s*$/, '').replace(/<br\s*\/?>\s*$/, '').trim();
-                html = html.replace(/<p>\s*<\/p>/g, '').replace(/:\s*$/gm, '');
-                return DOMPurify.sanitize(html, {
-                    ADD_TAGS: ['iframe', 'section', 'ol', 'li', 'sup', 'sub', 'mark', 'ins', 'small', 'kbd', 'del',
-                        'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'details', 'summary'
-                    ],
-                    ADD_ATTR: ['src', 'width', 'height', 'scrolling', 'border', 'frameborder', 'framespacing',
-                        'allowfullscreen', 'style', 'id', 'class', 'href', 'open', 'colspan', 'rowspan'
-                    ]
-                });
-            }
-
-            // ============================================================
-            // 复制代码功能
-            // ============================================================
-            function showCopyToast() {
-                let toast = document.querySelector('.swal2-toast-copy');
-                if (!toast) {
-                    toast = document.createElement('div');
-                    toast.className = 'swal2-toast-copy';
-                    toast.innerHTML =
-                        `
-                        <svg class="success-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#a5dc86" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <h2 class="swal2-title-copy">Contents copied!</h2>
-                    `;
-                    document.body.appendChild(toast);
-                } else {
-                    toast.classList.remove('show');
-                    void toast.offsetWidth;
-                }
-                toast.classList.add('show');
-                clearTimeout(toast._hideTimer);
-                toast._hideTimer = setTimeout(() => { toast.classList.remove('show'); }, 2000);
-            }
-
-            function fallbackCopy(text, btn) {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.left = '-9999px';
-                document.body.appendChild(textarea);
-                textarea.select();
-                try {
-                    document.execCommand('copy');
-                    showCopyToast();
-                } catch (e) { alert('复制失败，请手动复制'); }
-                document.body.removeChild(textarea);
-            }
-
-            window.copyCode = function (btn) {
-                const wrapper = btn.closest('.code-block-wrapper');
-                if (!wrapper) return;
-                const pre = wrapper.querySelector('pre');
-                if (!pre) return;
-                const codeTexts = pre.querySelectorAll('.code-text');
-                let code = '';
-                codeTexts.forEach(el => { code += el.textContent + '\n'; });
-                code = code.replace(/\n$/, '');
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(code).then(() => { showCopyToast(); }).catch(() => {
-                        fallbackCopy(code,
-                            btn);
-                    });
-                } else { fallbackCopy(code, btn); }
-            };
-
-            // ============================================================
-            // Mermaid 渲染
+            // 渲染 Mermaid（外部库渲染后可能需要手动运行）
             // ============================================================
             function renderMermaid() {
                 if (typeof mermaid === 'undefined') return;
@@ -2622,7 +1827,7 @@
             }
 
             // ============================================================
-            // 认证相关（与主页完全一致）
+            // 认证相关
             // ============================================================
             async function getSupabaseSession() {
                 const { data: { session } } = await supabase.auth.getSession();
@@ -2793,53 +1998,202 @@
             // ============================================================
             // 编辑器功能
             // ============================================================
-            const replyInput = document.getElementById('replyInput');
+            const easyMDE = new EasyMDE({
+                element: document.getElementById('replyInput'),
+                spellChecker: false,
+                autosave: { enabled: false },
+                status: false,                 // 隐藏底部状态栏（字数统计我们已有）
+                toolbar: false,                // 完全隐藏 EasyMDE 工具栏，使用我们自己的工具栏
+                renderingConfig: {
+                    singleLineBreaks: false,
+                    codeSyntaxHighlighting: true,
+                },
+                // 预览样式自定义（可选）
+                previewRender: function (plainText) {
+                    // 如果你希望保留自定义预览渲染器，可以在这里调用 MarkdownRenderer
+                    // 但为了简便，我们直接使用 EasyMDE 的默认渲染，然后额外添加样式
+                    return MarkdownRenderer.render(plainText, {
+                        isAdmin: currentProfile?.is_admin || false,
+                        username: currentProfile?.username || '',
+                        mentionMap: {},
+                        uniqueId: 'preview-' + Date.now()
+                    });
+                }
+            });
+            // 为了兼容后续代码，我们定义一个 replyInput 的别名指向 easyMDE
+            const replyInput = {
+                value: () => easyMDE.value(),
+                addEventListener: (event, callback) => {
+                    // 监听 EasyMDE 的 input 事件
+                    easyMDE.codemirror.on('change', callback);
+                },
+                // 其他需要的属性可以模拟
+            };
             const previewContent = document.getElementById('previewContent');
             const wordCount = document.getElementById('wordCount');
             const submitReplyBtn = document.getElementById('submitReplyBtn');
 
-            function updatePreview() {
+            // 获取 CodeMirror 实例
+            const cm = easyMDE.codemirror;
+
+            function highlightMath() {
+                const cm = easyMDE.codemirror;
+                const doc = cm.getDoc();
+                // 清除旧标记（如果有）
+                // 遍历所有行
+                for (let i = 0; i < doc.lineCount(); i++) {
+                    const line = doc.getLine(i);
+                    let match;
+                    const regex = /\$\$[^$]*\$\$|\$[^$\n]*\$/g;
+                    while ((match = regex.exec(line)) !== null) {
+                        const from = { line: i, ch: match.index };
+                        const to = { line: i, ch: match.index + match[0].length };
+                        doc.markText(from, to, {
+                            className: 'custom-math-inline'
+                        });
+                    }
+                }
+            }
+
+            // 每次编辑器内容变化时重新标记
+            easyMDE.codemirror.on('change', function () {
+                // 先清除所有之前添加的标记
+                const marks = easyMDE.codemirror.getAllMarks();
+                marks.forEach(mark => mark.clear());
+                highlightMath();
+            });
+
+            // 初始调用
+            highlightMath();
+
+            // ============================================================
+            // 标题级别调整（提升一级 / 降低一级）
+            // ============================================================
+
+            function getCurrentLineInfo() {
                 const text = replyInput.value;
-                const rendered = renderContent(
-                    text,
-                    {},
-                    currentProfile?.is_admin || false,
-                    currentProfile?.username || '',
-                    'preview-' + Date.now()
-                );
-                previewContent.innerHTML = rendered || '<p style="color:#b0b8c4;">预览区域，输入内容后将实时渲染</p>';
-                const chars = text.replace(/\s/g, '').length;
-                wordCount.textContent = `字数统计：${chars} 字符`;
-                renderMermaid();
-                document.querySelectorAll('.copy-code-btn').forEach(btn => {
-                    btn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        copyCode(this);
-                    });
+                const start = replyInput.selectionStart;
+                // 找到该行开头
+                let lineStart = text.lastIndexOf('\n', start - 1) + 1;
+                if (lineStart === -1) lineStart = 0;
+                // 找到该行结尾
+                let lineEnd = text.indexOf('\n', start);
+                if (lineEnd === -1) lineEnd = text.length;
+                return { lineStart, lineEnd, lineText: text.substring(lineStart, lineEnd) };
+            }
+
+            function replaceLine(lineStart, lineEnd, newText) {
+                const text = replyInput.value;
+                const newValue = text.substring(0, lineStart) + newText + text.substring(lineEnd);
+                replyInput.value = newValue;
+                // 将光标放在新行末尾（或开头？放在行尾便于继续编辑）
+                const newCursorPos = lineStart + newText.length;
+                replyInput.selectionStart = replyInput.selectionEnd = newCursorPos;
+                updatePreview(); // 同步预览
+            }
+
+            function headingUp() {
+                const cm = easyMDE.codemirror;
+                const cursor = cm.getCursor();
+                const line = cm.getLine(cursor.line);
+                const match = line.match(/^(\s*)(#+)(.*)$/);
+                if (match) {
+                    let spaces = match[1];
+                    let hashes = match[2];
+                    let rest = match[3];
+                    let count = hashes.length;
+                    if (count > 1) {
+                        let newHashes = '#'.repeat(count - 1);
+                        let content = rest.replace(/^\s+/, '');
+                        let newLine = spaces + newHashes + ' ' + content;
+                        cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+                    }
+                } else {
+                    let content = line.replace(/^\s+/, '');
+                    let newLine = '### ' + content;
+                    cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+                }
+                cm.focus();   // 新增
+                updatePreview();
+            }
+
+            function headingDown() {
+                const cm = easyMDE.codemirror;
+                const cursor = cm.getCursor();
+                const line = cm.getLine(cursor.line);
+                const match = line.match(/^(\s*)(#+)(.*)$/);
+                if (match) {
+                    let spaces = match[1];
+                    let hashes = match[2];
+                    let rest = match[3];
+                    let count = hashes.length;
+                    let content = rest.replace(/^\s+/, '');
+                    if (count < 6) {
+                        let newHashes = '#'.repeat(count + 1);
+                        let newLine = spaces + newHashes + ' ' + content;
+                        cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+                    } else {
+                        let newLine = spaces + content;
+                        cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+                    }
+                } else {
+                    let content = line.replace(/^\s+/, '');
+                    let newLine = '### ' + content;
+                    cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+                }
+                cm.focus();   // 新增
+                updatePreview();
+            }
+
+            function updatePreview() {
+                const text = easyMDE.value();
+                const rendered = MarkdownRenderer.render(text, {
+                    isAdmin: currentProfile?.is_admin || false,
+                    username: currentProfile?.username || '',
+                    mentionMap: {},
+                    uniqueId: 'preview-' + Date.now()
                 });
+                document.getElementById('previewContent').innerHTML = rendered;
+                renderMermaid();
+                // 字数统计
+                const chars = text.replace(/\s/g, '').length;
+                document.getElementById('wordCount').textContent = `字数统计：${chars} 字符`;
             }
 
             replyInput.addEventListener('input', updatePreview);
 
             function wrapSelection(before, after) {
-                const start = replyInput.selectionStart,
-                    end = replyInput.selectionEnd;
-                const text = replyInput.value;
-                const selected = text.substring(start, end);
-                const replacement = before + selected + after;
-                replyInput.value = text.substring(0, start) + replacement + text.substring(end);
-                replyInput.focus();
-                replyInput.selectionStart = start + before.length;
-                replyInput.selectionEnd = start + before.length + selected.length;
+                const cm = easyMDE.codemirror;
+                const from = cm.getCursor('from');
+                const to = cm.getCursor('to');
+                const selectedText = cm.getRange(from, to);
+                const newText = before + selectedText + after;
+                cm.replaceRange(newText, from, to);
+                const cursorPos = { line: from.line, ch: from.ch + before.length + selectedText.length };
+                cm.setCursor(cursorPos);
+                cm.focus();
                 updatePreview();
             }
 
             function insertText(text) {
-                const start = replyInput.selectionStart;
-                replyInput.value = replyInput.value.substring(0, start) + text + replyInput.value.substring(start);
-                replyInput.focus();
-                replyInput.selectionStart = start + text.length;
-                replyInput.selectionEnd = start + text.length;
+                const cm = easyMDE.codemirror;
+                const cursor = cm.getCursor();
+                const line = cursor.line;
+                const ch = cursor.ch;
+
+                cm.replaceRange(text, cursor, cursor);
+
+                const lines = text.split('\n');
+                if (lines.length === 1) {
+                    cm.setCursor({ line: line, ch: ch + text.length });
+                } else {
+                    const lastLine = lines[lines.length - 1];
+                    const newLine = line + lines.length - 1;
+                    const newCh = lastLine.length;
+                    cm.setCursor({ line: newLine, ch: newCh });
+                }
+
+                cm.focus();   // 确保焦点回到编辑器
                 updatePreview();
             }
 
@@ -2857,11 +2211,55 @@
                             wrapSelection('~~', '~~');
                             break;
                         case 'math':
-                            wrapSelection('$$', '$$');
+                            wrapSelection('$', '$');
                             break;
-                        case 'code':
-                            wrapSelection('`', '`');
+                        case 'code': {
+                            const cm = easyMDE.codemirror;
+                            const cursor = cm.getCursor();
+
+                            Swal.fire({
+                                title: '插入代码块',
+                                html: `
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">选择语言</label>
+                <input id="swal-code-lang" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+            </div>
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入代码</label>
+                <textarea id="swal-code-content" class="swal2-textarea" style="display: inline-block; width: calc(100% - 95px); min-height: 150px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: 'Menlo', 'Consolas', monospace; resize: vertical; vertical-align: top;"></textarea>
+            </div>
+        `,
+                                confirmButtonText: '确认',
+                                cancelButtonText: '取消',
+                                showCancelButton: true,
+                                confirmButtonColor: '#e74c3c',
+                                cancelButtonColor: '#95a5a6',
+                                focusConfirm: false,
+                                width: '600px',
+                                preConfirm: () => {
+                                    const lang = document.getElementById('swal-code-lang').value.trim();
+                                    const code = document.getElementById('swal-code-content').value;
+                                    if (!code) {
+                                        Swal.showValidationMessage('请输入代码内容');
+                                        return false;
+                                    }
+                                    return { lang, code };
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed && result.value) {
+                                    const { lang, code } = result.value;
+                                    const codeBlock = lang ? '```' + lang + '\n' + code + '\n```' : '```\n' + code + '\n```';
+                                    if (cm.getSelection()) {
+                                        cm.replaceSelection(codeBlock);
+                                    } else {
+                                        cm.replaceRange(codeBlock, cursor, cursor);
+                                    }
+                                    cm.focus();
+                                    updatePreview();
+                                }
+                            });
                             break;
+                        }
                         case 'quote':
                             wrapSelection('> ', '');
                             break;
@@ -2875,26 +2273,245 @@
                             wrapSelection('- [ ] ', '');
                             break;
                         case 'heading-up':
-                            insertText('# ');
+                            headingUp();
                             break;
                         case 'heading-down':
-                            insertText('## ');
+                            headingDown();
                             break;
                         case 'hr':
-                            insertText('\n---\n');
+                            insertText('---\n\n');
                             break;
-                        case 'link':
-                            wrapSelection('[', '](url)');
+                        case 'link': {
+                            const cm = easyMDE.codemirror;
+                            const selectedText = cm.getSelection();
+                            const cursor = cm.getCursor();
+
+                            Swal.fire({
+                                title: '插入链接',
+                                html: `
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">链接地址</label>
+                <input id="swal-url" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+            </div>
+            <div style="text-align: left;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">链接介绍</label>
+                <input id="swal-text" class="swal2-input" type="text" value="${selectedText.replace(/"/g, '&quot;')}" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+            </div>
+        `,
+                                confirmButtonText: '确认',
+                                cancelButtonText: '取消',
+                                showCancelButton: true,
+                                confirmButtonColor: '#e74c3c',
+                                cancelButtonColor: '#95a5a6',
+                                focusConfirm: false,
+                                preConfirm: () => {
+                                    const url = document.getElementById('swal-url').value.trim();
+                                    const text = document.getElementById('swal-text').value.trim() || url;
+                                    if (!url) {
+                                        Swal.showValidationMessage('请输入链接地址');
+                                        return false;
+                                    }
+                                    return { url, text };
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed && result.value) {
+                                    const { url, text } = result.value;
+                                    if (cm.getSelection()) {
+                                        cm.replaceSelection(`[${text}](${url})`);
+                                    } else {
+                                        cm.replaceRange(`[${text}](${url})`, cursor, cursor);
+                                    }
+                                    cm.focus();
+                                    updatePreview();
+                                }
+                            });
                             break;
-                        case 'image':
-                            wrapSelection('![', '](图片链接)');
+                        }
+                        case 'image': {
+                            const cm = easyMDE.codemirror;
+                            const selectedText = cm.getSelection();
+                            const cursor = cm.getCursor();
+
+                            Swal.fire({
+                                title: '插入图片',
+                                html: `
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">图片地址</label>
+                <input id="swal-img-url" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+            </div>
+            <div style="text-align: left;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">图片介绍</label>
+                <input id="swal-img-alt" class="swal2-input" type="text" value="${selectedText.replace(/"/g, '&quot;')}" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+            </div>
+        `,
+                                confirmButtonText: '确认',
+                                cancelButtonText: '取消',
+                                showCancelButton: true,
+                                confirmButtonColor: '#e74c3c',
+                                cancelButtonColor: '#95a5a6',
+                                focusConfirm: false,
+                                preConfirm: () => {
+                                    const url = document.getElementById('swal-img-url').value.trim();
+                                    const alt = document.getElementById('swal-img-alt').value.trim() || '图片';
+                                    if (!url) {
+                                        Swal.showValidationMessage('请输入图片地址');
+                                        return false;
+                                    }
+                                    return { url, alt };
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed && result.value) {
+                                    const { url, alt } = result.value;
+                                    const markdown = `![${alt}](${url})`;
+                                    if (cm.getSelection()) {
+                                        cm.replaceSelection(markdown);
+                                    } else {
+                                        cm.replaceRange(markdown, cursor, cursor);
+                                    }
+                                    cm.focus();
+                                    updatePreview();
+                                }
+                            });
                             break;
-                        case 'table':
-                            insertText('\n| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| 内容 | 内容 | 内容 |\n');
+                        }
+                        case 'table': {
+                            const cm = easyMDE.codemirror;
+                            const cursor = cm.getCursor();
+
+                            Swal.fire({
+                                title: '插入表格',
+                                html: `
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入行数</label>
+                <input id="swal-table-rows" class="swal2-input" type="number" value="1" min="1" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+            </div>
+            <div style="text-align: left;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入列数</label>
+                <input id="swal-table-cols" class="swal2-input" type="number" value="1" min="1" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+            </div>
+        `,
+                                confirmButtonText: '确认',
+                                cancelButtonText: '取消',
+                                showCancelButton: true,
+                                confirmButtonColor: '#e74c3c',
+                                cancelButtonColor: '#95a5a6',
+                                focusConfirm: false,
+                                width: '600px',
+                                preConfirm: () => {
+                                    const rows = parseInt(document.getElementById('swal-table-rows').value) || 2;
+                                    const cols = parseInt(document.getElementById('swal-table-cols').value) || 2;
+                                    if (rows < 1) {
+                                        Swal.showValidationMessage('行数至少为 1');
+                                        return false;
+                                    }
+                                    if (cols < 1) {
+                                        Swal.showValidationMessage('列数至少为 1');
+                                        return false;
+                                    }
+                                    return { rows, cols };
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed && result.value) {
+                                    const { rows, cols } = result.value;
+                                    const dataRows = rows - 1; // 数据行数
+                                    let table = '';
+                                    // 表头行（空）
+                                    table += '|' + '   |'.repeat(cols) + '\n';
+                                    // 分隔行
+                                    table += '|' + ':---:|'.repeat(cols) + '\n';
+                                    // 数据行
+                                    for (let i = 0; i < dataRows; i++) {
+                                        table += '|' + '   |'.repeat(cols);
+                                        if (i < dataRows - 1) {
+                                            table += '\n';
+                                        }
+                                    }
+                                    if (cm.getSelection()) {
+                                        cm.replaceSelection(table);
+                                    } else {
+                                        cm.replaceRange(table, cursor, cursor);
+                                    }
+                                    cm.focus();
+                                    updatePreview();
+                                }
+                            });
                             break;
-                        case 'mention':
-                            insertText('@用户名 ');
+                        }
+                        case 'mention': {
+                            const cm = easyMDE.codemirror;
+                            const cursor = cm.getCursor();
+
+                            Swal.fire({
+                                title: '@ 用户',
+                                html: `
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">用户名或UID</label>
+                <input id="swal-mention-input" class="swal2-input" type="text" placeholder="输入用户名或UID" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+            </div>
+        `,
+                                confirmButtonText: '确认',
+                                cancelButtonText: '取消',
+                                showCancelButton: true,
+                                confirmButtonColor: '#e74c3c',
+                                cancelButtonColor: '#95a5a6',
+                                focusConfirm: false,
+                                width: '600px',
+                                preConfirm: async () => {
+                                    const input = document.getElementById('swal-mention-input').value.trim();
+                                    if (!input) {
+                                        Swal.showValidationMessage('请输入用户名或UID');
+                                        return false;
+                                    }
+                                    // 去除前导 @（如果有）
+                                    const identifier = input.replace(/^@/, '');
+                                    let username = null;
+
+                                    // 如果是纯数字，先按 UID 查询
+                                    if (/^\d+$/.test(identifier)) {
+                                        const { data, error } = await supabase
+                                            .from('profiles')
+                                            .select('username')
+                                            .eq('user_number', parseInt(identifier))
+                                            .maybeSingle();
+                                        if (!error && data) {
+                                            username = data.username;
+                                        }
+                                    }
+
+                                    // 如果还没找到，按用户名查询
+                                    if (!username) {
+                                        const { data, error } = await supabase
+                                            .from('profiles')
+                                            .select('username')
+                                            .eq('username', identifier)
+                                            .maybeSingle();
+                                        if (!error && data) {
+                                            username = data.username;
+                                        }
+                                    }
+
+                                    if (!username) {
+                                        Swal.showValidationMessage('未找到该用户');
+                                        return false;
+                                    }
+
+                                    return { username };
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed && result.value) {
+                                    const { username } = result.value;
+                                    const mention = '@' + username + ' ';
+                                    if (cm.getSelection()) {
+                                        cm.replaceSelection(mention);
+                                    } else {
+                                        cm.replaceRange(mention, cursor, cursor);
+                                    }
+                                    cm.focus();
+                                    updatePreview();
+                                }
+                            });
                             break;
+                        }
                         case 'edit-only':
                             document.querySelector('.cs-content').style.display = 'flex';
                             document.querySelectorAll('.cs-zone-half')[1].style.display = 'none';
@@ -2945,11 +2562,43 @@
             }
 
             async function handleSubmitReply() {
+                // ===== 验证码校验（使用 SweetAlert2） =====
+                const userCaptcha = document.getElementById('captchaInput').value.trim();
+                if (!userCaptcha) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: '图形验证码错误',
+                        confirmButtonText: '确定',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                    return;
+                }
+                if (userCaptcha.toUpperCase() !== currentCaptcha) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: '图形验证码错误',
+                        confirmButtonText: '确定',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                    generateCaptcha();
+                    document.getElementById('captchaInput').value = '';
+                    return;
+                }
+
                 const text = replyInput.value.trim();
-                if (!text) { alert('请输入回复内容'); return; }
+                if (!text) { 
+                    await Swal.fire({
+                        icon: 'error',
+                        title: '该变量不应为空。',
+                        confirmButtonText: '确定',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                    return;
+                }
                 if (!currentUser) { document.getElementById('loginToCommentLink').click(); return; }
+
                 submitReplyBtn.disabled = true;
-                submitReplyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+                submitReplyBtn.innerHTML = '发表';
                 try {
                     await createComment(currentPost.id, text, currentUser.id);
                     replyInput.value = '';
@@ -2957,9 +2606,12 @@
                     localStorage.removeItem('reply_draft_' + currentPost.id);
                     await loadComments(1);
                     document.getElementById('commentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // 提交成功后刷新验证码
+                    generateCaptcha();
+                    document.getElementById('captchaInput').value = '';
                 } catch (err) { alert('评论失败：' + err.message); } finally {
                     submitReplyBtn.disabled = false;
-                    submitReplyBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发表';
+                    submitReplyBtn.innerHTML = '发表';
                 }
             }
 
@@ -2987,7 +2639,7 @@
                     let userTagHtml = '';
                     if (userTag) {
                         userTagHtml =
-                        `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
+                            `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
                     } else if (isAdmin) { userTagHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`; }
                     const userHtml =
                         `<a href="/user/${userNumber}" class="post-detail-author" style="color: ${color};">${escapeHtml(username)}</a>`;
@@ -2997,9 +2649,15 @@
                     const timeStrForHeader = formatAbsoluteTimeNoSeconds(post.created_at);
                     const timeStrForSide = formatAbsoluteTime(post.created_at);
                     document.getElementById('replyInfo').style.display = 'block';
+                    // 使用外部库渲染帖子内容
                     let renderedContent = '';
                     try {
-                        renderedContent = renderContent(post.content || '', {}, currentProfile?.is_admin || false, currentProfile?.username || '', 'post-' + post.id);
+                        renderedContent = MarkdownRenderer.render(post.content || '', {
+                            isAdmin: currentProfile?.is_admin || false,
+                            username: currentProfile?.username || '',
+                            mentionMap: {},
+                            uniqueId: 'post-' + post.id
+                        });
                     } catch (e) {
                         console.error('渲染内容失败:', e);
                         renderedContent = '<p style="color:red;">内容渲染出错，请检查格式。</p>';
@@ -3016,11 +2674,14 @@
                                     <div class="post-detail-meta"><span>发表于 ${timeStrForHeader}</span></div>
                                 </div>
                             </div>
-                            <div class="post-body"><div class="lfe-marked">${renderedContent}</div></div>
+                            <div class="post-body"><div class="benben-text">${renderedContent}</div></div>
                         </div>
                     `;
                     document.getElementById('postContent').innerHTML = postHtml;
                     document.getElementById('postContent').style.display = 'block';
+                    // 渲染 Mermaid
+                    renderMermaid();
+
                     const authorCard = document.getElementById('authorCard');
                     if (authorCard) {
                         const avatarImg = avatarUrl || letterAvatar(username);
@@ -3257,6 +2918,7 @@
                     });
                 }
                 await loadPost();
+                generateCaptcha();
             }
 
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -3264,79 +2926,79 @@
 
         })();
     </script>
-<script>
-/* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
-(function () {
-    if (!window.supabase || document.getElementById('topAvatarWrap')) return;
-    var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
-    var authBtns = document.querySelector('.topbar .auth-buttons');
-    if (!authBtns) return;
-    if (!document.getElementById('topAvatarStyle')) {
-        var st = document.createElement('style');
-        st.id = 'topAvatarStyle';
-        st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
-        document.head.appendChild(st);
-    }
-    function letterAvatar(name) {
-        var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
-    }
-    var me = null;
-    var mo = new MutationObserver(ensure);
-    mo.observe(authBtns, { childList: true });
-    function ensure() {
-        if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
-        mo.disconnect();
-        try {
-            var ue = authBtns.querySelector('.user-email');
-            if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
-            var wrap = document.getElementById('topAvatarWrap');
-            if (!wrap) {
-                wrap = document.createElement('div');
-                wrap.id = 'topAvatarWrap';
-                wrap.className = 'top-avatar-wrap';
-                var av = document.createElement('a');
-                av.id = 'topAvatar';
-                av.href = '/user/' + (me.user_number || '');
-                av.title = me.username || '';
-                av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
-                var img = document.createElement('img');
-                img.alt = '头像';
-                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
-                img.src = me.avatar_url || letterAvatar(me.username);
-                av.appendChild(img);
-                wrap.appendChild(av);
-                var menu = document.createElement('div');
-                menu.id = 'topAvatarMenu';
-                menu.className = 'top-avatar-menu';
-                wrap.appendChild(menu);
-                authBtns.appendChild(wrap);
+
+    <script>
+        /* 顶栏右上角头像菜单（与主页一致） */
+        (function () {
+            if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+            var authBtns = document.querySelector('.topbar .auth-buttons');
+            if (!authBtns) return;
+            if (!document.getElementById('topAvatarStyle')) {
+                var st = document.createElement('style');
+                st.id = 'topAvatarStyle';
+                st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+                document.head.appendChild(st);
             }
-            // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
-            var menu = document.getElementById('topAvatarMenu');
-            var logoutEl = authBtns.querySelector('.auth-btn.logout');
-            if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
-            if (me.can_manage_users && !document.getElementById('adminEntry')) {
-                var gear = document.createElement('a');
-                gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
-                gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
-                gear.textContent = '⚙️';
-                authBtns.appendChild(gear);
+            function letterAvatar(name) {
+                var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
-            ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
-                var el = authBtns.querySelector(sel);
-                if (el) authBtns.appendChild(el);
-            });
-        } finally { mo.observe(authBtns, { childList: true }); }
-    }
-    sb.auth.getSession().then(function (r) {
-        var s = r.data && r.data.session;
-        if (!s) return;
-        return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
-    }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () {});
-})();
-</script>
+            var me = null;
+            var mo = new MutationObserver(ensure);
+            mo.observe(authBtns, { childList: true });
+            function ensure() {
+                if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+                mo.disconnect();
+                try {
+                    var ue = authBtns.querySelector('.user-email');
+                    if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+                    var wrap = document.getElementById('topAvatarWrap');
+                    if (!wrap) {
+                        wrap = document.createElement('div');
+                        wrap.id = 'topAvatarWrap';
+                        wrap.className = 'top-avatar-wrap';
+                        var av = document.createElement('a');
+                        av.id = 'topAvatar';
+                        av.href = '/user/' + (me.user_number || '');
+                        av.title = me.username || '';
+                        av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                        var img = document.createElement('img');
+                        img.alt = '头像';
+                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                        img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                        img.src = me.avatar_url || letterAvatar(me.username);
+                        av.appendChild(img);
+                        wrap.appendChild(av);
+                        var menu = document.createElement('div');
+                        menu.id = 'topAvatarMenu';
+                        menu.className = 'top-avatar-menu';
+                        wrap.appendChild(menu);
+                        authBtns.appendChild(wrap);
+                    }
+                    var menu = document.getElementById('topAvatarMenu');
+                    var logoutEl = authBtns.querySelector('.auth-btn.logout');
+                    if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+                    if (me.can_manage_users && !document.getElementById('adminEntry')) {
+                        var gear = document.createElement('a');
+                        gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
+                        gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                        gear.textContent = '⚙️';
+                        authBtns.appendChild(gear);
+                    }
+                    ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                        var el = authBtns.querySelector(sel);
+                        if (el) authBtns.appendChild(el);
+                    });
+                } finally { mo.observe(authBtns, { childList: true }); }
+            }
+            sb.auth.getSession().then(function (r) {
+                var s = r.data && r.data.session;
+                if (!s) return;
+                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
+            }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () { });
+        })();
+    </script>
 </body>
 
 </html>
