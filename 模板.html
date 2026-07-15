@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>首页 - ✨ Jason227</title>
+
+    <!-- ===== 第三方依赖（CDN） ===== -->
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
+    </script>
+
+    <!-- markdown-it 及插件 -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
+    </script>
+
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
+    </script>
+
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
+
+    <!-- ===== 自定义渲染器（外部引用） ===== -->
+    <link rel="stylesheet" href="./markdown-renderer.css">
+    <script defer src="./markdown-renderer.js">
+    </script>
+
+    <!-- ===== 主样式 ===== -->
+    <style>
+        /* ========== 基础样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
+        }
+
+        .bell-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .bell-icon:hover {
+            color: #e74c3c;
+        }
+
+        .bell-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .bell-icon sup {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+        }
+
+        /* ===== 底部栏 ===== */
+        .bottombar {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .bottombar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+        }
+
+        .bottombar-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .bottombar-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .bottombar-meta {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .bottombar a {
+            text-decoration: none;
+        }
+
+        .bottombar .brand-highlight {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        #contributorsLine {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* ===== 🟢 新增：底部栏用户名样式（模仿近期讨论） ===== */
+        #contributorsLine .benben-username {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        #contributorsLine .benben-username:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+
+        /* ===== 用户标签（与近期讨论保持一致） ===== */
+        .user-tag-display {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 0 0 0 4px;
+            cursor: default;
+            transition: filter 0.15s;
+            vertical-align: middle;
+        }
+
+        .user-tag-display:hover {
+            filter: brightness(0.9);
+        }
+
+        /* ========== 主布局 ========== */
+        .main-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* ========== 侧边栏 ========== */
+        .nav-sidebar {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            height: calc(100vh - 50px);
+            width: 64px;
+            background: white;
+            border-radius: 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+            padding: 16px 0;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            white-space: nowrap;
+            z-index: 150;
+        }
+
+        .nav-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .nav-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        .nav-sidebar:hover {
+            width: 260px;
+        }
+
+        .nav-item,
+        .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-item:hover,
+        .group-title:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .nav-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .nav-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-group .group-title {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            cursor: default;
+        }
+
+        .nav-group .group-title:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 8px 0;
+        }
+
+        /* ========== 内容区域 ========== */
+        .content-wrapper {
+            margin-left: 64px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding-top: 20px;
+        }
+
+        .main-content {
+            flex: 2;
+            min-width: 260px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        #back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #back-to-top:hover {
+            background: #e74c3c;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            #back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
+        a {
+            text-decoration: none;
+            color: #e74c3c;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 900px) {
+            .main-layout {
+                position: static;
+                padding: 0 16px 16px 16px;
+            }
+
+            .nav-sidebar {
+                position: relative;
+                top: auto;
+                left: auto;
+                height: auto;
+                width: 100%;
+                border-radius: 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                margin-bottom: 20px;
+                padding: 12px 0;
+                transition: none;
+                overflow: visible;
+                white-space: normal;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+            }
+
+            .nav-sidebar:hover {
+                width: 100%;
+            }
+
+            .nav-text {
+                opacity: 1;
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                padding-top: 0;
+            }
+
+            .nav-item:hover,
+            .group-title:hover {
+                background: #f0f2f5;
+                color: #e74c3c;
+                text-decoration: none;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            }
+
+            .nav-sidebar a:hover {
+                text-decoration: none;
+                background: #f0f2f5;
+                color: #e74c3c;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            }
+
+            .nav-icon {
+                font-size: 16px;
+                width: 20px;
+            }
+
+            .group-title {
+                grid-column: 1 / -1;
+                background: #e9ecef;
+                margin-top: 0;
+                border-top: none;
+            }
+
+            .divider {
+                display: none;
+            }
+
+            .nav-sidebar::-webkit-scrollbar {
+                width: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .auth-buttons .auth-btn {
+                padding: 4px 14px;
+                font-size: 12px;
+            }
+
+            .user-email {
+                font-size: 12px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-buttons .auth-btn {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
+
+            .user-email {
+                font-size: 11px;
+            }
+
+            .nav-sidebar {
+                grid-template-columns: 1fr 1fr;
+                gap: 2px;
+                padding: 6px;
+            }
+
+            .nav-icon {
+                font-size: 12px;
+                width: 16px;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
+</head>
+
+<body>
+    <div class="topbar">
+        <a href="/" class="logo" style="text-decoration: none; color: #e74c3c;">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons"><span style="font-size:14px; color:#aaa;">加载中...</span></div>
+    </div>
+
+    <div class="main-layout">
+        <!-- 侧边栏：完整保留 -->
+        <div class="nav-sidebar">
+            <!-- ===== 主菜单 第一部分（主页 ~ 评测记录） ===== -->
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M240 6.1c9.1-8.2 22.9-8.2 32 0l232 208c9.9 8.8 10.7 24 1.8 33.9s-24 10.7-33.9 1.8l-8-7.2 0 205.3c0 35.3-28.7 64-64 64l-288 0c-35.3 0-64-28.7-64-64l0-205.3-8 7.2c-9.9 8.8-25 8-33.9-1.8s-8-25 1.8-33.9L240 6.1zm16 50.1L96 199.7 96 448c0 8.8 7.2 16 16 16l48 0 0-104c0-39.8 32.2-72 72-72l48 0c39.8 0 72 32.2 72 72l0 104 48 0c8.8 0 16-7.2 16-16l0-248.3-160-143.4zM208 464l96 0 0-104c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24l0 104z" />
+                                </svg></span><span class="nav-text">主页</span></a></li>
+                    <li><a class="nav-item" href="/problems"><span class="nav-icon"><svg viewBox="0 0 448 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M88 0C39.4 0 0 39.4 0 88L0 432c0 44.2 35.8 80 80 80l344 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-8 0 0-76.1C435.3 375 448 353 448 328l0-256c0-39.8-32.2-72-72-72L88 0zM368 400l0 64-288 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l288 0zM80 352c-11.4 0-22.2 2.4-32 6.7L48 88c0-22.1 17.9-40 40-40l288 0c13.3 0 24 10.7 24 24l0 256c0 13.3-10.7 24-24 24L80 352zm48-200c0 13.3 10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0c-13.3 0-24 10.7-24 24zm24 72c-13.3 0-24 10.7-24 24s10.7 24 24 24l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0z" />
+                                </svg></span><span class="nav-text">题库</span></a></li>
+                    <li><a class="nav-item" href="/courses"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2 48 19.8 0 168.5c0 53 86 96 192 96s192-43 192-96l0-168.5 81.2-33.4c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1zM144 384l0-148.7 113.2 46.6c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1L432 235.3 432 384c0 .1 0 .1 0 .3s-.1 .4-.3 .9c-.4 .9-1.3 2.7-3.4 5.2-4.4 5.2-12.6 11.9-26 18.6-26.8 13.4-67.1 23-114.3 23s-87.5-9.7-114.3-23c-13.4-6.7-21.6-13.4-26-18.6-2.1-2.5-3-4.3-3.4-5.2-.2-.5-.3-.8-.3-.9s0-.2 0-.3zM87.2 160L275.5 82.5c4-1.6 8.2-2.5 12.5-2.5s8.5 .8 12.5 2.5L488.8 160 300.5 237.5c-4 1.6-8.2 2.5-12.5 2.5s-8.5-.8-12.5-2.5L87.2 160z" />
+                                </svg></span><span class="nav-text">网校</span></a></li>
+                    <li><a class="nav-item" href="/training"><span class="nav-icon"><svg viewBox="0 0 384 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M152 96l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0 48c-37.1 0-67.6-28-71.6-64L64 80c-8.8 0-16 7.2-16 16l0 352c0 8.8 7.2 16 16 16l256 0c8.8 0 16-7.2 16-16l0-352c0-8.8-7.2-16-16-16l-16.4 0c-4 36-34.5 64-71.6 64l-80 0zM232 0c25 0 47 12.7 59.9 32L320 32c35.3 0 64 28.7 64 64l0 352c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l28.1 0C105 12.7 127 0 152 0l80 0zM171.2 193.1c8.2 6.7 9.5 18.8 2.8 27l-45.3 56c-3.7 4.5-9.2 7.1-15 7.1s-11.3-2.7-14.9-7.2L73.9 244.9c-6.6-8.3-5.3-20.4 3-27s20.4-5.3 27 3l10 12.5 30.3-37.5c6.7-8.2 18.8-9.5 27-2.8zM192 256c0-13.3 10.7-24 24-24l64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0c-13.3 0-24-10.7-24-24zm-16 96c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24zm-64-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                </svg></span><span class="nav-text">训练题单</span></a></li>
+                    <li><a class="nav-item" href="/contests"><span class="nav-icon"><svg viewBox="0 0 512 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M488 56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24s24-10.7 24-24l0-400zM360 128c-13.3 0-24 10.7-24 24l0 304c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-13.3-10.7-24-24-24zM280 248c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 208c0 13.3 10.7 24 24 24s24-10.7 24-24l0-208zM152 320c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zM48 384c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48c0-13.3-10.7-24-24-24z" />
+                                </svg></span><span class="nav-text">比赛</span></a></li>
+                    <li><a class="nav-item" href="/submissions"><span class="nav-icon"><svg viewBox="0 0 576 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M352.4 54l0 138 138 0C473 124.6 419.9 71.4 352.4 54zm-144 210l0-173.1c-74.6 26.4-128 97.5-128 181.1 0 106 86 192 192 192 24.6 0 48-4.6 69.5-12.9L225 309.9c-10.7-12.9-16.6-29.2-16.6-45.9zm333.9-55.9c2.3 17.5-12.2 31.9-29.9 31.9l-176 0c-17.7 0-32-14.3-32-32l0-176c0-17.7 14.4-32.2 31.9-29.9 107 14.2 191.8 99 206 206zM256.4 66.7l0 197.3c0 5.6 2 11 5.5 15.3L394 438.7c11.7 14.1 9.2 35.4-6.9 44.1-34.1 18.6-73.2 29.2-114.7 29.2-132.5 0-240-107.5-240-240 0-115.5 81.5-211.9 190.2-234.8 18.1-3.8 33.8 11 33.8 29.5zM541.7 288c18.5 0 33.3 15.7 29.5 33.8-10.2 48.4-35 91.4-69.6 124.2-12.3 11.7-31.6 9.2-42.4-3.9L374.9 340.4c-17.3-20.9-2.4-52.4 24.6-52.4l142.2 0z" />
+                                </svg></span><span class="nav-text">评测记录</span></a></li>
+                </ul>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="divider"></div>
+
+            <!-- ===== 主菜单 第二部分（讨论区、文章广场） ===== -->
+            <div class="nav-group">
+                <ul>
+                    <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
+                                    height="20" fill="currentColor">
+                                    <path
+                                        d="M76.2 258.7c6.1-15.2 4-32.6-5.6-45.9-14.5-20.1-22.6-43.7-22.6-68.8 0-66.8 60.5-128 144-128s144 61.2 144 128-60.5 128-144 128c-15.9 0-31.1-2.3-45.3-6.5-10.3-3.1-21.4-2.5-31.4 1.5l-50.4 20.2 11.4-28.5zM0 144c0 35.8 11.6 69.1 31.7 96.8L1.9 315.2c-1.3 3.2-1.9 6.6-1.9 10 0 14.8 12 26.8 26.8 26.8 3.4 0 6.8-.7 10-1.9l96.3-38.5c18.6 5.5 38.4 8.4 58.9 8.4 106 0 192-78.8 192-176S298-32 192-32 0 46.8 0 144zM384 512c20.6 0 40.3-3 58.9-8.4l96.3 38.5c3.2 1.3 6.6 1.9 10 1.9 14.8 0 26.8-12 26.8-26.8 0-3.4-.7-6.8-1.9-10l-29.7-74.4c20-27.8 31.7-61.1 31.7-96.8 0-82.4-61.7-151.5-145-170.7-1.6 16.3-5.1 31.9-10.1 46.9 63.9 14.8 107.2 67.3 107.2 123.9 0 25.1-8.1 48.7-22.6 68.8-9.6 13.3-11.7 30.6-5.6 45.9l11.4 28.5-50.4-20.2c-10-4-21.1-4.5-31.4-1.5-14.2 4.2-29.4 6.5-45.3 6.5-72.2 0-127.1-45.7-140.7-101.2-15.6 3.2-31.7 5-48.1 5.2 16.4 81.9 94.7 144 188.8 144z" />
+                                </svg></span><span class="nav-text">讨论区</span></a></li>
+                    <li><a class="nav-item" href="/articles"><span class="nav-icon"><svg viewBox="0 0 512 512"
+                                    width="20" height="20" fill="currentColor">
+                                    <path
+                                        d="M168 80c-13.3 0-24 10.7-24 24l0 304c0 8.4-1.4 16.5-4.1 24L440 432c13.3 0 24-10.7 24-24l0-304c0-13.3-10.7-24-24-24L168 80zM72 480c-39.8 0-72-32.2-72-72L0 112C0 98.7 10.7 88 24 88s24 10.7 24 24l0 296c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-39.8 32.2-72 72-72l272 0c39.8 0 72 32.2 72 72l0 304c0 39.8-32.2 72-72 72L72 480zM192 152c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 48c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-48zm152 24l48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zM216 256l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 80l176 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-176 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z" />
+                                </svg></span><span class="nav-text">文章广场</span></a></li>
+                </ul>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="divider"></div>
+
+            <!-- ===== 更多功能 ===== -->
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/image"><span class="nav-icon"></span><span
+                                class="nav-text">图片上传</span></a></li>
+                    <li><a class="nav-item" href="/clipboard"><span class="nav-icon"></span><span
+                                class="nav-text">云剪贴板</span></a></li>
+                    <li><a class="nav-item" href="/themes"><span class="nav-icon"></span><span
+                                class="nav-text">主题商店</span></a></li>
+                    <li><a class="nav-item" href="/ranking/gu"><span class="nav-icon"></span><span
+                                class="nav-text">咕值排名</span></a></li>
+                    <li><a class="nav-item" href="/ranking/rating"><span class="nav-icon"></span><span
+                                class="nav-text">等级分排名</span></a></li>
+                    <li><a class="nav-item" href="/luogu"><span class="nav-icon"></span><span
+                                class="nav-text">洛谷有题</span></a></li>
+                    <li><a class="nav-item" href="/feedback"><span class="nav-icon"></span><span
+                                class="nav-text">工单/反馈</span></a></li>
+                </ul>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="divider"></div>
+
+            <!-- ===== 相关链接 ===== -->
+            <div class="nav-group on-expand">
+                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
+                <ul>
+                    <li><a class="nav-item" href="/help"><span class="nav-icon"></span><span
+                                class="nav-text">帮助中心</span></a></li>
+                    <li><a class="nav-item" href="/contact"><span class="nav-icon"></span><span
+                                class="nav-text">联系我们</span></a></li>
+                    <li><a class="nav-item" href="/rules"><span class="nav-icon"></span><span
+                                class="nav-text">社区规则</span></a></li>
+                    <li><a class="nav-item" href="/judgement"><span class="nav-icon"></span><span
+                                class="nav-text">陶片放逐</span></a></li>
+                    <li><a class="nav-item" href="/judgement/admins"><span class="nav-icon"></span><span
+                                class="nav-text">管理名单</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ===== 内容区域（已无卡片） ===== -->
+        <div class="content-wrapper">
+            <div class="main-content">
+                <!-- 页面主要内容区域已清空，只保留布局结构 -->
+            </div>
+        </div>
+    </div>
+
+    <button id="back-to-top" title="回到顶部"
+        style="display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s;">↑</button>
+
+    <footer class="bottombar">
+        <div class="bottombar-inner">
+            <div class="bottombar-left">
+                <div>
+                    © <span id="currentYear"></span>
+                    <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>
+                </div>
+                <div class="bottombar-meta">
+                    <a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io"
+                        style="color:#bbb; text-decoration:none;">GitHub</a>
+                    <span style="color:#bbb;"> · </span>
+                    <a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io/graphs/contributors"
+                        style="color:#bbb; text-decoration:none;">项目贡献者</a>
+                    <span style="color:#bbb;"> · </span>
+                    <a href="https://icp.gov.moe/?keyword=20268322" target="_blank"
+                        style="color:#bbb; text-decoration:none;">萌ICP备20268322号</a>
+                </div>
+                <div class="bottombar-meta" id="serverTime">
+                    服务器时间: <span id="timeDisplay">加载中...</span>
+                </div>
+                <div class="bottombar-meta" id="uptime">
+                    本网站已运行 <span id="uptimeDisplay">0</span> 秒
+                </div>
+            </div>
+            <div class="bottombar-right">
+                <div id="contributorsLine"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================ -->
+    <!-- 业务脚本（仅保留核心认证与时间逻辑） -->
+    <!-- ================================================================ -->
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+    <script>
+        (function () {
+            // ---------- 时间更新 ----------
+            function updateServerTime() {
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const str = now.getFullYear() + '-' +
+                    pad(now.getMonth() + 1) + '-' +
+                    pad(now.getDate()) + ' ' +
+                    pad(now.getHours()) + ':' +
+                    pad(now.getMinutes()) + ':' +
+                    pad(now.getSeconds());
+                document.getElementById('timeDisplay').textContent = str;
+            }
+            updateServerTime();
+            setInterval(updateServerTime, 1000);
+
+            // 已运行秒数
+            const startTime = new Date('2026-06-01T17:48:56').getTime();
+
+            function updateUptime() {
+                const now = Date.now();
+                const diffSec = Math.floor((now - startTime) / 1000);
+                document.getElementById('uptimeDisplay').textContent = diffSec;
+            }
+            updateUptime();
+            setInterval(updateUptime, 1000);
+
+            // ---------- Supabase 客户端 ----------
+            if (!window._supabaseClient) {
+                window._supabaseClient = window.supabase.createClient(
+                    'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                    'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+                );
+            }
+            const supabase = window._supabaseClient;
+
+            // ---------- 辅助函数 ----------
+            function escapeHtmlAttr(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+            }
+
+            // ---------- 颜色与标签工具 ----------
+            const COLOR_RED = '#e74c3c';
+            const COLOR_PURPLE = '#9C3DCF';
+            const COLOR_BROWN = '#AD8B00';
+
+            function getUserDisplayColor(user) {
+                if (user && user.is_cheater) return COLOR_BROWN;
+                if (user && user.is_admin) return COLOR_PURPLE;
+                return COLOR_RED;
+            }
+
+            function getUserTagDisplay(user) {
+                if (!user) return '';
+                if (user.is_cheater) {
+                    if (user.is_admin) return user.user_tag || '管理员';
+                    else return '作弊者';
+                } else {
+                    return user.user_tag || '';
+                }
+            }
+
+            // ---------- 渲染贡献者 ----------
+            async function renderContributors() {
+                const container = document.getElementById('contributorsLine');
+                if (!container) return;
+                const userIds = [1, 10, 4];
+                try {
+                    const { data: users, error } = await supabase
+                        .from('profiles')
+                        .select('user_number, username, user_tag, username_color, is_admin, is_cheater')
+                        .in('user_number', userIds);
+                    if (error) throw error;
+                    if (!users || users.length === 0) {
+                        container.innerHTML = `<span style="color:#bbb;">By 未知用户 for <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a></span>`;
+                        return;
+                    }
+                    const userMap = {};
+                    users.forEach(u => { userMap[u.user_number] = u; });
+                    const parts = [];
+                    userIds.forEach(id => {
+                        const user = userMap[id];
+                        if (!user) return;
+                        const color = getUserDisplayColor(user);
+                        const tagText = getUserTagDisplay(user);
+                        let link = `<a href="/user/${user.user_number}" class="benben-username" style="color:${color};">${escapeHtml(user.username)}</a>`;
+                        if (tagText) {
+                            link += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                        }
+                        parts.push(link);
+                    });
+                    const joined = parts.join(' <span style="color:#bbb;">&amp;</span> ');
+                    container.innerHTML = `<span style="color:#bbb;">By </span>${joined}<span style="color:#bbb;"> for </span><a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>`;
+                } catch (err) {
+                    console.error('渲染贡献者失败:', err);
+                    container.innerHTML = `<span style="color:#bbb;">By 加载失败 for <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a></span>`;
+                }
+            }
+
+            // ---------- 通知 ----------
+            let unreadTimer = null;
+            let currentProfile = null;
+            let currentUser = null;
+            const authButtons = document.getElementById('authButtons');
+
+            async function fetchUnreadCount() {
+                if (!currentProfile) return;
+                try {
+                    const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true })
+                        .eq('user_number', currentProfile.user_number).eq('read', false);
+                    if (!error && count !== null) {
+                        const badge = document.getElementById('bell-badge');
+                        if (badge) {
+                            if (count > 0) {
+                                badge.textContent = count > 99 ? '99+' : count;
+                                badge.style.display = 'inline-flex';
+                            } else { badge.style.display = 'none'; }
+                        }
+                    }
+                } catch (err) { console.error(err); }
+            }
+
+            function startUnreadPolling() {
+                if (unreadTimer) clearInterval(unreadTimer);
+                unreadTimer = setInterval(() => {
+                    if (currentProfile && document.visibilityState === 'visible') fetchUnreadCount();
+                }, 30000);
+            }
+
+            function stopUnreadPolling() {
+                if (unreadTimer) {
+                    clearInterval(unreadTimer);
+                    unreadTimer = null;
+                }
+            }
+
+            // ---------- 获取用户资料 ----------
+            async function getProfile(userId) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, can_manage_posts, is_cheater, user_tag, avatar_url, username_color')
+                    .eq('id', userId)
+                    .single();
+                if (error) return null;
+                return data;
+            }
+
+            // ---------- 主 UI 更新 ----------
+            async function updateUI() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        currentProfile = await getProfile(session.user.id);
+                        currentUser = session.user;
+                        if (currentProfile) {
+                            const { data: banData, error: banErr } = await supabase
+                                .from('profiles')
+                                .select('is_banned')
+                                .eq('id', session.user.id)
+                                .single();
+                            if (!banErr && banData && banData.is_banned === true) {
+                                await supabase.auth.signOut();
+                                location.reload();
+                                return;
+                            }
+                        }
+                        let displayName = currentProfile?.username || session.user.email || '用户';
+                        let html = '';
+                        if (currentProfile?.user_number) html += `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
+                        else html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
+                        html += `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
+                        if (currentProfile?.is_admin === true) {
+                            html += `<a href="/admin/user" title="进入管理后台" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:8px;color:#666;text-decoration:none;font-size:18px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#666'">⚙️</a>`;
+                        }
+                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                        authButtons.innerHTML = html;
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
+
+                        await fetchUnreadCount();
+                        startUnreadPolling();
+                        await renderContributors();
+
+                        const sidebar = document.querySelector('.nav-sidebar');
+                        if (sidebar) {
+                            sidebar.addEventListener('mouseleave', function () {
+                                if (window.innerWidth > 900) this.scrollTop = 0;
+                            });
+                        }
+
+                        document.addEventListener('click', function (e) {
+                            const link = e.target.closest('a[href^="#"]');
+                            if (!link) return;
+                            const href = link.getAttribute('href');
+                            if (href === '#') return;
+                            const target = document.querySelector(href);
+                            if (target) {
+                                e.preventDefault();
+                                const topbarHeight = document.querySelector('.topbar')?.offsetHeight || 80;
+                                const targetRect = target.getBoundingClientRect();
+                                const scrollTop = window.pageYOffset + targetRect.top - topbarHeight - 10;
+                                window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                            }
+                        }, { passive: false });
+
+                    } else {
+                        currentUser = null;
+                        currentProfile = null;
+                        authButtons.innerHTML =
+                            `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                        stopUnreadPolling();
+                    }
+                } catch (err) {
+                    console.error(err);
+                    authButtons.innerHTML =
+                        `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                }
+                if (window.location.hash) {
+                    setTimeout(() => {
+                        const target = document.querySelector(window.location.hash);
+                        if (target) {
+                            const topbarHeight = document.querySelector('.topbar')?.offsetHeight || 80;
+                            const targetRect = target.getBoundingClientRect();
+                            window.scrollTo({ top: window.pageYOffset + targetRect.top - topbarHeight - 10 });
+                        }
+                    }, 300);
+                }
+            }
+
+            // ---------- 回到顶部 ----------
+            const backToTopBtn = document.getElementById('back-to-top');
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) backToTopBtn.style.display = 'block';
+                else backToTopBtn.style.display = 'none';
+            });
+            backToTopBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+            // ---------- 初始化 ----------
+            updateUI();
+        })();
+    </script>
+
+    <!-- ===== 顶栏头像菜单（独立模块，与原始代码一致） ===== -->
+    <script>
+        (function () {
+            if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+            var authBtns = document.querySelector('.topbar .auth-buttons');
+            if (!authBtns) return;
+            if (!document.getElementById('topAvatarStyle')) {
+                var st = document.createElement('style');
+                st.id = 'topAvatarStyle';
+                st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+                document.head.appendChild(st);
+            }
+
+            function letterAvatar(name) {
+                var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+            }
+            var me = null;
+            var mo = new MutationObserver(ensure);
+            mo.observe(authBtns, { childList: true });
+
+            function ensure() {
+                if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+                mo.disconnect();
+                try {
+                    var ue = authBtns.querySelector('.user-email');
+                    if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+                    var wrap = document.getElementById('topAvatarWrap');
+                    if (!wrap) {
+                        wrap = document.createElement('div');
+                        wrap.id = 'topAvatarWrap';
+                        wrap.className = 'top-avatar-wrap';
+                        var av = document.createElement('a');
+                        av.id = 'topAvatar';
+                        av.href = '/user/' + (me.user_number || '');
+                        av.title = me.username || '';
+                        av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                        var img = document.createElement('img');
+                        img.alt = '头像';
+                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                        img.onerror = function () {
+                            this.onerror = null;
+                            this.src = letterAvatar(me.username);
+                        };
+                        img.src = me.avatar_url || letterAvatar(me.username);
+                        av.appendChild(img);
+                        wrap.appendChild(av);
+                        var menu = document.createElement('div');
+                        menu.id = 'topAvatarMenu';
+                        menu.className = 'top-avatar-menu';
+                        wrap.appendChild(menu);
+                        authBtns.appendChild(wrap);
+                    }
+                    var menu = document.getElementById('topAvatarMenu');
+                    var logoutEl = authBtns.querySelector('.auth-btn.logout');
+                    if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+                    ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                        var el = authBtns.querySelector(sel);
+                        if (el) authBtns.appendChild(el);
+                    });
+                } finally { mo.observe(authBtns, { childList: true }); }
+            }
+            sb.auth.getSession().then(function (r) {
+                var s = r.data && r.data.session;
+                if (!s) return;
+                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users, is_admin').eq('id', s.user.id).maybeSingle();
+            }).then(function (rr) {
+                if (rr && rr.data) {
+                    me = rr.data;
+                    ensure();
+                }
+            }).catch(function () { });
+        })();
+    </script>
+</body>
+
+</html>
