@@ -58,18 +58,74 @@
                 return;
             }
 
-            // 2.5 帖子详情：/discuss/数字 → 使用 iframe 加载 post.html
-            var discussMatch = path.match(/^\/discuss\/(\d+)$/);
+            // ===== discuss 路由（模仿 team） =====
+
+            // 1. 若路径为 /discuss 且无查询参数 → 加载帖子列表页（若暂无列表页，可返回提示或重定向）
+            if (path === '/discuss' && !window.location.search) {
+                // 如果您有帖子列表页（比如 /discuss.html），就 fetch 它
+                // 如果没有，可以返回 404 或重定向到首页
+                fetch('/discuss.html')
+                    .then(res => {
+                        if (!res.ok) throw new Error('无法加载帖子列表页');
+                        return res.text();
+                    })
+                    .then(html => {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', '/discuss');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载帖子列表页，请稍后再试。</p>';
+                    });
+                return;
+            }
+
+            // 2. 若路径为 /discuss 且有查询参数 id → 转换为路径参数形式并加载详情页
+            if (path === '/discuss' && window.location.search) {
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get('id');
+                if (id && /^\d+$/.test(id)) {
+                    fetch('/post.html?id=' + id)
+                        .then(res => {
+                            if (!res.ok) throw new Error('无法加载帖子详情页');
+                            return res.text();
+                        })
+                        .then(html => {
+                            document.open();
+                            document.write(html);
+                            document.close();
+                            history.replaceState({}, '', '/discuss/' + id);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            document.body.innerHTML = '<h1>加载失败</h1><p>无法加载帖子详情页，请稍后再试。</p>';
+                        });
+                    return;
+                }
+                // 若 id 无效，则显示 404
+            }
+
+            // 3. 若路径为 /discuss/数字 → 加载详情页
+            const discussMatch = path.match(/^\/discuss\/(\d+)$/);
             if (discussMatch) {
-                var postId = discussMatch[1];
-                // 清空页面内容，创建 iframe
-                document.body.innerHTML = '';
-                var iframe = document.createElement('iframe');
-                iframe.src = '/post.html?id=' + postId;
-                iframe.style.cssText = 'width:100%;height:100vh;border:none;display:block;';
-                document.body.appendChild(iframe);
-                // 保持 URL 不变
-                history.replaceState({}, '', '/discuss/' + postId);
+                const id = discussMatch[1];
+                fetch('/post.html?id=' + id)
+                    .then(res => {
+                        if (!res.ok) throw new Error('无法加载帖子详情页');
+                        return res.text();
+                    })
+                    .then(html => {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', '/discuss/' + id);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载帖子详情页，请稍后再试。</p>';
+                    });
                 return;
             }
 
