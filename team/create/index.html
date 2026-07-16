@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>我的团队 - ✨ Jason227</title>
+    <title>创建团队 - ✨ Jason227</title>
 
     <!-- ===== 第三方依赖（CDN） ===== -->
     <!-- KaTeX -->
@@ -73,6 +73,7 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: #e74c3c;
+            text-decoration: none;
         }
 
         .auth-buttons {
@@ -149,9 +150,9 @@
             background: white;
             padding: 16px 24px;
             box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
             font-size: 13px;
             color: #bbb;
+            margin-top: 0 !important;
         }
 
         .bottombar-inner {
@@ -232,7 +233,7 @@
         .main-layout {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px 20px 20px;
+            padding: 0 20px 0 20px;
             position: relative;
             min-height: 100vh;
         }
@@ -365,6 +366,10 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             padding: 20px 24px;
             margin-bottom: 24px;
+        }
+
+        .card:last-child {
+            margin-bottom: 0 !important;
         }
 
         #back-to-top {
@@ -537,122 +542,6 @@
         }
 
         /* ===== 🟢 团队功能专用样式 ===== */
-        .team-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 16px;
-            border-radius: 10px;
-            background: #f8f9fa;
-            margin-bottom: 10px;
-            transition: background 0.2s;
-            border: 1px solid #eee;
-        }
-
-        .team-card:hover {
-            background: #f1f3f5;
-        }
-
-        .team-card-left {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .team-card-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .team-card-meta {
-            font-size: 13px;
-            color: #888;
-        }
-
-        .team-card-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .team-card .team-badge {
-            font-size: 12px;
-            padding: 2px 12px;
-            border-radius: 20px;
-            background: #e74c3c10;
-            color: #e74c3c;
-            border: 1px solid #e74c3c30;
-        }
-
-        .team-empty {
-            text-align: center;
-            padding: 32px 0;
-            color: #aaa;
-            font-size: 15px;
-        }
-
-        .team-empty .empty-icon {
-            font-size: 40px;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .team-form-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .team-form-row input {
-            flex: 1;
-            min-width: 200px;
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .team-form-row input:focus {
-            border-color: #e74c3c;
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12);
-        }
-
-        .team-form-row input:disabled {
-            background: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        .team-create-btn {
-            padding: 10px 28px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            white-space: nowrap;
-        }
-
-        .team-create-btn:hover:not(:disabled) {
-            background: #c0392b;
-        }
-
-        .team-create-btn:active:not(:disabled) {
-            transform: scale(0.97);
-        }
-
-        .team-create-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
         .team-notice {
             font-size: 14px;
             line-height: 1.8;
@@ -674,488 +563,6 @@
         .team-notice li {
             margin-bottom: 0.5em;
             line-height: 1.6;
-        }
-
-        .team-msg-success {
-            color: #27ae60;
-            background: #eafaf1;
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .team-msg-error {
-            color: #e74c3c;
-            background: #fdedec;
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .team-msg-success.show,
-        .team-msg-error.show {
-            display: block;
-        }
-
-        .team-card .team-delete-btn {
-            background: none;
-            border: none;
-            color: #bbb;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: color 0.2s, background 0.2s;
-        }
-
-        .team-card .team-delete-btn:hover {
-            color: #e74c3c;
-            background: #fdedec;
-        }
-
-        .team-loading {
-            text-align: center;
-            padding: 20px 0;
-            color: #aaa;
-        }
-
-        .team-loading .spinner {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #eee;
-            border-top-color: #e74c3c;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* 团队头部 */
-        .team-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .team-header h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .team-header .team-count {
-            font-size: 14px;
-            color: #888;
-        }
-
-        .team-header .team-count span {
-            font-weight: 700;
-            color: #e74c3c;
-        }
-
-        /* 顶部头像菜单覆盖 */
-        .top-avatar-wrap {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .top-avatar-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            min-width: 104px;
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
-            padding: 6px;
-            display: none;
-            z-index: 300;
-        }
-
-        .top-avatar-wrap:hover .top-avatar-menu {
-            display: block;
-        }
-
-        .top-avatar-menu .auth-btn.logout {
-            display: block;
-            width: 100%;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px 0;
-            box-sizing: border-box;
-        }
-
-        .card-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            border-left: 4px solid #e74c3c;
-            padding-left: 12px;
-            margin-bottom: 20px;
-        }
-
-        /* ===== 团队卡片（仿主页近期讨论样式） ===== */
-        .team-card-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .team-card-item:hover {
-            border-color: #e74c3c;
-            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.08);
-        }
-
-        .team-card-item .team-card-body {
-            display: flex;
-            gap: 14px;
-            padding: 14px 16px 14px 14px;
-            align-items: center;
-            flex: 1;
-        }
-
-        .team-card-item .team-card-avatar {
-            flex-shrink: 0;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f0f2f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #e74c3c;
-            font-weight: 700;
-        }
-
-        .team-card-item .team-card-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .team-card-item .team-card-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: #2c3e50;
-            text-decoration: none;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .team-card-item .team-card-name:hover {
-            color: #e74c3c;
-            text-decoration: underline;
-        }
-
-        .team-card-item .team-card-meta {
-            margin-top: 4px;
-            font-size: 13px;
-            color: #8a9aa8;
-            line-height: 1.5;
-            display: flex;
-            flex-direction: column;
-            gap: 2px 0;
-        }
-
-        .team-card-item .team-card-meta .meta-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .team-card-item .team-card-meta .team-badge {
-            display: inline-block;
-            padding: 0 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #fff;
-            background: #e74c3c;
-            line-height: 1.8;
-        }
-
-        .team-card-item .team-card-meta .team-badge.member {
-            background: #7f8c8d;
-        }
-
-        .team-card-item .team-card-delete {
-            flex-shrink: 0;
-            background: none;
-            border: none;
-            color: #bbb;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: color 0.2s, background 0.2s;
-            align-self: flex-start;
-            margin-top: 2px;
-        }
-
-        .team-card-item .team-card-delete:hover {
-            color: #e74c3c;
-            background: #fdedec;
-        }
-
-        .team-card-item .team-card-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            height: 100%;
-        }
-
-        /* 响应式：移动端单列 */
-        @media (max-width: 600px) {
-            .team-card-list {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-        }
-
-        /* ===== 创建团队表单（一行布局） ===== */
-        .team-form-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .team-form-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #2c3e50;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .team-form-row input {
-            flex: 1;
-            min-width: 160px;
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .team-form-row input:focus {
-            border-color: #e74c3c;
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12);
-        }
-
-        .team-form-row input:disabled {
-            background: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        .team-quota-inline {
-            font-size: 13px;
-            color: #888;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .team-quota-inline .quota-num {
-            font-weight: 700;
-            color: #e74c3c;
-        }
-
-        .team-create-btn {
-            padding: 10px 28px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .team-create-btn:hover:not(:disabled) {
-            background: #c0392b;
-        }
-
-        .team-create-btn:active:not(:disabled) {
-            transform: scale(0.97);
-        }
-
-        .team-create-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* ===== 响应式：小屏幕换行 ===== */
-        @media (max-width: 700px) {
-            .team-form-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-            
-            .team-form-row input {
-                min-width: unset;
-                width: 100%;
-            }
-            
-            .team-quota-inline {
-                white-space: normal;
-                text-align: center;
-            }
-            
-            .team-create-btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .team-form-label {
-                font-size: 13px;
-            }
-            .team-form-row input {
-                font-size: 13px;
-                padding: 8px 12px;
-            }
-            .team-create-btn {
-                font-size: 13px;
-                padding: 8px 16px;
-            }
-            .team-quota-inline {
-                font-size: 12px;
-            }
-        }
-
-        /* ===== 创建团队表单（仿 SweetAlert2 布局） ===== */
-
-        /* 每一行：标签 + 输入框 */
-        .team-field-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 10px;
-        }
-
-        .team-field-label {
-            width: 80px;
-            flex-shrink: 0;
-            font-weight: 600;
-            font-size: 14px;
-            color: #2c3e50;
-            text-align: right;
-            margin-right: 10px;
-        }
-
-        .team-field-row input {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            box-sizing: border-box;
-        }
-
-        .team-field-row input:focus {
-            border-color: #e74c3c;
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12);
-        }
-
-        .team-field-row input:disabled {
-            background: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        /* 第二行：配额 + 按钮 */
-        .team-action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-            padding-left: 90px;  /* 与第一行 label 宽度 + gap 对齐 */
-        }
-
-        .team-quota-inline {
-            font-size: 14px;
-            color: #888;
-        }
-
-        .team-quota-inline .quota-num {
-            font-weight: 700;
-            color: #e74c3c;
-        }
-
-        .team-create-btn {
-            padding: 10px 28px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            white-space: nowrap;
-        }
-
-        .team-create-btn:hover:not(:disabled) {
-            background: #c0392b;
-        }
-
-        .team-create-btn:active:not(:disabled) {
-            transform: scale(0.97);
-        }
-
-        .team-create-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* ===== 响应式：小屏幕调整 ===== */
-        @media (max-width: 600px) {
-            .team-field-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 6px;
-            }
-            .team-field-label {
-                width: auto;
-                text-align: left;
-                margin-right: 0;
-            }
-            .team-action-row {
-                flex-direction: column;
-                align-items: stretch;
-                padding-left: 0;
-                gap: 10px;
-            }
-            .team-create-btn {
-                width: 100%;
-                text-align: center;
-            }
-            .team-quota-inline {
-                text-align: center;
-            }
         }
 
         /* ===== 创建团队表单（两行布局，整体居中） ===== */
@@ -1242,30 +649,54 @@
             opacity: 0.7;
         }
 
-        /* ===== 消息提示 ===== */
-        .team-msg-success {
-            color: #27ae60;
-            background: #eafaf1;
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-top: 14px;
-            display: none;
-            text-align: center;
+        /* ===== 顶部头像菜单覆盖 ===== */
+        .top-avatar-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .team-msg-error {
-            color: #e74c3c;
-            background: #fdedec;
-            padding: 10px 14px;
+        .top-avatar-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 104px;
+            background: #fff;
+            border: 1px solid #eee;
             border-radius: 8px;
-            margin-top: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+            padding: 6px;
             display: none;
-            text-align: center;
+            z-index: 300;
         }
 
-        .team-msg-success.show,
-        .team-msg-error.show {
+        .top-avatar-wrap:hover .top-avatar-menu {
             display: block;
+        }
+
+        .top-avatar-menu .auth-btn.logout {
+            display: block;
+            width: 100%;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            box-sizing: border-box;
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== 加载状态 ===== */
+        .detail-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
         }
 
         /* ===== 响应式：小屏幕 ===== */
@@ -1275,15 +706,18 @@
                 align-items: center;
                 gap: 8px;
             }
+
             .team-row input {
                 width: 100%;
                 max-width: 280px;
             }
+
             .team-quota {
                 white-space: normal;
                 text-align: center;
                 font-size: 13px;
             }
+
             .team-create-btn {
                 width: 100%;
                 max-width: 280px;
@@ -1306,7 +740,6 @@
     <div class="main-layout">
         <!-- ===== 侧边栏 ===== -->
         <div class="nav-sidebar">
-            <!-- 主菜单 第一部分 -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -1341,10 +774,7 @@
                                 </svg></span><span class="nav-text">评测记录</span></a></li>
                 </ul>
             </div>
-
             <div class="divider"></div>
-
-            <!-- 主菜单 第二部分 -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -1359,10 +789,7 @@
                                 </svg></span><span class="nav-text">文章广场</span></a></li>
                 </ul>
             </div>
-
             <div class="divider"></div>
-
-            <!-- 更多功能 -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
                 <ul>
@@ -1382,10 +809,7 @@
                                 class="nav-text">工单/反馈</span></a></li>
                 </ul>
             </div>
-
             <div class="divider"></div>
-
-            <!-- 相关链接 -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
                 <ul>
@@ -1406,36 +830,9 @@
         <!-- ===== 内容区域 ===== -->
         <div class="content-wrapper">
             <div class="main-content">
-
-                <!-- 卡片：创建团队 -->
-                <div class="card">
-                    <h3 class="card-header">创建团队</h3>
-
-                    <div class="team-notice">
-                        <p>已经创建的团队无法删除，您作为团队主也无法退出但可以转让给他人。每个账户终身可加入、创建团队的数量有限制，请思考好再创建。</p>
-                        <p>请勿在站内公开场合、或通过私信群发陌生人等方式宣传团队，将被认为是垃圾广告而删除。</p>
-                        <p>如果您的团队中出现违反国家法律法规、公序良俗的公开信息，则您可能需要对此类内容负责任。</p>
-                        <p>出现下面任一情况，团队将被管理员封禁：</p>
-                        <ul>
-                            <li>假冒其他团队、或使用与其他团队类似的名字的；</li>
-                            <li>团队发生对其他团队、个人侮辱、诽谤的；</li>
-                            <li>其他管理员认为可能造成危害的情况。</li>
-                        </ul>
-                    </div>
-
-                    <!-- 第一行：团队名称 + 输入框 + 配额（整体居中） -->
-                    <div class="team-row">
-                        <span class="team-label">团队名称</span>
-                        <input type="text" id="teamNameInput">
-                        <span class="team-quota" id="quotaDisplayInline">剩余可创建团队数量：<span class="quota-num">3</span>/3</span>
-                    </div>
-                    
-                    <!-- 第二行：按钮（居中） -->
-                    <div class="team-btn-row">
-                        <button class="team-create-btn" id="createTeamBtn">创建普通团队</button>
-                    </div>
+                <div id="teamCreateContent">
+                    <div class="detail-loading">加载中...</div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -1654,24 +1051,8 @@
 
             const MAX_TEAMS = 3;
 
-            // 获取当前用户的所有团队
-            async function fetchUserTeams(userId) {
-                try {
-                    const { data, error } = await supabase
-                        .from('teams')
-                        .select('*')
-                        .eq('owner_id', userId)
-                        .order('created_at', { ascending: false });
-                    if (error) throw error;
-                    return data || [];
-                } catch (err) {
-                    console.error('获取团队列表失败:', err);
-                    return [];
-                }
-            }
-
             // ================================================================
-            // ===== 🟢 创建团队（修复版） =====
+            // ===== 🟢 创建团队 =====
             // ================================================================
 
             async function createTeam(name) {
@@ -1785,18 +1166,13 @@
 
                     if (updateError) {
                         console.error('更新 team_count 失败:', updateError);
-                        // 不影响主流程，但记录错误
                     }
 
                     // 更新本地 currentProfile
                     currentProfile.team_count = currentCount + 1;
 
-                    // 清空输入框
-                    const pageInput = document.getElementById('teamNameInput');
-                    if (pageInput) pageInput.value = '';
-
                     // 刷新配额显示
-                    await loadTeams();
+                    await renderCreateTeamCard();
 
                     // 跳转到新创建的团队页面
                     await Swal.fire({
@@ -1819,82 +1195,71 @@
                 }
             }
 
-            // 加载团队配额（每次从 profiles 表重新查询，确保最新）
-            async function loadTeams() {
-                if (!currentProfile) {
-                    const quotaNumEl = document.querySelector('#quotaDisplayInline .quota-num');
-                    if (quotaNumEl) quotaNumEl.textContent = '0';
-                    const btn = document.getElementById('createTeamBtn');
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.textContent = '请先登录';
-                    }
-                    return;
-                }
+            // ================================================================
+            // ===== 🟢 渲染创建团队卡片 =====
+            // ================================================================
 
-                try {
-                    // 🔁 从 profiles 表重新查询 team_count，确保获取最新值
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('team_count')
-                        .eq('user_number', currentProfile.user_number)
-                        .maybeSingle();
+            function renderCreateTeamCard() {
+                const container = document.getElementById('teamCreateContent');
+                if (!container) return;
 
-                    if (error) {
-                        console.error('查询 team_count 失败:', error);
-                        // 查询失败时，使用 currentProfile 中的旧值（兜底）
-                        const teamCount = currentProfile.team_count || 0;
-                        const remaining = Math.max(0, MAX_TEAMS - teamCount);
-                        updateQuotaUI(remaining);
-                        return;
-                    }
+                // 计算配额
+                const teamCount = currentProfile?.team_count || 0;
+                const remaining = Math.max(0, MAX_TEAMS - teamCount);
 
-                    const teamCount = data?.team_count ?? 0;
-                    // 更新 currentProfile 以便后续使用
-                    currentProfile.team_count = teamCount;
-                    const remaining = Math.max(0, MAX_TEAMS - teamCount);
-                    updateQuotaUI(remaining);
+                // 构建卡片 HTML
+                container.innerHTML = `
+                    <div class="card">
+                        <h3 class="card-header">创建团队</h3>
+                        <div class="team-notice">
+                            <p>已经创建的团队无法删除，您作为团队主也无法退出但可以转让给他人。每个账户终身可加入、创建团队的数量有限制，请思考好再创建。</p>
+                            <p>请勿在站内公开场合、或通过私信群发陌生人等方式宣传团队，将被认为是垃圾广告而删除。</p>
+                            <p>如果您的团队中出现违反国家法律法规、公序良俗的公开信息，则您可能需要对此类内容负责任。</p>
+                            <p>出现下面任一情况，团队将被管理员封禁：</p>
+                            <ul>
+                                <li>假冒其他团队、或使用与其他团队类似的名字的；</li>
+                                <li>团队发生对其他团队、个人侮辱、诽谤的；</li>
+                                <li>其他管理员认为可能造成危害的情况。</li>
+                            </ul>
+                        </div>
+                        <div class="team-row">
+                            <span class="team-label">团队名称</span>
+                            <input type="text" id="teamNameInput">
+                            <span class="team-quota" id="quotaDisplayInline">剩余可创建团队数量：<span class="quota-num">${remaining}</span>/3</span>
+                        </div>
+                        <div class="team-btn-row">
+                            <button class="team-create-btn" id="createTeamBtn" ${remaining <= 0 ? 'disabled' : ''}>
+                                ${remaining <= 0 ? '已达创建上限' : '创建普通团队'}
+                            </button>
+                        </div>
+                    </div>
+                `;
 
-                } catch (err) {
-                    console.error('加载团队配额异常:', err);
+                // 绑定事件
+                bindCreateTeamEvents();
+            }
+
+            function bindCreateTeamEvents() {
+                const createBtn = document.getElementById('createTeamBtn');
+                const nameInput = document.getElementById('teamNameInput');
+                if (createBtn && nameInput) {
+                    // 移除旧监听器（避免重复绑定）
+                    const newHandler = () => {
+                        const name = nameInput.value.trim();
+                        createTeam(name);
+                    };
+                    // 使用新监听器
+                    createBtn.onclick = newHandler;
+                    nameInput.onkeydown = function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            createBtn.click();
+                        }
+                    };
                 }
             }
 
-            // 抽离 UI 更新函数
-            function updateQuotaUI(remaining) {
-                // 更新配额显示
-                const quotaNumEl = document.querySelector('#quotaDisplayInline .quota-num');
-                if (quotaNumEl) quotaNumEl.textContent = remaining;
-
-                // 更新按钮状态
-                const btn = document.getElementById('createTeamBtn');
-                if (remaining <= 0) {
-                    btn.disabled = true;
-                    btn.textContent = '已达创建上限';
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = '创建普通团队';
-                }
-            }
-
-            // 显示消息
-            function showTeamMessage(type, text) {
-                const successEl = document.getElementById('teamMsgSuccess');
-                const errorEl = document.getElementById('teamMsgError');
-                const errorText = document.getElementById('teamMsgErrorText');
-                if (type === 'success') {
-                    successEl.textContent = '✅ ' + text;
-                    successEl.classList.add('show');
-                    errorEl.classList.remove('show');
-                    setTimeout(() => successEl.classList.remove('show'), 5000);
-                } else {
-                    if (errorText) errorText.textContent = text;
-                    errorEl.classList.add('show');
-                    successEl.classList.remove('show');
-                    setTimeout(() => errorEl.classList.remove('show'), 5000);
-                }
-            }
-
+            // ---------- 主 UI 更新 ----------
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -1932,42 +1297,8 @@
                         startUnreadPolling();
                         await renderContributors();
 
-                        // ===== 🟢 加载团队数据 =====
-                        // 先用 currentProfile 中的 team_count 立即更新 UI（避免显示错误的 3/3）
-                        if (currentProfile && currentProfile.team_count !== undefined) {
-                            const initialRemaining = Math.max(0, MAX_TEAMS - (currentProfile.team_count || 0));
-                            const quotaNumEl = document.querySelector('#quotaDisplayInline .quota-num');
-                            if (quotaNumEl) quotaNumEl.textContent = initialRemaining;
-                            const btn = document.getElementById('createTeamBtn');
-                            if (initialRemaining <= 0) {
-                                btn.disabled = true;
-                                btn.textContent = '已达创建上限';
-                            } else {
-                                btn.disabled = false;
-                                btn.textContent = '创建普通团队';
-                            }
-                        }
-                        // 然后异步查询最新值
-                        await loadTeams();
-
-                        // ===== 🟢 绑定创建团队事件 =====
-                        const createBtn = document.getElementById('createTeamBtn');
-                        const nameInput = document.getElementById('teamNameInput');
-                        if (createBtn && nameInput) {
-                            const handler = () => {
-                                const name = nameInput.value.trim();
-                                createTeam(name);
-                            };
-                            createBtn.removeEventListener('click', handler);
-                            createBtn.addEventListener('click', handler);
-                            nameInput.removeEventListener('keydown', handler);
-                            nameInput.addEventListener('keydown', function (e) {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    createBtn.click();
-                                }
-                            });
-                        }
+                        // ===== 🟢 渲染创建团队卡片 =====
+                        renderCreateTeamCard();
 
                         const sidebar = document.querySelector('.nav-sidebar');
                         if (sidebar) {
@@ -2000,6 +1331,10 @@
                     console.error(err);
                     authButtons.innerHTML =
                         `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    // 即使出错也尝试显示卡片
+                    if (currentProfile) {
+                        renderCreateTeamCard();
+                    }
                 }
                 if (window.location.hash) {
                     setTimeout(() => {
