@@ -1419,6 +1419,28 @@
             --lfe-color--blue-3: #3498db;
             --lfe-color--gold-3: #f1c40f;
         }
+
+        @keyframes rainbow-fill {
+            0%   { fill: #e74c3c; }  /* 柔和红 */
+            14.28% { fill: #e67e22; } /* 橙 */
+            28.57% { fill: #f1c40f; } /* 金（温和黄） */
+            42.85% { fill: #2ecc71; } /* 翠绿（柔和绿） */
+            57.14% { fill: #3498db; } /* 蓝 */
+            71.42% { fill: #9b59b6; } /* 靛 */
+            85.71% { fill: #8e44ad; } /* 紫 */
+            100%  { fill: #e74c3c; }  /* 回到红，无缝循环 */
+        }
+
+        .rainbow-badge path {
+            animation: rainbow-fill 5s linear infinite;
+        }
+
+        .rainbow-badge .fa-secondary {
+            animation: rainbow-fill 3s linear infinite;
+        }
+        .rainbow-badge .fa-primary {
+            fill: #ffffff !important; /* 保持白色 */
+        }
     </style>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2">
@@ -1686,18 +1708,30 @@
                 return COLOR_RED;
             }
 
-            // ===== CCF 等级徽章 =====
             function getCcfBadgeHtml(ccfLevel) {
+                // ★★★ ccfLevel >= 11 时，返回整体变色的彩虹徽章 ★★★
+                if (ccfLevel && ccfLevel >= 11) {
+                    // 返回与原模板完全相同的 SVG，但添加了 class="rainbow-badge"
+                    // 并移除了原有的 fill 属性，让 CSS 动画接管
+                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;">
+            <g class="fa-duotone-group">
+                <path class="fa-secondary" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z" />
+                <path class="fa-primary" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z" />
+            </g>
+        </svg>`;
+                }
+
+                // ===== 以下为原有逻辑（ccfLevel 1~10 使用静态颜色） =====
                 if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
                 let color = '';
                 if (ccfLevel >= 1 && ccfLevel <= 5) {
-                    color = '#52C41A';      // 绿色
+                    color = '#52C41A';
                 } else if (ccfLevel >= 6 && ccfLevel <= 7) {
-                    color = '#3498DB';      // 蓝色
+                    color = '#3498DB';
                 } else if (ccfLevel >= 8 && ccfLevel <= 10) {
-                    color = '#FFC116';      // 金色
+                    color = '#FFC116';
                 }
-                // 注意：fa-secondary 使用 color 变量，fa-primary 使用白色
+                // 原 SVG 模板，带有 fill 属性
                 return `<svg class="svg-inline--fa fa-badge-check" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;"><g class="fa-duotone-group"><path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"></path><path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"></path></g></svg>`;
             }
 
