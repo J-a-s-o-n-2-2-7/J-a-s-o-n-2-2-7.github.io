@@ -132,13 +132,35 @@
             line-height: 1;
         }
 
+        /* 底部栏默认固定在底部 */
         .bottombar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
             background: white;
             padding: 16px 24px;
             box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
             font-size: 13px;
             color: #bbb;
+            transition: position 0s;
+        }
+
+        .bottombar.static {
+            position: static;
+            width: 100%;
+            left: auto;
+            transform: none;
+            margin-top: 30px;
+        }
+
+        .main-layout {
+            padding-bottom: 80px;
+        }
+
+        .main-layout.no-padding {
+            padding-bottom: 0;
         }
 
         .bottombar-inner {
@@ -218,9 +240,9 @@
         .main-layout {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px 20px 20px;
-            position: relative;
-            min-height: 100vh;
+            padding: 0 20px 0 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         .nav-sidebar {
@@ -348,7 +370,7 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 28px 32px 0 32px;
+            padding: 20px 24px;
             margin-bottom: 24px;
         }
 
@@ -356,14 +378,13 @@
             margin-bottom: 0;
         }
 
-        /* ===== 🟢 顶部卡片（与用户设置页面完全一致） ===== */
         .card-top {
             padding: 28px 32px 0 32px;
         }
 
         .card-top .title-row {
             display: flex;
-            align-items: flex-start;  /* ← 改成 flex-start */
+            align-items: flex-start;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
@@ -376,7 +397,6 @@
             margin: 0;
         }
 
-        /* ===== 🟢 导航菜单（与用户设置页面完全一致） ===== */
         .setting-nav {
             display: flex;
             gap: 40px;
@@ -434,12 +454,10 @@
             height: 2px;
         }
 
-        /* ===== 底部卡片（与用户设置页面一致） ===== */
         .card-bottom {
-            padding: 28px 32px 0 32px;
+            padding: 28px 32px 28px 32px;
         }
 
-        /* ===== 团队详情专用样式 ===== */
         .detail-back-link {
             display: inline-block;
             margin-bottom: 16px;
@@ -474,27 +492,88 @@
             text-align: center;
         }
 
-        /* ===== 成员列表 ===== */
-        .detail-member-list {
-            margin-top: 0;
-            border-top: none;
-            padding-top: 0;
+        .member-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
         }
 
-        .detail-member-list h4 {
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: #2c3e50;
-            font-size: 16px;
+        .member-card-item {
+            background: #FAFAFA;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            transition: border-color 0.15s;
+            min-height: 48px;
         }
 
-        .detail-member-list h4 .member-count {
-            font-weight: 400;
-            color: #999;
+        .member-card-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .member-card-item .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f0f2f5;
+        }
+
+        .member-card-item .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .member-card-item .member-name {
+            display: inline;
+            font-weight: normal;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-card-item .member-name .benben-username {
+            font-weight: bold;
             font-size: 14px;
+            text-decoration: none;
+            vertical-align: middle;
+        }
+
+        .member-card-item .member-name .benben-username:hover {
+            text-decoration: underline;
+        }
+
+        .member-card-item .member-name .user-tag-display {
+            margin-left: 4px;
+        }
+
+        .member-card-item .role-tag {
+            font-size: 12px;
+            color: #e74c3c;
+            background: #fef0ef;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .member-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .detail-member-item {
@@ -519,22 +598,35 @@
         }
 
         .detail-member-item .member-avatar {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            background: #e74c3c;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
+            overflow: hidden;
             flex-shrink: 0;
+            background: #e74c3c;
+        }
+
+        .detail-member-item .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .detail-member-item .member-name {
-            font-weight: 500;
-            color: #2c3e50;
+            display: inline;
+            font-weight: normal;
+        }
+
+        .detail-member-item .member-name .benben-username {
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            vertical-align: middle;
+        }
+
+        .detail-member-item .member-name .benben-username:hover {
+            text-decoration: underline;
         }
 
         .detail-actions {
@@ -586,24 +678,11 @@
 
         .detail-loading {
             text-align: center;
-            padding: 40px 0;
-            color: #aaa;
-        }
-
-        .detail-loading .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 4px solid #eee;
-            border-top-color: #e74c3c;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
+            background: transparent;
+            border-radius: 0;
         }
 
         .detail-error {
@@ -701,7 +780,6 @@
             text-decoration: underline;
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 900px) {
             .main-layout {
                 position: static;
@@ -897,6 +975,284 @@
         html {
             scroll-behavior: smooth;
         }
+
+        /* ===== 新增：管理成员按钮样式 ===== */
+        .member-card-item .manage-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.15s, color 0.15s;
+            flex-shrink: 0;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .member-card-item .manage-btn:hover {
+            filter: brightness(0.75);
+        }
+
+        .member-card-item .manage-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ===== 新增：成员信息对话框 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 16px;
+            min-width: 360px;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            padding: 28px 32px 24px;
+            animation: modalSlideUp 0.25s ease;
+            position: relative;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #8e9aaf;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+
+        .modal-body .field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f2f5;
+            gap: 12px;
+        }
+
+        .modal-body .field-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .modal-body .field-label {
+            width: 72px;
+            flex-shrink: 0;
+            font-size: 14px;
+            color: #4B4B4B;
+            font-weight: bold;
+        }
+
+        .modal-body .field-value {
+            flex: 1;
+            font-size: 14px;
+            color: #565656;
+        }
+
+        .modal-body .field-value input[type="text"] {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #dce0e6;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fafbfc;
+        }
+
+        .modal-body .field-value input[type="text"]:focus {
+            border-color: #e74c3c;
+            background: #fff;
+        }
+
+        .modal-body .field-value .luogu-username {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .modal-body .field-value .luogu-username a {
+            font-weight: 600;
+            text-decoration: none;
+            color: #e74c3c;
+        }
+
+        .modal-body .field-value .luogu-username a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-body .field-value .badge-check {
+            color: #27ae60;
+            font-size: 16px;
+        }
+
+        .modal-body .checkboxes {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .modal-body .checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #1f2a3a;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .modal-body .checkboxes input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #e74c3c;
+            cursor: pointer;
+        }
+
+        .modal-body .checkboxes input[type="checkbox"]:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f2f5;
+        }
+
+        .modal-footer .btn {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .modal-footer .btn:active {
+            transform: scale(0.96);
+        }
+
+        .modal-footer .btn-primary {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .modal-footer .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .modal-footer .btn-secondary {
+            background: #eee;
+            color: #333;
+        }
+
+        .modal-footer .btn-secondary:hover {
+            background: #ddd;
+        }
+
+        .modal-footer .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .modal-body .field-value .hint-text {
+            font-size: 12px;
+            color: #8e9aaf;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .modal-box {
+                padding: 20px 18px;
+                min-width: unset;
+                width: 95%;
+            }
+
+            .modal-body .field-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                padding: 12px 0;
+            }
+
+            .modal-body .field-label {
+                width: 100%;
+                font-size: 13px;
+            }
+
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2">
@@ -910,7 +1266,7 @@
     </div>
 
     <div class="main-layout">
-        <!-- ===== 侧边栏（完整保留） ===== -->
+        <!-- ===== 侧边栏 ===== -->
         <div class="nav-sidebar">
             <div class="nav-group">
                 <ul>
@@ -1003,10 +1359,7 @@
         <div class="content-wrapper">
             <div class="main-content">
                 <div id="detailContent">
-                    <!-- 由 JavaScript 动态渲染 -->
-                    <div class="detail-loading">
-                        <div class="spinner"></div> 加载中...
-                    </div>
+                    <div class="detail-loading">加载中...</div>
                 </div>
             </div>
         </div>
@@ -1015,6 +1368,56 @@
     <button id="back-to-top" title="回到顶部"
         style="display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s;">↑</button>
 
+    <!-- ===== 成员信息对话框 ===== -->
+    <div id="memberModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>成员信息</h3>
+                <button class="modal-close" id="modalCloseBtn" aria-label="关闭">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="field-row">
+                    <span class="field-label">成员</span>
+                    <div class="field-value">
+                        <div class="luogu-username" id="modalUsername">
+                            <a href="#" id="modalUserLink" target="_blank">用户名</a>
+                            <span class="badge-check" id="modalBadge" style="display:none;">✓</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">备注名</span>
+                    <div class="field-value">
+                        <input type="text" id="modalNote" placeholder="输入备注名（仅自己可见）" />
+                    </div>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">权限管理</span>
+                    <div class="field-value">
+                        <div class="checkboxes">
+                            <label>
+                                <input type="checkbox" id="modalIsAdmin" />
+                                管理员
+                                <span class="hint-text">（可管理团队成员）</span>
+                            </label>
+                            <label id="modalOwnerLabel" style="display:none;">
+                                <input type="checkbox" id="modalIsOwner" checked disabled />
+                                团队主
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancelBtn">取消</button>
+                <button class="btn btn-primary" id="modalSaveBtn">保存</button>
+            </div>
+            <div id="modalStatus" style="margin-top:12px;font-size:13px;text-align:center;color:#27ae60;display:none;">
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 底部栏 ===== -->
     <footer class="bottombar">
         <div class="bottombar-inner">
             <div class="bottombar-left">
@@ -1040,13 +1443,11 @@
     </footer>
 
     <!-- ================================================================ -->
-    <!-- 业务脚本（认证、时间、贡献者等） -->
+    <!-- 业务脚本（认证、时间、贡献者、团队详情、管理成员等） -->
     <!-- ================================================================ -->
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
-    </script>
 
-    <script>
         (function () {
             // ---------- 时间更新 ----------
             function updateServerTime() {
@@ -1083,6 +1484,16 @@
             const supabase = window._supabaseClient;
 
             // ---------- 辅助函数 ----------
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
             function escapeHtmlAttr(str) {
                 if (!str) return '';
                 return str.replace(/[&<>"]/g, function (m) {
@@ -1094,30 +1505,15 @@
                 });
             }
 
-            function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/[&<>]/g, function (m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    return m;
-                });
-            }
-
             function letterAvatar(name) {
                 const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
                 return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
 
-            // ---------- 颜色与标签工具 ----------
-            const COLOR_RED = '#e74c3c';
-            const COLOR_PURPLE = '#9C3DCF';
-            const COLOR_BROWN = '#AD8B00';
-
             function getUserDisplayColor(user) {
-                if (user && user.is_cheater) return COLOR_BROWN;
-                if (user && user.is_admin) return COLOR_PURPLE;
-                return COLOR_RED;
+                if (user && user.is_cheater) return '#AD8B00';
+                if (user && user.is_admin) return '#9C3DCF';
+                return '#e74c3c';
             }
 
             function getUserTagDisplay(user) {
@@ -1204,7 +1600,6 @@
                 }
             }
 
-            // ---------- 获取用户资料 ----------
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
@@ -1216,10 +1611,9 @@
             }
 
             // ================================================================
-            // ===== 🟢 团队详情核心逻辑 =====
+            // ===== 团队详情核心逻辑（含管理成员功能） =====
             // ================================================================
 
-            // 获取团队 ID
             function getTeamId() {
                 const path = window.location.pathname;
                 const match = path.match(/^\/team\/(\d+)$/);
@@ -1230,31 +1624,11 @@
                 return null;
             }
 
-            // 通过 user_number 获取用户信息
-            async function getProfileByUserNumber(userNumber) {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('username')
-                    .eq('user_number', userNumber)
-                    .maybeSingle();
-                if (error) return null;
-                return data;
-            }
-
-            function showDetailMessage(type, text) {
-                const el = document.getElementById('detailActionMessage');
-                if (!el) return;
-                el.className = type === 'success' ? 'detail-success' : 'detail-error';
-                el.textContent = text;
-                el.classList.remove('detail-hidden');
-            }
-
-            // 批量获取用户信息（新增）
             async function getProfilesByUserNumbers(userNumbers) {
                 if (!userNumbers.length) return {};
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, avatar_url')
+                    .select('user_number, username, avatar_url, user_tag, is_admin, is_cheater, username_color')
                     .in('user_number', userNumbers);
                 if (error) return {};
                 const map = {};
@@ -1262,12 +1636,43 @@
                 return map;
             }
 
+            // 加入团队
+            async function handleJoinTeam(teamId, userNumber) {
+                const btn = document.getElementById('joinTeamBtn');
+                if (!btn) return;
+                btn.disabled = true;
+                btn.textContent = '处理中...';
+                try {
+                    const { error: insertErr } = await supabase
+                        .from('team_members')
+                        .insert({ team_id: teamId, user_number: userNumber, role: 'member', joined_at: new Date().toISOString() });
+                    if (insertErr) throw insertErr;
+                    btn.textContent = '已加入';
+                    btn.style.background = '#27ae60';
+                    setTimeout(() => {
+                        if (window.loadTeamDetail) window.loadTeamDetail(teamId);
+                        else location.reload();
+                    }, 800);
+                } catch (err) {
+                    console.error('加入失败:', err);
+                    btn.disabled = false;
+                    btn.textContent = '加入团队';
+                    const msg = document.getElementById('detailActionMessage');
+                    if (msg) {
+                        msg.className = 'detail-error';
+                        msg.textContent = '加入失败：' + (err.message || '未知错误');
+                        msg.classList.remove('detail-hidden');
+                    }
+                }
+            }
+
+            // ===== 加载团队详情 =====
             async function loadTeamDetail(teamId) {
-                const content = document.getElementById('detailContent');
                 if (!teamId) {
-                    content.innerHTML = `<div class="detail-error">无效的团队 ID</div>`;
+                    document.getElementById('detailContent').innerHTML = `<div class="detail-error">无效的团队 ID</div>`;
                     return;
                 }
+                window._currentTeamId = teamId;
 
                 try {
                     // 1. 获取团队信息
@@ -1278,7 +1683,7 @@
                         .maybeSingle();
                     if (teamErr) throw teamErr;
                     if (!team) {
-                        content.innerHTML = `<div class="detail-error">团队不存在</div>`;
+                        document.getElementById('detailContent').innerHTML = `<div class="detail-error">团队不存在</div>`;
                         return;
                     }
 
@@ -1300,9 +1705,8 @@
                     // 3. 获取所有成员
                     const { data: members, error: membersErr } = await supabase
                         .from('team_members')
-                        .select('user_number, joined_at, role')
+                        .select('user_number, joined_at, role, note')
                         .eq('team_id', teamId);
-
                     if (membersErr) throw membersErr;
 
                     // 4. 构建成员列表
@@ -1311,7 +1715,15 @@
                         memberUserNumbers.push(team.owner_id);
                     }
                     const profileMap = await getProfilesByUserNumbers(memberUserNumbers);
-                    const ownerProfile = profileMap[team.owner_id] || { username: '未知用户', avatar_url: '' };
+                    const ownerProfile = profileMap[team.owner_id] || { username: '未知用户', avatar_url: '', user_tag: '', is_admin: false, is_cheater: false };
+
+                    // 备注名映射
+                    const memberNoteMap = {};
+                    if (members) {
+                        members.forEach(m => {
+                            memberNoteMap[m.user_number] = m.note || '';
+                        });
+                    }
 
                     // 5. 检查当前用户是否已是成员
                     let isMember = false;
@@ -1322,180 +1734,306 @@
                         if (isOwner) isMember = true;
                     }
 
-                    // 6. 生成成员列表 HTML
-                    let membersHtml = `
-            <div class="detail-member-item">
-                <div class="member-avatar">${escapeHtml(ownerProfile.username.charAt(0).toUpperCase())}</div>
-                <span class="member-name">${escapeHtml(ownerProfile.username)}</span>
-                <span class="role">队长</span>
-            </div>
-        `;
+                    // ===== 辅助：构建用户名HTML =====
+                    function buildMemberNameHtml(user) {
+                        const color = getUserDisplayColor(user);
+                        const tagText = getUserTagDisplay(user);
+                        let nameHtml = `<a href="/user/${user.user_number}" class="benben-username" style="color:${color};">${escapeHtml(user.username)}</a>`;
+                        if (tagText) {
+                            nameHtml += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                        }
+                        return nameHtml;
+                    }
+
+                    // ===== 构建卡片网格 =====
+                    let cardsHtml = `<div class="member-grid">`;
+
+                    // 所有者
+                    const ownerAvatarSrc = ownerProfile.avatar_url || letterAvatar(ownerProfile.username);
+                    const ownerNameHtml = buildMemberNameHtml(ownerProfile);
+                    cardsHtml += `
+                        <div class="member-card-item">
+                            <div class="member-card-left">
+                                <div class="member-avatar">
+                                    <img src="${ownerAvatarSrc}" alt="${escapeHtml(ownerProfile.username)}" onerror="this.onerror=null;this.src='${letterAvatar(ownerProfile.username)}'">
+                                </div>
+                                <div class="member-name">
+                                    ${ownerNameHtml}
+                                    <span class="user-tag-display" style="background-color: #FFC116; color: #FFFFFF; margin-left: 10px;">所有者</span>
+                                </div>
+                            </div>
+                            ${isOwner ? `
+                            <button class="manage-btn" data-user="${team.owner_id}" data-username="${escapeHtml(ownerProfile.username)}" data-isowner="true" data-isadmin="${ownerProfile.is_admin ? 'true' : 'false'}" data-note="${escapeHtml(memberNoteMap[team.owner_id] || '')}" title="管理成员">
+                                <svg viewBox="0 0 640 512" fill="currentColor"><path d="M320 224a104 104 0 1 0 0-208 104 104 0 1 0 0 208zM96 232a72 72 0 1 0 0-144 72 72 0 1 0 0 144zM0 416l0 32c0 17.7 14.3 32 32 32l86.7 0c-4.3-9.8-6.7-20.6-6.7-32l0-16c0-53.2 20-101.8 52.9-138.6-11.7-3.5-24.1-5.4-36.9-5.4-70.7 0-128 57.3-128 128zM616 160a72 72 0 1 0 -144 0 72 72 0 1 0 144 0zM160 432l0 16c0 17.7 14.3 32 32 32l156.8 0c-7.1-21.6-6.3-44.4 10.7-64-14-16.2-20.5-39.7-11.4-63.3 6.6-17.1 15.9-33.1 27.4-47.3 5.4-6.6 11.6-11.7 18.3-15.4-22.1-11.5-47.2-18-73.8-18-88.4 0-160 71.6-160 160zm464.6-44.1c6.3-3.6 9.5-11.1 6.8-18-4.8-12.4-11.5-24.1-19.9-34.4-4.6-5.7-12.7-6.7-19-3-21.8 12.6-48.6-2.8-48.6-28.1 0-7.3-4.9-13.8-12.1-14.9-12.9-2-26.8-2-39.7 0-7.2 1.1-12.1 7.6-12.1 14.9 0 25.2-26.8 40.7-48.6 28.1-6.3-3.6-14.4-2.6-19 3-8.4 10.3-15.1 22-19.9 34.4-2.6 6.8 .5 14.3 6.8 17.9 21.9 12.6 21.9 43.5 0 56.2-6.3 3.6-9.5 11.1-6.8 17.9 4.8 12.4 11.5 24.1 19.9 34.4 4.6 5.7 12.7 6.7 19 3 21.8-12.6 48.6 2.9 48.6 28.1 0 7.3 4.9 13.8 12.1 14.9 12.9 2 26.8 2 39.7 0 7.2-1.1 12.1-7.6 12.1-14.9 0-25.2 26.8-40.7 48.6-28.1 6.3 3.6 14.4 2.6 19-3 8.4-10.3 15.1-22 19.9-34.4 2.6-6.8-.5-14.3-6.8-17.9-21.9-12.6-21.9-43.5 0-56.2zM472 416a40 40 0 1 1 80 0 40 40 0 1 1 -80 0z"/></svg>
+                                管理成员
+                            </button>
+                            ` : ''}
+                        </div>
+                    `;
+
+                    // 其他成员
                     if (members) {
                         for (const m of members) {
                             if (m.user_number === team.owner_id) continue;
                             const user = profileMap[m.user_number];
                             if (!user) continue;
-                            const roleLabel = m.role === 'admin' ? '管理员' : '成员';
-                            membersHtml += `
-                    <div class="detail-member-item">
-                        <div class="member-avatar">${escapeHtml(user.username.charAt(0).toUpperCase())}</div>
-                        <span class="member-name">${escapeHtml(user.username)}</span>
-                        <span class="role">${roleLabel}</span>
-                    </div>
-                `;
+                            const isAdmin = m.role === 'admin';
+                            const userAvatarSrc = user.avatar_url || letterAvatar(user.username);
+                            const userNameHtml = buildMemberNameHtml(user);
+                            const note = memberNoteMap[m.user_number] || '';
+
+                            cardsHtml += `
+                                <div class="member-card-item">
+                                    <div class="member-card-left">
+                                        <div class="member-avatar">
+                                            <img src="${userAvatarSrc}" alt="${escapeHtml(user.username)}" onerror="this.onerror=null;this.src='${letterAvatar(user.username)}'">
+                                        </div>
+                                        <div class="member-name">${userNameHtml}</div>
+                                        ${isAdmin ? `<span class="role-tag">管理员</span>` : ''}
+                                    </div>
+                                    ${isOwner ? `
+                                    <button class="manage-btn" data-user="${m.user_number}" data-username="${escapeHtml(user.username)}" data-isowner="false" data-isadmin="${isAdmin ? 'true' : 'false'}" data-note="${escapeHtml(note)}" title="管理成员">
+                                        <svg viewBox="0 0 640 512" fill="currentColor"><path d="M320 224a104 104 0 1 0 0-208 104 104 0 1 0 0 208zM96 232a72 72 0 1 0 0-144 72 72 0 1 0 0 144zM0 416l0 32c0 17.7 14.3 32 32 32l86.7 0c-4.3-9.8-6.7-20.6-6.7-32l0-16c0-53.2 20-101.8 52.9-138.6-11.7-3.5-24.1-5.4-36.9-5.4-70.7 0-128 57.3-128 128zM616 160a72 72 0 1 0 -144 0 72 72 0 1 0 144 0zM160 432l0 16c0 17.7 14.3 32 32 32l156.8 0c-7.1-21.6-6.3-44.4 10.7-64-14-16.2-20.5-39.7-11.4-63.3 6.6-17.1 15.9-33.1 27.4-47.3 5.4-6.6 11.6-11.7 18.3-15.4-22.1-11.5-47.2-18-73.8-18-88.4 0-160 71.6-160 160zm464.6-44.1c6.3-3.6 9.5-11.1 6.8-18-4.8-12.4-11.5-24.1-19.9-34.4-4.6-5.7-12.7-6.7-19-3-21.8 12.6-48.6-2.8-48.6-28.1 0-7.3-4.9-13.8-12.1-14.9-12.9-2-26.8-2-39.7 0-7.2 1.1-12.1 7.6-12.1 14.9 0 25.2-26.8 40.7-48.6 28.1-6.3-3.6-14.4-2.6-19 3-8.4 10.3-15.1 22-19.9 34.4-2.6 6.8 .5 14.3 6.8 17.9 21.9 12.6 21.9 43.5 0 56.2-6.3 3.6-9.5 11.1-6.8 17.9 4.8 12.4 11.5 24.1 19.9 34.4 4.6 5.7 12.7 6.7 19 3 21.8-12.6 48.6 2.9 48.6 28.1 0 7.3 4.9 13.8 12.1 14.9 12.9 2 26.8 2 39.7 0 7.2-1.1 12.1-7.6 12.1-14.9 0-25.2 26.8-40.7 48.6-28.1 6.3 3.6 14.4 2.6 19-3 8.4-10.3 15.1-22 19.9-34.4 2.6-6.8-.5-14.3-6.8-17.9-21.9-12.6-21.9-43.5 0-56.2zM472 416a40 40 0 1 1 80 0 40 40 0 1 1 -80 0z"/></svg>
+                                        管理成员
+                                    </button>
+                                    ` : ''}
+                                </div>
+                            `;
                         }
                     }
 
-                    // 7. 操作按钮
+                    cardsHtml += `</div>`;
+
+                    // ---- 操作按钮 ----
                     let actionButtonHtml = '';
-                    const memberCount = memberUserNumbers.length;
                     if (!isLoggedIn) {
-                        actionButtonHtml = `<a href="/auth/login" class="btn btn-secondary">请登录后加入</a>`;
+                        actionButtonHtml = `<a href="/auth/login" class="btn btn-secondary">登录后才可加入</a>`;
                     } else if (isOwner) {
                         actionButtonHtml = `
-                <button class="btn btn-secondary" disabled>你是队长</button>
-                <a href="/team/${teamId}/manage" class="btn btn-secondary">管理团队</a>
-            `;
+                            <a href="/team/${teamId}/manage" class="btn btn-secondary">管理团队</a>
+                        `;
                     } else if (isMember) {
-                        actionButtonHtml = `<button class="btn btn-secondary" disabled>已加入</button>`;
+                        actionButtonHtml = ``;
                     } else {
                         actionButtonHtml = `
-                <button id="joinTeamBtn" class="btn btn-danger" data-team-id="${teamId}" data-user-number="${currentUserProfile.user_number}">
-                    加入团队
-                </button>
-            `;
+                            <button id="joinTeamBtn" class="btn btn-danger" data-team-id="${teamId}" data-user-number="${currentUserProfile.user_number}">加入团队</button>
+                        `;
                     }
 
-                    // 8. 渲染（保留原有顶部卡片结构，只修改底部成员列表）
+                    // ---- 渲染 ----
                     const created = team.created_at ? new Date(team.created_at).toISOString().split('T')[0] : '未知';
+                    const content = document.getElementById('detailContent');
+                    const memberCount = memberUserNumbers.length;
 
                     content.innerHTML = `
-            <div class="card card-top">
-                <div class="title-row">
-                    <h1>${escapeHtml(team.name)}</h1>
-                    <div class="right">
-                        <div class="team-stats">
-                            <span class="stat-label">队员人数</span>
-                            <span class="stat-label">创建时间</span>
-                            <span class="stat-value">${memberCount}</span>
-                            <span class="stat-value">${created}</span>
+                        <div class="card card-top">
+                            <div class="title-row">
+                                <h1>${escapeHtml(team.name)}</h1>
+                                <div class="right">
+                                    <div class="team-stats">
+                                        <span class="stat-label">队员人数</span>
+                                        <span class="stat-label">创建时间</span>
+                                        <span class="stat-value">${memberCount}</span>
+                                        <span class="stat-value">${created}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setting-nav-wrapper" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:0;">
+                                <div class="setting-nav">
+                                    <span class="nav-btn active">概览</span>
+                                    <span class="nav-btn">题目</span>
+                                    <span class="nav-btn">作业</span>
+                                    <span class="nav-btn">题单</span>
+                                    <span class="nav-btn">比赛</span>
+                                    <span class="nav-btn">成员</span>
+                                    <span class="nav-btn">文件</span>
+                                </div>
+                                <div style="flex-shrink:0; margin-left:16px;">
+                                    ${actionButtonHtml}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="setting-nav">
-                    <span class="nav-btn active">概览</span>
-                    <span class="nav-btn">题目</span>
-                    <span class="nav-btn">作业</span>
-                    <span class="nav-btn">题单</span>
-                    <span class="nav-btn">比赛</span>
-                    <span class="nav-btn">成员</span>
-                    <span class="nav-btn">文件</span>
-                </div>
-            </div>
-
-            <div class="card card-bottom">
-                <div class="detail-member-list">
-                    <h4>
-                        团队成员
-                        <span class="member-count">（${memberCount} 人）</span>
-                    </h4>
-                    ${membersHtml}
-                    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #eee;">
-                        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-                            ${actionButtonHtml}
-                            <span id="joinStatusMsg" style="font-size:13px;color:#999;"></span>
+                        <div class="card card-bottom">
+                            <div class="detail-member-list">
+                                <h4>团队成员 <span class="member-count">（${memberCount} 人）</span></h4>
+                                ${cardsHtml}
+                            </div>
+                            <div id="detailActionMessage" class="detail-hidden"></div>
                         </div>
-                    </div>
-                </div>
-                <div id="detailActionMessage" class="detail-hidden"></div>
-            </div>
-        `;
+                    `;
 
-                    // 9. 绑定加入按钮事件
+                    // 切换底部栏
+                    const bottombar = document.querySelector('.bottombar');
+                    const mainLayout = document.querySelector('.main-layout');
+                    if (bottombar) bottombar.classList.add('static');
+                    if (mainLayout) mainLayout.classList.add('no-padding');
+
+                    // ===== 绑定管理按钮事件 =====
+                    document.querySelectorAll('.manage-btn').forEach(btn => {
+                        btn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const userNumber = parseInt(this.dataset.user);
+                            const username = this.dataset.username;
+                            const isOwner = this.dataset.isowner === 'true';
+                            const isAdmin = this.dataset.isadmin === 'true';
+                            const note = this.dataset.note || '';
+
+                            const profile = profileMap[userNumber] || {};
+                            const memberData = {
+                                user_number: userNumber,
+                                username: username,
+                                note: note,
+                                is_admin: isAdmin,
+                                is_owner: isOwner,
+                                avatar_url: profile.avatar_url || '',
+                                user_tag: profile.user_tag || '',
+                                is_cheater: profile.is_cheater || false,
+                            };
+                            if (window.openMemberModal) {
+                                window.openMemberModal(memberData);
+                            }
+                        });
+                    });
+
+                    // ===== 绑定加入按钮事件 =====
                     const joinBtn = document.getElementById('joinTeamBtn');
                     if (joinBtn) {
-                        joinBtn.addEventListener('click', async function (e) {
+                        joinBtn.addEventListener('click', function (e) {
                             const teamId = parseInt(this.dataset.teamId);
                             const userNumber = parseInt(this.dataset.userNumber);
-                            await handleJoinTeam(teamId, userNumber);
+                            handleJoinTeam(teamId, userNumber);
                         });
                     }
 
                 } catch (err) {
                     console.error('加载团队详情失败:', err);
-                    content.innerHTML = `<div class="detail-error">加载失败：${escapeHtml(err.message)}</div>`;
+                    document.getElementById('detailContent').innerHTML = `<div class="detail-error">加载失败：${escapeHtml(err.message)}</div>`;
                 }
             }
 
-            async function handleJoinTeam(teamId, userNumber) {
-                const msgEl = document.getElementById('joinStatusMsg');
-                const btn = document.getElementById('joinTeamBtn');
-                if (!btn) return;
+            // ================================================================
+            // ===== 成员信息对话框控制 =====
+            // ================================================================
+            const modal = document.getElementById('memberModal');
+            const modalClose = document.getElementById('modalCloseBtn');
+            const modalCancel = document.getElementById('modalCancelBtn');
+            const modalSave = document.getElementById('modalSaveBtn');
+            const modalUserLink = document.getElementById('modalUserLink');
+            const modalBadge = document.getElementById('modalBadge');
+            const modalNote = document.getElementById('modalNote');
+            const modalIsAdmin = document.getElementById('modalIsAdmin');
+            const modalIsOwner = document.getElementById('modalIsOwner');
+            const modalOwnerLabel = document.getElementById('modalOwnerLabel');
+            const modalStatus = document.getElementById('modalStatus');
+            let currentMember = null;
 
-                btn.disabled = true;
-                btn.textContent = '处理中...';
-                if (msgEl) {
-                    msgEl.textContent = '';
-                    msgEl.style.color = '#999';
+            function setStatus(msg, isError) {
+                if (!msg) {
+                    modalStatus.style.display = 'none';
+                    return;
                 }
+                modalStatus.textContent = msg;
+                modalStatus.style.color = isError ? '#e74c3c' : '#27ae60';
+                modalStatus.style.display = 'block';
+            }
+
+            function openMemberModal(memberData) {
+                currentMember = memberData;
+                modalUserLink.textContent = memberData.username || '未知用户';
+                modalUserLink.href = '/user/' + (memberData.user_number || '');
+                const hasBadge = memberData.is_admin || memberData.user_tag;
+                modalBadge.style.display = hasBadge ? 'inline' : 'none';
+                modalNote.value = memberData.note || '';
+                if (memberData.is_owner) {
+                    modalIsAdmin.disabled = true;
+                    modalIsAdmin.checked = true;
+                    modalIsAdmin.parentElement.style.opacity = '0.6';
+                } else {
+                    modalIsAdmin.disabled = false;
+                    modalIsAdmin.checked = !!memberData.is_admin;
+                    modalIsAdmin.parentElement.style.opacity = '1';
+                }
+                if (memberData.is_owner) {
+                    modalOwnerLabel.style.display = 'flex';
+                    modalIsOwner.checked = true;
+                } else {
+                    modalOwnerLabel.style.display = 'none';
+                }
+                setStatus(null);
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => modalNote.focus(), 100);
+            }
+
+            function closeMemberModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                currentMember = null;
+                setStatus(null);
+            }
+
+            async function saveMemberInfo() {
+                if (!currentMember) {
+                    setStatus('未选择成员', true);
+                    return;
+                }
+                const note = modalNote.value.trim();
+                const isAdmin = modalIsAdmin.checked && !currentMember.is_owner;
+                const noteChanged = note !== (currentMember.note || '');
+                const adminChanged = isAdmin !== !!currentMember.is_admin;
+                if (!noteChanged && !adminChanged) {
+                    setStatus('没有更改', false);
+                    return;
+                }
+                modalSave.disabled = true;
+                modalSave.textContent = '保存中...';
+                setStatus('正在保存...', false);
 
                 try {
-                    // 检查是否已加入
-                    const { data: existing, error: checkErr } = await supabase
-                        .from('team_members')
-                        .select('user_number')
-                        .eq('team_id', teamId)
-                        .eq('user_number', userNumber)
-                        .maybeSingle();
-
-                    if (checkErr) throw checkErr;
-                    if (existing) {
-                        if (msgEl) {
-                            msgEl.textContent = '你已经是团队成员了';
-                            msgEl.style.color = '#e67e22';
-                        }
-                        btn.textContent = '已加入';
-                        btn.disabled = true;
-                        return;
-                    }
-
-                    // 插入成员记录
-                    const { error: insertErr } = await supabase
-                        .from('team_members')
-                        .insert({
-                            team_id: teamId,
-                            user_number: userNumber,
-                            role: 'member',
-                            joined_at: new Date().toISOString()
-                        });
-
-                    if (insertErr) throw insertErr;
-
-                    if (msgEl) {
-                        msgEl.textContent = '成功加入团队！';
-                        msgEl.style.color = '#27ae60';
-                    }
-                    btn.textContent = '已加入';
-                    btn.disabled = true;
-                    btn.style.background = '#27ae60';
-
-                    // 刷新页面
+                    // 模拟保存（实际需对接 Supabase）
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    // 更新本地对象
+                    currentMember.note = note;
+                    currentMember.is_admin = isAdmin;
+                    setStatus('保存成功！', false);
                     setTimeout(() => {
-                        loadTeamDetail(teamId);
-                    }, 800);
-
+                        closeMemberModal();
+                        if (window._currentTeamId) {
+                            loadTeamDetail(window._currentTeamId);
+                        } else {
+                            location.reload();
+                        }
+                    }, 600);
                 } catch (err) {
-                    console.error('加入团队失败:', err);
-                    if (msgEl) {
-                        msgEl.textContent = `加入失败：${err.message || '未知错误'}`;
-                        msgEl.style.color = '#e74c3c';
-                    }
-                    btn.disabled = false;
-                    btn.textContent = '加入团队';
+                    console.error('保存失败:', err);
+                    setStatus('保存失败：' + (err.message || '未知错误'), true);
+                } finally {
+                    modalSave.disabled = false;
+                    modalSave.textContent = '保存';
                 }
             }
 
-            // ---------- 主 UI 更新 ----------
+            // 绑定对话框事件
+            modalClose.addEventListener('click', closeMemberModal);
+            modalCancel.addEventListener('click', closeMemberModal);
+            modalSave.addEventListener('click', saveMemberInfo);
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeMemberModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    closeMemberModal();
+                }
+            });
+
+            // 暴露全局
+            window.openMemberModal = openMemberModal;
+            window.loadTeamDetail = loadTeamDetail;
+            window.handleJoinTeam = handleJoinTeam;
+
+            // ================================================================
+            // ===== 主 UI 更新（登录/登出等） =====
+            // ================================================================
             async function updateUI() {
                 try {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -1524,6 +2062,40 @@
                         }
                         html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
                         authButtons.innerHTML = html;
+                        // 头像
+                        (function renderAvatarManually() {
+                            if (!currentProfile) return;
+                            if (document.getElementById('topAvatarWrap')) return;
+                            var ue = authButtons.querySelector('.user-email');
+                            if (ue) ue.parentNode.removeChild(ue);
+                            var wrap = document.createElement('div');
+                            wrap.id = 'topAvatarWrap';
+                            wrap.className = 'top-avatar-wrap';
+                            var av = document.createElement('a');
+                            av.id = 'topAvatar';
+                            av.href = '/user/' + (currentProfile.user_number || '');
+                            av.title = currentProfile.username || '';
+                            av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                            var img = document.createElement('img');
+                            img.alt = '头像';
+                            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                            img.onerror = function () {
+                                this.onerror = null;
+                                this.src = letterAvatar(currentProfile.username);
+                            };
+                            img.src = currentProfile.avatar_url || letterAvatar(currentProfile.username);
+                            av.appendChild(img);
+                            wrap.appendChild(av);
+                            var menu = document.createElement('div');
+                            menu.id = 'topAvatarMenu';
+                            menu.className = 'top-avatar-menu';
+                            wrap.appendChild(menu);
+                            var logoutBtn = authButtons.querySelector('.auth-btn.logout');
+                            if (logoutBtn && logoutBtn.parentNode !== menu) {
+                                menu.appendChild(logoutBtn);
+                            }
+                            authButtons.appendChild(wrap);
+                        })();
                         document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                             await supabase.auth.signOut();
                             location.reload();
@@ -1538,13 +2110,6 @@
                             await loadTeamDetail(teamId);
                         } else {
                             document.getElementById('detailContent').innerHTML = `<div class="detail-error">未指定团队 ID</div>`;
-                        }
-
-                        const sidebar = document.querySelector('.nav-sidebar');
-                        if (sidebar) {
-                            sidebar.addEventListener('mouseleave', function () {
-                                if (window.innerWidth > 900) this.scrollTop = 0;
-                            });
                         }
 
                         document.addEventListener('click', function (e) {
@@ -1591,12 +2156,12 @@
             });
             backToTopBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            // ---------- 初始化 ----------
+            // ---------- 启动 ----------
             updateUI();
         })();
     </script>
 
-    <!-- ===== 顶栏头像菜单 ===== -->
+    <!-- ===== 顶栏头像菜单（独立模块） ===== -->
     <script>
         (function () {
             if (!window.supabase || document.getElementById('topAvatarWrap')) return;

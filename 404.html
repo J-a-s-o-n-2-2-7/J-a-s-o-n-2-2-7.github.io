@@ -34,236 +34,102 @@
     </style>
     <script>
         (function () {
+            // ----- 通用页面加载函数 -----
+            function loadPage(fetchUrl, displayUrl, errorMsg) {
+                fetch(fetchUrl)
+                    .then(function (response) {
+                        if (!response.ok) throw new Error(errorMsg || '加载失败');
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        history.replaceState({}, '', displayUrl);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        document.body.innerHTML = '<h1>加载失败</h1><p>' + (errorMsg || '请稍后再试。') + '</p>';
+                    });
+            }
+
             var path = window.location.pathname;
 
-            // 2. 用户主页：/user/数字
+            // ===== 1. 用户主页：/user/数字 =====
             var userMatch = path.match(/^\/user\/(\d+)/);
             if (userMatch) {
                 var userId = userMatch[1];
-                fetch('/user/index.html')
-                    .then(function (response) {
-                        if (!response.ok) throw new Error('无法加载用户主页模板');
-                        return response.text();
-                    })
-                    .then(function (html) {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/user/' + userId);
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法获取用户主页，请稍后再试。</p>';
-                    });
+                loadPage('/user/index.html', '/user/' + userId, '无法加载用户主页模板');
                 return;
             }
 
-            // ===== discuss 路由（模仿 team） =====
-
-            // 1. 若路径为 /discuss 且无查询参数 → 加载帖子列表页（若暂无列表页，可返回提示或重定向）
+            // ===== 2. discuss 路由 =====
+            // 2.1 列表页：/discuss（无参数）
             if (path === '/discuss' && !window.location.search) {
-                // 如果您有帖子列表页（比如 /discuss.html），就 fetch 它
-                // 如果没有，可以返回 404 或重定向到首页
-                fetch('/discuss.html')
-                    .then(res => {
-                        if (!res.ok) throw new Error('无法加载帖子列表页');
-                        return res.text();
-                    })
-                    .then(html => {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/discuss');
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载帖子列表页，请稍后再试。</p>';
-                    });
+                loadPage('/discuss.html', '/discuss', '无法加载帖子列表页');
                 return;
             }
-
-            // 2. 若路径为 /discuss 且有查询参数 id → 转换为路径参数形式并加载详情页
+            // 2.2 带查询参数 id → 转换为路径参数
             if (path === '/discuss' && window.location.search) {
-                const params = new URLSearchParams(window.location.search);
-                const id = params.get('id');
+                var params = new URLSearchParams(window.location.search);
+                var id = params.get('id');
                 if (id && /^\d+$/.test(id)) {
-                    fetch('/post.html?id=' + id)
-                        .then(res => {
-                            if (!res.ok) throw new Error('无法加载帖子详情页');
-                            return res.text();
-                        })
-                        .then(html => {
-                            document.open();
-                            document.write(html);
-                            document.close();
-                            history.replaceState({}, '', '/discuss/' + id);
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            document.body.innerHTML = '<h1>加载失败</h1><p>无法加载帖子详情页，请稍后再试。</p>';
-                        });
+                    loadPage('/post.html?id=' + id, '/discuss/' + id, '无法加载帖子详情页');
                     return;
                 }
-                // 若 id 无效，则显示 404
+                // id 无效则继续往下走，最后会 404
             }
-
-            // 3. 若路径为 /discuss/数字 → 加载详情页
-            const discussMatch = path.match(/^\/discuss\/(\d+)$/);
+            // 2.3 路径参数：/discuss/数字
+            var discussMatch = path.match(/^\/discuss\/(\d+)$/);
             if (discussMatch) {
-                const id = discussMatch[1];
-                fetch('/post.html?id=' + id)
-                    .then(res => {
-                        if (!res.ok) throw new Error('无法加载帖子详情页');
-                        return res.text();
-                    })
-                    .then(html => {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/discuss/' + id);
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载帖子详情页，请稍后再试。</p>';
-                    });
+                var id = discussMatch[1];
+                loadPage('/post.html?id=' + id, '/discuss/' + id, '无法加载帖子详情页');
                 return;
             }
 
-            // ===== 新增：帮助文档路由（管理后台） =====
-
-            // 3. 编辑帮助文档：/admin/help/数字/edit
+            // ===== 3. 帮助文档管理路由（/admin/help） =====
+            // 3.1 编辑：/admin/help/数字/edit
             var helpEditMatch = path.match(/^\/admin\/help\/(\d+)\/edit$/);
             if (helpEditMatch) {
                 var helpId = helpEditMatch[1];
-                fetch('/edit.html')
-                    .then(function (response) {
-                        if (!response.ok) throw new Error('无法加载编辑页');
-                        return response.text();
-                    })
-                    .then(function (html) {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/admin/help/' + helpId + '/edit');
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载编辑页，请稍后再试。</p>';
-                    });
+                loadPage('/edit.html', '/admin/help/' + helpId + '/edit', '无法加载编辑页');
                 return;
             }
-
-            // 4. 新建帮助文档：/admin/help/new
+            // 3.2 新建：/admin/help/new
             if (path === '/admin/help/new') {
-                fetch('/edit.html')
-                    .then(function (response) {
-                        if (!response.ok) throw new Error('无法加载编辑页');
-                        return response.text();
-                    })
-                    .then(function (html) {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/admin/help/new');
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载编辑页，请稍后再试。</p>';
-                    });
+                loadPage('/edit.html', '/admin/help/new', '无法加载编辑页');
                 return;
             }
-
-            // 5. 帮助列表：/admin/help
+            // 3.3 列表：/admin/help
             if (path === '/admin/help') {
-                fetch('/index.html')
-                    .then(function (response) {
-                        if (!response.ok) throw new Error('无法加载列表页');
-                        return response.text();
-                    })
-                    .then(function (html) {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/admin/help');
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载列表页，请稍后再试。</p>';
-                    });
+                loadPage('/index.html', '/admin/help', '无法加载列表页');
                 return;
             }
 
-            // ===== 团队路由 =====
-
-            // 1. 若路径为 /team 且无查询参数 → 加载团队列表页
+            // ===== 4. 团队路由（/team） =====
+            // 4.1 列表页：/team（无参数）
             if (path === '/team' && !window.location.search) {
-                fetch('/team.html')
-                    .then(res => {
-                        if (!res.ok) throw new Error('无法加载团队列表页');
-                        return res.text();
-                    })
-                    .then(html => {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/team');
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载团队列表页，请稍后再试。</p>';
-                    });
+                loadPage('/team.html', '/team', '无法加载团队列表页');
                 return;
             }
-
-            // 2. 若路径为 /team 且有查询参数 id → 转换为路径参数形式并加载详情页
+            // 4.2 带查询参数 id → 转换为路径参数
             if (path === '/team' && window.location.search) {
-                const params = new URLSearchParams(window.location.search);
-                const id = params.get('id');
+                var params = new URLSearchParams(window.location.search);
+                var id = params.get('id');
                 if (id && /^\d+$/.test(id)) {
-                    fetch('/team-detail.html')
-                        .then(res => {
-                            if (!res.ok) throw new Error('无法加载团队详情页');
-                            return res.text();
-                        })
-                        .then(html => {
-                            document.open();
-                            document.write(html);
-                            document.close();
-                            // 将 URL 替换为 /team/id，方便刷新
-                            history.replaceState({}, '', '/team/' + id);
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            document.body.innerHTML = '<h1>加载失败</h1><p>无法加载团队详情页，请稍后再试。</p>';
-                        });
+                    loadPage('/team-detail.html', '/team/' + id, '无法加载团队详情页');
                     return;
                 }
-                // 若 id 无效，则显示 404
             }
-
-            // 3. 若路径为 /team/数字 → 加载详情页
-            const teamMatch = path.match(/^\/team\/(\d+)$/);
+            // 4.3 路径参数：/team/数字
+            var teamMatch = path.match(/^\/team\/(\d+)$/);
             if (teamMatch) {
-                const id = teamMatch[1];
-                fetch('/team-detail.html')
-                    .then(res => {
-                        if (!res.ok) throw new Error('无法加载团队详情页');
-                        return res.text();
-                    })
-                    .then(html => {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        history.replaceState({}, '', '/team/' + id);
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        document.body.innerHTML = '<h1>加载失败</h1><p>无法加载团队详情页，请稍后再试。</p>';
-                    });
+                var id = teamMatch[1];
+                loadPage('/team-detail.html', '/team/' + id, '无法加载团队详情页');
                 return;
             }
 
-            // 6. 其他路径显示 404
+            // ===== 5. 其他路径 → 404 =====
             document.body.innerHTML = `
                 <h1>404 - 页面未找到</h1>
                 <p>您访问的页面不存在，请检查网址。</p>
