@@ -1622,7 +1622,7 @@
             // ===== 认证 =====
             async function getProfile(userId) {
                 const { data, error } = await supabase.from('profiles')
-                    .select('user_number, username, is_admin, special_privilege, can_manage_users, is_cheater')
+                    .select('user_number, username, is_admin, can_manage_users, is_cheater')
                     .eq('id', userId).single();
                 if (error) return null;
                 return data;

@@ -4,8 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>用户设置 - ✨ Jason227</title>
+    <title>奖项设置 - ✨ Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     </script>
     <style>
         /* ========== 基础样式 ========== */
@@ -19,6 +24,15 @@
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
+        }
+
+        a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
 
         /* ========== 顶部栏 ========== */
@@ -175,7 +189,6 @@
             background: #f0f2f5;
             color: #e74c3c;
             text-decoration: none;
-            box-shadow: 0 rgba(0, 0, 0, 0.06);
         }
 
         .nav-icon {
@@ -243,12 +256,12 @@
             max-width: 1500px;
         }
 
-        /* ===== 卡片通用样式（与用户设置页面完全一致） ===== */
+        /* ===== 卡片通用样式 ===== */
         .card {
             background: white;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 28px 32px 0 32px;
+            padding: 28px 32px;
             margin-bottom: 24px;
         }
 
@@ -256,7 +269,6 @@
             margin-bottom: 0;
         }
 
-        /* 顶部卡片 - 标题 + 导航 */
         .card-top .title-row {
             display: flex;
             align-items: center;
@@ -272,7 +284,11 @@
             margin: 0;
         }
 
-        /* ===== 导航样式（与用户设置页面完全一致） ===== */
+        .card-bottom {
+            padding-bottom: 28px;
+        }
+
+        /* ===== 导航样式 ===== */
         .setting-nav {
             display: flex;
             gap: 40px;
@@ -329,21 +345,114 @@
             height: 2px;
         }
 
-        /* ===== 底部卡片 - 表单行样式（与用户设置页面完全一致） ===== */
-        .card-bottom {
-            padding-bottom: 0;
+        /* 让奖项详情区左对齐并占满父容器宽度，与个人信息页保持一致 */
+        #prize-detail {
+            width: 100%;
+            align-self: flex-start;
         }
 
+        /* ============================================================
+           奖项选择 ———— 完全复刻 Vue 片段样式
+           ============================================================ */
+        .prize-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0 12px 0;
+        }
+
+        .prize-selector .selector-title {
+            font-size: 25px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .prize-cards {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto 32px auto;
+        }
+
+        .prize-card {
+            width: 200px;
+            height: 170px;
+            min-width: 170px;
+            max-width: 260px;
+            background: #FEFEFE;
+            border-radius: 5px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .prize-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.7);
+        }
+
+        .prize-card:active {
+            transform: scale(0.96);
+        }
+
+        .prize-card .card-icon svg .secondary {
+            transition: fill 0.25s ease;
+        }
+
+        .prize-card .card-icon svg .primary {
+            transition: fill 0.25s ease;
+        }
+
+        .prize-card#oiCard:hover .card-icon svg .secondary {
+            fill: #e74c3c;
+        }
+
+        .prize-card#oiCard:hover .card-icon svg .primary {
+            fill: #F5B7B1;
+        }
+
+        .prize-card#icpcCard:hover .card-icon svg .secondary {
+            fill: #F5B7B1;
+        }
+
+        .prize-card#icpcCard:hover .card-icon svg .primary {
+            fill: #e74c3c;
+        }
+
+        .prize-card .card-icon {
+            font-size: 48px;
+            color: #e74c3c;
+            line-height: 1;
+        }
+
+        .prize-card h2 {
+            font-size: 25px;
+            font-weight: 500;
+            color: #404040;
+            margin: 0;
+        }
+
+        /* ===== 复用「个人信息」页面的 .form-row / .form-label / .form-right ===== */
         .form-row {
             display: flex;
             align-items: flex-start;
             gap: 32px;
-            padding: 14px 0;
         }
 
         .form-row:last-of-type {
             border-bottom: none;
-            padding-bottom: 40px;
         }
 
         .form-label {
@@ -361,19 +470,24 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 6px;
         }
 
-        .form-right .info-text {
-            font-size: 14px;
-            color: #5b6e8c;
-            line-height: 1.6;
+        /* ===== 头像 ===== */
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            width: 100%;
         }
 
-        .form-right .warning-text {
-            font-size: 14px;
-            color: #5b6e8c;
-            line-height: 1.6;
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e9ecef;
+            display: block;
         }
 
         .avatar-upload-btn {
@@ -393,12 +507,10 @@
             background: #E74C3C;
             color: #fff;
             width: auto;
-            text-decoration: none;
         }
 
         .avatar-upload-btn:hover {
             filter: brightness(1.1);
-            text-decoration: none;
         }
 
         .avatar-upload-btn:active {
@@ -411,11 +523,37 @@
             transform: none !important;
         }
 
-        .btn-link:hover {
-            background: #c0392b;
+        .avatar-caption {
+            font-size: 13px;
+            color: #808080;
+            margin-top: 12px;
+            margin-bottom: 20px;
         }
 
-        /* ===== 响应式（与用户设置页面一致） ===== */
+        .avatar-caption strong {
+            font-weight: 600;
+        }
+
+        .message {
+            margin-top: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+            width: 100%;
+            padding: 8px 16px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* ========== 响应式 ========== */
         @media (max-width: 900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
@@ -452,41 +590,6 @@
                 padding-top: 0;
             }
 
-            .nav-item:hover,
-            .group-title:hover {
-                background: #f0f2f5;
-                color: #e74c3c;
-                text-decoration: none;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            }
-
-            .nav-sidebar a:hover {
-                text-decoration: none;
-                background: #f0f2f5;
-                color: #e74c3c;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            }
-
-            .nav-icon {
-                font-size: 16px;
-                width: 20px;
-            }
-
-            .group-title {
-                grid-column: 1 / -1;
-                background: #e9ecef;
-                margin-top: 0;
-                border-top: none;
-            }
-
-            .divider {
-                display: none;
-            }
-
-            .nav-sidebar::-webkit-scrollbar {
-                width: 0;
-            }
-
             .card {
                 padding: 20px 18px;
             }
@@ -495,6 +598,20 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
+            }
+
+            .prize-cards {
+                gap: 20px;
+            }
+
+            .prize-card {
+                flex: 1 1 160px;
+                min-width: 140px;
+                padding: 24px 16px 20px 16px;
+            }
+
+            .prize-card .card-icon {
+                font-size: 38px;
             }
         }
 
@@ -507,17 +624,6 @@
 
             .logo {
                 font-size: 1.2rem;
-            }
-
-            .form-row {
-                flex-direction: column;
-                gap: 8px;
-                padding: 12px 0;
-            }
-
-            .form-label {
-                min-width: auto;
-                padding-top: 0;
             }
 
             .setting-nav {
@@ -548,9 +654,43 @@
                 padding: 16px 14px;
             }
 
-            .btn-link {
-                padding: 6px 18px;
-                font-size: 13px;
+            .prize-selector .selector-title {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+
+            .prize-cards {
+                gap: 14px;
+            }
+
+            .prize-card {
+                flex: 1 1 130px;
+                min-width: 110px;
+                padding: 18px 12px 16px 12px;
+            }
+
+            .prize-card .card-icon {
+                font-size: 32px;
+            }
+
+            .prize-card h2 {
+                font-size: 15px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px 0;
+            }
+
+            .form-label {
+                min-width: auto;
+                padding-top: 0;
+            }
+
+            .avatar-preview {
+                width: 96px;
+                height: 96px;
             }
         }
 
@@ -583,21 +723,14 @@
                 padding: 6px;
             }
 
-            .nav-icon {
-                font-size: 12px;
-                width: 16px;
-            }
-
-            .btn-link {
-                padding: 5px 14px;
-                font-size: 12px;
+            .prize-card {
+                flex: 1 1 100%;
+                max-width: 100%;
             }
         }
 
-        #usernameActionArea {
-            min-height: 36px;              /* 与按钮/文本高度匹配 */
-            display: flex;
-            align-items: center;           /* 内容垂直居中 */
+        .prize-detail-content {
+            transition: opacity 0.3s ease;
         }
     </style>
 </head>
@@ -614,7 +747,6 @@
 
         <!-- ===== 侧边栏 ===== -->
         <div class="nav-sidebar">
-            <!-- 主菜单 第一部分 -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -664,44 +796,6 @@
                                 </svg></span><span class="nav-text">文章广场</span></a></li>
                 </ul>
             </div>
-            <div class="divider"></div>
-            <div class="nav-group on-expand">
-                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
-                <ul>
-                    <li><a class="nav-item" href="/image"><span class="nav-icon"></span><span
-                                class="nav-text">图片上传</span></a></li>
-                    <li><a class="nav-item" href="/clipboard"><span class="nav-icon"></span><span
-                                class="nav-text">云剪贴板</span></a></li>
-                    <li><a class="nav-item" href="/themes"><span class="nav-icon"></span><span
-                                class="nav-text">主题商店</span></a></li>
-                    <li><a class="nav-item" href="/ranking/gu"><span class="nav-icon"></span><span
-                                class="nav-text">咕值排名</span></a></li>
-                    <li><a class="nav-item" href="/ranking/rating"><span class="nav-icon"></span><span
-                                class="nav-text">等级分排名</span></a></li>
-                    <li><a class="nav-item" href="/luogu"><span class="nav-icon"></span><span
-                                class="nav-text">洛谷有题</span></a></li>
-                    <li><a class="nav-item" href="/feedback"><span class="nav-icon"></span><span
-                                class="nav-text">工单/反馈</span></a></li>
-                </ul>
-            </div>
-            <div class="divider"></div>
-            <div class="nav-group on-expand">
-                <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
-                <ul>
-                    <li><a class="nav-item" href="/help"><span class="nav-icon"></span><span
-                                class="nav-text">帮助中心</span></a></li>
-                    <li><a class="nav-item" href="/contact"><span class="nav-icon"></span><span
-                                class="nav-text">联系我们</span></a></li>
-                    <li><a class="nav-item" href="/rules"><span class="nav-icon"></span><span
-                                class="nav-text">社区规则</span></a></li>
-                    <li><a class="nav-item" href="/judgement"><span class="nav-icon"></span><span
-                                class="nav-text">陶片放逐</span></a></li>
-                    <li><a class="nav-item" href="/judgement/admins"><span class="nav-icon"></span><span
-                                class="nav-text">管理名单</span></a></li>
-                    <li><a class="nav-item" href="/admin/user" id="userManageItem" style="display:none;"><span
-                                class="nav-icon"></span><span class="nav-text">用户管理</span></a></li>
-                </ul>
-            </div>
         </div>
 
         <!-- ===== 内容区域 ===== -->
@@ -715,32 +809,64 @@
                     </div>
                     <div class="setting-nav">
                         <a href="/user/setting" class="nav-btn">个人信息</a>
-                        <span class="nav-btn active">安全设置</span>
+                        <a href="/user/setting/security" class="nav-btn">安全设置</a>
+                        <span class="nav-btn active">奖项设置</span>
                     </div>
                 </div>
 
-                <!-- ===== 底部卡片：表单行布局（与用户设置页面完全一致） ===== -->
+                <!-- ===== 底部卡片：奖项选择 + 详情 ===== -->
                 <div class="card card-bottom">
+                    <div class="prize-selector">
 
-                    <!-- 修改用户名 -->
-                    <div class="form-row">
-                        <span class="form-label">用户名</span>
-                        <div class="form-right">
-                            <div class="info-text">一年（365天）内仅可修改一次用户名。</div>
-                            <div id="usernameActionArea"></div>
+                        <!-- ===== 选择区域（默认可见） ===== -->
+                        <div id="prize-selection">
+                            <div class="selector-title">选择奖项类型</div>
+                            <div class="prize-cards">
+                                <div class="prize-card" data-prize="oi" id="oiCard">
+                                    <div class="card-icon">
+                                        <svg viewBox="0 0 512 512" width="48" height="48">
+                                            <path class="secondary" fill="#404040"
+                                                d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256z" />
+                                            <path class="primary" fill="#9F9F9F"
+                                                d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z" />
+                                        </svg>
+                                    </div>
+                                    <h2>OI 奖项</h2>
+                                </div>
+                                <div class="prize-card" data-prize="icpc" id="icpcCard">
+                                    <div class="card-icon">
+                                        <svg viewBox="0 0 384 512" width="48" height="48">
+                                            <path class="secondary" fill="#B2B2B2"
+                                                d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z" />
+                                            <path class="primary" fill="#404040"
+                                                d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z" />
+                                        </svg>
+                                    </div>
+                                    <h2>ICPC/CCPC</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== 奖项详情区（默认隐藏） ===== -->
+                        <div id="prize-detail" style="display: none;">
+
+                            <!-- 头像行 -->
+                            <div class="form-row">
+                                <span class="form-label">头像</span>
+                                <div class="form-right">
+                                    <div class="avatar-container">
+                                        <img id="avatarImg" class="avatar-preview" src="https://placehold.co/120"
+                                            alt="头像">
+                                        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+                                        <button id="uploadAvatarBtn" class="avatar-upload-btn">选择头像</button>
+                                    </div>
+                                    <p class="avatar-caption">由于缓存问题，需要<strong>强制刷新并清空缓存</strong>才能看到新头像。</p>
+                                    <div id="profileMsg"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- 修改密码 -->
-                    <div class="form-row">
-                        <span class="form-label">密码</span>
-                        <div class="form-right">
-                            <a href="/user/security/passwordUpdate" class="avatar-upload-btn">修改密码</a>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
         </div>
 
@@ -764,7 +890,32 @@
             let unreadTimer = null;
 
             // ==============================================================
-            // 2. 顶部栏 & 侧边栏
+            // 2. 🏆 生成 CCF 等级徽章（保留，但本页面不再使用）
+            // ==============================================================
+            function getCcfBadgeHtml(ccfLevel) {
+                if (ccfLevel && ccfLevel >= 11) {
+                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" viewBox="0 0 512 512" aria-hidden="true">
+                        <g class="fa-duotone-group">
+                            <path class="fa-secondary" fill="#e74c3c" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
+                            <path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
+                        </g>
+                    </svg>`;
+                }
+                if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
+                let color = '';
+                if (ccfLevel >= 1 && ccfLevel <= 5) color = '#52C41A';
+                else if (ccfLevel >= 6 && ccfLevel <= 7) color = '#3498DB';
+                else if (ccfLevel >= 8 && ccfLevel <= 10) color = '#FFC116';
+                return `<svg class="svg-inline--fa fa-badge-check" viewBox="0 0 512 512" aria-hidden="true">
+                    <g class="fa-duotone-group">
+                        <path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
+                        <path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
+                    </g>
+                </svg>`;
+            }
+
+            // ==============================================================
+            // 3. 顶部栏 & 侧边栏
             // ==============================================================
             const authButtons = document.getElementById('authButtons');
 
@@ -782,7 +933,7 @@
             async function getProfile(userId) {
                 var { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, can_speak, can_manage_users, avatar_url')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, avatar_url, ccf_level')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -858,6 +1009,9 @@
                         await fetchUnreadCount();
                         startUnreadPolling();
 
+                        // 加载头像
+                        await loadAvatarData();
+
                         var userManageItem = document.getElementById('userManageItem');
                         if (userManageItem) {
                             if (currentProfile && currentProfile.can_manage_users === true) {
@@ -879,79 +1033,139 @@
             }
 
             // ==============================================================
-            // 3. 安全设置业务逻辑（功能保留）
+            // 4. 头像逻辑
             // ==============================================================
-            const usernameActionArea = document.getElementById('usernameActionArea');
+            const avatarImg = document.getElementById('avatarImg');
+            const avatarInput = document.getElementById('avatarInput');
+            const uploadBtn = document.getElementById('uploadAvatarBtn');
+            const msgDiv = document.getElementById('profileMsg');
 
-            async function loadSecurityData() {
-                try {
+            function showMessage(text, type) {
+                type = type || 'success';
+                msgDiv.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
+            }
+
+            function clearMessage() { msgDiv.innerHTML = ''; }
+
+            async function loadAvatarData() {
+                if (!currentUser) {
                     const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) {
-                        window.location.href = '/login';
-                        return;
-                    }
-                    const userId = session.user.id;
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('username, username_last_modified')
-                        .eq('id', userId)
-                        .single();
-                    if (error) throw new Error(error.message);
-
-                    const lastModified = data.username_last_modified ? new Date(data.username_last_modified) : null;
-                    const now = new Date();
-                    let canModify = false;
-                    let lastModifiedStr = '';
-
-                    if (!lastModified) {
-                        canModify = true;
-                    } else {
-                        const nextAllowed = new Date(lastModified);
-                        nextAllowed.setFullYear(nextAllowed.getFullYear() + 1);
-                        if (now >= nextAllowed) {
-                            canModify = true;
-                        } else {
-                            canModify = false;
-                            const year = lastModified.getFullYear();
-                            const month = String(lastModified.getMonth() + 1).padStart(2, '0');
-                            const day = String(lastModified.getDate()).padStart(2, '0');
-                            const hours = String(lastModified.getHours()).padStart(2, '0');
-                            const minutes = String(lastModified.getMinutes()).padStart(2, '0');
-                            const seconds = String(lastModified.getSeconds()).padStart(2, '0');
-                            lastModifiedStr = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-                        }
-                    }
-
-                    if (canModify) {
-                        usernameActionArea.innerHTML = `
-                            <a href="/user/security/usernameUpdate" class="avatar-upload-btn">修改用户名</a>
-                        `;
-                    } else {
-                        usernameActionArea.innerHTML = `
-                            <span class="warning-text">上次修改时间：${lastModifiedStr}，禁止修改。</span>
-                        `;
-                    }
-                } catch (err) {
-                    usernameActionArea.innerHTML = `<span class="warning-text">加载失败: ${err.message}</span>`;
+                    if (!session) { return; }
+                    currentUser = session.user;
+                }
+                if (!currentProfile) {
+                    currentProfile = await getProfile(currentUser.id);
+                }
+                if (currentProfile && currentProfile.avatar_url) {
+                    avatarImg.src = currentProfile.avatar_url;
+                } else {
+                    avatarImg.src = 'https://placehold.co/120';
                 }
             }
 
+            async function uploadAvatar(file) {
+                const fileExt = file.name.split('.').pop();
+                const filePath = currentUser.id + '/avatar_' + Date.now() + '.' + fileExt;
+                const { error: uploadError } = await supabase.storage
+                    .from('avatars')
+                    .upload(filePath, file, { upsert: true });
+                if (uploadError) throw new Error('上传失败: ' + uploadError.message);
+                const { data: { publicUrl } } = supabase.storage
+                    .from('avatars')
+                    .getPublicUrl(filePath);
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ avatar_url: publicUrl })
+                    .eq('id', currentUser.id);
+                if (updateError) throw new Error('更新头像URL失败: ' + updateError.message);
+                currentProfile = await getProfile(currentUser.id);
+                return publicUrl;
+            }
+
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', function () { avatarInput.click(); });
+            }
+            if (avatarInput) {
+                avatarInput.addEventListener('change', async function (e) {
+                    var file = e.target.files[0];
+                    if (!file) return;
+                    if (!file.type.startsWith('image/')) {
+                        alert('请选择图片文件');
+                        return;
+                    }
+                    uploadBtn.disabled = true;
+                    uploadBtn.textContent = '上传中…';
+                    try {
+                        var url = await uploadAvatar(file);
+                        avatarImg.src = url;
+                        showMessage('头像更新成功！请强制刷新查看。', 'success');
+                        setTimeout(clearMessage, 4000);
+                    } catch (err) {
+                        showMessage(err.message, 'error');
+                    } finally {
+                        uploadBtn.disabled = false;
+                        uploadBtn.textContent = '选择头像';
+                        avatarInput.value = '';
+                    }
+                });
+            }
+
             // ==============================================================
-            // 4. 启动
+            // 5. 奖项卡片点击 ———— 显示详情
+            // ==============================================================
+            function setupPrizeCards() {
+                const oiCard = document.getElementById('oiCard');
+                const icpcCard = document.getElementById('icpcCard');
+                const selection = document.getElementById('prize-selection');
+                const detail = document.getElementById('prize-detail');
+
+                function showDetail() {
+                    selection.style.display = 'none';
+                    detail.style.display = 'block';
+                }
+
+                function showSelection() {
+                    selection.style.display = 'block';
+                    detail.style.display = 'none';
+                }
+
+                if (oiCard) {
+                    oiCard.addEventListener('click', function () {
+                        showDetail();
+                    });
+                }
+                if (icpcCard) {
+                    icpcCard.addEventListener('click', function () {
+                        showDetail();
+                    });
+                }
+
+                backBtns.forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        showSelection();
+                    });
+                });
+            }
+
+            // ==============================================================
+            // 6. 侧边栏滚动复位
+            // ==============================================================
+            const sidebar = document.querySelector('.nav-sidebar');
+            if (sidebar) {
+                sidebar.addEventListener('mouseleave', function () {
+                    if (window.innerWidth > 900) {
+                        this.scrollTop = 0;
+                    }
+                });
+            }
+
+            // ==============================================================
+            // 7. 启动
             // ==============================================================
             (async function init() {
                 await updateTopbar();
-                await loadSecurityData();
-
-                // 新增：侧边栏滚动复位
-                const sidebar = document.querySelector('.nav-sidebar');
-                if (sidebar) {
-                    sidebar.addEventListener('mouseleave', function () {
-                        if (window.innerWidth > 900) {
-                            this.scrollTop = 0;
-                        }
-                    });
-                }
+                setupPrizeCards();
             })();
 
             document.addEventListener('visibilitychange', function () {

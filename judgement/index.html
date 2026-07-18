@@ -1089,7 +1089,7 @@
                 }
 
                 // 管理轮换
-                const managerPerms = ['is_admin', 'can_manage_users', 'can_manage_posts', 'special_privilege'];
+                const managerPerms = ['is_admin', 'can_manage_users', 'can_manage_posts'];
                 if ((action === 'grant_perm' || action === 'revoke_perm') && managerPerms.includes(perm)) {
                     return {
                         label: '管理轮换',
@@ -1153,7 +1153,6 @@
                     'can_speak': '自由发言',
                     'is_banned': '进入主站',
                     'is_cheater': '学术不端',
-                    'special_privilege': '特殊权限',
                 };
                 return map[perm] || perm || '未知权限';
             }
