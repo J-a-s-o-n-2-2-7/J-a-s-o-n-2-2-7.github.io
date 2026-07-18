@@ -1231,7 +1231,8 @@
             }
             function canModifyUser(targetUser) {
                 if (!currentProfile) return false;
-                if (currentProfile.user_number === 1 && currentProfile.is_super_admin) return true;
+                // === 修改点：user_number === 1 或 4 拥有超级管理权限 ===
+                if ((currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) return true;
                 if (targetUser.user_number === currentProfile.user_number) return false;
                 if (targetUser.is_super_admin) return false;
                 if (currentProfile.can_manage_users) return true;
@@ -1706,7 +1707,8 @@
 
                     // 管理权限
                     const mgmtPerms = [];
-                    if (currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin) {
+                    // === 修改点：user_number === 1 或 4 拥有超级管理权限 ===
+                    if (currentProfile && (currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin) {
                         mgmtPerms.push({ name: '超级管理', field: 'is_super_admin', on: !!user.is_super_admin });
                     }
                     mgmtPerms.push(
@@ -1718,7 +1720,8 @@
                         const pVal = pending[p.field] !== undefined ? pending[p.field] : p.on;
                         const color = pVal ? 'green' : 'red';
                         const pendingClass = pending[p.field] !== undefined ? 'pending' : '';
-                        const canEditThis = canEdit && (p.field !== 'is_super_admin' || (currentProfile.user_number === 1 && currentProfile.is_super_admin));
+                        // === 修改点：user_number === 1 或 4 拥有超级管理权限 ===
+                        const canEditThis = canEdit && (p.field !== 'is_super_admin' || ((currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin));
                         if (canEditThis) {
                             return `<span class="action-link ${color} ${pendingClass}" style="cursor:pointer;" data-action="toggle-local" data-user="${user.user_number}" data-field="${p.field}" data-current="${p.on}">${p.name}</span>`;
                         } else {
@@ -2018,11 +2021,13 @@
             document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('批量授予自由发言权限', { can_speak: true }));
             document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('批量撤销自由发言权限', { can_speak: false }));
             document.getElementById('batchGrantSuperAdmin').addEventListener('click', async () => {
-                if (!currentProfile || currentProfile.user_number !== 1 || !currentProfile.is_super_admin) return;
+                // === 修改点：user_number === 1 或 4 拥有超级管理权限 ===
+                if (!currentProfile || ((currentProfile.user_number !== 1 && currentProfile.user_number !== 4) || !currentProfile.is_super_admin)) return;
                 await batchAction('批量授予超级管理权限', { is_super_admin: true });
             });
             document.getElementById('batchRevokeSuperAdmin').addEventListener('click', async () => {
-                if (!currentProfile || currentProfile.user_number !== 1 || !currentProfile.is_super_admin) return;
+                // === 修改点：user_number === 1 或 4 拥有超级管理权限 ===
+                if (!currentProfile || ((currentProfile.user_number !== 1 && currentProfile.user_number !== 4) || !currentProfile.is_super_admin)) return;
                 await batchAction('批量撤销超级管理权限', { is_super_admin: false });
             });
             document.getElementById('batchGrantAdmin').addEventListener('click', async () => {
@@ -2088,13 +2093,14 @@
                     // 控制管理员权限按钮显示
                     if (currentProfile) {
                         const adminOnlyBtns = ['batchGrantAdmin', 'batchRevokeAdmin', 'batchGrantUserMgmt', 'batchRevokeUserMgmt', 'batchGrantPostMgmt', 'batchRevokePostMgmt', 'batchGrantSuperAdmin', 'batchRevokeSuperAdmin'];
+                        // === 修改点：user_number === 1 或 4 拥有超级管理权限 ===
                         const isSuper = currentProfile.is_super_admin === true;
-                        const isNumberOne = currentProfile.user_number === 1 && currentProfile.is_super_admin;
+                        const isPrivileged = (currentProfile.user_number === 1 || currentProfile.user_number === 4) && currentProfile.is_super_admin;
                         adminOnlyBtns.forEach(id => {
                             const btn = document.getElementById(id);
                             if (btn) {
                                 if (id.includes('SuperAdmin')) {
-                                    btn.style.display = isNumberOne ? 'inline-block' : 'none';
+                                    btn.style.display = isPrivileged ? 'inline-block' : 'none';
                                 } else {
                                     btn.style.display = isSuper ? 'inline-block' : 'none';
                                 }
