@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>奖项设置 - ✨ Jason227</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>用户设置 - ✨ Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
@@ -52,6 +52,10 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .logo:hover {
             text-decoration: none;
         }
 
@@ -261,7 +265,7 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 28px 32px;
+            padding: 28px 32px 0 32px;
             margin-bottom: 24px;
         }
 
@@ -345,14 +349,13 @@
             height: 2px;
         }
 
-        /* 让奖项详情区左对齐并占满父容器宽度，与个人信息页保持一致 */
         #prize-detail {
             width: 100%;
             align-self: flex-start;
         }
 
         /* ============================================================
-           奖项选择 ———— 完全复刻 Vue 片段样式
+           奖项选择卡片样式
            ============================================================ */
         .prize-selector {
             display: flex;
@@ -444,11 +447,12 @@
             margin: 0;
         }
 
-        /* ===== 复用「个人信息」页面的 .form-row / .form-label / .form-right ===== */
+        /* ===== 表单行 ===== */
         .form-row {
             display: flex;
             align-items: flex-start;
             gap: 32px;
+            width: 100%;
         }
 
         .form-row:last-of-type {
@@ -472,66 +476,11 @@
             align-items: flex-start;
         }
 
-        /* ===== 头像 ===== */
-        .avatar-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-            width: 100%;
-        }
-
-        .avatar-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #e9ecef;
-            display: block;
-        }
-
-        .avatar-upload-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 7px 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: filter 0.2s, transform 0.1s;
-            white-space: nowrap;
-            font-family: inherit;
-            line-height: 1.4;
-            background: #E74C3C;
-            color: #fff;
-            width: auto;
-        }
-
-        .avatar-upload-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        .avatar-upload-btn:active {
-            transform: scale(0.96);
-        }
-
-        .avatar-upload-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
         .avatar-caption {
             font-size: 13px;
             color: #808080;
             margin-top: 12px;
             margin-bottom: 20px;
-        }
-
-        .avatar-caption strong {
-            font-weight: 600;
         }
 
         .message {
@@ -551,6 +500,88 @@
         .success {
             background: #dcfce7;
             color: #166534;
+        }
+
+        /* ===== 切换按钮（模仿洛谷绑定） ===== */
+        .toggle-badge-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: filter 0.2s, transform 0.1s;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+            color: #fff;
+            margin-left: 12px;
+            background: #E74C3C;
+        }
+
+        .toggle-badge-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .toggle-badge-btn:active {
+            transform: scale(0.96);
+        }
+
+        .toggle-badge-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ===== 彩虹动画（与首页一致） ===== */
+        @keyframes rainbow-fill {
+            0% {
+                fill: #e74c3c;
+            }
+
+            14.28% {
+                fill: #e67e22;
+            }
+
+            28.57% {
+                fill: #f1c40f;
+            }
+
+            42.85% {
+                fill: #2ecc71;
+            }
+
+            57.14% {
+                fill: #3498db;
+            }
+
+            71.42% {
+                fill: #9b59b6;
+            }
+
+            85.71% {
+                fill: #8e44ad;
+            }
+
+            100% {
+                fill: #e74c3c;
+            }
+        }
+
+        .rainbow-badge path {
+            animation: rainbow-fill 5s linear infinite;
+        }
+
+        .rainbow-badge .fa-secondary {
+            animation: rainbow-fill 3s linear infinite;
+        }
+
+        .rainbow-badge .fa-primary {
+            fill: #ffffff !important;
         }
 
         /* ========== 响应式 ========== */
@@ -612,6 +643,17 @@
 
             .prize-card .card-icon {
                 font-size: 38px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px 0;
+            }
+
+            .form-label {
+                min-width: auto;
+                padding-top: 0;
             }
         }
 
@@ -677,20 +719,9 @@
                 font-size: 15px;
             }
 
-            .form-row {
-                flex-direction: column;
-                gap: 8px;
-                padding: 12px 0;
-            }
-
-            .form-label {
-                min-width: auto;
-                padding-top: 0;
-            }
-
-            .avatar-preview {
-                width: 96px;
-                height: 96px;
+            .toggle-badge-btn {
+                font-size: 12px;
+                padding: 4px 10px;
             }
         }
 
@@ -727,10 +758,6 @@
                 flex: 1 1 100%;
                 max-width: 100%;
             }
-        }
-
-        .prize-detail-content {
-            transition: opacity 0.3s ease;
         }
     </style>
 </head>
@@ -809,8 +836,8 @@
                     </div>
                     <div class="setting-nav">
                         <a href="/user/setting" class="nav-btn">个人信息</a>
-                        <a href="/user/setting/security" class="nav-btn">安全设置</a>
                         <span class="nav-btn active">奖项设置</span>
+                        <a href="/user/setting/security" class="nav-btn">安全设置</a>
                     </div>
                 </div>
 
@@ -849,19 +876,20 @@
 
                         <!-- ===== 奖项详情区（默认隐藏） ===== -->
                         <div id="prize-detail" style="display: none;">
-
-                            <!-- 头像行 -->
-                            <div class="form-row">
-                                <span class="form-label">头像</span>
+                            <!-- OI 详情 -->
+                            <div id="oi-detail" class="form-row">
+                                <span class="form-label">OI 等级</span>
                                 <div class="form-right">
-                                    <div class="avatar-container">
-                                        <img id="avatarImg" class="avatar-preview" src="https://placehold.co/120"
-                                            alt="头像">
-                                        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
-                                        <button id="uploadAvatarBtn" class="avatar-upload-btn">选择头像</button>
-                                    </div>
-                                    <p class="avatar-caption">由于缓存问题，需要<strong>强制刷新并清空缓存</strong>才能看到新头像。</p>
-                                    <div id="profileMsg"></div>
+                                    <span id="oiLevelText" class="avatar-caption" style="margin-top: 0; margin-bottom:0;">加载中...</span>
+                                    <div id="oiProfileMsg"></div>
+                                </div>
+                            </div>
+                            <!-- ICPC 详情 -->
+                            <div id="icpc-detail" class="form-row" style="display:none;">
+                                <span class="form-label">ICPC 等级</span>
+                                <div class="form-right">
+                                    <span id="icpcLevelText" class="avatar-caption" style="margin-top: 0; margin-bottom: 0;">加载中...</span>
+                                    <div id="icpcProfileMsg"></div>
                                 </div>
                             </div>
                         </div>
@@ -890,35 +918,8 @@
             let unreadTimer = null;
 
             // ==============================================================
-            // 2. 🏆 生成 CCF 等级徽章（保留，但本页面不再使用）
+            // 2. 工具函数
             // ==============================================================
-            function getCcfBadgeHtml(ccfLevel) {
-                if (ccfLevel && ccfLevel >= 11) {
-                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" viewBox="0 0 512 512" aria-hidden="true">
-                        <g class="fa-duotone-group">
-                            <path class="fa-secondary" fill="#e74c3c" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
-                            <path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
-                        </g>
-                    </svg>`;
-                }
-                if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
-                let color = '';
-                if (ccfLevel >= 1 && ccfLevel <= 5) color = '#52C41A';
-                else if (ccfLevel >= 6 && ccfLevel <= 7) color = '#3498DB';
-                else if (ccfLevel >= 8 && ccfLevel <= 10) color = '#FFC116';
-                return `<svg class="svg-inline--fa fa-badge-check" viewBox="0 0 512 512" aria-hidden="true">
-                    <g class="fa-duotone-group">
-                        <path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
-                        <path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
-                    </g>
-                </svg>`;
-            }
-
-            // ==============================================================
-            // 3. 顶部栏 & 侧边栏
-            // ==============================================================
-            const authButtons = document.getElementById('authButtons');
-
             function escapeHtmlAttr(str) {
                 if (!str) return '';
                 return str.replace(/[&<>"]/g, function (m) {
@@ -933,12 +934,128 @@
             async function getProfile(userId) {
                 var { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, can_speak, can_manage_users, avatar_url, ccf_level')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, avatar_url, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
                 return data;
             }
+
+            // ==============================================================
+            // 3. 徽章生成函数（与首页一致）
+            // ==============================================================
+            function getCcfBadgeHtml(ccfLevel) {
+                if (ccfLevel && ccfLevel >= 11) {
+                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;">
+            <g class="fa-duotone-group">
+                <path class="fa-secondary" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z" />
+                <path class="fa-primary" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z" />
+            </g>
+        </svg>`;
+                }
+                if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
+                let color = '';
+                if (ccfLevel >= 1 && ccfLevel <= 5) color = '#52C41A';
+                else if (ccfLevel >= 6 && ccfLevel <= 7) color = '#3498DB';
+                else if (ccfLevel >= 8 && ccfLevel <= 10) color = '#FFC116';
+                return `<svg class="svg-inline--fa fa-badge-check" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;"><g class="fa-duotone-group"><path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"></path><path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"></path></g></svg>`;
+            }
+
+            function getXcpcBalloonHtml(level) {
+                if (!level || level < 1) return '';
+                let color = '';
+                if (level >= 1 && level <= 5) color = '#52C41A';
+                else if (level >= 6 && level <= 7) color = '#3498DB';
+                else if (level >= 8 && level <= 10) color = '#FFC116';
+                if (level >= 11) {
+                    return `<svg class="svg-inline--fa fa-balloon rainbow-badge" data-prefix="fad" data-icon="balloon" role="img" viewBox="0 0 384 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;">
+            <g class="fa-duotone-group">
+                <path class="fa-primary" fill="currentColor" d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z"></path>
+                <path class="fa-secondary" fill="currentColor" d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z"></path>
+            </g>
+        </svg>`;
+                }
+                return `<svg class="svg-inline--fa fa-balloon" data-prefix="fad" data-icon="balloon" role="img" viewBox="0 0 384 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;">
+        <g class="fa-duotone-group">
+            <path class="fa-secondary" fill="#ffffff" d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z"></path>
+            <path class="fa-primary" fill="${color}" d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z"></path>
+        </g>
+    </svg>`;
+            }
+
+            // ==============================================================
+            // 4. 渲染函数
+            // ==============================================================
+            function renderOiBadge(level) {
+                const el = document.getElementById('oiLevelText');
+                if (!el) return;
+                let label = '暂无奖项';
+                let badgeHtml = '';
+                let buttonHtml = '';
+                if (level >= 1) {
+                    label = `OI 认证等级：${level}`;
+                    badgeHtml = getCcfBadgeHtml(level);
+                    const show = currentProfile?.show_ccf_badge !== false;
+                    const btnText = show ? '设为隐藏' : '设为展示';
+                    const btnClass = show ? 'btn-hide' : 'btn-show';
+                    buttonHtml = `<button class="toggle-badge-btn ${btnClass}" data-field="show_ccf_badge">${btnText}</button>`;
+                }
+                el.innerHTML = label + '&nbsp;&nbsp;&nbsp;' + badgeHtml + buttonHtml;
+            }
+
+            function renderIcpcBadge(level) {
+                const el = document.getElementById('icpcLevelText');
+                if (!el) return;
+                let label = '暂无奖项';
+                let badgeHtml = '';
+                let buttonHtml = '';
+                if (level >= 1) {
+                    label = `ICPC 认证等级：${level}`;
+                    badgeHtml = getXcpcBalloonHtml(level);
+                    const show = currentProfile?.show_xcpc_badge !== false;
+                    const btnText = show ? '设为隐藏' : '设为展示';
+                    const btnClass = show ? 'btn-hide' : 'btn-show';
+                    buttonHtml = `<button class="toggle-badge-btn ${btnClass}" data-field="show_xcpc_badge">${btnText}</button>`;
+                }
+                el.innerHTML = label + '&nbsp;&nbsp;&nbsp;' + badgeHtml + buttonHtml;
+            }
+
+            // ==============================================================
+            // 5. 切换字段函数（不改变本页徽章显示）
+            // ==============================================================
+            async function toggleBadgeVisibility(field) {
+                if (!currentUser || !currentProfile) {
+                    alert('请先登录');
+                    return;
+                }
+                try {
+                    const newValue = !currentProfile[field];
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update({ [field]: newValue })
+                        .eq('id', currentUser.id);
+                    if (error) throw error;
+                    currentProfile[field] = newValue;
+                    // 重新渲染两个奖项（徽章不变，按钮文字变化）
+                    renderOiBadge(currentProfile?.ccf_level ?? 0);
+                    renderIcpcBadge(currentProfile?.xcpc_level ?? 0);
+                } catch (err) {
+                    alert('切换失败：' + err.message);
+                }
+            }
+
+            // 事件委托绑定切换按钮
+            document.addEventListener('click', function (e) {
+                const target = e.target.closest('.toggle-badge-btn');
+                if (!target) return;
+                e.stopPropagation();
+                toggleBadgeVisibility(target.dataset.field);
+            });
+
+            // ==============================================================
+            // 6. 顶部栏认证逻辑
+            // ==============================================================
+            const authButtons = document.getElementById('authButtons');
 
             async function fetchUnreadCount() {
                 if (!currentProfile) return;
@@ -1009,8 +1126,11 @@
                         await fetchUnreadCount();
                         startUnreadPolling();
 
-                        // 加载头像
-                        await loadAvatarData();
+                        // 加载数据并渲染两个奖项
+                        const ccfLevel = currentProfile?.ccf_level ?? 0;
+                        const xcpcLevel = currentProfile?.xcpc_level ?? 0;
+                        renderOiBadge(ccfLevel);
+                        renderIcpcBadge(xcpcLevel);
 
                         var userManageItem = document.getElementById('userManageItem');
                         if (userManageItem) {
@@ -1033,123 +1153,47 @@
             }
 
             // ==============================================================
-            // 4. 头像逻辑
-            // ==============================================================
-            const avatarImg = document.getElementById('avatarImg');
-            const avatarInput = document.getElementById('avatarInput');
-            const uploadBtn = document.getElementById('uploadAvatarBtn');
-            const msgDiv = document.getElementById('profileMsg');
-
-            function showMessage(text, type) {
-                type = type || 'success';
-                msgDiv.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
-            }
-
-            function clearMessage() { msgDiv.innerHTML = ''; }
-
-            async function loadAvatarData() {
-                if (!currentUser) {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) { return; }
-                    currentUser = session.user;
-                }
-                if (!currentProfile) {
-                    currentProfile = await getProfile(currentUser.id);
-                }
-                if (currentProfile && currentProfile.avatar_url) {
-                    avatarImg.src = currentProfile.avatar_url;
-                } else {
-                    avatarImg.src = 'https://placehold.co/120';
-                }
-            }
-
-            async function uploadAvatar(file) {
-                const fileExt = file.name.split('.').pop();
-                const filePath = currentUser.id + '/avatar_' + Date.now() + '.' + fileExt;
-                const { error: uploadError } = await supabase.storage
-                    .from('avatars')
-                    .upload(filePath, file, { upsert: true });
-                if (uploadError) throw new Error('上传失败: ' + uploadError.message);
-                const { data: { publicUrl } } = supabase.storage
-                    .from('avatars')
-                    .getPublicUrl(filePath);
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ avatar_url: publicUrl })
-                    .eq('id', currentUser.id);
-                if (updateError) throw new Error('更新头像URL失败: ' + updateError.message);
-                currentProfile = await getProfile(currentUser.id);
-                return publicUrl;
-            }
-
-            if (uploadBtn) {
-                uploadBtn.addEventListener('click', function () { avatarInput.click(); });
-            }
-            if (avatarInput) {
-                avatarInput.addEventListener('change', async function (e) {
-                    var file = e.target.files[0];
-                    if (!file) return;
-                    if (!file.type.startsWith('image/')) {
-                        alert('请选择图片文件');
-                        return;
-                    }
-                    uploadBtn.disabled = true;
-                    uploadBtn.textContent = '上传中…';
-                    try {
-                        var url = await uploadAvatar(file);
-                        avatarImg.src = url;
-                        showMessage('头像更新成功！请强制刷新查看。', 'success');
-                        setTimeout(clearMessage, 4000);
-                    } catch (err) {
-                        showMessage(err.message, 'error');
-                    } finally {
-                        uploadBtn.disabled = false;
-                        uploadBtn.textContent = '选择头像';
-                        avatarInput.value = '';
-                    }
-                });
-            }
-
-            // ==============================================================
-            // 5. 奖项卡片点击 ———— 显示详情
+            // 7. 奖项卡片点击
             // ==============================================================
             function setupPrizeCards() {
                 const oiCard = document.getElementById('oiCard');
                 const icpcCard = document.getElementById('icpcCard');
                 const selection = document.getElementById('prize-selection');
                 const detail = document.getElementById('prize-detail');
+                const oiDetail = document.getElementById('oi-detail');
+                const icpcDetail = document.getElementById('icpc-detail');
 
-                function showDetail() {
+                function showDetail(type) {
                     selection.style.display = 'none';
                     detail.style.display = 'block';
-                }
-
-                function showSelection() {
-                    selection.style.display = 'block';
-                    detail.style.display = 'none';
+                    if (type === 'oi') {
+                        oiDetail.style.display = 'flex';
+                        icpcDetail.style.display = 'none';
+                    } else {
+                        oiDetail.style.display = 'none';
+                        icpcDetail.style.display = 'flex';
+                    }
+                    // 重新渲染（确保数据最新）
+                    const ccfLevel = currentProfile?.ccf_level ?? 0;
+                    const xcpcLevel = currentProfile?.xcpc_level ?? 0;
+                    renderOiBadge(ccfLevel);
+                    renderIcpcBadge(xcpcLevel);
                 }
 
                 if (oiCard) {
                     oiCard.addEventListener('click', function () {
-                        showDetail();
+                        showDetail('oi');
                     });
                 }
                 if (icpcCard) {
                     icpcCard.addEventListener('click', function () {
-                        showDetail();
+                        showDetail('icpc');
                     });
                 }
-
-                backBtns.forEach(btn => {
-                    btn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        showSelection();
-                    });
-                });
             }
 
             // ==============================================================
-            // 6. 侧边栏滚动复位
+            // 8. 侧边栏滚动复位
             // ==============================================================
             const sidebar = document.querySelector('.nav-sidebar');
             if (sidebar) {
@@ -1161,7 +1205,7 @@
             }
 
             // ==============================================================
-            // 7. 启动
+            // 9. 启动
             // ==============================================================
             (async function init() {
                 await updateTopbar();

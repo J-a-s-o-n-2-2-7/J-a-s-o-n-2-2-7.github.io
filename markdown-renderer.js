@@ -38,7 +38,7 @@
     checkDeps();
 
     // ---------- markdown-it 实例 ----------
-    const md = global.markdownit({ html: false, linkify: true, typographer: true });
+    const md = global.markdownit({ html: true, linkify: true, typographer: true });
     md.use(global.markdownitTaskLists);
     md.use(global.markdownitEmoji);
     md.use(global.markdownitFootnote);
