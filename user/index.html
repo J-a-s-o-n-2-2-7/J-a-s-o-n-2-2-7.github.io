@@ -336,10 +336,9 @@
         }
 
         .user-header-name .user-tag-display {
-            margin-left: 0;   /* 取消标签自带的左边距，仅使用 flex gap */
+            margin-left: 0;
         }
 
-        /* ===== 用户名：大一倍（1.75rem ≈ 28px） ===== */
         .user-header-name h1 {
             font-size: 1.75rem;
             font-weight: 700;
@@ -354,7 +353,6 @@
             font-weight: 400;
         }
 
-        /* ===== 个性签名：白色、无斜体，稍放大 ===== */
         .user-header-slogan {
             font-size: 1.1rem;
             opacity: 0.92;
@@ -377,7 +375,6 @@
             cursor: pointer;
         }
 
-        /* 编辑输入框 */
         .slogan-editor-input {
             border: 1px solid #e74c3c;
             border-radius: 4px;
@@ -468,11 +465,11 @@
             align-items: center;
             gap: 7px;
             padding: 7px 20px;
-            border-radius: 30px;                /* pill 形状 */
+            border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.5);
-            background: rgba(0, 0, 0, 0.5);     /* 半透明毛玻璃 */
+            background: rgba(0, 0, 0, 0.5);
             color: #fff;
-            font-size: 0.875em;                /* ≈14px */
+            font-size: 0.875em;
             font-weight: 500;
             text-decoration: none;
             cursor: pointer;
@@ -483,29 +480,25 @@
             white-space: nowrap;
         }
 
-        /* 齿轮图标 */
         .btn-luogu-setting i {
             font-size: 1em;
             transition: transform 0.35s ease;
         }
 
-        /* 悬停效果 */
         .btn-luogu-setting:hover {
             background: rgba(255, 255, 255, 0.18);
             border-color: rgba(255, 255, 255, 0.75);
         }
 
         .btn-luogu-setting:hover i {
-            transform: rotate(60deg);          /* 趣味旋转 */
+            transform: rotate(60deg);
         }
 
-        /* 点击反馈 */
         .btn-luogu-setting:active {
             transform: scale(0.96) translateY(0);
             background: rgba(255, 255, 255, 0.12);
         }
 
-        /* 键盘焦点 */
         .btn-luogu-setting:focus-visible {
             outline: 2px solid #fff;
             outline-offset: 3px;
@@ -551,14 +544,64 @@
             color: #2c3e50;
         }
 
-        /* 响应式：小屏可适当缩小 */
+        /* 关注按钮特殊样式 */
+        .follow-btn {
+            padding: 4px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .follow-btn.following {
+            background: #7f8c8d;
+        }
+
+        .follow-btn.following:hover {
+            background: #c0392b;
+        }
+
+        .follow-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .follow-btn:not(:disabled):hover {
+            transform: scale(1.04);
+        }
+
+        .follow-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .follow-stats span {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .follow-stats .num {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
         @media (max-width: 600px) {
             .l-card {
                 padding: 14px 16px;
             }
+
             .l-flex-info-row {
                 padding: 8px 0;
             }
+
             .l-flex-info-row span,
             .l-flex-info-row .right {
                 font-size: 13px;
@@ -672,7 +715,6 @@
             cursor: not-allowed;
         }
 
-        /* ===== 用户标签（与主页一致） ===== */
         .user-tag-display {
             display: inline-block;
             border-radius: 2px;
@@ -690,7 +732,6 @@
             filter: brightness(0.9);
         }
 
-        /* 响应式（针对用户信息区） */
         @media (max-width: 900px) {
             .user-header {
                 min-height: 220px;
@@ -720,10 +761,6 @@
 
             .user-header-avatar .avatar-fallback {
                 font-size: 28px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr 1fr;
             }
 
             .slogan-editor-input {
@@ -760,10 +797,6 @@
                 padding: 4px 12px;
             }
 
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
             .cover-upload-panel {
                 padding: 24px 20px;
             }
@@ -787,14 +820,37 @@
         }
 
         @keyframes rainbow-fill {
-            0%   { fill: #e74c3c; }  /* 柔和红 */
-            14.28% { fill: #e67e22; } /* 橙 */
-            28.57% { fill: #f1c40f; } /* 金（温和黄） */
-            42.85% { fill: #2ecc71; } /* 翠绿（柔和绿） */
-            57.14% { fill: #3498db; } /* 蓝 */
-            71.42% { fill: #9b59b6; } /* 靛 */
-            85.71% { fill: #8e44ad; } /* 紫 */
-            100%  { fill: #e74c3c; }  /* 回到红，无缝循环 */
+            0% {
+                fill: #e74c3c;
+            }
+
+            14.28% {
+                fill: #e67e22;
+            }
+
+            28.57% {
+                fill: #f1c40f;
+            }
+
+            42.85% {
+                fill: #2ecc71;
+            }
+
+            57.14% {
+                fill: #3498db;
+            }
+
+            71.42% {
+                fill: #9b59b6;
+            }
+
+            85.71% {
+                fill: #8e44ad;
+            }
+
+            100% {
+                fill: #e74c3c;
+            }
         }
 
         .rainbow-badge path {
@@ -804,8 +860,9 @@
         .rainbow-badge .fa-secondary {
             animation: rainbow-fill 3s linear infinite;
         }
+
         .rainbow-badge .fa-primary {
-            fill: #ffffff !important; /* 保持白色 */
+            fill: #ffffff !important;
         }
     </style>
 </head>
@@ -820,7 +877,7 @@
 
     <!-- ===== 主体 ===== -->
     <div class="main-layout">
-        <!-- 侧边栏 -->
+        <!-- 侧边栏（略，与原来一致） -->
         <div class="nav-sidebar">
             <div class="nav-group">
                 <ul>
@@ -964,7 +1021,7 @@
             return trimmed || '这个家伙很懒，什么也没有留下';
         }
 
-        // ===== 颜色和标签（与主页一致） =====
+        // ===== 颜色和标签 =====
         const COLOR_RED = '#e74c3c';
         const COLOR_PURPLE = '#9C3DCF';
         const COLOR_BROWN = '#AD8B00';
@@ -976,39 +1033,27 @@
         }
 
         function getCcfBadgeHtml(ccfLevel) {
-                // ★★★ 新增：ccfLevel >= 11 返回彩虹徽章 ★★★
-                if (ccfLevel && ccfLevel >= 11) {
-                    // 注意：移除了静态 fill 属性，由 CSS 动画控制
-                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle;">
+            if (ccfLevel && ccfLevel >= 11) {
+                return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle;">
                     <g class="fa-duotone-group">
                         <path class="fa-secondary" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
                         <path class="fa-primary" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
                     </g>
                 </svg>`;
-                }
-
-                // ===== 以下为原有逻辑（ccfLevel 1~10 使用静态颜色） =====
-                if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
-                let color = '';
-                if (ccfLevel >= 1 && ccfLevel <= 5) {
-                    color = '#52C41A';
-                } else if (ccfLevel >= 6 && ccfLevel <= 7) {
-                    color = '#3498DB';
-                } else if (ccfLevel >= 8 && ccfLevel <= 10) {
-                    color = '#FFC116';
-                }
-                // 原 SVG 模板（带有静态 fill）
-                return `<svg class="svg-inline--fa fa-badge-check" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle;"><g class="fa-duotone-group"><path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"></path><path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"></path></g></svg>`;
             }
+            if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
+            let color = '';
+            if (ccfLevel >= 1 && ccfLevel <= 5) color = '#52C41A';
+            else if (ccfLevel >= 6 && ccfLevel <= 7) color = '#3498DB';
+            else if (ccfLevel >= 8 && ccfLevel <= 10) color = '#FFC116';
+            return `<svg class="svg-inline--fa fa-badge-check" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle;"><g class="fa-duotone-group"><path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"></path><path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"></path></g></svg>`;
+        }
 
         function getUserTagDisplay(user) {
             if (!user) return '';
             if (user.is_cheater) {
-                if (user.is_admin) {
-                    return user.user_tag || '管理员';
-                } else {
-                    return '作弊者';
-                }
+                if (user.is_admin) return user.user_tag || '管理员';
+                else return '作弊者';
             } else {
                 return user.user_tag || '';
             }
@@ -1020,41 +1065,36 @@
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // 1. 优先从路径中提取（例如 /user/1）
+            // 1. 从路径或参数获取 userNumber
             let userNumber = null;
             const pathMatch = window.location.pathname.match(/^\/user\/(\d+)/);
             if (pathMatch) {
                 userNumber = pathMatch[1];
             }
-
-            // 2. 如果路径中没有，再从查询参数中获取（兼容旧链接）
             if (!userNumber) {
                 const params = new URLSearchParams(window.location.search);
                 userNumber = params.get('id');
             }
-
-            // 3. 如果都没有，显示错误
             if (!userNumber) {
                 document.getElementById('loadingPlaceholder').textContent = '❌ 无效的用户编号，请使用 /user/数字 或 ?id=数字 访问';
                 return;
             }
-            
+
             const loadingEl = document.getElementById('loadingPlaceholder');
             const profileContainer = document.getElementById('userProfile');
-
-            if (!userNumber) {
-                loadingEl.textContent = '❌ 无效的用户编号，请使用 ?id=数字 访问';
-                return;
-            }
 
             let userData = null;
             let profileBio = '';
             let avatarUrl = '';
             let isOwner = false;
             let currentUserId = null;
+            // 关注相关变量
+            let followCount = 0;      // 该用户关注的用户数（关注数）
+            let followerCount = 0;    // 该用户的粉丝数
+            let isFollowing = false;  // 当前登录用户是否关注了该用户
 
             try {
-                // 1. 获取当前登录用户
+                // 获取当前登录用户
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError) throw new Error(`获取登录状态失败: ${sessionError.message}`);
                 currentUserId = session?.user?.id || null;
@@ -1081,7 +1121,7 @@
                     if (umi) umi.style.display = (p?.can_manage_users === true) ? 'flex' : 'none';
                 })();
 
-                // 2. 直接用 user_number 查 profiles（添加角色字段）
+                // 2. 查询用户资料
                 const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
                     .select('id, username, user_number, avatar_url, bio, banned_until, created_at, is_admin, is_cheater, user_tag, username_color, cover_url, ccf_level')
@@ -1096,14 +1136,46 @@
                 avatarUrl = user.avatar_url || '';
                 profileBio = user.bio || '';
 
-                // 封面使用数据库中的 cover_url，如果没有则使用默认图
                 const defaultCover = 'https://cdn.luogu.org/images/bg/fe/DSCF0530-shrink.jpg';
-                const coverUrl = user.cover_url || '';  // 从数据库读取
+                const coverUrl = user.cover_url || '';
                 const coverStyle = coverUrl ? `background-image: url('${coverUrl}');` : `background-image: url('${defaultCover}');`;
 
                 isOwner = currentUserId && user.id && currentUserId === user.id;
 
                 document.title = `${user.username} 的个人主页 - Jason227`;
+
+                // 3. 查询关注数据（关注数、粉丝数、是否关注）
+                const targetUserId = user.id;
+
+                // 3.1 关注数（该用户关注了多少人）
+                const { count: followCountResult, error: followCountError } = await supabase
+                    .from('follows')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('follower_id', targetUserId);
+                if (followCountError) console.warn('获取关注数失败:', followCountError);
+                else followCount = followCountResult || 0;
+
+                // 3.2 粉丝数（有多少人关注该用户）
+                const { count: followerCountResult, error: followerCountError } = await supabase
+                    .from('follows')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('followed_id', targetUserId);
+                if (followerCountError) console.warn('获取粉丝数失败:', followerCountError);
+                else followerCount = followerCountResult || 0;
+
+                // 3.3 当前用户是否关注了该用户（仅当已登录且不是自己）
+                if (currentUserId && !isOwner) {
+                    const { data: followData, error: followCheckError } = await supabase
+                        .from('follows')
+                        .select('*')
+                        .eq('follower_id', currentUserId)
+                        .eq('followed_id', targetUserId)
+                        .maybeSingle();
+                    if (followCheckError) console.warn('检查关注状态失败:', followCheckError);
+                    else isFollowing = !!followData;
+                }
+
+                // ===== 构建 HTML =====
                 const bannedUntil = user.banned_until ? new Date(user.banned_until) : null;
                 const now = new Date();
                 const isBanned = bannedUntil && bannedUntil > now;
@@ -1111,8 +1183,6 @@
                 const avatarImg = `<img src="${avatarUrl || letterAvatar(user.username)}" alt="${escapeHtml(user.username)}" onerror="this.onerror=null;this.src='${letterAvatar(user.username)}'">`;
                 const sigDisplayText = getDisplayText(profileBio);
                 const sigEmpty = !profileBio.trim();
-
-                // ===== 生成带颜色的用户名和标签 =====
                 const color = getUserDisplayColor(user);
                 const ccfBadge = getCcfBadgeHtml(user.ccf_level);
                 const tagText = getUserTagDisplay(user);
@@ -1121,97 +1191,164 @@
                     tagHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
                 }
 
-                let html = '';
+                // 关注按钮 HTML（仅当不是自己的主页且用户未被封禁）
+                let followButtonHtml = '';
+                if (!isOwner && !isBanned) {
+                    if (currentUserId) {
+                        // 已登录，显示关注/取消关注
+                        const btnClass = isFollowing ? 'follow-btn following' : 'follow-btn';
+                        const btnText = isFollowing ? '取消关注' : '关注';
+                        followButtonHtml = `<button class="${btnClass}" id="followToggleBtn" data-following="${isFollowing}">${btnText}</button>`;
+                    } else {
+                        // 未登录，显示登录提示
+                        followButtonHtml = `<a href="/auth/login" class="follow-btn" style="background:#7f8c8d;text-decoration:none;display:inline-block;">登录后关注</a>`;
+                    }
+                }
 
+                // 构建 HTML
+                let html = '';
                 if (isBanned) {
                     html = `
-                            <div class="user-header" style="min-height:160px;">
-                                <div class="user-header-bg" style="${coverStyle}"></div>
-                                <div class="user-header-content" style="justify-content:center;text-align:center;">
-                                    <div style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.6);">
-                                        <div style="font-size:48px;margin-bottom:8px;">⛔</div>
-                                        <h1 style="font-size:1.75rem;margin:0;">该用户已被封禁</h1>
-                                        <p style="opacity:0.9;margin-top:6px;font-size:1rem;">封禁至：${bannedUntil.toLocaleString()}</p>
-                                    </div>
+                        <div class="user-header" style="min-height:160px;">
+                            <div class="user-header-bg" style="${coverStyle}"></div>
+                            <div class="user-header-content" style="justify-content:center;text-align:center;">
+                                <div style="color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.6);">
+                                    <div style="font-size:48px;margin-bottom:8px;">⛔</div>
+                                    <h1 style="font-size:1.75rem;margin:0;">该用户已被封禁</h1>
+                                    <p style="opacity:0.9;margin-top:6px;font-size:1rem;">封禁至：${bannedUntil.toLocaleString()}</p>
                                 </div>
                             </div>
-                        `;
+                        </div>
+                    `;
                 } else {
                     html = `
-                            <div class="user-header">
-                                <div class="user-header-bg" style="${coverStyle}"></div>
-                                ${isOwner ? `
-                                    <span class="btn-action-cover" id="openCoverUpload">
-                                        <svg viewBox="0 0 384 512" width="16" height="16">
-                                            <path d="M162.4 6c-1.5-3.6-5-6-8.9-6l-19 0c-3.9 0-7.5 2.4-8.9 6L104.9 57.7c-3.2 8-14.6 8-17.8 0L66.4 6c-1.5-3.6-5-6-8.9-6L48 0C21.5 0 0 21.5 0 48l0 208 384 0 0-208c0-26.5-21.5-48-48-48L230.5 0c-3.9 0-7.5 2.4-8.9 6L200.9 57.7c-3.2 8-14.6 8-17.8 0L162.4 6zM0 304l0 16c0 35.3 28.7 64 64 64l64 0 0 64c0 35.3 28.7 64 64 64s64-28.7 64-64l0-64 64 0c35.3 0 64-28.7 64-64l0-16-384 0zM192 464c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z"/>
-                                        </svg>
-                                    </span>
-                                ` : ''}
-                                <div class="user-header-content">
-                                    <div class="user-header-avatar">${avatarImg}</div>
-                                    <div class="user-header-info">
-                                        <div class="user-header-name">
-                                            <h1 style="color: ${color};">${escapeHtml(user.username)}</h1>
-                                            ${ccfBadge}
-                                            ${tagHtml}
+                        <div class="user-header">
+                            <div class="user-header-bg" style="${coverStyle}"></div>
+                            ${isOwner ? `
+                                <span class="btn-action-cover" id="openCoverUpload">
+                                    <svg viewBox="0 0 384 512" width="16" height="16">
+                                        <path d="M162.4 6c-1.5-3.6-5-6-8.9-6l-19 0c-3.9 0-7.5 2.4-8.9 6L104.9 57.7c-3.2 8-14.6 8-17.8 0L66.4 6c-1.5-3.6-5-6-8.9-6L48 0C21.5 0 0 21.5 0 48l0 208 384 0 0-208c0-26.5-21.5-48-48-48L230.5 0c-3.9 0-7.5 2.4-8.9 6L200.9 57.7c-3.2 8-14.6 8-17.8 0L162.4 6zM0 304l0 16c0 35.3 28.7 64 64 64l64 0 0 64c0 35.3 28.7 64 64 64s64-28.7 64-64l0-64 64 0c35.3 0 64-28.7 64-64l0-16-384 0zM192 464c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z"/>
+                                    </svg>
+                                </span>
+                            ` : ''}
+                            <div class="user-header-content">
+                                <div class="user-header-avatar">${avatarImg}</div>
+                                <div class="user-header-info">
+                                    <div class="user-header-name">
+                                        <h1 style="color: ${color};">${escapeHtml(user.username)}</h1>
+                                        ${ccfBadge}
+                                        ${tagHtml}
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px;">
+                                        <div class="follow-stats">
+                                            <span>关注 <span class="num" id="followCount">${followCount}</span></span>
+                                            <span>粉丝 <span class="num" id="followerCount">${followerCount}</span></span>
                                         </div>
-                                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                                            <div class="user-header-slogan ${sigEmpty ? 'empty' : ''}" 
-                                                data-editable="${isOwner ? 'true' : 'false'}" 
-                                                data-user="${user.user_number}"
-                                                id="topSlogan">${escapeHtml(sigDisplayText)}</div>
-                                            ${isOwner ? `
-                                                <a href="/user/setting" class="btn-luogu-setting" style="flex-shrink: 0; margin-left: auto;">
-                                                    <svg viewBox="0 0 640 512" width="16" height="16" fill="currentColor">
-                                                        <path d="M256.5 8a120 120 0 1 1 0 240 120 120 0 1 1 0-240zM226.7 304l59.4 0 1.5 0c-12.9 26.8-7.8 58.2 11.5 79.5-20.2 22.3-24.8 55.8-9.4 83.4l22.5 40.4c.9 1.6 1.9 3.2 2.9 4.7l-237 0c-16.4 0-29.7-13.3-29.7-29.7 0-98.5 79.8-178.3 178.3-178.3zm205.9-56.4c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 6.1c0 18.9 24.1 32.8 40.5 23.4l5-2.9c11.6-6.7 26.5-2.6 33 9.1l22.4 40.2c6.2 11.2 2.6 25.2-8.2 32l-4.7 2.9c-16.2 10.1-16.2 39.9 0 50.1l4.6 2.9c10.8 6.8 14.5 20.8 8.3 32L607 483.8c-6.5 11.7-21.4 15.9-33 9.1l-4.9-2.9c-16.4-9.5-40.5 4.5-40.5 23.4l0 6.1c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-5.9c0-19-24.2-33-40.7-23.5l-4.8 2.8c-11.6 6.7-26.4 2.6-33-9.1l-22.6-40.4c-6.2-11.2-2.6-25.3 8.3-32.1l4.4-2.7c16.3-10.1 16.3-40.1 0-50.2l-4.5-2.8c-10.9-6.8-14.5-20.9-8.3-32.1l22.5-40.3c6.5-11.7 21.4-15.8 32.9-9.1l4.8 2.8c16.5 9.5 40.7-4.5 40.7-23.5l0-5.9zm99.9 136.2a52 52 0 1 0 -104 0 52 52 0 1 0 104 0z"/>
-                                                    </svg>
-                                                    个人设置
-                                                </a>
-                                            ` : ''}
-                                        </div>
+                                        ${followButtonHtml}
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px;">
+                                        <div class="user-header-slogan ${sigEmpty ? 'empty' : ''}" 
+                                            data-editable="${isOwner ? 'true' : 'false'}" 
+                                            data-user="${user.user_number}"
+                                            id="topSlogan">${escapeHtml(sigDisplayText)}</div>
+                                        ${isOwner ? `
+                                            <a href="/user/setting" class="btn-luogu-setting" style="flex-shrink: 0; margin-left: auto;">
+                                                <svg viewBox="0 0 640 512" width="16" height="16" fill="currentColor">
+                                                    <path d="M256.5 8a120 120 0 1 1 0 240 120 120 0 1 1 0-240zM226.7 304l59.4 0 1.5 0c-12.9 26.8-7.8 58.2 11.5 79.5-20.2 22.3-24.8 55.8-9.4 83.4l22.5 40.4c.9 1.6 1.9 3.2 2.9 4.7l-237 0c-16.4 0-29.7-13.3-29.7-29.7 0-98.5 79.8-178.3 178.3-178.3zm205.9-56.4c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 6.1c0 18.9 24.1 32.8 40.5 23.4l5-2.9c11.6-6.7 26.5-2.6 33 9.1l22.4 40.2c6.2 11.2 2.6 25.2-8.2 32l-4.7 2.9c-16.2 10.1-16.2 39.9 0 50.1l4.6 2.9c10.8 6.8 14.5 20.8 8.3 32L607 483.8c-6.5 11.7-21.4 15.9-33 9.1l-4.9-2.9c-16.4-9.5-40.5 4.5-40.5 23.4l0 6.1c0 13.3-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24l0-5.9c0-19-24.2-33-40.7-23.5l-4.8 2.8c-11.6 6.7-26.4 2.6-33-9.1l-22.6-40.4c-6.2-11.2-2.6-25.3 8.3-32.1l4.4-2.7c16.3-10.1 16.3-40.1 0-50.2l-4.5-2.8c-10.9-6.8-14.5-20.9-8.3-32.1l22.5-40.3c6.5-11.7 21.4-15.8 32.9-9.1l4.8 2.8c16.5 9.5 40.7-4.5 40.7-23.5l0-5.9zm99.9 136.2a52 52 0 1 0 -104 0 52 52 0 1 0 104 0z"/>
+                                                </svg>
+                                                个人设置
+                                            </a>
+                                        ` : ''}
                                     </div>
                                 </div>
                             </div>
-                            <!-- 洛谷风格信息卡片 -->
-                            <div class="l-card">
-                                <div class="l-flex-info-row">
-                                    <span>用户编号</span>
-                                    <div class="right">${user.user_number}</div>
-                                </div>
-                                <div class="l-flex-info-row">
-                                    <span>用户类型</span>
-                                    <div class="right">${user.is_admin ? '管理员' : user.is_cheater ? '作弊者' : '普通用户'}</div>
-                                </div>
-                                <div class="l-flex-info-row">
-                                    <span>注册时间</span>
-                                    <div class="right"><time datetime="${user.created_at}">${user.created_at.split('T')[0]}</time></div>
-                                </div>
-                                ${user.ccf_level && user.ccf_level >= 1 ? `
-                                    <div class="l-flex-info-row">
-                                        <span>OI 程序设计能力</span>
-                                        <div class="right">
-                                            ${user.ccf_level} 级 ${getCcfBadgeHtml(user.ccf_level)}
-                                        </div>
-                                    </div>
-                                ` : ''}
+                        </div>
+                        <!-- 信息卡片 -->
+                        <div class="l-card">
+                            <div class="l-flex-info-row">
+                                <span>用户编号</span>
+                                <div class="right">${user.user_number}</div>
                             </div>
-                        `;
+                            <div class="l-flex-info-row">
+                                <span>用户类型</span>
+                                <div class="right">${user.is_admin ? '管理员' : user.is_cheater ? '作弊者' : '普通用户'}</div>
+                            </div>
+                            <div class="l-flex-info-row">
+                                <span>注册时间</span>
+                                <div class="right"><time datetime="${user.created_at}">${user.created_at.split('T')[0]}</time></div>
+                            </div>
+                            ${user.ccf_level && user.ccf_level >= 1 ? `
+                                <div class="l-flex-info-row">
+                                    <span>OI 程序设计能力</span>
+                                    <div class="right">
+                                        ${user.ccf_level} 级 ${getCcfBadgeHtml(user.ccf_level)}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
                 }
 
                 profileContainer.innerHTML = html;
                 profileContainer.style.display = 'block';
                 loadingEl.style.display = 'none';
 
-                // ===== 签名双击编辑 =====
+                // ===== 关注按钮交互 =====
+                const followBtn = document.getElementById('followToggleBtn');
+                if (followBtn && currentUserId && !isOwner) {
+                    followBtn.addEventListener('click', async function () {
+                        const isCurrentlyFollowing = this.dataset.following === 'true';
+                        const targetId = user.id;
+
+                        this.disabled = true;
+                        this.textContent = '处理中...';
+
+                        try {
+                            if (isCurrentlyFollowing) {
+                                // 取消关注
+                                const { error } = await supabase
+                                    .from('follows')
+                                    .delete()
+                                    .eq('follower_id', currentUserId)
+                                    .eq('followed_id', targetId);
+                                if (error) throw new Error(error.message);
+                                // 更新状态
+                                isFollowing = false;
+                                followerCount -= 1;
+                            } else {
+                                // 关注
+                                const { error } = await supabase
+                                    .from('follows')
+                                    .insert({ follower_id: currentUserId, followed_id: targetId });
+                                if (error) throw new Error(error.message);
+                                isFollowing = true;
+                                followerCount += 1;
+                            }
+
+                            // 更新 UI
+                            this.dataset.following = isFollowing ? 'true' : 'false';
+                            this.textContent = isFollowing ? '取消关注' : '关注';
+                            this.className = isFollowing ? 'follow-btn following' : 'follow-btn';
+                            // 更新粉丝数显示
+                            const followerSpan = document.getElementById('followerCount');
+                            if (followerSpan) followerSpan.textContent = followerCount;
+
+                        } catch (err) {
+                            alert('操作失败：' + err.message);
+                        } finally {
+                            this.disabled = false;
+                        }
+                    });
+                }
+
+                // ===== 签名编辑（与原逻辑一致） =====
                 if (isOwner && !isBanned) {
                     const topSlogan = document.getElementById('topSlogan');
                     if (topSlogan) {
                         let originalText = topSlogan.textContent.trim();
-
                         topSlogan.addEventListener('dblclick', function (e) {
                             e.stopPropagation();
                             if (this.querySelector('input')) return;
-
                             const currentText = this.textContent.trim();
                             const input = document.createElement('input');
                             input.type = 'text';
@@ -1219,7 +1356,6 @@
                             input.value = currentText === '这个家伙很懒，什么也没有留下' ? '' : currentText;
                             input.placeholder = '这个家伙很懒，什么也没有留下';
                             input.maxLength = 500;
-
                             this.textContent = '';
                             this.appendChild(input);
                             input.focus();
@@ -1231,47 +1367,35 @@
                                     restoreDisplay();
                                     return;
                                 }
-
                                 topSlogan.textContent = '⏳ 保存中...';
                                 topSlogan.style.opacity = '0.7';
-
                                 try {
                                     const { error: updateError } = await supabase
                                         .from('profiles')
                                         .update({ bio: val })
                                         .eq('user_number', parseInt(userNumber));
-
                                     if (updateError) {
                                         if (updateError.message && updateError.message.includes('column "bio" does not exist')) {
                                             throw new Error('❌ 数据库缺少 bio 字段，请为 profiles 表添加 bio (text) 列。');
                                         }
                                         throw new Error(`保存失败: ${updateError.message}`);
                                     }
-
                                     profileBio = val;
                                     const displayText = val || '这个家伙很懒，什么也没有留下';
                                     originalText = displayText;
-
                                     topSlogan.textContent = displayText;
                                     topSlogan.className = 'user-header-slogan' + (!val ? ' empty' : '');
                                     topSlogan.style.opacity = '1';
-
                                     topSlogan.style.transition = 'color 0.3s';
                                     topSlogan.style.color = '#2ecc71';
-                                    setTimeout(() => {
-                                        topSlogan.style.color = '';
-                                    }, 800);
-
+                                    setTimeout(() => { topSlogan.style.color = ''; }, 800);
                                 } catch (err) {
                                     topSlogan.textContent = '❌ ' + err.message;
                                     topSlogan.style.color = '#e74c3c';
                                     topSlogan.style.opacity = '1';
-                                    setTimeout(() => {
-                                        restoreDisplay();
-                                    }, 2000);
+                                    setTimeout(() => { restoreDisplay(); }, 2000);
                                 }
                             };
-
                             const restoreDisplay = () => {
                                 const displayText = originalText || '这个家伙很懒，什么也没有留下';
                                 topSlogan.textContent = displayText;
@@ -1279,22 +1403,19 @@
                                 topSlogan.style.opacity = '1';
                                 topSlogan.style.color = '';
                             };
-
                             input.addEventListener('blur', saveSlogan);
                             input.addEventListener('keydown', function (e) {
                                 if (e.key === 'Enter') {
                                     e.preventDefault();
                                     this.blur();
                                 }
-                                if (e.key === 'Escape') {
-                                    restoreDisplay();
-                                }
+                                if (e.key === 'Escape') { restoreDisplay(); }
                             });
                         });
                     }
                 }
 
-                // ===== 封面更换逻辑（可选，但 cover_url 不存在，暂时保留但不会生效） =====
+                // ===== 封面更换（与原逻辑一致） =====
                 const openBtn = document.getElementById('openCoverUpload');
                 const overlay = document.getElementById('coverUploadOverlay');
                 const cancelCoverBtn = document.getElementById('coverCancelBtn');
@@ -1379,50 +1500,38 @@
                 if (uploadBtn) {
                     uploadBtn.addEventListener('click', async () => {
                         if (!selectedFile) return;
-
                         uploadBtn.disabled = true;
                         uploadBtn.textContent = '⏳ 上传中…';
-                        coverFeedback.textContent = '⏳ 正在上传到 Supabase Storage...';
+                        coverFeedback.textContent = '⏳ 正在上传...';
                         coverFeedback.style.color = '#f39c12';
-
                         try {
                             const fileExt = selectedFile.name.split('.').pop();
                             const fileName = `cover_${userNumber}_${Date.now()}.${fileExt}`;
                             const filePath = `covers/${fileName}`;
-
                             const { data: uploadData, error: uploadError } = await supabase.storage
                                 .from('avatars')
                                 .upload(filePath, selectedFile, {
                                     cacheControl: '3600',
                                     upsert: true,
                                 });
-
                             if (uploadError) throw new Error(`上传失败: ${uploadError.message}`);
-
                             const { data: urlData } = supabase.storage
                                 .from('avatars')
                                 .getPublicUrl(filePath);
-
                             const publicUrl = urlData?.publicUrl;
                             if (!publicUrl) throw new Error('获取图片链接失败');
-
                             const { error: updateError } = await supabase
                                 .from('profiles')
                                 .update({ cover_url: publicUrl })
                                 .eq('user_number', parseInt(userNumber));
-
                             if (updateError) throw new Error(`更新数据库失败: ${updateError.message}`);
-
                             const bg = document.querySelector('.user-header-bg');
                             if (bg) {
                                 bg.style.backgroundImage = `url('${publicUrl}')`;
                             }
-                            coverUrl = publicUrl;
-
                             coverFeedback.textContent = '✅ 封面更新成功！';
                             coverFeedback.style.color = '#27ae60';
                             setTimeout(closeCoverUpload, 1200);
-
                         } catch (err) {
                             coverFeedback.textContent = '❌ ' + err.message;
                             coverFeedback.style.color = '#e74c3c';

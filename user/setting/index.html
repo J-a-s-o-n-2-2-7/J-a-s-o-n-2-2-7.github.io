@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
     <style>
         /* ========== 基础样式 ========== */
         * {
@@ -22,6 +24,15 @@
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
+        }
+
+        a{
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        a:hover{
+            text-decoration: underline;
         }
 
         .topbar {
@@ -248,6 +259,10 @@
             margin-bottom: 24px;
         }
 
+        .card-bottom {
+            padding-bottom: 28px;
+        }
+
         .card:last-child {
             margin-bottom: 0;
         }
@@ -327,8 +342,6 @@
             display: flex;
             align-items: flex-start;
             gap: 32px;
-            padding: 14px 0;
-            border-bottom: 1px solid #f0f2f5;
         }
 
         .form-row:last-of-type {
@@ -341,6 +354,7 @@
             color: #2c3e50;
             min-width: 64px;
             flex-shrink: 0;
+            padding-top: 2px;
         }
 
         .form-right {
@@ -368,246 +382,229 @@
             display: block;
         }
 
+        /* ============================================
+           选择头像按钮 ———— 模仿解绑按钮样式
+           ============================================ */
         .avatar-upload-btn {
-            background: #e74c3c;
-            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 14px;
             border: none;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 15px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: filter 0.2s, transform 0.1s;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+            background: #E74C3C;
+            color: #fff;
             width: auto;
         }
 
         .avatar-upload-btn:hover {
-            background: #c0392b;
+            filter: brightness(1.1);
+        }
+
+        .avatar-upload-btn:active {
+            transform: scale(0.96);
         }
 
         .avatar-upload-btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
+            transform: none !important;
         }
 
         .avatar-caption {
             font-size: 13px;
-            color: #8a9aa8;
+            color: #808080;
             margin-top: 12px;
             margin-bottom: 20px;
         }
 
         .avatar-caption strong {
-            color: #2c3e50;
             font-weight: 600;
         }
 
-        /* ===== 洛谷绑定卡片 ===== */
+        /* ============================================
+           洛谷绑定 ———— 扁平化，仿 Codeforces 风格
+           ============================================ */
         .bind-card {
-            background: white;
-            border: 2px solid #e6e1da;
-            border-radius: 12px;
-            padding: 20px 24px;
-            transition: border-color 0.3s;
-            margin: 4px 0;
-            width: 100%;
-        }
-
-        .bind-card.bound {
-            border-color: #a5d6a7;
-            background: #f9fdf9;
-        }
-
-        .bind-card .card-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             flex-wrap: wrap;
-            gap: 10px;
+            width: 100%;
+            gap: 12px 18px;
         }
 
-        .bind-card .card-type {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
+        /* 状态 + 按钮 容器，靠右对齐 */
         .bind-card .card-status {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 64px;
             flex-wrap: wrap;
         }
 
-        .bind-card .card-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            background: #f5f5f5;
-            color: #999;
-        }
-
-        .bind-card .card-badge.bound {
-            background: #c8e6c9;
-            color: #2e7d32;
-        }
-
-        .bind-card .card-badge.unbound {
-            background: #f5f5f5;
-            color: #999;
+        /* 状态文本 */
+        .bind-card .status-text {
+            font-size: 15px;
+            color: #808080;
+            white-space: nowrap;
+            line-height: 1.4;
         }
 
         .bind-card .btn {
-            padding: 6px 16px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             font-size: 13px;
-            font-weight: 500;
-            transition: background 0.2s, transform 0.1s;
+            font-weight: 600;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: filter 0.2s, transform 0.1s;
+            white-space: nowrap;
             font-family: inherit;
+            line-height: 1.4;
+            background: #13C2C2;
+            color: #fff;
+        }
+
+        .bind-card .btn:hover {
+            filter: brightness(1.1);
         }
 
         .bind-card .btn:active {
             transform: scale(0.96);
         }
 
-        .bind-card .btn-primary {
-            background: #6b8a74;
-            color: #fff;
-        }
-
-        .bind-card .btn-primary:hover {
-            background: #55735e;
+        .bind-card .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
         .bind-card .btn-danger {
-            background: #d9534f;
-            color: #fff;
+            background: #E74C3C;
         }
 
-        .bind-card .btn-danger:hover {
-            background: #c0392b;
+        /* ===== 验证码代码块样式（仿 markdown-renderer） ===== */
+        .challenge-code-wrapper {
+            position: relative;
+            margin: 12px 0;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            padding: 16px 20px;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .bind-card .btn-secondary {
-            background: #7f8c8d;
-            color: #fff;
-        }
-
-        .bind-card .btn-secondary:hover {
-            background: #5a6a72;
-        }
-
-        .bind-card .btn-check {
-            background: #d4a24e;
-            color: #fff;
-        }
-
-        .bind-card .btn-check:hover {
-            background: #b8893a;
-        }
-
-        .bind-card .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .bind-card .bind-detail {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #f0ece6;
-            display: none;
-        }
-
-        .bind-card .bind-detail.active {
-            display: block;
-        }
-
-        .bind-card .bind-detail .hint {
-            font-size: 13px;
-            color: #7a736b;
-            margin-bottom: 8px;
-        }
-
-        .bind-card .bind-detail .challenge-code {
-            font-family: 'Consolas', monospace;
+        .challenge-code-wrapper .code-text {
+            font-family: 'Courier New', monospace;
             font-size: 18px;
-            font-weight: 700;
-            background: #fce4ec;
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: 2px dashed #ef9a9a;
-            cursor: pointer;
-            user-select: all;
-            display: inline-block;
-            margin: 4px 0;
-        }
-
-        .bind-card .bind-detail .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .bind-card .bind-detail .input-group .row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .bind-card .bind-detail .input-group input {
-            flex: 1;
-            min-width: 120px;
-            padding: 8px 12px;
-            border: 1.5px solid #e6e1da;
-            border-radius: 6px;
-            font-size: 14px;
-            background: #fdfdfc;
-            outline: none;
-        }
-
-        .bind-card .bind-detail .input-group input:focus {
-            border-color: #6b8a74;
-            box-shadow: 0 0 0 3px rgba(107, 138, 116, 0.08);
-        }
-
-        .bind-card .bind-detail .btn-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-
-        .bind-card .bind-msg {
-            margin-top: 10px;
-            font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            display: none;
-        }
-
-        .bind-card .bind-msg.success {
-            display: block;
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-        }
-
-        .bind-card .bind-msg.error {
-            display: block;
-            background: #fce4ec;
+            font-weight: bold;
             color: #c62828;
-            border: 1px solid #ef9a9a;
+            text-align: center;
+            flex: 1;
+            user-select: all;
+            cursor: pointer;
         }
 
-        .bind-card .bind-msg.info {
-            display: block;
-            background: #e3f2fd;
-            color: #0d47a1;
-            border: 1px solid #90caf9;
+        .challenge-copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+            width: 30px;
+            height: 30px;
+        }
+
+        .challenge-code-wrapper:hover .challenge-copy-btn {
+            opacity: 1;
+        }
+
+        .challenge-copy-btn:hover {
+            background: #ddd;
+        }
+
+        .challenge-copy-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        #luoguLink {
+            color: #E74C3C;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        #luoguLink:hover {
+            text-decoration: underline;
+        }
+
+        /* 防止洛谷绑定加载时卡片高度跳动 */
+        #luoguBindStatus {
+            min-height: 36px;      /* 与加载后（文本+按钮）的高度相匹配 */
+            display: flex;
+            align-items: center;   /* 让内容垂直居中，避免偏上 */
+        }
+
+        /* ===== 右上角 Toast 通知（仿 markdown-renderer） ===== */
+        .swal2-toast-copy {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transform: scale(0.8) translateY(-20px);
+            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-width: 200px;
+            box-sizing: border-box;
+        }
+        .swal2-toast-copy.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+        .swal2-toast-copy .success-icon {
+            flex-shrink: 0;
+        }
+        .swal2-toast-copy .toast-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            line-height: 1.4;
         }
 
         .message {
@@ -628,6 +625,7 @@
             color: #166534;
         }
 
+        /* ========== 响应式 ========== */
         @media (max-width: 900px) {
             .nav-sidebar {
                 position: relative;
@@ -655,6 +653,12 @@
 
             .card {
                 padding: 20px 18px;
+            }
+
+            .bind-card .card-status {
+                margin-left: 0;
+                width: 100%;
+                justify-content: flex-start;
             }
         }
 
@@ -691,21 +695,12 @@
             }
 
             .bind-card {
-                padding: 16px;
-            }
-
-            .bind-card .card-header {
-                flex-direction: column;
-                align-items: flex-start;
+                gap: 8px;
             }
 
             .bind-card .card-status {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .bind-card .bind-detail .input-group .row {
-                flex-direction: column;
+                flex-wrap: wrap;
+                gap: 8px;
             }
         }
     </style>
@@ -772,7 +767,6 @@
                                 </svg></span><span class="nav-text">文章广场</span></a></li>
                 </ul>
             </div>
-            <!-- 更多功能等省略，与用户现有代码一致 -->
         </div>
 
         <!-- ===== 内容区域 ===== -->
@@ -792,7 +786,7 @@
 
                 <!-- ===== 底部卡片：设置内容 ===== -->
                 <div class="card card-bottom">
-                    <!-- 头像行（原样保留，不变） -->
+                    <!-- 头像行 -->
                     <div class="form-row">
                         <span class="form-label">头像</span>
                         <div class="form-right">
@@ -806,41 +800,16 @@
                         </div>
                     </div>
 
-                    <!-- ===== 洛谷绑定 ===== -->
-                    <div class="form-row" style="border-bottom: none; padding-bottom: 4px;">
-                        <span class="form-label">第三方绑定</span>
+                    <!-- ============================================================
+                    洛谷绑定 ———— 扁平化，form-label 直接显示 "洛谷"
+                    ============================================================ -->
+                    <div class="form-row" style="border-bottom: none;">
+                        <span class="form-label">洛谷</span>
                         <div class="form-right" style="width: 100%;">
                             <div class="bind-card" id="luoguBindCard">
-                                <div class="card-header">
-                                    <span class="card-type">洛谷绑定</span>
-                                    <div class="card-status" id="luoguBindStatus">
-                                        <!-- 由 JS 动态渲染 -->
-                                    </div>
-                                </div>
-                                <div class="bind-detail" id="luoguBindDetail">
-                                    <div class="hint">
-                                        在洛谷个人主页的<strong>个人签名</strong>中写入以下挑战码（复制整行）：
-                                    </div>
-                                    <div
-                                        style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:8px 0;">
-                                        <span id="challengeCodeDisplay" class="challenge-code">等待生成</span>
-                                        <button id="copyChallengeBtn" class="btn btn-secondary">复制</button>
-                                    </div>
-                                    <div class="hint" style="margin-top:4px;">
-                                        前往 <a href="https://www.luogu.com.cn/user/setting" target="_blank">洛谷个人设置</a>
-                                        修改签名
-                                    </div>
-                                    <div class="input-group">
-                                        <div class="row">
-                                            <input type="number" id="luoguUidInput" placeholder="输入洛谷 UID（例如：1011727）"
-                                                style="flex:1; min-width:200px;">
-                                        </div>
-                                        <div class="btn-row">
-                                            <button id="verifyBindBtn" class="btn btn-check">验证并绑定</button>
-                                            <button id="cancelBindBtn" class="btn btn-secondary">取消</button>
-                                        </div>
-                                    </div>
-                                    <div id="luoguBindMsg" class="bind-msg"></div>
+                                <!-- 状态 + 按钮 -->
+                                <div class="card-status" id="luoguBindStatus">
+                                    <!-- 由 JS 动态渲染 -->
                                 </div>
                             </div>
                         </div>
@@ -868,15 +837,9 @@
             let currentUser = null;
             let currentProfile = null;
             let unreadTimer = null;
-            let luoguBindState = {
-                challenge: '',
-                expiresAt: '',
-                isVerifying: false,
-                isGenerating: false
-            };
 
             // ==============================================================
-            // 2. 头像逻辑（保持不变）
+            // 2. 头像逻辑
             // ==============================================================
             const avatarImg = document.getElementById('avatarImg');
             const avatarInput = document.getElementById('avatarInput');
@@ -969,7 +932,7 @@
             async function getProfile(userId) {
                 var { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, special_privilege, can_speak, can_manage_users, avatar_url, luogu_uid, luogu_username, luogu_bind_time')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, avatar_url, luogu_uid, luogu_username, luogu_bind_time')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -1004,11 +967,501 @@
                 }, 30000);
             }
 
+            // ==============================================================
+            // 4. 洛谷绑定渲染
+            // ==============================================================
+            function getLuoguBindInfo() {
+                if (!currentProfile) return null;
+                return {
+                    uid: currentProfile.luogu_uid || null,
+                    username: currentProfile.luogu_username || null,
+                    bindTime: currentProfile.luogu_bind_time || null,
+                    isBound: !!currentProfile.luogu_bind_time
+                };
+            }
+
+            function renderLuoguBind() {
+                const info = getLuoguBindInfo();
+                const statusContainer = document.getElementById('luoguBindStatus');
+                if (!statusContainer) return;
+
+                if (info && info.isBound) {
+                    const displayName = info.username || '已绑定';
+                    statusContainer.innerHTML = `
+                        <span class="status-text bound"><strong>${escapeHtmlAttr(displayName)}</strong></span>
+                        <button id="unbindLuoguBtn" class="btn btn-danger">解绑</button>
+                    `;
+                } else {
+                    statusContainer.innerHTML = `
+                        <span class="status-text unbound">从未绑定</span>
+                        <button id="startBindBtn" class="btn">绑定</button>
+                    `;
+                }
+            }
+
+            // ==================== 洛谷绑定三步向导 ====================
+            let wizardData = {
+                challenge: '',
+                uid: '',
+                captcha: ''
+            };
+
+            // 生成图形验证码（模仿注册页面样式）
+            function generateCaptcha() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+                let code = '';
+                for (let i = 0; i < 5; i++) {
+                    code += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return code.toUpperCase();  // 返回大写，方便比较
+            }
+
+            function drawCaptcha(canvas, code) {
+                const ctx = canvas.getContext('2d');
+                const w = canvas.width;
+                const h = canvas.height;
+
+                // 清空并设置背景色（#f9fafb）
+                ctx.clearRect(0, 0, w, h);
+                ctx.fillStyle = '#f9fafb';
+                ctx.fillRect(0, 0, w, h);
+
+                // 干扰线（10条）
+                for (let i = 0; i < 10; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(Math.random() * w, Math.random() * h);
+                    ctx.lineTo(Math.random() * w, Math.random() * h);
+                    ctx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
+                    ctx.stroke();
+                }
+
+                // 噪点（100个）
+                for (let i = 0; i < 100; i++) {
+                    ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
+                    ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
+                }
+
+                // 绘制验证码字符
+                for (let i = 0; i < code.length; i++) {
+                    const fontSize = 24 + Math.floor(Math.random() * 6);
+                    ctx.font = `${fontSize}px "Courier New", monospace`;
+                    ctx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
+                    const x = 12 + i * 20 + Math.random() * 6;
+                    const y = 30 + Math.random() * 8;
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate((Math.random() - 0.5) * 0.4);
+                    ctx.fillText(code[i], 0, 0);
+                    ctx.restore();
+                }
+            }
+
+            function showCopyToast() {
+                let toast = document.querySelector('.swal2-toast-copy');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.className = 'swal2-toast-copy';
+                    toast.innerHTML = `
+            <svg class="success-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#a5dc86" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <h2 class="toast-title">已复制</h2>
+        `;
+                    document.body.appendChild(toast);
+                } else {
+                    toast.classList.remove('show');
+                    void toast.offsetWidth;
+                }
+                toast.classList.add('show');
+                clearTimeout(toast._hideTimer);
+                toast._hideTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            // 启动向导
+            async function startBindWizard() {
+                let currentStep = 0;
+                let captchaCode = '';
+
+                // 步骤定义 ———— 4 步
+                const steps = [
+                    // ========== 第 1 步：介绍 ==========
+                    {
+                        title: '洛谷账号绑定',
+                        html: `接下来系统将带你绑定洛谷的个人账号，我们会获取您洛谷账号的用户名、UID 以及 OI 认证等级。请确保您的洛谷账号可以正常登录，并已展示 OI 等级。`,
+                        confirmText: '下一步',
+                        cancelText: '取消'
+                    },
+
+                    // ========== 第 2 步：输入洛谷 UID ==========
+                    {
+                        title: 'UID',
+                        input: 'number',
+                        inputAttributes: {
+                            min: 1,
+                            step: 1,
+                            autofocus: true
+                        },
+                        confirmText: '下一步',
+                        cancelText: '取消',
+                        preConfirm: (uid) => {
+                            if (!uid) {
+                                Swal.showValidationMessage('请输入 UID');
+                                return false;
+                            }
+                            wizardData.uid = uid.toString().trim();
+                            return true;
+                        }
+                    },
+
+                    // ========== 第 3 步：验证码 ==========
+                    {
+                        title: '验证码',
+                        html: `
+        <style>
+            .challenge-code-wrapper {
+                position: relative;
+                margin: 12px 0;
+                background: #fafafa;
+                border-radius: 8px;
+                border: 1px solid #e8e8e8;
+                padding: 16px 20px;
+                min-height: 52px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .challenge-code-wrapper .code-text {
+                font-family: 'Courier New', monospace;
+                font-size: 18px;
+                font-weight: bold;
+                color: #c62828;
+                text-align: center;
+                flex: 1;
+                user-select: text
+            }
+            .challenge-copy-btn {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: none;
+                border: none;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 13px;
+                color: #333;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.2s, background 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                z-index: 10;
+            }
+            .challenge-code-wrapper:hover .challenge-copy-btn {
+                opacity: 1;
+            }
+            .challenge-copy-btn:hover {
+                background: #ddd;
+            }
+            .challenge-copy-btn svg {
+                width: 16px;
+                height: 16px;
+                fill: currentColor;
+            }
+            #luoguLink {
+                color: #E74C3C;
+                text-decoration: none;
+                font-weight: 500;
+            }
+            #luoguLink:hover {
+                text-decoration: underline;
+            }
+        </style>
+        <div>
+            将以下验证码复制到你的洛谷个人签名中（<a id="luoguLink" href="#" target="_blank">点击前往</a>）
+            <div class="challenge-code-wrapper">
+                <span class="code-text" id="challengeDisplay">生成中...</span>
+                <button class="challenge-copy-btn" id="challengeCopyBtn">
+                    <svg viewBox="0 0 448 512" aria-hidden="true">
+                        <path d="M192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-200.6c0-17.4-7.1-34.1-19.7-46.2L370.6 17.8C358.7 6.4 342.8 0 326.3 0L192 0zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-16-64 0 0 16-192 0 0-256 16 0 0-64-16 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `,
+                        confirmText: '下一步',
+                        cancelText: '取消',
+                        didOpen: async (popup) => {
+                            // 1. 更新链接到用户主页
+                            const link = popup.querySelector('#luoguLink');
+                            if (link && wizardData.uid) {
+                                link.href = `https://www.luogu.com.cn/user/${wizardData.uid}`;
+                                link.textContent = `前往 ${wizardData.uid} 的个人中心`;
+                            }
+
+                            // 2. 生成验证码
+                            try {
+                                const token = (await supabase.auth.getSession()).data.session?.access_token;
+                                if (!token) throw new Error('未登录');
+                                const res = await fetch(
+                                    'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-luogu/generate',
+                                    {
+                                        method: 'GET',
+                                        headers: { 'Authorization': 'Bearer ' + token }
+                                    }
+                                );
+                                if (!res.ok) {
+                                    const errData = await res.json();
+                                    throw new Error(errData.error || '生成验证码失败');
+                                }
+                                const data = await res.json();
+                                wizardData.challenge = data.challenge;
+
+                                const display = popup.querySelector('#challengeDisplay');
+                                if (display) {
+                                    display.textContent = `Jason227_${data.challenge}`;
+                                }
+
+                                // 3. 【仅保留】点击复制按钮复制 → 使用 Toast
+                                const copyBtn = popup.querySelector('#challengeCopyBtn');
+                                if (copyBtn) {
+                                    copyBtn.onclick = (e) => {
+                                        e.stopPropagation();
+                                        const code = display?.textContent;
+                                        if (code && code !== '⏳ 生成中...') {
+                                            navigator.clipboard?.writeText(code)
+                                                .then(() => showCopyToast())
+                                                .catch(() => {
+                                                    const range = document.createRange();
+                                                    range.selectNode(display);
+                                                    window.getSelection().removeAllRanges();
+                                                    window.getSelection().addRange(range);
+                                                    document.execCommand('copy');
+                                                    showCopyToast();
+                                                });
+                                        }
+                                    };
+                                }
+                            } catch (err) {
+                                Swal.showValidationMessage('生成验证码失败: ' + err.message);
+                            }
+                        },
+                        preConfirm: () => {
+                            if (!wizardData.challenge) {
+                                Swal.showValidationMessage('验证码尚未生成，请稍后重试');
+                                return false;
+                            }
+                            return true;
+                        }
+                    },
+
+                    // ========== 第 4 步：图形验证码 ==========
+                    {
+                        title: '图形验证码',
+                        html: `
+        <div>
+            <div style="display:flex; align-items:center; justify-content:center;">
+                <canvas id="captchaCanvas" width="120" height="44" style="border:1px solid #ddd; border-radius:6px; background:#f9fafb; cursor:pointer;"></canvas>
+            </div>
+        </div>
+    `,
+                        input: 'text',
+                        didOpen: (popup) => {
+                            const canvas = popup.querySelector('#captchaCanvas');
+
+                            function refresh() {
+                                captchaCode = generateCaptcha();
+                                if (canvas) drawCaptcha(canvas, captchaCode);
+                            }
+
+                            refresh();
+
+                            // 点击图片刷新
+                            if (canvas) {
+                                canvas.addEventListener('click', refresh);
+                            }
+                        },
+                        preConfirm: () => {
+                            const input = Swal.getInput();
+                            if (!input) {
+                                Swal.showValidationMessage('请输入图形验证码');
+                                return false;
+                            }
+                            const value = input.value.trim().toUpperCase();
+                            if (!value) {
+                                Swal.showValidationMessage('请输入图形验证码');
+                                return false;
+                            }
+                            if (value !== captchaCode) {
+                                Swal.showValidationMessage('图形验证码错误');
+                                const canvas = document.getElementById('captchaCanvas');
+                                if (canvas) {
+                                    captchaCode = generateCaptcha();
+                                    drawCaptcha(canvas, captchaCode);
+                                }
+                                if (input) input.value = '';
+                                return false;
+                            }
+                            return true;
+                        }
+                    }
+                ];
+
+                // 递归显示步骤
+                function showStep(stepIndex) {
+                    if (stepIndex >= steps.length) {
+                        performBind();
+                        return;
+                    }
+
+                    const step = steps[stepIndex];
+
+                    // 构建配置对象
+                    const config = {
+                        title: step.title,
+                        showCancelButton: true,
+                        confirmButtonText: step.confirmText || '下一步',
+                        cancelButtonText: step.cancelText || '取消',
+                        confirmButtonColor: '#E74C3C',
+                        cancelButtonColor: '#BFBFBF',
+                        progressSteps: ['1', '2', '3', '4'],
+                        currentProgressStep: stepIndex,
+                        preConfirm: step.preConfirm || (() => true),
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    };
+
+                    // 条件添加参数
+                    if (step.html) config.html = step.html;
+                    if (step.text) config.text = step.text;
+                    if (step.input) {
+                        config.input = step.input;
+                        if (step.inputPlaceholder) config.inputPlaceholder = step.inputPlaceholder;
+                        if (step.inputAttributes) config.inputAttributes = step.inputAttributes;
+                    }
+                    if (step.didOpen) config.didOpen = step.didOpen;
+
+                    Swal.fire(config).then((result) => {
+                        if (result.isConfirmed) {
+                            showStep(stepIndex + 1);
+                        }
+                    });
+                }
+
+                // 执行最终绑定（和第 3 步时一样，保持不变）
+                async function performBind() {
+                    try {
+                        const token = (await supabase.auth.getSession()).data.session?.access_token;
+                        if (!token) throw new Error('未登录');
+
+                        const res = await fetch(
+                            'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-luogu/verify',
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': 'Bearer ' + token,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    luogu_uid: wizardData.uid
+                                })
+                            }
+                        );
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || '绑定失败');
+
+                        if (data.profile) {
+                            currentProfile = { ...currentProfile, ...data.profile };
+                        } else {
+                            currentProfile = await getProfile(currentUser.id);
+                        }
+                        renderLuoguBind();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: '绑定成功',
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                    } catch (err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: err.message,
+                            confirmButtonColor: '#E74C3C',
+                            confirmButtonText: '确定',
+                        });
+                    }
+                }
+
+                showStep(0);
+            }
+
+            // ==============================================================
+            // 5. 事件委托（动态按钮）
+            // ==============================================================
+            const statusContainer = document.getElementById('luoguBindStatus');
+            if (statusContainer) {
+                statusContainer.addEventListener('click', function (e) {
+                    const target = e.target;
+                    if (target.id === 'startBindBtn') {
+                        startBindWizard();
+                    } else if (target.id === 'unbindLuoguBtn') {
+                        // 使用 SweetAlert2 确认弹窗
+                        Swal.fire({
+                            title: '真的要解绑洛谷的账号吗？',
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonColor: '#E74C3C',
+                            cancelButtonColor: '#BFBFBF',
+                            confirmButtonText: '要！',
+                            cancelButtonText: '算了'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // 执行解绑
+                                (async function () {
+                                    try {
+                                        const { error } = await supabase
+                                            .from('profiles')
+                                            .update({ luogu_uid: null, luogu_username: null, luogu_bind_time: null })
+                                            .eq('id', currentUser.id);
+                                        if (error) throw error;
+                                        currentProfile = await getProfile(currentUser.id);
+                                        renderLuoguBind();
+                                        // 解绑成功提示
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: '解绑成功',
+                                            showConfirmButton: false,
+                                            timer: 1000
+                                        });
+                                    } catch (err) {
+                                        // 解绑失败提示
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: err.message,
+                                            confirmButtonColor: '#E74C3C',
+                                            confirmButtonText: '确定',
+                                        });
+                                    }
+                                })();
+                            }
+                        });
+                    }
+                });
+            }
+
+            // ==============================================================
+            // 6. 更新 UI
+            // ==============================================================
             async function updateUI() {
                 try {
                     var { data: { session } } = await supabase.auth.getSession();
                     if (session) {
                         currentUser = session.user;
+                        localStorage.removeItem('luogu_bind_status');
+
                         currentProfile = await getProfile(session.user.id);
                         if (currentProfile) {
                             var { data: banData, error: banErr } = await supabase
@@ -1044,7 +1497,6 @@
                         await fetchUnreadCount();
                         startUnreadPolling();
 
-                        // 渲染洛谷绑定状态
                         renderLuoguBind();
                     } else {
                         window.location.href = '/login';
@@ -1058,255 +1510,7 @@
             }
 
             // ==============================================================
-            // 4. 洛谷绑定（只输入 UID，从个人签名提取）
-            // ==============================================================
-            const luoguBindCard = document.getElementById('luoguBindCard');
-            const luoguBindStatus = document.getElementById('luoguBindStatus');
-            const luoguBindDetail = document.getElementById('luoguBindDetail');
-            const challengeCodeDisplay = document.getElementById('challengeCodeDisplay');
-            const copyChallengeBtn = document.getElementById('copyChallengeBtn');
-            const luoguUidInput = document.getElementById('luoguUidInput');
-            const verifyBindBtn = document.getElementById('verifyBindBtn');
-            const cancelBindBtn = document.getElementById('cancelBindBtn');
-            const luoguBindMsg = document.getElementById('luoguBindMsg');
-
-            function getLuoguBindInfo() {
-                // 优先从 localStorage 读取缓存
-                const cached = localStorage.getItem('luogu_bind_status');
-                if (cached) {
-                    try {
-                        const data = JSON.parse(cached);
-                        if (data.bind_time) {
-                            return {
-                                uid: currentProfile?.luogu_uid || '',
-                                username: data.username || '',
-                                bindTime: data.bind_time,
-                                isBound: true
-                            };
-                        }
-                    } catch (_) { }
-                }
-
-                if (!currentProfile) return null;
-                return {
-                    uid: currentProfile.luogu_uid || null,
-                    username: currentProfile.luogu_username || null,
-                    bindTime: currentProfile.luogu_bind_time || null,
-                    isBound: !!currentProfile.luogu_bind_time
-                };
-            }
-
-            function renderLuoguBind() {
-                const info = getLuoguBindInfo();
-                if (info && info.isBound) {
-                    luoguBindCard.classList.add('bound');
-                    const displayName = info.username || '已绑定';
-                    luoguBindStatus.innerHTML = `
-                        <span style="font-size:13px; color:#2c3e50;">已绑定：<strong style="color:#6b8a74;">${escapeHtmlAttr(displayName)}</strong></span>
-                        <span class="card-badge bound">已绑定</span>
-                        <button id="unbindLuoguBtn" class="btn btn-danger">解绑</button>
-                    `;
-                    luoguBindDetail.classList.remove('active');
-                    luoguBindMsg.className = 'bind-msg';
-                    luoguBindMsg.textContent = '';
-                } else {
-                    luoguBindCard.classList.remove('bound');
-                    luoguBindStatus.innerHTML = `
-                        <span style="font-size:13px; color:#2c3e50;">未绑定</span>
-                        <span class="card-badge unbound">—</span>
-                        <button id="startBindBtn" class="btn btn-primary">绑定洛谷账号</button>
-                    `;
-                    luoguBindDetail.classList.remove('active');
-                    luoguBindMsg.className = 'bind-msg';
-                    luoguBindMsg.textContent = '';
-                }
-            }
-
-            function showLuoguMsg(text, type) {
-                luoguBindMsg.textContent = text;
-                luoguBindMsg.className = 'bind-msg ' + (type || 'info');
-                if (type) {
-                    luoguBindMsg.style.display = 'block';
-                } else {
-                    luoguBindMsg.style.display = 'none';
-                }
-            }
-
-            // 开始绑定流程（生成挑战码）
-            async function startBindProcess() {
-                if (luoguBindState.isGenerating) return;
-                luoguBindState.isGenerating = true;
-                const startBtn = document.getElementById('startBindBtn');
-                if (startBtn) startBtn.disabled = true;
-                showLuoguMsg('正在生成挑战码...', 'info');
-
-                try {
-                    const token = (await supabase.auth.getSession()).data.session?.access_token;
-                    if (!token) throw new Error('未登录');
-                    const res = await fetch(
-                        'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-luogu/generate', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-                            'Content-Type': 'application/json',
-                        }
-                    }
-                    );
-                    if (!res.ok) {
-                        const errData = await res.json();
-                        throw new Error(errData.error || '生成挑战码失败');
-                    }
-                    const data = await res.json();
-                    luoguBindState.challenge = data.challenge;
-                    luoguBindState.expiresAt = data.expires_at;
-                    challengeCodeDisplay.textContent = data.challenge;
-                    luoguBindDetail.classList.add('active');
-                    luoguBindMsg.className = 'bind-msg';
-                    luoguBindMsg.textContent = '';
-                    luoguUidInput.value = '';
-                    verifyBindBtn.disabled = false;
-                } catch (err) {
-                    showLuoguMsg('错误: ' + err.message, 'error');
-                } finally {
-                    luoguBindState.isGenerating = false;
-                    if (startBtn) startBtn.disabled = false;
-                }
-            }
-
-            // 复制挑战码
-            copyChallengeBtn.addEventListener('click', function () {
-                const code = challengeCodeDisplay.textContent;
-                if (code && code !== '等待生成') {
-                    const fullText = `Jason227_${code}`;
-                    navigator.clipboard.writeText(fullText).then(() => {
-                        showLuoguMsg('已复制：' + fullText, 'success');
-                        setTimeout(() => {
-                            if (!luoguBindState.isVerifying) {
-                                luoguBindMsg.className = 'bind-msg';
-                                luoguBindMsg.textContent = '';
-                            }
-                        }, 2000);
-                    }).catch(() => {
-                        const textarea = document.createElement('textarea');
-                        textarea.value = fullText;
-                        document.body.appendChild(textarea);
-                        textarea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textarea);
-                        showLuoguMsg('已复制：' + fullText, 'success');
-                        setTimeout(() => {
-                            if (!luoguBindState.isVerifying) {
-                                luoguBindMsg.className = 'bind-msg';
-                                luoguBindMsg.textContent = '';
-                            }
-                        }, 2000);
-                    });
-                }
-            });
-
-            // 验证绑定（只传 UID）
-            verifyBindBtn.addEventListener('click', async function () {
-                const uid = luoguUidInput.value.trim();
-
-                if (!uid) {
-                    showLuoguMsg('请输入洛谷 UID', 'error');
-                    return;
-                }
-                if (!luoguBindState.challenge) {
-                    showLuoguMsg('请先生成挑战码', 'error');
-                    return;
-                }
-                if (luoguBindState.isVerifying) return;
-
-                luoguBindState.isVerifying = true;
-                verifyBindBtn.disabled = true;
-                showLuoguMsg('验证中...', 'info');
-
-                try {
-                    const token = (await supabase.auth.getSession()).data.session?.access_token;
-                    if (!token) throw new Error('未登录');
-                    const res = await fetch(
-                        'https://nosikdfacxkuaxfrmoqn.supabase.co/functions/v1/verify-luogu/verify', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            luogu_uid: uid
-                        })
-                    }
-                    );
-                    const data = await res.json();
-                    if (!res.ok) {
-                        throw new Error(data.error || '验证失败');
-                    }
-                    // 更新 currentProfile
-                    if (data.profile) {
-                        currentProfile = { ...currentProfile, ...data.profile };
-                    } else {
-                        currentProfile = await getProfile(currentUser.id);
-                    }
-                    const bindTime = currentProfile.luogu_bind_time || new Date().toISOString();
-                    const username = currentProfile.luogu_username || '';
-                    currentProfile.luogu_bind_time = bindTime;
-                    localStorage.setItem('luogu_bind_status', JSON.stringify({
-                        bind_time: bindTime,
-                        username: username
-                    }));
-                    renderLuoguBind();
-                    luoguBindDetail.classList.remove('active');
-                    showLuoguMsg('✅ ' + (data.message || '绑定成功！'), 'success');
-                } catch (err) {
-                    showLuoguMsg('❌ ' + err.message, 'error');
-                } finally {
-                    luoguBindState.isVerifying = false;
-                    verifyBindBtn.disabled = false;
-                }
-            });
-
-            // 取消绑定
-            cancelBindBtn.addEventListener('click', function () {
-                luoguBindDetail.classList.remove('active');
-                luoguBindMsg.className = 'bind-msg';
-                luoguBindMsg.textContent = '';
-                luoguUidInput.value = '';
-                luoguBindState.challenge = '';
-                renderLuoguBind();
-            });
-
-            // ==============================================================
-            // 5. 事件委托（处理动态按钮）
-            // ==============================================================
-            const statusContainer = document.getElementById('luoguBindStatus');
-            if (statusContainer) {
-                statusContainer.addEventListener('click', function (e) {
-                    const target = e.target;
-                    if (target.id === 'startBindBtn') {
-                        startBindProcess();
-                    } else if (target.id === 'unbindLuoguBtn') {
-                        if (!confirm('确定要解绑洛谷账号吗？')) return;
-                        (async function () {
-                            try {
-                                const { error } = await supabase
-                                    .from('profiles')
-                                    .update({ luogu_uid: null, luogu_username: null, luogu_bind_time: null })
-                                    .eq('id', currentUser.id);
-                                if (error) throw error;
-                                localStorage.removeItem('luogu_bind_status');
-                                currentProfile = await getProfile(currentUser.id);
-                                renderLuoguBind();
-                                showLuoguMsg('已解绑', 'success');
-                            } catch (err) {
-                                showLuoguMsg('解绑失败: ' + err.message, 'error');
-                            }
-                        })();
-                    }
-                });
-            }
-
-            // ==============================================================
-            // 6. 侧边栏滚动重置
+            // 7. 侧边栏滚动重置
             // ==============================================================
             const sidebar = document.querySelector('.nav-sidebar');
             if (sidebar) {
@@ -1318,7 +1522,7 @@
             }
 
             // ==============================================================
-            // 7. 启动
+            // 8. 启动
             // ==============================================================
             updateUI();
 

@@ -38,7 +38,7 @@
     checkDeps();
 
     // ---------- markdown-it 实例 ----------
-    const md = global.markdownit({ html: true, linkify: true, typographer: true });
+    const md = global.markdownit({ html: false, linkify: true, typographer: true });
     md.use(global.markdownitTaskLists);
     md.use(global.markdownitEmoji);
     md.use(global.markdownitFootnote);
@@ -540,7 +540,7 @@
             return `
                 ${titleHtml}
                 <div class="code-block-wrapper">
-                    <button class="copy-code-btn" title="复制代码">
+                    <button class="copy-code-btn">
                         <svg class="svg-icon" viewBox="0 0 448 512" aria-hidden="true">
                             <path d="M192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-200.6c0-17.4-7.1-34.1-19.7-46.2L370.6 17.8C358.7 6.4 342.8 0 326.3 0L192 0zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-16-64 0 0 16-192 0 0-256 16 0 0-64-16 0z"/>
                         </svg>
