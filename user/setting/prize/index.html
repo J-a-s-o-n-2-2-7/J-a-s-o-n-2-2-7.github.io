@@ -292,7 +292,9 @@
             padding-bottom: 28px;
         }
 
-        /* ===== 导航样式 ===== */
+        /* ============================================================
+           选项卡样式 —— 已改为与「个人信息」页面完全一致
+           ============================================================ */
         .setting-nav {
             display: flex;
             gap: 40px;
@@ -307,7 +309,8 @@
             font-weight: 500;
             cursor: pointer;
             color: #6c7a8e;
-            padding: 8px 0;
+            padding: 12px 0 20px 0;
+            /* 与个人信息页面一致 */
             text-decoration: none;
             transition: color 0.2s;
         }
@@ -318,7 +321,8 @@
             bottom: 0;
             left: 50%;
             width: 0;
-            height: 2px;
+            height: 5px;
+            /* 与个人信息页面一致 */
             background: #d0d7de;
             transition: all 0.25s ease;
             transform: translateX(-50%);
@@ -340,13 +344,14 @@
             width: 100%;
             left: 0;
             transform: translateX(0);
-            height: 2px;
+            height: 5px;
+            /* 与个人信息页面一致 */
         }
 
         .setting-nav .nav-btn.active:hover::after {
             width: calc(100% + 20px);
             left: -10px;
-            height: 2px;
+            height: 5px;
         }
 
         #prize-detail {
@@ -675,6 +680,7 @@
 
             .setting-nav .nav-btn {
                 font-size: 14px;
+                /* 继承 padding: 12px 0 20px 0，与个人信息页面一致 */
             }
 
             .auth-buttons .auth-btn {
@@ -737,6 +743,7 @@
             .setting-nav .nav-btn {
                 font-size: 12px;
                 padding: 6px 0;
+                /* 与个人信息页面一致 */
             }
 
             .auth-buttons .auth-btn {
@@ -880,7 +887,8 @@
                             <div id="oi-detail" class="form-row">
                                 <span class="form-label">OI 等级</span>
                                 <div class="form-right">
-                                    <span id="oiLevelText" class="avatar-caption" style="margin-top: 0; margin-bottom:0;">加载中...</span>
+                                    <span id="oiLevelText" class="avatar-caption"
+                                        style="margin-top: 0; margin-bottom:0;">加载中...</span>
                                     <div id="oiProfileMsg"></div>
                                 </div>
                             </div>
@@ -888,7 +896,8 @@
                             <div id="icpc-detail" class="form-row" style="display:none;">
                                 <span class="form-label">ICPC 等级</span>
                                 <div class="form-right">
-                                    <span id="icpcLevelText" class="avatar-caption" style="margin-top: 0; margin-bottom: 0;">加载中...</span>
+                                    <span id="icpcLevelText" class="avatar-caption"
+                                        style="margin-top: 0; margin-bottom: 0;">加载中...</span>
                                     <div id="icpcProfileMsg"></div>
                                 </div>
                             </div>
