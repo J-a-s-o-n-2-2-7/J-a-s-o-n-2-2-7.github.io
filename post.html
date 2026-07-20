@@ -2855,10 +2855,6 @@
                 var match = path.match(/^\/discuss\/(\d+)$/);
                 var postId = match ? match[1] : null;
                 if (!postId) {
-                    var params = new URLSearchParams(window.location.search);
-                    postId = params.get('id');
-                }
-                if (!postId) {
                     document.getElementById('loadingState').style.display = 'none';
                     document.getElementById('postContent').innerHTML =
                         '<div class="error-state"><h1>缺少帖子 ID</h1><p>请提供有效的帖子编号。</p></div>';

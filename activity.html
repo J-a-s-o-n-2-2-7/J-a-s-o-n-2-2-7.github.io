@@ -4,9 +4,36 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>用户主页 - Jason227</title>
+    <title>个人中心 - ✨ Jason227</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
+
+    <!-- ===== Markdown 渲染依赖 ===== -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
+
+    <!-- ===== 自定义 Markdown 渲染器（与主页共用） ===== -->
+    <link rel="stylesheet" href="./markdown-renderer.css">
+    <script defer src="./markdown-renderer.js">
+    </script>
+
     <style>
         /* ===== 全局重置 & 基础 ===== */
         * {
@@ -182,7 +209,7 @@
             padding-top: 20px;
         }
 
-        /* ===== 响应式（侧边栏） ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
@@ -256,7 +283,7 @@
             font-size: 16px;
         }
 
-        /* 用户头部（封面）—— 顶部圆角，底部直角 */
+        /* 用户头部（封面） */
         .user-header {
             position: relative;
             border-radius: 16px 16px 0 0;
@@ -347,7 +374,7 @@
         }
 
         .user-header-slogan {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             opacity: 0.92;
             max-width: 600px;
             word-break: break-word;
@@ -436,7 +463,6 @@
             transform: scale(1.04);
         }
 
-        /* ===== 右上角更换封面按钮 ===== */
         .btn-action-cover {
             position: absolute;
             top: 16px;
@@ -463,7 +489,6 @@
             color: #4e4e4e;
         }
 
-        /* ===== 个人设置按钮 ===== */
         .btn-luogu-setting {
             display: inline-flex;
             align-items: center;
@@ -494,9 +519,7 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
-        /* ============================================================ */
-        /* ===== 新建卡片 —— 选项卡导航（仅标签，无内容面板） ===== */
-        /* ============================================================ */
+        /* ===== 选项卡导航 ===== */
         .new-card {
             border-radius: 0 0 16px 16px;
             margin-bottom: 24px;
@@ -509,7 +532,6 @@
             align-items: stretch;
         }
 
-        /* ===== 选项卡导航（完全复刻用户设置页样式） ===== */
         .profile-tabs {
             width: 100%;
         }
@@ -578,46 +600,6 @@
             height: 5px;
         }
 
-        /* ===== 信息卡片（原 l-card） ===== */
-        .l-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 18px 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            margin-bottom: 24px;
-        }
-
-        .l-flex-info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-        }
-
-        .l-flex-info-row:last-child {
-            border-bottom: none;
-        }
-
-        .l-flex-info-row span {
-            font-size: 14px;
-            color: #404040;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-
-        .l-flex-info-row .right {
-            font-size: 14px;
-            color: #2c3e50;
-            font-weight: 500;
-            text-align: right;
-            word-break: break-all;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-        }
-
-        .l-flex-info-row .right time {
-            color: #2c3e50;
-        }
-
         .user-tag-display {
             display: inline-block;
             border-radius: 2px;
@@ -633,42 +615,6 @@
 
         .user-tag-display:hover {
             filter: brightness(0.9);
-        }
-
-        /* ===== 洛谷个人中心链接样式 ===== */
-        .luogu-link {
-            color: #e74c3c;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s, text-decoration 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .luogu-link:hover {
-            text-decoration: underline;
-        }
-
-        .luogu-link svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-            flex-shrink: 0;
-        }
-
-        .luogu-link .luogu-uid-badge {
-            background: #f0f2f5;
-            color: #2c3e50;
-            padding: 1px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 400;
-            margin-left: 2px;
-        }
-
-        .luogu-link .luogu-uid-badge:hover {
-            background: #e5e7eb;
         }
 
         /* ===== 封面更换浮层 ===== */
@@ -925,6 +871,195 @@
         .rainbow-badge .fa-primary {
             fill: #ffffff !important;
         }
+
+        /* ============================================================ */
+        /* ===== 犇犇模块样式（无气泡框） ===== */
+        /* ============================================================ */
+
+        .benben-module-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+
+        .benben-list {
+            margin-top: 20px;
+        }
+
+        .benben-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 16px;
+        }
+
+        .benben-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .benben-avatar {
+            flex-shrink: 0;
+            width: 60px;
+            margin-top: 4px;
+        }
+
+        .benben-avatar a {
+            display: block;
+        }
+
+        .benben-avatar img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f0f2f5;
+        }
+
+        /* 移除原气泡框容器样式，直接使用 .benben-content 作为内容区，但去掉边框背景等 */
+        .benben-content {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            position: static;
+        }
+
+        .benben-content::before,
+        .benben-content::after {
+            display: none;
+        }
+
+        .benben-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: transparent;
+            padding: 0 0 6px 0;
+            margin: 0;
+            border-radius: 0;
+        }
+
+        .benben-user-info {
+            display: flex;
+            align-items: center;
+            gap: 4px 8px;
+            flex-wrap: wrap;
+        }
+
+        .benben-username {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .benben-username:hover {
+            color: #e74c3c;
+        }
+
+        .benben-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .benben-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .benben-report-btn,
+        .benben-delete {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .benben-report-btn:hover,
+        .benben-delete:hover {
+            color: #e74c3c;
+        }
+
+        .benben-text {
+            margin-top: 6px;
+            padding: 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .benben-text .task-list-item {
+            list-style: none;
+        }
+
+        .benben-text .task-list-item input[type="checkbox"] {
+            margin-right: 6px;
+        }
+
+        .benben-empty,
+        .no-more-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .loading-sentinel {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .benben-module-card {
+                padding: 16px 18px;
+            }
+
+            .benben-item {
+                gap: 10px;
+                padding-bottom: 12px;
+            }
+
+            .benben-avatar {
+                width: 40px;
+                margin-top: 2px;
+            }
+
+            .benben-avatar img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .benben-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-bottom: 4px;
+            }
+
+            .benben-user-info {
+                gap: 6px;
+            }
+
+            .benben-actions {
+                gap: 8px;
+            }
+
+            .benben-text {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 
@@ -938,7 +1073,7 @@
 
     <!-- ===== 主体 ===== -->
     <div class="main-layout">
-        <!-- 侧边栏 -->
+        <!-- 侧边栏（保持不变） -->
         <div class="nav-sidebar">
             <div class="nav-group">
                 <ul>
@@ -1034,6 +1169,18 @@
             <div class="main-content">
                 <div class="loading-box" id="loadingPlaceholder">加载中...</div>
                 <div id="userProfile" style="display:none;"></div>
+
+                <!-- ===== 犇犇模块卡片（仅显示该用户的犇犇） ===== -->
+                <!-- 修改：已删除发布窗口和选项卡，并移除了气泡框样式 -->
+                <div class="benben-module-card" id="benbenModule" style="display:none;">
+                    <!-- 列表 -->
+                    <div id="benbenList" class="benben-list">
+                        <div class="benben-empty">加载中...</div>
+                    </div>
+                    <div id="loadingSentinel" class="loading-sentinel" style="display:none;">加载中...</div>
+                </div>
+                <!-- ===== 犇犇模块结束 ===== -->
+
             </div>
         </div>
     </div>
@@ -1061,6 +1208,17 @@
     <script>
         // ===== 工具函数 =====
         function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        function escapeHtmlAttr(str) {
             if (!str) return '';
             return str.replace(/[&<>"]/g, function (m) {
                 if (m === '&') return '&amp;';
@@ -1184,38 +1342,59 @@
             let followerCount = 0;
             let isFollowing = false;
 
+            // ---- 犇犇相关状态 ----
+            let isLoading = false;
+            let hasMore = true;
+            let lastId = null;
+
+            // ---- 获取当前登录用户信息 ----
+            let currentProfile = null;
             try {
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError) throw new Error(`获取登录状态失败: ${sessionError.message}`);
                 currentUserId = session?.user?.id || null;
 
-                // 顶栏认证 UI
-                (async () => {
-                    const c = document.getElementById('authButtons');
-                    if (!session) {
-                        c.innerHTML =
-                            '<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>';
-                        return;
-                    }
-                    const { data: p } = await supabase.from('profiles').select('username, can_manage_users').eq('id',
-                        session.user.id).maybeSingle();
-                    const name = p?.username || session.user.email || '用户';
-                    c.innerHTML = '<span class="user-email">' + escapeHtml(name) +
-                        '</span><button id="logoutBtn" class="auth-btn logout">登出</button>';
-                    const lb = document.getElementById('logoutBtn');
-                    if (lb) lb.addEventListener('click', async () => {
-                        await supabase.auth.signOut();
-                        location.reload();
-                    });
-                    const umi = document.getElementById('userManageItem');
-                    if (umi) umi.style.display = (p?.can_manage_users === true) ? 'flex' : 'none';
-                })();
+                if (currentUserId) {
+                    const { data: prof, error: profErr } = await supabase
+                        .from('profiles')
+                        .select(
+                            'id, user_number, username, is_admin, can_speak, can_manage_users, can_manage_posts, is_cheater, user_tag, avatar_url, username_color, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge'
+                        )
+                        .eq('id', currentUserId)
+                        .single();
+                    if (!profErr && prof) currentProfile = prof;
+                }
+            } catch (e) { console.warn('获取当前用户信息失败:', e); }
 
-                // ===== 查询用户资料（新增 luogu_uid 字段） =====
+            // ---- 顶栏 UI ----
+            (async () => {
+                const c = document.getElementById('authButtons');
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    c.innerHTML =
+                        '<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>';
+                    return;
+                }
+                const { data: p } = await supabase.from('profiles').select('username, can_manage_users').eq('id', session
+                    .user.id).maybeSingle();
+                const name = p?.username || session.user.email || '用户';
+                c.innerHTML = '<span class="user-email">' + escapeHtml(name) +
+                    '</span><button id="logoutBtn" class="auth-btn logout">登出</button>';
+                const lb = document.getElementById('logoutBtn');
+                if (lb) lb.addEventListener('click', async () => {
+                    await supabase.auth.signOut();
+                    location.reload();
+                });
+                const umi = document.getElementById('userManageItem');
+                if (umi) umi.style.display = (p?.can_manage_users === true) ? 'flex' : 'none';
+            })();
+
+            try {
+                // ---- 查询用户资料 ----
                 const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
                     .select(
-                        'id, username, user_number, avatar_url, bio, banned_until, created_at, is_admin, is_cheater, user_tag, username_color, cover_url, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge, luogu_uid, luogu_username'
+                        'id, username, user_number, avatar_url, bio, banned_until, created_at, is_admin, is_cheater, user_tag, username_color, cover_url, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge'
                     )
                     .eq('user_number', parseInt(userNumber))
                     .maybeSingle();
@@ -1234,9 +1413,9 @@
                     `background-image: url('${defaultCover}');`;
 
                 isOwner = currentUserId && user.id && currentUserId === user.id;
-                document.title = `${user.username} 的个人主页 - Jason227`;
+                document.title = `${user.username} - 个人中心 - ✨ Jason227`;
 
-                // 关注数据
+                // ---- 关注数据 ----
                 const targetUserId = user.id;
                 const { count: followCountResult, error: followCountError } = await supabase
                     .from('follows')
@@ -1263,7 +1442,7 @@
                     else isFollowing = !!followData;
                 }
 
-                // ===== 构建 HTML =====
+                // ---- 构建用户信息 HTML ----
                 const bannedUntil = user.banned_until ? new Date(user.banned_until) : null;
                 const now = new Date();
                 const isBanned = bannedUntil && bannedUntil > now;
@@ -1293,24 +1472,6 @@
                         followButtonHtml =
                             `<a href="/auth/login" class="follow-btn" style="background:#7f8c8d;text-decoration:none;display:inline-block;">登录后关注</a>`;
                     }
-                }
-
-                let luoguLinkHtml = '';
-                if (user.luogu_uid) {
-                    const luoguUid = user.luogu_uid;
-                    const luoguUsername = user.luogu_username || '';
-                    // 显示名称：优先用户名，否则显示 #UID（但按照你的需求，这里也可以直接用用户名，如果没有就显示 UID 或自定义）
-                    const displayName = luoguUsername || `#${luoguUid}`;
-                    luoguLinkHtml = `
-        <div class="l-flex-info-row">
-            <span>洛谷个人中心</span>
-            <div class="right">
-                <a href="https://www.luogu.com.cn/user/${luoguUid}" target="_blank" rel="noopener noreferrer" class="luogu-link">
-                    ${escapeHtml(displayName)}
-                </a>
-            </div>
-        </div>
-    `;
                 }
 
                 let html = '';
@@ -1371,12 +1532,12 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- ===== 新建卡片：选项卡导航（仅标签，无内容面板） ===== -->
+                        <!-- ===== 选项卡导航 ===== -->
                         <div class="new-card">
                             <div class="profile-tabs">
                                 <nav class="tab-nav">
-                                    <button class="tab-btn active" data-tab="home">主页</button>
-                                    <button class="tab-btn" data-tab="dynamic">动态</button>
+                                    <button class="tab-btn" data-tab="home">主页</button>
+                                    <button class="tab-btn active" data-tab="dynamic">动态</button>
                                     <button class="tab-btn" data-tab="column">专栏</button>
                                     <button class="tab-btn" data-tab="practice">练习</button>
                                     <button class="tab-btn" data-tab="follow">关注</button>
@@ -1386,39 +1547,6 @@
                                 </nav>
                             </div>
                         </div>
-                        <!-- ===== 信息卡片（l-card） ===== -->
-                        <div class="l-card">
-                            <div class="l-flex-info-row">
-                                <span>用户编号</span>
-                                <div class="right">${user.user_number}</div>
-                            </div>
-                            <div class="l-flex-info-row">
-                                <span>用户类型</span>
-                                <div class="right">${user.is_admin ? '管理员' : user.is_cheater ? '作弊者' : '普通用户'}</div>
-                            </div>
-                            <div class="l-flex-info-row">
-                                <span>注册时间</span>
-                                <div class="right"><time datetime="${user.created_at}">${user.created_at.split('T')[0]}</time></div>
-                            </div>
-                            ${user.ccf_level && user.ccf_level >= 1 && user.show_ccf_badge !== false ? `
-                                <div class="l-flex-info-row">
-                                    <span>OI 程序设计能力</span>
-                                    <div class="right">
-                                        ${user.ccf_level} 级 ${getCcfBadgeHtml(user.ccf_level, user)}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            ${user.xcpc_level && user.xcpc_level >= 1 && user.show_xcpc_badge !== false ? `
-                                <div class="l-flex-info-row">
-                                    <span>ICPC/CCPC 程序设计能力</span>
-                                    <div class="right">
-                                        ${user.xcpc_level} 级 ${getXcpcBalloonHtml(user.xcpc_level, user)}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            <!-- ===== ★ 新增：洛谷个人中心链接（放在 l-card 最下面） ===== -->
-                            ${luoguLinkHtml}
-                        </div>
                     `;
                 }
 
@@ -1426,7 +1554,7 @@
                 profileContainer.style.display = 'block';
                 loadingEl.style.display = 'none';
 
-                // ===== 选项卡切换（仅切换 active 状态） =====
+                // ---- 选项卡切换 ----
                 document.querySelectorAll('.tab-btn').forEach(function (btn) {
                     btn.addEventListener('click', function () {
                         document.querySelectorAll('.tab-btn').forEach(function (b) {
@@ -1436,7 +1564,7 @@
                     });
                 });
 
-                // ===== 关注按钮交互 =====
+                // ---- 关注按钮 ----
                 const followBtn = document.getElementById('followToggleBtn');
                 if (followBtn && currentUserId && !isOwner) {
                     followBtn.addEventListener('click', async function () {
@@ -1479,7 +1607,7 @@
                     });
                 }
 
-                // ===== 签名编辑 =====
+                // ---- 签名编辑 ----
                 if (isOwner && !isBanned) {
                     const topSlogan = document.getElementById('topSlogan');
                     if (topSlogan) {
@@ -1543,7 +1671,7 @@
                     }
                 }
 
-                // ===== 封面更换 =====
+                // ---- 封面更换 ----
                 const openBtn = document.getElementById('openCoverUpload');
                 const overlay = document.getElementById('coverUploadOverlay');
                 const cancelCoverBtn = document.getElementById('coverCancelBtn');
@@ -1670,6 +1798,271 @@
                         }
                     });
                 }
+
+                // ================================================================
+                // ===== 犇犇模块初始化（仅显示该用户的犇犇，无导航，无气泡框） =====
+                // ================================================================
+                const benbenModule = document.getElementById('benbenModule');
+                const benbenListEl = document.getElementById('benbenList');
+                const loadingSentinel = document.getElementById('loadingSentinel');
+
+                // 只有用户未被封禁时才显示犇犇模块
+                if (!isBanned && userData) {
+                    benbenModule.style.display = 'block';
+
+                    // ---- 加载犇犇 ----
+                    await loadBenbenList(true);
+
+                    // ---- 无限滚动 ----
+                    setupInfiniteScroll();
+
+                } else {
+                    benbenModule.style.display = 'none';
+                }
+
+                // ================================================================
+                // ===== 犇犇函数定义（始终过滤为该用户） =====
+                // ================================================================
+
+                async function loadBenbenList(reset = true) {
+                    if (isLoading) return;
+                    if (reset) {
+                        hasMore = true;
+                        lastId = null;
+                        if (benbenListEl) benbenListEl.innerHTML = '';
+                        const existing = document.querySelector('.no-more-message');
+                        if (existing) existing.remove();
+                        if (loadingSentinel) {
+                            loadingSentinel.style.display = 'block';
+                            loadingSentinel.textContent = '滚动加载更多...';
+                        }
+                    }
+                    if (!hasMore) {
+                        if (loadingSentinel) {
+                            loadingSentinel.style.display = 'block';
+                            loadingSentinel.textContent = '没有更多动态了';
+                        }
+                        return;
+                    }
+                    isLoading = true;
+                    if (loadingSentinel) {
+                        loadingSentinel.style.display = 'block';
+                        loadingSentinel.textContent = '加载中...';
+                    }
+                    try {
+                        let query = supabase.from('benben')
+                            .select(`
+                                *, 
+                                profiles:user_number (
+                                    username,
+                                    is_admin,
+                                    is_cheater,
+                                    username_color,
+                                    user_tag,
+                                    avatar_url,
+                                    ccf_level,
+                                    xcpc_level,
+                                    show_ccf_badge,
+                                    show_xcpc_badge
+                                )
+                            `)
+                            .eq('is_deleted', false)
+                            .eq('user_number', parseInt(userNumber))
+                            .order('created_at', { ascending: false })
+                            .limit(20);
+
+                        if (lastId) query = query.lt('id', lastId);
+
+                        const { data, error } = await query;
+                        if (error) throw error;
+
+                        // 收集被 @ 的用户名
+                        const mentionSet = new Set();
+                        data?.forEach(item => {
+                            const matches = item.content.match(/@([\u4e00-\u9fa5a-zA-Z0-9_.-]+)/g);
+                            if (matches) matches.forEach(m => mentionSet.add(m.slice(1)));
+                        });
+                        let mentionMap = {};
+                        if (mentionSet.size > 0) {
+                            const usernames = Array.from(mentionSet);
+                            const { data: userData, error: userError } = await supabase.from('profiles')
+                                .select('username, user_number')
+                                .in('username', usernames);
+                            if (!userError && userData) {
+                                userData.forEach(u => { mentionMap[u.username] = u.user_number; });
+                            }
+                        }
+
+                        if (data && data.length > 0) {
+                            await renderBenbenList(data, reset, mentionMap);
+                            lastId = data[data.length - 1].id;
+                            if (data.length < 20) {
+                                hasMore = false;
+                                if (loadingSentinel) {
+                                    loadingSentinel.style.display = 'block';
+                                    loadingSentinel.textContent = '没有更多动态了';
+                                }
+                            } else {
+                                hasMore = true;
+                                if (loadingSentinel) {
+                                    loadingSentinel.style.display = 'block';
+                                    loadingSentinel.textContent = '滚动加载更多...';
+                                }
+                            }
+                        } else {
+                            hasMore = false;
+                            if (reset) {
+                                if (benbenListEl) {
+                                    benbenListEl.innerHTML = '<div class="benben-empty">还没有犇犇 🚀</div>';
+                                }
+                            }
+                            if (loadingSentinel) {
+                                loadingSentinel.style.display = 'block';
+                                loadingSentinel.textContent = '没有更多动态了';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('加载犇犇失败:', error);
+                        if (reset && benbenListEl && benbenListEl.children.length === 0) {
+                            benbenListEl.innerHTML = '<div class="benben-empty">加载失败，请刷新重试</div>';
+                        }
+                        if (loadingSentinel) {
+                            loadingSentinel.style.display = 'block';
+                            loadingSentinel.textContent = '加载出错，请刷新';
+                        }
+                    } finally {
+                        isLoading = false;
+                    }
+                }
+
+                async function renderBenbenList(data, reset, mentionMap = {}) {
+                    if (!benbenListEl) return;
+                    if (reset) benbenListEl.innerHTML = '';
+                    const mentionMapJson = JSON.stringify(mentionMap);
+                    for (const item of data) {
+                        const isOwnBenben = currentProfile && currentProfile.user_number === item.user_number;
+                        const username = escapeHtmlAttr(item.profiles?.username || '用户');
+                        const timeStr = new Date(item.created_at).toLocaleString('zh-CN');
+                        const prof = item.profiles || {};
+                        const avatarUrl = prof.avatar_url || '';
+                        const color = getUserDisplayColor(prof);
+                        const tagText = getUserTagDisplay(prof);
+                        let labelHtml = '';
+                        if (tagText) {
+                            labelHtml = `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(tagText)}</span>`;
+                        }
+                        const ccfBadge = getCcfBadgeHtml(prof?.ccf_level, prof);
+                        const xcpcBalloon = getXcpcBalloonHtml(prof?.xcpc_level, prof);
+                        let userHtml =
+                            `<span class="benben-user"><a href="/user/${item.user_number}" class="benben-username" style="color: ${color};">${username}</a>`;
+                        if (labelHtml) userHtml += labelHtml;
+                        userHtml += `${ccfBadge}${xcpcBalloon}</span>`;
+
+                        // 构建无气泡框的扁平结构
+                        const benbenHtml = `
+                            <div class="benben-item" data-id="${item.id}">
+                                <div class="benben-avatar"><a href="/user/${item.user_number}"><img src="${avatarUrl || letterAvatar(item.profiles?.username || '用户')}" alt="${username}" onerror="this.onerror=null;this.src='${letterAvatar(item.profiles?.username || '用户')}'"></a></div>
+                                <div class="benben-content">
+                                    <div class="benben-item-header">
+                                        <div class="benben-user-info">${userHtml} <span class="benben-time">${timeStr}</span></div>
+                                        <div class="benben-actions">
+                                            <button class="benben-report-btn" data-id="${item.id}">举报</button>
+                                            ${isOwnBenben ? `<button class="benben-delete" data-id="${item.id}">删除</button>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="benben-text" data-raw="${escapeHtmlAttr(item.content)}" data-mention-map='${escapeHtmlAttr(mentionMapJson)}'></div>
+                                </div>
+                            </div>
+                        `;
+                        benbenListEl.insertAdjacentHTML('beforeend', benbenHtml);
+
+                        // 渲染 Markdown
+                        const newItem = benbenListEl.lastElementChild;
+                        const textEl = newItem.querySelector('.benben-text');
+                        if (textEl) {
+                            const rawEncoded = textEl.getAttribute('data-raw');
+                            const mentionMapStr = textEl.getAttribute('data-mention-map');
+                            if (rawEncoded) {
+                                let map = {};
+                                try { map = JSON.parse(mentionMapStr || '{}'); } catch (e) { }
+                                if (typeof MarkdownRenderer !== 'undefined' && MarkdownRenderer.render) {
+                                    textEl.innerHTML = MarkdownRenderer.render(rawEncoded, {
+                                        isAdmin: currentProfile?.is_admin || false,
+                                        username: currentProfile?.username || '用户',
+                                        mentionMap: map,
+                                        uniqueId: 'benben-' + item.id
+                                    });
+                                } else {
+                                    try {
+                                        const md = window.markdownit({
+                                            html: true,
+                                            linkify: true,
+                                            typographer: true,
+                                        });
+                                        if (window.markdownitTaskLists) md.use(window.markdownitTaskLists);
+                                        if (window.markdownitEmoji) md.use(window.markdownitEmoji);
+                                        if (window.markdownitFootnote) md.use(window.markdownitFootnote);
+                                        if (window.markdownitDeflist) md.use(window.markdownitDeflist);
+                                        if (window.markdownitAbbr) md.use(window.markdownitAbbr);
+                                        const rendered = md.render(rawEncoded);
+                                        textEl.innerHTML = DOMPurify.sanitize(rendered);
+                                    } catch (e2) {
+                                        textEl.textContent = rawEncoded;
+                                    }
+                                }
+                                if (typeof mermaid !== 'undefined') {
+                                    mermaid.initialize({ theme: 'default', startOnLoad: false });
+                                    requestAnimationFrame(() => {
+                                        mermaid.run({ nodes: textEl.querySelectorAll('.mermaid') }).catch(err =>
+                                            console.warn('Mermaid 渲染失败:', err));
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // ---- 删除按钮事件 ----
+                    document.querySelectorAll('.benben-delete').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.dataset.id;
+                            if (!confirm('确定要删除这条犇犇吗？')) return;
+                            await deleteBenben(id);
+                        });
+                    });
+
+                    // ---- 举报按钮事件 ----
+                    document.querySelectorAll('.benben-report-btn').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            alert('举报功能暂未开放，请联系管理员。');
+                        });
+                    });
+                }
+
+                async function deleteBenben(id) {
+                    try {
+                        const { error } = await supabase.from('benben').update({ is_deleted: true }).eq('id', id);
+                        if (error) throw error;
+                        await loadBenbenList(true);
+                    } catch (error) {
+                        console.error('删除失败:', error);
+                        alert('删除失败：' + error.message);
+                    }
+                }
+
+                function setupInfiniteScroll() {
+                    if (!loadingSentinel) return;
+                    const observer = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting && !isLoading && hasMore && currentProfile) {
+                            loadBenbenList(false);
+                        }
+                    }, { threshold: 0.1 });
+                    observer.observe(loadingSentinel);
+                }
+
+                // ================================================================
+                // ===== 犇犇模块初始化结束 =====
+                // ================================================================
 
             } catch (err) {
                 console.error('加载出错：', err);

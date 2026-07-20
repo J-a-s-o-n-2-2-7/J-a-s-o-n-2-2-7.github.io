@@ -276,7 +276,9 @@
             margin: 0;
         }
 
-        /* ===== 导航样式（与用户设置页面完全一致） ===== */
+        /* ============================================================
+           选项卡样式 —— 已改为与「个人信息」页面完全一致
+           ============================================================ */
         .setting-nav {
             display: flex;
             gap: 40px;
@@ -291,7 +293,8 @@
             font-weight: 500;
             cursor: pointer;
             color: #6c7a8e;
-            padding: 8px 0;
+            padding: 12px 0 20px 0;
+            /* 与个人信息页面一致 */
             text-decoration: none;
             transition: color 0.2s;
         }
@@ -302,7 +305,8 @@
             bottom: 0;
             left: 50%;
             width: 0;
-            height: 2px;
+            height: 5px;
+            /* 与个人信息页面一致 */
             background: #d0d7de;
             transition: all 0.25s ease;
             transform: translateX(-50%);
@@ -324,18 +328,20 @@
             width: 100%;
             left: 0;
             transform: translateX(0);
-            height: 2px;
+            height: 5px;
+            /* 与个人信息页面一致 */
         }
 
         .setting-nav .nav-btn.active:hover::after {
             width: calc(100% + 20px);
             left: -10px;
-            height: 2px;
+            height: 5px;
         }
 
-        /* ===== 底部卡片 - 表单行样式（与用户设置页面完全一致） ===== */
+        /* ===== 底部卡片 - 表单行样式 ===== */
         .card-bottom {
-            padding-bottom: 0;
+            padding-bottom: 28px;
+            /* 与个人信息页面一致 */
         }
 
         .form-row {
@@ -347,7 +353,7 @@
 
         .form-row:last-of-type {
             border-bottom: none;
-            padding-bottom: 40px;
+            /* 移除多余的 padding-bottom，与个人信息页面一致 */
         }
 
         .form-label {
@@ -419,7 +425,13 @@
             background: #c0392b;
         }
 
-        /* ===== 响应式（与用户设置页面一致） ===== */
+        #usernameActionArea {
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ========== 响应式（与用户设置页面一致） ========== */
         @media (max-width: 900px) {
             .main-layout {
                 padding: 0 16px 16px 16px;
@@ -597,12 +609,6 @@
                 font-size: 12px;
             }
         }
-
-        #usernameActionArea {
-            min-height: 36px;              /* 与按钮/文本高度匹配 */
-            display: flex;
-            align-items: center;           /* 内容垂直居中 */
-        }
     </style>
 </head>
 
@@ -718,13 +724,13 @@
                         <h1>用户设置</h1>
                     </div>
                     <div class="setting-nav">
-                        <a href="/user/setting/security" class="nav-btn">个人信息</a>
+                        <a href="/user/setting" class="nav-btn">个人信息</a>
                         <a href="/user/setting/prize" class="nav-btn">奖项设置</a>
                         <span class="nav-btn active">安全设置</span>
                     </div>
                 </div>
 
-                <!-- ===== 底部卡片：表单行布局（与用户设置页面完全一致） ===== -->
+                <!-- ===== 底部卡片：表单行布局 ===== -->
                 <div class="card card-bottom">
 
                     <!-- 修改用户名 -->
@@ -884,7 +890,7 @@
             }
 
             // ==============================================================
-            // 3. 安全设置业务逻辑（功能保留）
+            // 3. 安全设置业务逻辑
             // ==============================================================
             const usernameActionArea = document.getElementById('usernameActionArea');
 
@@ -948,7 +954,6 @@
                 await updateTopbar();
                 await loadSecurityData();
 
-                // 新增：侧边栏滚动复位
                 const sidebar = document.querySelector('.nav-sidebar');
                 if (sidebar) {
                     sidebar.addEventListener('mouseleave', function () {

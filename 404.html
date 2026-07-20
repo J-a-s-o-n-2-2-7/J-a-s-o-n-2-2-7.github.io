@@ -59,73 +59,45 @@
             var userMatch = path.match(/^\/user\/(\d+)/);
             if (userMatch) {
                 var userId = userMatch[1];
+                var subPath = path.replace(/^\/user\/\d+/, '');
+                if (subPath === '/activity') {
+                    loadPage('/activity.html', '/user/' + userId + '/activity', '无法加载活动页面');
+                    return;
+                }
                 loadPage('/user/index.html', '/user/' + userId, '无法加载用户主页模板');
                 return;
             }
 
-            // ===== 2. discuss 路由 =====
-            // 2.1 列表页：/discuss（无参数）
-            if (path === '/discuss' && !window.location.search) {
-                loadPage('/discuss.html', '/discuss', '无法加载帖子列表页');
-                return;
-            }
-            // 2.2 带查询参数 id → 转换为路径参数
-            if (path === '/discuss' && window.location.search) {
-                var params = new URLSearchParams(window.location.search);
-                var id = params.get('id');
-                if (id && /^\d+$/.test(id)) {
-                    loadPage('/post.html?id=' + id, '/discuss/' + id, '无法加载帖子详情页');
-                    return;
-                }
-                // id 无效则继续往下走，最后会 404
-            }
-            // 2.3 路径参数：/discuss/数字
+            // ===== 2. 帖子详情：/discuss/数字  （改为丢弃参数，不传递 ?id=） =====
             var discussMatch = path.match(/^\/discuss\/(\d+)$/);
             if (discussMatch) {
                 var id = discussMatch[1];
-                loadPage('/post.html?id=' + id, '/discuss/' + id, '无法加载帖子详情页');
+                // 👇 去掉 ?id= 参数，仅加载 post.html，由 post.html 自己从路径解析 id
+                loadPage('/post.html', '/discuss/' + id, '无法加载帖子详情页');
                 return;
             }
 
             // ===== 3. 帮助文档管理路由（/admin/help） =====
-            // 3.1 编辑：/admin/help/数字/edit
             var helpEditMatch = path.match(/^\/admin\/help\/(\d+)\/edit$/);
             if (helpEditMatch) {
                 var helpId = helpEditMatch[1];
                 loadPage('/edit.html', '/admin/help/' + helpId + '/edit', '无法加载编辑页');
                 return;
             }
-            // 3.2 新建：/admin/help/new
             if (path === '/admin/help/new') {
                 loadPage('/edit.html', '/admin/help/new', '无法加载编辑页');
                 return;
             }
-            // 3.3 列表：/admin/help
             if (path === '/admin/help') {
                 loadPage('/index.html', '/admin/help', '无法加载列表页');
                 return;
             }
 
-            // ===== 4. 团队路由（/team） =====
-            // 4.1 列表页：/team（无参数）
-            if (path === '/team' && !window.location.search) {
-                loadPage('/team.html', '/team', '无法加载团队列表页');
-                return;
-            }
-            // 4.2 带查询参数 id → 转换为路径参数
-            if (path === '/team' && window.location.search) {
-                var params = new URLSearchParams(window.location.search);
-                var id = params.get('id');
-                if (id && /^\d+$/.test(id)) {
-                    loadPage('/team-detail.html', '/team/' + id, '无法加载团队详情页');
-                    return;
-                }
-            }
-            // 4.3 路径参数：/team/数字
+            // ===== 4. 团队路由 =====
             var teamMatch = path.match(/^\/team\/(\d+)$/);
             if (teamMatch) {
                 var id = teamMatch[1];
-                loadPage('/team-detail.html', '/team/' + id, '无法加载团队详情页');
+                loadPage('/team.html', '/team/' + id, '无法加载团队详情页');
                 return;
             }
 

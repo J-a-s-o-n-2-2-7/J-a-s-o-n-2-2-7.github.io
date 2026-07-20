@@ -42,6 +42,9 @@
             background: #f5f7fa;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .topbar {
@@ -132,19 +135,15 @@
             line-height: 1;
         }
 
-        /* 底部栏默认固定在底部 */
         .bottombar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            position: static;
             width: 100%;
-            z-index: 100;
             background: white;
             padding: 16px 24px;
             box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.08);
             font-size: 13px;
             color: #bbb;
-            transition: position 0s;
+            margin-top: 30px;
         }
 
         .bottombar.static {
@@ -243,6 +242,8 @@
             padding: 0 20px 0 20px;
             display: flex;
             flex-direction: column;
+            flex: 1;
+            width: 100%;
         }
 
         .nav-sidebar {
@@ -397,6 +398,9 @@
             margin: 0;
         }
 
+        /* ============================================================
+           选项卡样式 —— 已改为与「个人信息」页面完全一致
+           ============================================================ */
         .setting-nav {
             display: flex;
             gap: 40px;
@@ -411,7 +415,8 @@
             font-weight: 500;
             cursor: pointer;
             color: #6c7a8e;
-            padding: 8px 0;
+            padding: 12px 0 20px 0;
+            /* 与个人信息页面一致 */
             text-decoration: none;
             transition: color 0.2s;
             font-family: inherit;
@@ -423,7 +428,8 @@
             bottom: 0;
             left: 50%;
             width: 0;
-            height: 2px;
+            height: 5px;
+            /* 与个人信息页面一致 */
             background: #d0d7de;
             transition: all 0.25s ease;
             transform: translateX(-50%);
@@ -445,13 +451,14 @@
             width: 100%;
             left: 0;
             transform: translateX(0);
-            height: 2px;
+            height: 5px;
+            /* 与个人信息页面一致 */
         }
 
         .setting-nav .nav-btn.active:hover::after {
             width: calc(100% + 20px);
             left: -10px;
-            height: 2px;
+            height: 5px;
         }
 
         .card-bottom {
@@ -872,6 +879,7 @@
 
             .setting-nav .nav-btn {
                 font-size: 14px;
+                /* 继承 padding: 12px 0 20px 0，与个人信息页面一致 */
             }
         }
 
@@ -919,7 +927,7 @@
 
             .setting-nav .nav-btn {
                 font-size: 13px;
-                padding: 6px 0;
+                /* 继承 padding: 12px 0 20px 0，与个人信息页面一致 */
             }
 
             .team-stats {
@@ -964,7 +972,8 @@
 
             .setting-nav .nav-btn {
                 font-size: 12px;
-                padding: 4px 0;
+                padding: 6px 0;
+                /* 与个人信息页面一致 */
             }
 
             .team-stats .stat-item {
@@ -1861,12 +1870,6 @@
                             <div id="detailActionMessage" class="detail-hidden"></div>
                         </div>
                     `;
-
-                    // 切换底部栏
-                    const bottombar = document.querySelector('.bottombar');
-                    const mainLayout = document.querySelector('.main-layout');
-                    if (bottombar) bottombar.classList.add('static');
-                    if (mainLayout) mainLayout.classList.add('no-padding');
 
                     // ===== 绑定管理按钮事件 =====
                     document.querySelectorAll('.manage-btn').forEach(btn => {
