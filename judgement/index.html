@@ -1180,8 +1180,11 @@
                 const info = getActionInfo(log);
                 const time = formatTime(log.created_at);
 
-                // 目标用户颜色
-                const targetColor = target.is_cheater ? '#AD8B00' : (target.username_color || (target.is_admin ? '#9b59b6' : '#2c3e50'));
+                // 目标用户颜色（与主页统一）
+                const COLOR_RED = '#e74c3c';
+                const COLOR_PURPLE = '#9C3DCF';
+                const COLOR_BROWN = '#AD8B00';
+                const targetColor = target.is_cheater ? COLOR_BROWN : (target.is_admin ? COLOR_PURPLE : COLOR_RED);
 
                 // 标签
                 let tagHtml = '';
