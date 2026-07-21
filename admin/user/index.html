@@ -6,16 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>用户管理 - ✨ Jason227</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
     <style>
         /* ========== 基础样式（与之前完全相同） ========== */
         * {
@@ -657,15 +667,18 @@
             font-family: inherit;
             font-weight: 500;
         }
+
         .btn-sm.confirm:hover {
             background: #c0392b;
         }
+
         .btn-sm.confirm:disabled {
             opacity: 0.5;
             cursor: default;
         }
+
         .btn-sm.confirm:disabled:hover {
-            background: #e74c3c;   /* 禁用时悬停不变色 */
+            background: #e74c3c;
         }
 
         .batch-bar {
@@ -822,6 +835,89 @@
         .row-checkbox:disabled {
             opacity: 0.5;
             cursor: default;
+        }
+
+        .btn-reset-password {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: filter 0.2s, transform 0.1s;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+            color: #fff;
+            background: #E74C3C;
+        }
+
+        .btn-reset-password:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-reset-password:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== OI / XCPC 等级徽章样式（与用户主页一致） ===== */
+        @keyframes rainbow-fill {
+            0% {
+                fill: #e74c3c;
+            }
+
+            14.28% {
+                fill: #e67e22;
+            }
+
+            28.57% {
+                fill: #f1c40f;
+            }
+
+            42.85% {
+                fill: #2ecc71;
+            }
+
+            57.14% {
+                fill: #3498db;
+            }
+
+            71.42% {
+                fill: #9b59b6;
+            }
+
+            85.71% {
+                fill: #8e44ad;
+            }
+
+            100% {
+                fill: #e74c3c;
+            }
+        }
+
+        .rainbow-badge path,
+        .rainbow-badge .fa-secondary {
+            animation: rainbow-fill 5s linear infinite;
+        }
+
+        .level-badge-svg {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-weight: 500;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+
+        .level-badge-svg svg {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+            margin-left: 2px;
         }
 
         /* 响应式 */
@@ -1021,7 +1117,8 @@
             }
         }
     </style>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2">
+    </script>
 </head>
 
 <body>
@@ -1171,6 +1268,9 @@
         (function () {
             const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const SUPABASE_SERVICE_ROLE_KEY =
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vc2lrZGZhY3hrdWF4ZnJtb3FuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDIyNTkyNywiZXhwIjoyMDk1ODAxOTI3fQ.mX_ZOm1vPb_HZjdXHVtCNxgtp0vbd8OwvyfOT4NhuIk';
+
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ===== 权限门禁 =====
@@ -1189,19 +1289,16 @@
                 } catch { window.location.href = '/'; return false; }
             }
 
-            // ===== 常量 =====
             const COLOR_RED = '#e74c3c';
             const COLOR_PURPLE = '#9C3DCF';
             const COLOR_BROWN = '#AD8B00';
             const ONLINE_THRESHOLD = 60;
 
-            // ===== 全局变量 =====
             let currentUser = null,
                 currentProfile = null,
                 allUsers = [],
                 filteredUsers = [],
                 onlineChannel = null;
-            // 暂存待修改权限
             const pendingChanges = {};
 
             const userList = document.getElementById('userList');
@@ -1209,26 +1306,54 @@
             const resultCount = document.getElementById('resultCount');
             const batchBar = document.getElementById('batchBar');
             const batchInfo = document.getElementById('batchInfo');
-            const bellBadge = document.getElementById('bell-badge');
-            const userDisplay = document.getElementById('userDisplay');
 
-            // ===== 工具函数 =====
-            function escapeHtmlAttr(s) { if (!s) return ''; return s.replace(/[&<>"]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return m; }); }
-            function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
-            function formatTime(iso) { if (!iso) return '未知'; try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; } }
+            function escapeHtmlAttr(s) {
+                if (!s) return '';
+                return s.replace(/[&<>"]/g, m => {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function escapeHtml(s) {
+                if (!s) return '';
+                return s.replace(/[&<>]/g, m => {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            function formatTime(iso) {
+                if (!iso) return '未知';
+                try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; }
+            }
+
             function letterAvatar(name) {
                 const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
+
             function getUserDisplayColor(user) {
                 if (user.is_admin) return COLOR_PURPLE;
                 if (user.is_cheater) return COLOR_BROWN;
                 return COLOR_RED;
             }
+
             function isUserOnline(user) {
                 if (!user.last_seen) return false;
-                try { const last = new Date(user.last_seen); const now = new Date(); return (now - last) <= ONLINE_THRESHOLD * 1000; } catch { return false; }
+                try {
+                    const last = new Date(user.last_seen);
+                    const now = new Date();
+                    return (now - last) <= ONLINE_THRESHOLD * 1000;
+                } catch { return false; }
             }
+
             function canModifyUser(targetUser) {
                 if (!currentProfile) return false;
                 if (currentProfile.user_number === 1 && currentProfile.is_super_admin) return true;
@@ -1236,6 +1361,58 @@
                 if (targetUser.is_super_admin) return false;
                 if (currentProfile.can_manage_users) return true;
                 return false;
+            }
+
+            // ===== ★★★ 从用户主页复制的 OI / XCPC 徽章生成函数 ★★★ =====
+            function getCcfBadgeHtml(ccfLevel, user) {
+                if (user && user.show_ccf_badge === false) return '';
+                if (!ccfLevel) return '';
+                if (ccfLevel && ccfLevel >= 11) {
+                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle;">
+                        <g class="fa-duotone-group">
+                            <path class="fa-secondary" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
+                            <path class="fa-primary" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
+                        </g>
+                    </svg>`;
+                }
+                if (!ccfLevel || ccfLevel < 1 || ccfLevel > 10) return '';
+                let color = '';
+                if (ccfLevel >= 1 && ccfLevel <= 5) color = '#52C41A';
+                else if (ccfLevel >= 6 && ccfLevel <= 7) color = '#3498DB';
+                else if (ccfLevel >= 8 && ccfLevel <= 10) color = '#FFC116';
+                return `<svg class="svg-inline--fa fa-badge-check" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <g class="fa-duotone-group">
+                        <path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
+                        <path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
+                    </g>
+                </svg>`;
+            }
+
+            function getXcpcBalloonHtml(level, user) {
+                if (user && user.show_xcpc_badge === false) return '';
+                if (!level) return '';
+                let color = '';
+                if (level >= 1 && level <= 5) {
+                    color = '#52C41A';
+                } else if (level >= 6 && level <= 7) {
+                    color = '#3498DB';
+                } else if (level >= 8 && level <= 10) {
+                    color = '#FFC116';
+                }
+                if (level >= 11) {
+                    return `<svg class="svg-inline--fa fa-balloon rainbow-badge" data-prefix="fad" data-icon="balloon" role="img" viewBox="0 0 384 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;">
+                        <g class="fa-duotone-group">
+                            <path class="fa-primary" fill="currentColor" d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z"></path>
+                            <path class="fa-secondary" fill="currentColor" d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z"></path>
+                        </g>
+                    </svg>`;
+                }
+                return `<svg class="svg-inline--fa fa-balloon" data-prefix="fad" data-icon="balloon" role="img" viewBox="0 0 384 512" aria-hidden="true" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 2px;">
+                    <g class="fa-duotone-group">
+                        <path class="fa-secondary" fill="#ffffff" d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z"></path>
+                        <path class="fa-primary" fill="${color}" d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z"></path>
+                    </g>
+                </svg>`;
             }
 
             // ===== 日志 =====
@@ -1265,46 +1442,28 @@
                 for (const [field, value] of Object.entries(changes)) {
                     const changeInfo = { permission: field, new_value: value };
 
-                    // 特殊处理 is_banned 字段（逻辑是反的）
                     if (field === 'is_banned') {
-                        // is_banned: false = 授予进入主站权限
-                        // is_banned: true = 撤销进入主站权限
-                        if (value === false) {
-                            normalGrants.push(changeInfo);
-                        } else {
-                            normalRevokes.push(changeInfo);
-                        }
+                        if (value === false) { normalGrants.push(changeInfo); } else { normalRevokes.push(changeInfo); }
                     } else if (normalPerms.includes(field)) {
-                        if (value === true) {
-                            normalGrants.push(changeInfo);
-                        } else {
-                            normalRevokes.push(changeInfo);
-                        }
+                        if (value === true) { normalGrants.push(changeInfo); } else { normalRevokes.push(changeInfo); }
                     } else if (adminPerms.includes(field)) {
-                        if (value === true) {
-                            adminGrants.push(changeInfo);
-                        } else {
-                            adminRevokes.push(changeInfo);
-                        }
+                        if (value === true) { adminGrants.push(changeInfo); } else { adminRevokes.push(changeInfo); }
                     }
                 }
 
-                return {
-                    normalGrants,
-                    normalRevokes,
-                    adminGrants,
-                    adminRevokes
-                };
+                return { normalGrants, normalRevokes, adminGrants, adminRevokes };
             }
+
             async function getCurrentAdminId() {
                 if (currentUser) return currentUser.id;
                 const { data: { user } } = await supabase.auth.getUser();
                 return user ? user.id : null;
             }
+
             async function promptReason(operationName) {
                 const { value: reason } = await Swal.fire({
                     title: `请输入 ${operationName} 的原因`,
-                    html: `<textarea id="swal-textarea" class="swal2-textarea" placeholder="请输入操作原因（必填）..." rows="3" style="width:100%;max-width:460px;text-align:left;margin:0 auto;display:block;"></textarea>`,
+                    html: `<textarea id="swal-textarea" class="swal2-textarea" rows="3" style="width:100%;max-width:460px;text-align:left;margin:0 auto;display:block;"></textarea>`,
                     showCancelButton: true,
                     confirmButtonText: '操作',
                     cancelButtonText: '取消',
@@ -1319,10 +1478,10 @@
                 return reason;
             }
 
-            // ===== 通用更新 =====
             async function updateUserField(userNumber, updateData) {
                 try {
-                    const { data, error } = await supabase.from('profiles').update(updateData).eq('user_number', userNumber).select();
+                    const { data, error } = await supabase.from('profiles').update(updateData).eq('user_number', userNumber)
+                        .select();
                     if (error) throw error;
                     if (data && data.length > 0) {
                         const target = allUsers.find(u => u.user_number === userNumber);
@@ -1331,25 +1490,19 @@
                 } catch (err) { /* 静默 */ }
             }
 
-            // ===== 本地暂存切换（修正版） =====
             function toggleLocalPermission(userNumber, field, currentValue) {
                 if (!pendingChanges[userNumber]) pendingChanges[userNumber] = {};
-                // 如果该字段已在暂存中，则移除（取消）
                 if (pendingChanges[userNumber][field] !== undefined) {
                     delete pendingChanges[userNumber][field];
                 } else {
-                    // 否则添加新值（取反）
                     pendingChanges[userNumber][field] = !currentValue;
                 }
-                // 如果该用户没有待修改项了，删除键
                 if (Object.keys(pendingChanges[userNumber]).length === 0) {
                     delete pendingChanges[userNumber];
                 }
-                // 重新渲染列表
                 filterUsers();
             }
 
-            // ===== 确认修改 =====
             async function applyUserChanges(userNumber) {
                 const changes = pendingChanges[userNumber];
                 if (!changes || Object.keys(changes).length === 0) {
@@ -1359,18 +1512,14 @@
                 const reason = await promptReason('确认修改权限');
                 if (!reason) return;
 
-                // 检查是否只有 is_cheater 或 is_banned 字段变更
                 const onlyCheaterChange = Object.keys(changes).length === 1 && changes.is_cheater !== undefined;
                 const onlyBannedChange = Object.keys(changes).length === 1 && changes.is_banned !== undefined;
 
-                // 分析权限变更类型
                 const { normalGrants, normalRevokes, adminGrants, adminRevokes } = analyzePermissionChanges(changes);
 
-                // 判断是否有普通权限和管理权限的变更
                 const hasNormalChanges = normalGrants.length > 0 || normalRevokes.length > 0;
                 const hasAdminChanges = adminGrants.length > 0 || adminRevokes.length > 0;
 
-                // 如果同时有普通权限和管理权限的变更，则拒绝
                 if (hasNormalChanges && hasAdminChanges) {
                     Swal.fire({
                         icon: 'warning',
@@ -1380,12 +1529,10 @@
                     return;
                 }
 
-                // 确定操作类型和标签
                 let actionType = '';
                 let actionLabel = '';
                 let actionDetail = {};
 
-                // 特殊处理：只有学术不端标记变更
                 if (onlyCheaterChange) {
                     actionType = changes.is_cheater ? 'brown_penalty' : 'unbrown';
                     actionLabel = changes.is_cheater ? '棕名惩罚' : '解除棕名';
@@ -1393,61 +1540,34 @@
                         changes: [{ permission: 'is_cheater', new_value: changes.is_cheater }],
                         category: 'cheater'
                     };
-                }
-                // 特殊处理：只有进入主站权限变更
-                else if (onlyBannedChange) {
+                } else if (onlyBannedChange) {
                     if (changes.is_banned === false) {
-                        // 授予进入主站权限
                         actionType = 'unban';
                         actionLabel = '授予权限';
-                        actionDetail = {
-                            changes: [{ permission: 'is_banned', new_value: false }],
-                            category: 'normal'
-                        };
+                        actionDetail = { changes: [{ permission: 'is_banned', new_value: false }], category: 'normal' };
                     } else {
-                        // 撤销进入主站权限（用户封禁）
                         actionType = 'ban';
                         actionLabel = '用户封禁';
-                        actionDetail = {
-                            changes: [{ permission: 'is_banned', new_value: true }],
-                            category: 'normal'
-                        };
+                        actionDetail = { changes: [{ permission: 'is_banned', new_value: true }], category: 'normal' };
                     }
-                }
-                else if (hasNormalChanges) {
+                } else if (hasNormalChanges) {
                     if (normalGrants.length > 0 && normalRevokes.length === 0) {
-                        // 全是普通权限的授予
                         actionType = 'grant_normal';
                         actionLabel = '授予权限';
-                        actionDetail = {
-                            changes: normalGrants,
-                            category: 'normal'
-                        };
+                        actionDetail = { changes: normalGrants, category: 'normal' };
                     } else if (normalRevokes.length > 0 && normalGrants.length === 0) {
-                        // 全是普通权限的撤销
                         actionType = 'revoke_normal';
                         actionLabel = '撤销权限';
-                        actionDetail = {
-                            changes: normalRevokes,
-                            category: 'normal'
-                        };
+                        actionDetail = { changes: normalRevokes, category: 'normal' };
                     } else {
-                        // 既有普通权限的授予又有撤销
                         actionType = 'ostracism';
                         actionLabel = '陶片放逐';
-                        actionDetail = {
-                            changes: [...normalGrants, ...normalRevokes],
-                            category: 'normal'
-                        };
+                        actionDetail = { changes: [...normalGrants, ...normalRevokes], category: 'normal' };
                     }
                 } else if (hasAdminChanges) {
-                    // 全是管理权限的变更
                     actionType = 'admin_rotation';
                     actionLabel = '管理轮换';
-                    actionDetail = {
-                        changes: [...adminGrants, ...adminRevokes],
-                        category: 'admin'
-                    };
+                    actionDetail = { changes: [...adminGrants, ...adminRevokes], category: 'admin' };
                 }
 
                 const updateObj = {};
@@ -1466,7 +1586,6 @@
                     await updateUserField(userNumber, updateObj);
                     const adminId = await getCurrentAdminId();
                     if (adminId && targetUser) {
-                        // 记录一条合并的日志
                         await insertOstrakonLog(
                             adminId,
                             targetUser.id,
@@ -1489,7 +1608,6 @@
                 }
             }
 
-            // ===== 更新在线概览 =====
             function updateOnlineSummary() {
                 const container = document.getElementById('onlineAvatars');
                 const countEl = document.getElementById('onlineCount');
@@ -1512,11 +1630,13 @@
                 container.innerHTML = html;
             }
 
-            // ===== 加载用户 =====
+            // ===== 加载用户（增加 ccf_level / xcpc_level） =====
             async function loadUsers() {
                 try {
                     const { data, error } = await supabase.from('profiles')
-                        .select('id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url, is_super_admin, last_seen')
+                        .select(
+                            'id, user_number, username, is_admin, created_at, can_speak, is_banned, remark, can_manage_users, can_manage_posts, username_color, user_tag, is_cheater, avatar_url, is_super_admin, last_seen, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge'
+                        )
                         .order('user_number');
                     if (error) throw error;
                     allUsers = data;
@@ -1529,7 +1649,6 @@
                 }
             }
 
-            // ===== 筛选状态 =====
             const filterStates = {
                 admin: 'off',
                 user_mgmt: 'off',
@@ -1539,6 +1658,7 @@
                 speak: 'off',
                 status: 'off'
             };
+
             function toggleFilterTag(key) {
                 if (key === 'status') {
                     const current = filterStates[key] || 'off';
@@ -1556,6 +1676,7 @@
                 updateFilterTags();
                 filterUsers();
             }
+
             function updateFilterTags() {
                 document.querySelectorAll('.filter-tag').forEach(el => {
                     const key = el.dataset.key;
@@ -1571,7 +1692,6 @@
                 });
             }
 
-            // ===== 过滤 =====
             function filterUsers() {
                 const keyword = searchInput.value.trim().toLowerCase();
                 filteredUsers = allUsers.filter(user => {
@@ -1582,7 +1702,8 @@
                         const remark = (user.remark || '').toLowerCase();
                         const tag = (user.user_tag || '').toLowerCase();
                         const roleLabel = user.is_admin ? '管理员' : '普通用户';
-                        if (userNumber !== keyword && username !== keyword && remark !== keyword && tag !== keyword && roleLabel !== keyword) {
+                        if (userNumber !== keyword && username !== keyword && remark !== keyword && tag !== keyword &&
+                            roleLabel !== keyword) {
                             match = false;
                         }
                     }
@@ -1596,12 +1717,24 @@
                                 else if (state === 'offline') hasPermission = !isUserOnline(user);
                             } else {
                                 switch (key) {
-                                    case 'admin': hasPermission = user.is_admin; break;
-                                    case 'user_mgmt': hasPermission = user.can_manage_users; break;
-                                    case 'post_mgmt': hasPermission = user.can_manage_posts; break;
-                                    case 'enter_site': hasPermission = !user.is_banned; break;
-                                    case 'cheater': hasPermission = user.is_cheater; break;
-                                    case 'speak': hasPermission = user.can_speak !== false; break;
+                                    case 'admin':
+                                        hasPermission = user.is_admin;
+                                        break;
+                                    case 'user_mgmt':
+                                        hasPermission = user.can_manage_users;
+                                        break;
+                                    case 'post_mgmt':
+                                        hasPermission = user.can_manage_posts;
+                                        break;
+                                    case 'enter_site':
+                                        hasPermission = !user.is_banned;
+                                        break;
+                                    case 'cheater':
+                                        hasPermission = user.is_cheater;
+                                        break;
+                                    case 'speak':
+                                        hasPermission = user.can_speak !== false;
+                                        break;
                                 }
                                 if (state === 'has' && !hasPermission) { match = false; break; }
                                 if (state === 'no' && hasPermission) { match = false; break; }
@@ -1617,7 +1750,7 @@
                 renderUserList();
             }
 
-            // ===== 渲染 =====
+            // ===== 渲染（OI / XCPC 列显示等级 + SVG 徽章） =====
             function renderUserList() {
                 if (!filteredUsers || filteredUsers.length === 0) {
                     userList.innerHTML = '<div class="loading-text">没有找到匹配的用户</div>';
@@ -1626,6 +1759,10 @@
                     return;
                 }
                 resultCount.textContent = `共 ${filteredUsers.length} 位用户`;
+
+                const isSuperAdmin = currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin ===
+                    true;
+
                 let html = `
                 <table>
                     <thead>
@@ -1636,13 +1773,17 @@
                             <th>头像</th>
                             <th>用户名</th>
                             <th>标签</th>
+                            <th>OI</th>
+                            <th>XCPC</th>
                             <th>备注名</th>
                             <th>用户类型</th>
                             <th>权限</th>
+                            ${isSuperAdmin ? '<th>操作</th>' : ''}
                         </tr>
                     </thead>
                     <tbody>
                 `;
+
                 for (const user of filteredUsers) {
                     const isSelf = currentProfile.user_number === user.user_number;
                     const isAdmin = user.is_admin;
@@ -1655,7 +1796,8 @@
                     const username = user.username || '用户';
                     const avatarUrl = user.avatar_url || '';
                     const avatarImgSrc = avatarUrl || letterAvatar(username);
-                    const avatarHtml = `<img class="avatar-image" data-user="${user.user_number}" src="${avatarImgSrc}" alt="${escapeHtmlAttr(username)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#f0f2f5;display:block;cursor:pointer;" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">`;
+                    const avatarHtml =
+                        `<img class="avatar-image" data-user="${user.user_number}" src="${avatarImgSrc}" alt="${escapeHtmlAttr(username)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;background:#f0f2f5;display:block;cursor:pointer;" onerror="this.onerror=null;this.src='${letterAvatar(username)}'">`;
 
                     let tagDisplay = '';
                     if (user.is_admin) tagDisplay = user.user_tag || '管理员';
@@ -1663,19 +1805,32 @@
                     else tagDisplay = user.user_tag || '';
                     let tagCellHtml = '';
                     if (tagDisplay) {
-                        tagCellHtml = `<span class="user-tag-display" style="background-color:${userNameColor};">${escapeHtmlAttr(tagDisplay)}</span>`;
+                        tagCellHtml =
+                            `<span class="user-tag-display" style="background-color:${userNameColor};">${escapeHtmlAttr(tagDisplay)}</span>`;
                     } else {
-                        tagCellHtml = `<span style="color:#bbb;font-size:13px;">无</span>`;
+                        tagCellHtml = `<span class="editable-field">-</span>`;
                     }
 
-                    const userNameHtml = `<span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>`;
+                    // ===== ★★★ OI / XCPC 等级显示（等级数字 + SVG 徽章）★★★ =====
+                    let oiDisplay = '-';
+                    if (user.ccf_level && user.ccf_level >= 1) {
+                        const badge = getCcfBadgeHtml(user.ccf_level, user);
+                        oiDisplay = `<span class="level-badge-svg">${user.ccf_level} 级 ${badge}</span>`;
+                    }
+                    let xcpcDisplay = '-';
+                    if (user.xcpc_level && user.xcpc_level >= 1) {
+                        const balloon = getXcpcBalloonHtml(user.xcpc_level, user);
+                        xcpcDisplay = `<span class="level-badge-svg">${user.xcpc_level} 级 ${balloon}</span>`;
+                    }
+
+                    const userNameHtml =
+                        `<span class="username-display" data-user="${user.user_number}" data-current="${escapeHtmlAttr(user.username || '未命名')}" style="color:${userNameColor};">${escapeHtmlAttr(user.username || '未命名')}</span>`;
                     const remarkDisplay = user.remark || '';
 
                     // ---- 权限部分 ----
                     const canEdit = canModifyUser(user);
                     const pending = pendingChanges[user.user_number] || {};
 
-                    // 普通权限
                     const isBanned = user.is_banned || false;
                     const banPending = pending.is_banned !== undefined;
                     const banVal = banPending ? pending.is_banned : isBanned;
@@ -1704,13 +1859,11 @@
                     const normalLinksHtml = `${banHtml} | ${cheaterHtml} | ${speakHtml}`;
                     const normalHtml = `<div class="perm-group-line"><span class="perm-cat">普通权限</span>${normalLinksHtml}</div>`;
 
-                    // 管理权限
                     const mgmtPerms = [];
                     if (currentProfile && currentProfile.user_number === 1 && currentProfile.is_super_admin) {
                         mgmtPerms.push({ name: '超级管理', field: 'is_super_admin', on: !!user.is_super_admin });
                     }
-                    mgmtPerms.push(
-                        { name: '进入后台', field: 'is_admin', on: !!user.is_admin },
+                    mgmtPerms.push({ name: '进入后台', field: 'is_admin', on: !!user.is_admin },
                         { name: '用户管理', field: 'can_manage_users', on: !!user.can_manage_users },
                         { name: '秩序管理', field: 'can_manage_posts', on: !!user.can_manage_posts }
                     );
@@ -1718,7 +1871,8 @@
                         const pVal = pending[p.field] !== undefined ? pending[p.field] : p.on;
                         const color = pVal ? 'green' : 'red';
                         const pendingClass = pending[p.field] !== undefined ? 'pending' : '';
-                        const canEditThis = canEdit && (p.field !== 'is_super_admin' || (currentProfile.user_number === 1 && currentProfile.is_super_admin));
+                        const canEditThis = canEdit && (p.field !== 'is_super_admin' || (currentProfile
+                            .user_number === 1 && currentProfile.is_super_admin));
                         if (canEditThis) {
                             return `<span class="action-link ${color} ${pendingClass}" style="cursor:pointer;" data-action="toggle-local" data-user="${user.user_number}" data-field="${p.field}" data-current="${p.on}">${p.name}</span>`;
                         } else {
@@ -1727,8 +1881,8 @@
                     }).join(' | ');
                     const mgmtHtml = `<div class="perm-group-line"><span class="perm-cat">管理权限</span>${mgmtLinksHtml}</div>`;
 
-                    // 确认按钮（无撤销按钮）
-                    const hasPending = pendingChanges[user.user_number] && Object.keys(pendingChanges[user.user_number]).length > 0;
+                    const hasPending = pendingChanges[user.user_number] && Object.keys(pendingChanges[user.user_number])
+                        .length > 0;
                     const pendingButtonsHtml = `
                         <div class="perm-group-line" style="margin-top:4px;">
                             <button class="btn-sm confirm" data-action="apply-changes" data-user="${user.user_number}" ${!hasPending ? 'disabled' : ''}>确认修改</button>
@@ -1737,9 +1891,14 @@
 
                     const permSummaryHtml = `${normalHtml}${mgmtHtml}${pendingButtonsHtml}`;
 
-                    // ---- 复选框 ----
                     const isDisabled = !canEdit;
                     const statusClass = online ? 'online' : 'offline';
+
+                    let operationCell = '';
+                    if (isSuperAdmin) {
+                        operationCell =
+                            `<td data-label="操作"><button class="btn-reset-password" data-user-id="${user.id}" data-username="${escapeHtmlAttr(user.username || '用户')}">重置密码</button></td>`;
+                    }
 
                     html += `
                     <tr>
@@ -1751,17 +1910,19 @@
                         <td data-label="头像">${avatarHtml}</td>
                         <td data-label="用户名">${userNameHtml}</td>
                         <td data-label="标签" class="tag-cell" data-user="${user.user_number}" data-current="${escapeHtmlAttr(tagDisplay)}" data-cheater="${user.is_cheater}">${tagCellHtml}</td>
+                        <td data-label="OI">${oiDisplay}</td>
+                        <td data-label="XCPC">${xcpcDisplay}</td>
                         <td data-label="备注名"><span class="editable-field" data-field="remark" data-user="${user.user_number}" data-value="${escapeHtmlAttr(remarkDisplay)}">${escapeHtmlAttr(remarkDisplay) || '-'}</span></td>
                         <td data-label="用户类型">${roleLabel}</td>
                         <td data-label="权限">${permSummaryHtml}</td>
+                        ${operationCell}
                     </tr>
                     `;
                 }
                 html += `</tbody></table>`;
                 userList.innerHTML = html;
 
-                // ===== 绑定事件 =====
-                // 1. 用户名双击编辑
+                // ===== 绑定事件（与之前相同） =====
                 document.querySelectorAll('.username-display').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -1770,6 +1931,7 @@
                         if (!targetUser || !canModifyUser(targetUser)) return;
                         enterEditModeUsername(this);
                     });
+
                     async function enterEditModeUsername(el) {
                         const uid = parseInt(el.dataset.user);
                         const current = el.dataset.current || el.textContent.trim();
@@ -1783,19 +1945,31 @@
                         input.select();
                         const save = async () => {
                             const val = input.value.trim();
-                            if (val === current) { el.textContent = current; el.dataset.current = current; return; }
+                            if (val === current) {
+                                el.textContent = current;
+                                el.dataset.current = current;
+                                return;
+                            }
                             if (!val) return;
-                            try { await updateUserField(uid, { username: val }); await loadUsers(); } catch (err) { /* 静默 */ }
+                            try {
+                                await updateUserField(uid, { username: val });
+                                await loadUsers();
+                            } catch (err) { /* 静默 */ }
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-                            if (e.key === 'Escape') { el.textContent = current; el.dataset.current = current; }
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                input.blur();
+                            }
+                            if (e.key === 'Escape') {
+                                el.textContent = current;
+                                el.dataset.current = current;
+                            }
                         });
                     }
                 });
 
-                // 2. 备注名双击编辑
                 document.querySelectorAll('.editable-field[data-field="remark"]').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -1813,18 +1987,31 @@
                         input.select();
                         const save = async () => {
                             const val = input.value.trim();
-                            if (val === cur) { this.textContent = cur || '-'; this.dataset.value = cur; return; }
-                            try { await updateUserField(uid, { remark: val }); await loadUsers(); } catch (err) { /* 静默 */ }
+                            if (val === cur) {
+                                this.textContent = cur || '-';
+                                this.dataset.value = cur;
+                                return;
+                            }
+                            try {
+                                await updateUserField(uid, { remark: val });
+                                await loadUsers();
+                            } catch (err) { /* 静默 */ }
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-                            if (e.key === 'Escape') { const p = this.parentNode; p.textContent = cur || '-'; p.dataset.value = cur; }
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                input.blur();
+                            }
+                            if (e.key === 'Escape') {
+                                const p = this.parentNode;
+                                p.textContent = cur || '-';
+                                p.dataset.value = cur;
+                            }
                         });
                     });
                 });
 
-                // 3. 标签列双击编辑
                 document.querySelectorAll('.tag-cell').forEach(el => {
                     el.addEventListener('dblclick', function (e) {
                         e.stopPropagation();
@@ -1847,42 +2034,55 @@
                             const targetUser = allUsers.find(u => u.user_number === uid);
                             if (targetUser && targetUser.is_admin && val === '') val = '管理员';
                             if (val === current) { renderTagCell(this, uid, current); return; }
-                            try { await updateUserField(uid, { user_tag: val || null }); await loadUsers(); } catch (err) { renderTagCell(this, uid, current); }
+                            try {
+                                await updateUserField(uid, { user_tag: val || null });
+                                await loadUsers();
+                            } catch (err) {
+                                renderTagCell(this, uid,
+                                    current);
+                            }
                         };
                         input.addEventListener('blur', save);
                         input.addEventListener('keydown', function (e) {
-                            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                input.blur();
+                            }
                             if (e.key === 'Escape') { renderTagCell(el, uid, current); }
                         });
                     });
                 });
+
                 function renderTagCell(el, uid, tagValue) {
                     const targetUser = allUsers.find(u => u.user_number === uid);
-                    if (!targetUser) { el.textContent = tagValue || '-'; el.dataset.current = tagValue || ''; return; }
+                    if (!targetUser) {
+                        el.textContent = tagValue || '-';
+                        el.dataset.current = tagValue || '';
+                        return;
+                    }
                     const color = getUserDisplayColor(targetUser);
                     let display = tagValue || '';
                     if (targetUser.is_cheater) display = '作弊者';
                     if (display) {
-                        el.innerHTML = `<span class="user-tag-display" style="background-color:${color};">${escapeHtmlAttr(display)}</span>`;
+                        el.innerHTML =
+                            `<span class="user-tag-display" style="background-color:${color};">${escapeHtmlAttr(display)}</span>`;
                     } else {
-                        el.innerHTML = `<span style="color:#bbb;font-size:13px;">空</span>`;
+                        el.innerHTML = '-';
                     }
                     el.dataset.current = display;
                     el.dataset.cheater = targetUser.is_cheater ? 'true' : 'false';
                 }
 
-                // 4. 本地权限切换事件
                 document.querySelectorAll('[data-action="toggle-local"]').forEach(el => {
                     el.addEventListener('click', function (e) {
                         e.stopPropagation();
                         const uid = parseInt(this.dataset.user);
                         const field = this.dataset.field;
-                        const currentVal = this.dataset.current === 'true'; // 字符串转布尔
+                        const currentVal = this.dataset.current === 'true';
                         toggleLocalPermission(uid, field, currentVal);
                     });
                 });
 
-                // 5. 确认修改按钮事件
                 document.querySelectorAll('[data-action="apply-changes"]').forEach(el => {
                     el.addEventListener('click', function () {
                         const uid = parseInt(this.dataset.user);
@@ -1890,7 +2090,6 @@
                     });
                 });
 
-                // 6. 头像双击上传
                 document.querySelectorAll('.avatar-image').forEach(img => {
                     img.addEventListener('dblclick', function (e) {
                         e.preventDefault();
@@ -1908,10 +2107,13 @@
                             if (!file) { this.remove(); return; }
                             try {
                                 const fileExt = file.name.split('.').pop();
-                                const filePath = targetUser.id + '/avatar_' + Date.now() + '.' + fileExt;
-                                const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+                                const filePath = targetUser.id + '/avatar_' + Date.now() +
+                                    '.' + fileExt;
+                                const { error: uploadError } = await supabase.storage.from(
+                                    'avatars').upload(filePath, file, { upsert: true });
                                 if (uploadError) throw uploadError;
-                                const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+                                const { data: { publicUrl } } = supabase.storage.from('avatars')
+                                    .getPublicUrl(filePath);
                                 await updateUserField(uid, { avatar_url: publicUrl });
                                 await loadUsers();
                             } catch (err) { /* 静默 */ } finally { this.remove(); }
@@ -1920,19 +2122,69 @@
                     });
                 });
 
-                // 7. 全选 & 批量栏
                 const selectAll = document.getElementById('selectAll');
                 if (selectAll) {
                     selectAll.addEventListener('change', function () {
-                        document.querySelectorAll('.row-checkbox:not(:disabled)').forEach(cb => cb.checked = this.checked);
+                        document.querySelectorAll('.row-checkbox:not(:disabled)').forEach(cb => cb.checked =
+                            this.checked);
                         updateBatchBar();
                     });
                 }
                 document.querySelectorAll('.row-checkbox').forEach(cb => cb.addEventListener('change', updateBatchBar));
                 updateBatchBar();
+
+                document.querySelectorAll('.btn-reset-password').forEach(btn => {
+                    btn.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const userId = this.dataset.userId;
+                        const username = this.dataset.username || '用户';
+
+                        const result = await Swal.fire({
+                            title: `重置 ${username} 的密码`,
+                            input: 'password',
+                            inputAttributes: { autocomplete: 'new-password' },
+                            showCancelButton: true,
+                            confirmButtonText: '确认重置',
+                            cancelButtonText: '取消',
+                            preConfirm: (value) => {
+                                if (!value) {
+                                    Swal.showValidationMessage('请填写完整');
+                                    return false;
+                                }
+                                if (value.length < 6) {
+                                    Swal.showValidationMessage('密码长度过短或过长');
+                                    return false;
+                                }
+                                return value;
+                            }
+                        });
+
+                        if (result.isConfirmed) {
+                            const newPassword = result.value;
+                            try {
+                                const supabaseAdmin = window.supabase.createClient(SUPABASE_URL,
+                                    SUPABASE_SERVICE_ROLE_KEY);
+                                const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
+                                    userId, { password: newPassword });
+                                if (error) throw error;
+                                await Swal.fire({
+                                    icon: 'success',
+                                    title: '重置成功',
+                                    text: `用户 ${username} 的密码已重置`,
+                                    timer: 1500
+                                });
+                            } catch (err) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: '重置失败',
+                                    text: err.message || '未知错误'
+                                });
+                            }
+                        }
+                    });
+                });
             }
 
-            // ===== 批量栏 =====
             function updateBatchBar() {
                 const checked = document.querySelectorAll('.row-checkbox:checked:not(:disabled)');
                 const count = checked.length;
@@ -1943,17 +2195,18 @@
                 batchBar.dataset.selected = JSON.stringify(ids);
             }
 
-            // ===== 批量操作 =====
             async function batchAction(actionName, updateObj) {
                 const ids = JSON.parse(batchBar.dataset.selected || '[]');
                 if (ids.length === 0) return;
-                const targetUsers = ids.map(id => allUsers.find(u => u.user_number === id)).filter(u => u && canModifyUser(u));
+                const targetUsers = ids.map(id => allUsers.find(u => u.user_number === id)).filter(u => u && canModifyUser(
+                    u));
                 if (targetUsers.length === 0) return;
                 const filteredIds = targetUsers.map(u => u.user_number);
                 const reason = await promptReason(actionName);
                 if (!reason) return;
                 try {
-                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number, id').in('user_number', filteredIds);
+                    const { data: users, error: fetchErr } = await supabase.from('profiles').select('user_number, id')
+                        .in('user_number', filteredIds);
                     if (fetchErr) throw fetchErr;
                     const { error } = await supabase.from('profiles').update(updateObj).in('user_number', filteredIds);
                     if (error) throw error;
@@ -1961,43 +2214,22 @@
                     if (adminId) {
                         const field = Object.keys(updateObj)[0];
                         const newValue = updateObj[field];
-
-                        // 分析权限类型
                         const normalPerms = ['can_speak'];
                         const adminPerms = ['is_super_admin', 'is_admin', 'can_manage_users', 'can_manage_posts'];
 
                         let actionType = '';
                         let actionDetail = {};
 
-                        // 特殊处理 is_banned 字段（逻辑是反的）
                         if (field === 'is_banned') {
-                            // is_banned: false = 授予进入主站权限
-                            // is_banned: true = 撤销进入主站权限（用户封禁）
-                            if (newValue === false) {
-                                actionType = 'unban';  // 使用unban类型，左上角显示"授予权限"
-                            } else {
-                                actionType = 'ban';     // 使用ban类型，左上角显示"用户封禁"
-                            }
-                            actionDetail = {
-                                changes: [{ permission: field, new_value: newValue }],
-                                category: 'normal'
-                            };
+                            if (newValue === false) { actionType = 'unban'; } else { actionType = 'ban'; }
+                            actionDetail = { changes: [{ permission: field, new_value: newValue }], category: 'normal' };
                         } else if (normalPerms.includes(field)) {
-                            // 普通权限
                             actionType = newValue ? 'grant_normal' : 'revoke_normal';
-                            actionDetail = {
-                                changes: [{ permission: field, new_value: newValue }],
-                                category: 'normal'
-                            };
+                            actionDetail = { changes: [{ permission: field, new_value: newValue }], category: 'normal' };
                         } else if (adminPerms.includes(field)) {
-                            // 管理权限
                             actionType = 'admin_rotation';
-                            actionDetail = {
-                                changes: [{ permission: field, new_value: newValue }],
-                                category: 'admin'
-                            };
+                            actionDetail = { changes: [{ permission: field, new_value: newValue }], category: 'admin' };
                         } else {
-                            // 未知权限，使用旧格式
                             if (field === 'is_banned') actionType = newValue ? 'ban' : 'unban';
                             else actionType = newValue ? 'grant_perm' : 'revoke_perm';
                             actionDetail = { permission: field, new_value: newValue };
@@ -2012,11 +2244,14 @@
                 } catch (err) { /* 静默 */ }
             }
 
-            // ===== 批量按钮事件 =====
-            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('批量授予进入主站权限', { is_banned: false }));
-            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('批量撤销进入主站权限', { is_banned: true }));
-            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('批量授予自由发言权限', { can_speak: true }));
-            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('批量撤销自由发言权限', { can_speak: false }));
+            document.getElementById('batchGrantEnterSite').addEventListener('click', () => batchAction('批量授予进入主站权限',
+                { is_banned: false }));
+            document.getElementById('batchRevokeEnterSite').addEventListener('click', () => batchAction('批量撤销进入主站权限',
+                { is_banned: true }));
+            document.getElementById('batchGrantSpeak').addEventListener('click', () => batchAction('批量授予自由发言权限',
+                { can_speak: true }));
+            document.getElementById('batchRevokeSpeak').addEventListener('click', () => batchAction('批量撤销自由发言权限',
+                { can_speak: false }));
             document.getElementById('batchGrantSuperAdmin').addEventListener('click', async () => {
                 if (!currentProfile || currentProfile.user_number !== 1 || !currentProfile.is_super_admin) return;
                 await batchAction('批量授予超级管理权限', { is_super_admin: true });
@@ -2050,23 +2285,30 @@
                 await batchAction('批量撤销秩序管理权限', { can_manage_posts: false });
             });
 
-            // ===== 通知未读数 =====
             async function fetchUnreadCount() {
                 const bellBadge = document.getElementById('bell-badge');
                 if (!bellBadge) return;
                 if (!currentProfile) return;
                 try {
-                    const { count, error } = await supabase.from('notifications').select('*', { count: 'exact', head: true }).eq('user_number', currentProfile.user_number).eq('read', false);
+                    const { count, error } = await supabase.from('notifications').select('*', {
+                        count: 'exact',
+                        head: true
+                    }).eq('user_number', currentProfile.user_number).eq('read', false);
                     if (!error && count !== null) {
-                        if (count > 0) { bellBadge.textContent = count > 99 ? '99+' : count; bellBadge.style.display = 'inline-flex'; } else { bellBadge.style.display = 'none'; }
+                        if (count > 0) {
+                            bellBadge.textContent = count > 99 ? '99+' : count;
+                            bellBadge.style.display = 'inline-flex';
+                        } else { bellBadge.style.display = 'none'; }
                     }
                 } catch (err) { /* 静默 */ }
             }
 
-            // ===== 更新 last_seen =====
             async function updateLastSeen() {
                 if (!currentUser) return;
-                try { await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id); } catch (err) { /* 静默 */ }
+                try {
+                    await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id',
+                        currentUser.id);
+                } catch (err) { /* 静默 */ }
             }
 
             // ===== 初始化 =====
@@ -2085,9 +2327,11 @@
                     if (profileError || !profile) { window.location.href = '/'; return; }
                     currentProfile = profile;
 
-                    // 控制管理员权限按钮显示
                     if (currentProfile) {
-                        const adminOnlyBtns = ['batchGrantAdmin', 'batchRevokeAdmin', 'batchGrantUserMgmt', 'batchRevokeUserMgmt', 'batchGrantPostMgmt', 'batchRevokePostMgmt', 'batchGrantSuperAdmin', 'batchRevokeSuperAdmin'];
+                        const adminOnlyBtns = ['batchGrantAdmin', 'batchRevokeAdmin', 'batchGrantUserMgmt',
+                            'batchRevokeUserMgmt', 'batchGrantPostMgmt', 'batchRevokePostMgmt', 'batchGrantSuperAdmin',
+                            'batchRevokeSuperAdmin'
+                        ];
                         const isSuper = currentProfile.is_super_admin === true;
                         const isNumberOne = currentProfile.user_number === 1 && currentProfile.is_super_admin;
                         adminOnlyBtns.forEach(id => {
@@ -2102,7 +2346,6 @@
                         });
                     }
 
-                    // 构建完整顶栏
                     const displayName = profile.username || currentUser.email;
                     const userNumber = profile.user_number || '';
                     let authHtml = '';
@@ -2125,20 +2368,16 @@
 
                     authButtons.innerHTML = authHtml;
 
-                    // 绑定登出事件
                     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
                         await supabase.auth.signOut();
                         window.location.href = '/';
                     });
 
-                    // 获取通知未读数（需要重新获取 bell-badge 引用）
                     const bellBadge = document.getElementById('bell-badge');
-                    // 原有的 fetchUnreadCount 函数需要更新 bellBadge 引用
 
                     await updateLastSeen();
                     await loadUsers();
 
-                    // 搜索事件
                     searchInput.addEventListener('input', filterUsers);
                     document.querySelectorAll('.filter-tag').forEach(el => {
                         el.addEventListener('click', function () {
@@ -2150,7 +2389,6 @@
                     await fetchUnreadCount();
                     setInterval(fetchUnreadCount, 30000);
 
-                    // ===== Realtime 订阅 =====
                     if (currentUser) {
                         const channel = supabase
                             .channel('profiles-online')
@@ -2164,8 +2402,8 @@
                                 if (localUser) {
                                     localUser.last_seen = updated.last_seen;
                                     updateOnlineSummary();
-                                    // 只更新该行的复选框样式
-                                    const row = document.querySelector(`tr:has(.row-checkbox[data-user="${updated.user_number}"])`);
+                                    const row = document.querySelector(
+                                        `tr:has(.row-checkbox[data-user="${updated.user_number}"])`);
                                     if (row) {
                                         const cb = row.querySelector('.row-checkbox');
                                         if (cb) {
@@ -2180,14 +2418,15 @@
                             });
                     }
 
-                    // 保底：每30秒更新自己的 last_seen
                     setInterval(async () => {
                         if (currentUser) {
-                            try { await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id); } catch (e) { /* 静默 */ }
+                            try {
+                                await supabase.from('profiles').update({ last_seen: new Date().toISOString() })
+                                    .eq('id', currentUser.id);
+                            } catch (e) { /* 静默 */ }
                         }
                     }, 30000);
 
-                    // ===== 侧边栏鼠标离开时滚动回顶部（模仿主页） =====
                     const sidebar = document.querySelector('.nav-sidebar');
                     if (sidebar) {
                         sidebar.addEventListener('mouseleave', function () {
@@ -2207,25 +2446,29 @@
     </script>
 
     <script>
-        /* 顶栏右上角头像菜单（与原来一致） */
         (function () {
             if (!window.supabase || document.getElementById('topAvatarWrap')) return;
-            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
             var authBtns = document.querySelector('.topbar .auth-buttons');
             if (!authBtns) return;
             if (!document.getElementById('topAvatarStyle')) {
                 var st = document.createElement('style');
                 st.id = 'topAvatarStyle';
-                st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+                st.textContent =
+                    '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
                 document.head.appendChild(st);
             }
+
             function letterAvatar(name) {
                 var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
             var me = null;
             var mo = new MutationObserver(ensure);
             mo.observe(authBtns, { childList: true });
+
             function ensure() {
                 if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
                 mo.disconnect();
@@ -2241,11 +2484,15 @@
                         av.id = 'topAvatar';
                         av.href = '/user/' + (me.user_number || '');
                         av.title = me.username || '';
-                        av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                        av.style.cssText =
+                            'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
                         var img = document.createElement('img');
                         img.alt = '头像';
                         img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                        img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                        img.onerror = function () {
+                            this.onerror = null;
+                            this.src = letterAvatar(me.username);
+                        };
                         img.src = me.avatar_url || letterAvatar(me.username);
                         av.appendChild(img);
                         wrap.appendChild(av);
@@ -2263,7 +2510,8 @@
                         gear.id = 'adminEntry';
                         gear.href = '/admin/user';
                         gear.title = '管理后台';
-                        gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                        gear.style.cssText =
+                            'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
                         gear.textContent = '⚙️';
                         authBtns.appendChild(gear);
                     }
@@ -2276,10 +2524,17 @@
             sb.auth.getSession().then(function (r) {
                 var s = r.data && r.data.session;
                 if (!s) return;
-                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
-            }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () { });
+                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s
+                    .user.id).maybeSingle();
+            }).then(function (rr) {
+                if (rr && rr.data) {
+                    me = rr.data;
+                    ensure();
+                }
+            }).catch(function () { });
         })();
     </script>
+
 </body>
 
 </html>
