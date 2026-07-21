@@ -994,7 +994,6 @@
                     const displayName = info.username || '已绑定';
                     statusContainer.innerHTML = `
                         <span class="status-text bound"><strong>${escapeHtmlAttr(displayName)}</strong></span>
-                        <button id="unbindLuoguBtn" class="btn btn-danger">解绑</button>
                     `;
                 } else {
                     statusContainer.innerHTML = `
@@ -1094,7 +1093,7 @@
                     // ========== 第 1 步：介绍 ==========
                     {
                         title: '洛谷账号绑定',
-                        html: `接下来系统将带你绑定洛谷的个人账号，我们会获取您洛谷账号的用户名、UID 以及 OI 认证等级。请确保您的洛谷账号可以正常登录，并已展示 OI 等级。`,
+                        html: `接下来系统将带你绑定洛谷的个人账号，我们会获取您洛谷账号的用户名、UID 、OI 认证等级、ICPC/XCPC 认证等级。请确保您的洛谷账号可以正常登录，并已展示 OI 等级。`,
                         confirmText: '下一步',
                         cancelText: '取消'
                     },
@@ -1412,47 +1411,6 @@
                     const target = e.target;
                     if (target.id === 'startBindBtn') {
                         startBindWizard();
-                    } else if (target.id === 'unbindLuoguBtn') {
-                        // 使用 SweetAlert2 确认弹窗
-                        Swal.fire({
-                            title: '真的要解绑洛谷的账号吗？',
-                            icon: 'info',
-                            showCancelButton: true,
-                            confirmButtonColor: '#E74C3C',
-                            cancelButtonColor: '#BFBFBF',
-                            confirmButtonText: '要！',
-                            cancelButtonText: '算了'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // 执行解绑
-                                (async function () {
-                                    try {
-                                        const { error } = await supabase
-                                            .from('profiles')
-                                            .update({ luogu_uid: null, luogu_username: null, luogu_bind_time: null })
-                                            .eq('id', currentUser.id);
-                                        if (error) throw error;
-                                        currentProfile = await getProfile(currentUser.id);
-                                        renderLuoguBind();
-                                        // 解绑成功提示
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: '解绑成功',
-                                            showConfirmButton: false,
-                                            timer: 1000
-                                        });
-                                    } catch (err) {
-                                        // 解绑失败提示
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: err.message,
-                                            confirmButtonColor: '#E74C3C',
-                                            confirmButtonText: '确定',
-                                        });
-                                    }
-                                })();
-                            }
-                        });
                     }
                 });
             }

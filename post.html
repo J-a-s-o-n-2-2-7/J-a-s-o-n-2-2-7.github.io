@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 
 <head>
-    <base href="/">
+    <!-- <base href="/"> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>帖子详情 - ✨ Jason227</title>
@@ -263,6 +263,8 @@
             position: sticky;
             top: 74px;
             align-self: flex-start;
+            max-height: calc(100vh - 90px);
+            overflow-y: auto;
         }
 
         .side-card {
@@ -770,7 +772,8 @@
         .CodeMirror .cm-header {
             font-weight: 700 !important;
             text-decoration: underline !important;
-            color: #404040 !important;      /* 保持编辑器文字颜色 */
+            color: #404040 !important;
+            /* 保持编辑器文字颜色 */
         }
 
         /* 单个 $ 数学公式高亮为 #994400 */
@@ -802,14 +805,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap;          /* 窄屏自动换行，宽屏强制一行 */
+            flex-wrap: wrap;
+            /* 窄屏自动换行，宽屏强制一行 */
             padding: 12px 16px;
             background: #fff;
             border-top: 1px solid #e9ecef;
         }
 
         .reply-bottom .captcha-input {
-            flex: 1 1 140px;          /* 可伸缩，最小宽度 140px */
+            flex: 1 1 140px;
+            /* 可伸缩，最小宽度 140px */
             min-width: 120px;
             padding: 12px 16px;
             border: 1px solid #d1d5db;
@@ -828,7 +833,8 @@
         }
 
         .reply-bottom canvas {
-            flex: 0 0 120px;          /* 固定宽度 */
+            flex: 0 0 120px;
+            /* 固定宽度 */
             height: 44px;
             cursor: pointer;
             border-radius: 12px;
@@ -837,7 +843,8 @@
         }
 
         .reply-bottom .btn-submit {
-            flex: 0 0 auto;           /* 不伸缩，宽度由内容撑开 */
+            flex: 0 0 auto;
+            /* 不伸缩，宽度由内容撑开 */
             padding: 10px 24px;
             border-radius: 8px;
             border: none;
@@ -850,7 +857,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            white-space: nowrap;      /* 防止按钮文字换行 */
+            white-space: nowrap;
+            /* 防止按钮文字换行 */
         }
 
         .reply-bottom .btn-submit:hover {
@@ -964,26 +972,6 @@
             text-align: center;
             padding: 60px 20px;
             color: #8a9aa8;
-        }
-
-        .loading-state .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #e74c3c;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
         }
 
         .error-state {
@@ -1133,22 +1121,30 @@
             }
 
             .cs-content {
-                flex-direction: row;          /* 恢复水平排列 */
-                height: 280px;                /* 固定高度，避免撑乱 */
-                overflow: hidden;             /* 防止内容溢出 */
+                flex-direction: row;
+                /* 恢复水平排列 */
+                height: 280px;
+                /* 固定高度，避免撑乱 */
+                overflow: hidden;
+                /* 防止内容溢出 */
             }
 
             .cs-zone-half {
-                flex: 1 1 50%;                /* 各占一半宽度 */
-                min-width: 0;                 /* 允许收缩 */
+                flex: 1 1 50%;
+                /* 各占一半宽度 */
+                min-width: 0;
+                /* 允许收缩 */
                 padding: 8px 12px;
                 min-height: 200px;
-                overflow-y: auto;             /* 内部滚动 */
+                overflow-y: auto;
+                /* 内部滚动 */
             }
 
             .cs-zone-half:first-child {
-                border-right: 1px solid #e9ecef;  /* 保留左右分隔线 */
-                border-bottom: none;              /* 去掉底部分隔线 */
+                border-right: 1px solid #e9ecef;
+                /* 保留左右分隔线 */
+                border-bottom: none;
+                /* 去掉底部分隔线 */
             }
 
             .reply-bottom {
@@ -1454,7 +1450,6 @@
                 <!-- 主内容 -->
                 <div class="main">
                     <div id="loadingState" class="loading-state">
-                        <div class="spinner"></div>
                         <p>加载中...</p>
                     </div>
                     <div id="postContent" style="display:none;"></div>
@@ -1655,7 +1650,8 @@
                                     </div>
                                 </div>
                                 <div class="reply-bottom">
-                                    <input class="captcha-input" id="captchaInput" placeholder="请输入图形验证码" autocomplete="off" maxlength="6">
+                                    <input class="captcha-input" id="captchaInput" placeholder="请输入图形验证码"
+                                        autocomplete="off" maxlength="6">
                                     <canvas id="captchaCanvas" width="120" height="44"></canvas>
                                     <button class="btn-submit" id="submitReplyBtn">发表</button>
                                 </div>
@@ -2021,14 +2017,18 @@
                     });
                 }
             });
-            // 为了兼容后续代码，我们定义一个 replyInput 的别名指向 easyMDE
             const replyInput = {
-                value: () => easyMDE.value(),
-                addEventListener: (event, callback) => {
-                    // 监听 EasyMDE 的 input 事件
-                    easyMDE.codemirror.on('change', callback);
+                get value() {
+                    return easyMDE.value();
                 },
-                // 其他需要的属性可以模拟
+                set value(v) {
+                    easyMDE.value(v);
+                },
+                addEventListener: (event, callback) => {
+                    if (event === 'input' || event === 'change') {
+                        easyMDE.codemirror.on('change', callback);
+                    }
+                },
             };
             const previewContent = document.getElementById('previewContent');
             const wordCount = document.getElementById('wordCount');
@@ -2549,7 +2549,9 @@
             });
 
             setInterval(function () {
-                if (currentPost) localStorage.setItem('reply_draft_' + currentPost.id, replyInput.value);
+                if (currentPost) {
+                    localStorage.setItem('reply_draft_' + currentPost.id, replyInput.value);
+                }
             }, 30000);
 
             function loadDraft() {
@@ -2587,7 +2589,7 @@
                 }
 
                 const text = replyInput.value.trim();
-                if (!text) { 
+                if (!text) {
                     await Swal.fire({
                         icon: 'error',
                         title: '该变量不应为空。',
@@ -2801,8 +2803,11 @@
                         e.preventDefault();
                         const author = this.dataset.author;
                         replyInput.value = '|| @' + author + ' : ';
-                        replyInput.focus();
-                        replyInput.setSelectionRange(replyInput.value.length, replyInput.value.length);
+                        easyMDE.codemirror.focus();
+                        const cm = easyMDE.codemirror;
+                        const line = cm.lineCount() - 1;
+                        const ch = cm.getLine(line).length;
+                        cm.setCursor(line, ch);
                         updatePreview();
                         document.getElementById('replyEditorContainer').scrollIntoView({
                             behavior: 'smooth',
@@ -2852,12 +2857,29 @@
             // ============================================================
             async function loadPost() {
                 var path = window.location.pathname;
+                var postId = null;
+
+                // 1️⃣ 先尝试从路径中解析（/discuss/123）
                 var match = path.match(/^\/discuss\/(\d+)$/);
-                var postId = match ? match[1] : null;
+                if (match) {
+                    postId = match[1];
+                }
+
+                // 2️⃣ 如果路径解析失败，尝试从查询参数中解析（?id=123）
+                if (!postId) {
+                    const params = new URLSearchParams(window.location.search);
+                    postId = params.get('id');
+                }
+
                 if (!postId) {
                     document.getElementById('loadingState').style.display = 'none';
-                    document.getElementById('postContent').innerHTML =
-                        '<div class="error-state"><h1>缺少帖子 ID</h1><p>请提供有效的帖子编号。</p></div>';
+                    document.getElementById('postContent').innerHTML = `
+            <div class="error-state">
+                <h1>缺少帖子 ID</h1>
+                <p>请使用 <code>/discuss/帖子编号</code> 或 <code>/discuss?id=帖子编号</code> 访问。</p>
+                <p style="margin-top:12px;"><a href="/discuss" style="color:#e74c3c;">返回讨论区</a></p>
+            </div>
+        `;
                     document.getElementById('postContent').style.display = 'block';
                     return;
                 }
