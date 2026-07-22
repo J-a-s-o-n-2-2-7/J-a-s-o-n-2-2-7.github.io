@@ -68,16 +68,23 @@
                 return;
             }
 
-            // ===== 2. 帖子详情：/discuss/数字  （改为丢弃参数，不传递 ?id=） =====
+            // ===== 2. 帖子详情：/discuss/数字 =====
             var discussMatch = path.match(/^\/discuss\/(\d+)$/);
             if (discussMatch) {
                 var id = discussMatch[1];
-                // 👇 去掉 ?id= 参数，仅加载 post.html，由 post.html 自己从路径解析 id
                 loadPage('/post.html', '/discuss/' + id, '无法加载帖子详情页');
                 return;
             }
 
-            // ===== 3. 帮助文档管理路由（/admin/help） =====
+            // ===== 3. 文章路由：/article 或 /article/xxxxxx（新增） =====
+            var articleMatch = path.match(/^\/article(?:\/([a-zA-Z0-9]+))?$/);
+            if (articleMatch) {
+                // 无论是 /article 还是 /article/xxxxxx，都加载同一个 article.html，由它自己根据路径识别
+                loadPage('/article/index.html', path, '无法加载文章页面');
+                return;
+            }
+
+            // ===== 4. 帮助文档管理路由（/admin/help） =====
             var helpEditMatch = path.match(/^\/admin\/help\/(\d+)\/edit$/);
             if (helpEditMatch) {
                 var helpId = helpEditMatch[1];
@@ -93,7 +100,7 @@
                 return;
             }
 
-            // ===== 4. 团队路由 =====
+            // ===== 5. 团队路由 =====
             var teamMatch = path.match(/^\/team\/(\d+)$/);
             if (teamMatch) {
                 var id = teamMatch[1];
@@ -101,7 +108,7 @@
                 return;
             }
 
-            // ===== 5. 其他路径 → 404 =====
+            // ===== 6. 其他路径 → 404 =====
             document.body.innerHTML = `
                 <h1>404 - 页面未找到</h1>
                 <p>您访问的页面不存在，请检查网址。</p>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表</title>
+
+    <!-- 引入 markdown-it 和 DOMPurify（用于详情预览） -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            padding: 28px 32px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a2632;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header h1 i {
+            color: #e74c3c;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #2c3e50;
+            border: 1px solid #dce3ea;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: #f0f2f5;
+        }
+
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #2c3e50;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e6ea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8a9aa8;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #dce3ea;
+            margin-bottom: 16px;
+        }
+
+        .article-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .article-item {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 18px 20px;
+            border: 1px solid #e9ecef;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .article-item:hover {
+            border-color: #e74c3c;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.06);
+        }
+
+        .article-info {
+            flex: 1;
+            min-width: 180px;
+            cursor: pointer;
+        }
+
+        .article-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a2632;
+            margin-bottom: 4px;
+        }
+
+        .article-title:hover {
+            color: #e74c3c;
+        }
+
+        .article-meta {
+            font-size: 13px;
+            color: #8a9aa8;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .article-meta i {
+            margin-right: 4px;
+        }
+
+        .article-excerpt {
+            font-size: 14px;
+            color: #5a6a7a;
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 详情模态框 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            max-width: 720px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 28px 32px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 12px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a2632;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #8a9aa8;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+
+        .detail-content {
+            padding: 4px 0;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #1a2632;
+        }
+
+        .detail-content .benben-text p {
+            margin-bottom: 12px;
+        }
+
+        .detail-content code {
+            background: #f0f2f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .detail-content pre {
+            background: #f0f2f5;
+            padding: 12px 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 16px;
+            margin-top: 12px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .article-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .article-actions {
+                justify-content: flex-end;
+            }
+
+            .modal {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1><i class="fas fa-blog"></i> 我的文章</h1>
+            <a href="_new.html" class="btn-primary"><i class="fas fa-plus"></i> 新建文章</a>
+        </div>
+
+        <!-- 文章列表容器 -->
+        <div id="articleListContainer">
+            <!-- 由 JavaScript 动态渲染 -->
+        </div>
+    </div>
+
+    <!-- ===== 详情模态框 ===== -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="detailTitle">文章详情</h2>
+                <button class="modal-close" id="closeDetailBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-content" id="detailContent">
+                    <p style="color:#8a9aa8;">加载中……</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeDetailFooterBtn">关闭</button>
+                <a href="#" class="btn-primary" id="detailEditBtn" style="text-decoration:none;"><i
+                        class="fas fa-edit"></i> 编辑</a>
+                <button class="btn-danger" id="detailDeleteBtn"><i class="fas fa-trash"></i> 删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ===== 数据管理 =====
+            const STORAGE_KEY = 'my_articles';
+
+            function getArticles() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function saveArticles(articles) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+            }
+
+            function findArticle(id) {
+                return getArticles().find(a => a.id === id) || null;
+            }
+
+            // ===== Markdown 渲染 =====
+            let md = null;
+
+            function getMarkdownRenderer() {
+                if (!md && typeof markdownit !== 'undefined') {
+                    md = markdownit({ html: true, linkify: true, typographer: true, breaks: true });
+                }
+                return md;
+            }
+
+            function renderMarkdown(text) {
+                if (!text) return '';
+                const renderer = getMarkdownRenderer();
+                if (!renderer) return text;
+                const raw = renderer.render(text);
+                if (typeof DOMPurify !== 'undefined') {
+                    return DOMPurify.sanitize(raw);
+                }
+                return raw;
+            }
+
+            function getExcerpt(text, len = 80) {
+                if (!text) return '';
+                let plain = text.replace(/[#*`~_\[\]()>!]/g, '').replace(/\s+/g, ' ').trim();
+                if (plain.length <= len) return plain;
+                return plain.slice(0, len) + '…';
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // ===== 渲染列表 =====
+            function renderList() {
+                const container = document.getElementById('articleListContainer');
+                const articles = getArticles();
+
+                if (articles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="far fa-file-alt"></i>
+                            <p>还没有文章，点击 “新建文章” 开始创作吧！</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const sorted = [...articles].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                let html = '<div class="article-list">';
+                sorted.forEach(article => {
+                    const date = article.createdAt ?
+                        new Date(article.createdAt).toLocaleString('zh-CN', { hour12: false }) :
+                        '未知时间';
+                    const excerpt = getExcerpt(article.content);
+                    html += `
+                        <div class="article-item" data-id="${article.id}">
+                            <div class="article-info" data-id="${article.id}">
+                                <div class="article-title">${escapeHtml(article.title)}</div>
+                                <div class="article-meta">
+                                    <span><i class="far fa-calendar-alt"></i> ${date}</span>
+                                    <span><i class="far fa-file-word"></i> ${article.content ? article.content.length : 0} 字符</span>
+                                </div>
+                                <div class="article-excerpt">${escapeHtml(excerpt)}</div>
+                            </div>
+                            <div class="article-actions">
+                                <button class="btn-outline view-detail-btn" data-id="${article.id}"><i class="fas fa-eye"></i> 查看</button>
+                                <button class="btn-danger delete-btn" data-id="${article.id}"><i class="fas fa-trash"></i> 删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+
+                // 绑定事件
+                container.querySelectorAll('.view-detail-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const id = this.dataset.id;
+                        showDetail(id);
+                    });
+                });
+
+                container.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const id = this.dataset.id;
+                        if (confirm('确定要删除这篇文章吗？')) {
+                            deleteArticle(id);
+                        }
+                    });
+                });
+
+                container.querySelectorAll('.article-info').forEach(el => {
+                    el.addEventListener('click', function () {
+                        const id = this.dataset.id;
+                        showDetail(id);
+                    });
+                });
+            }
+
+            // ===== 删除文章 =====
+            function deleteArticle(id) {
+                let articles = getArticles();
+                articles = articles.filter(a => a.id !== id);
+                saveArticles(articles);
+                renderList();
+                // 如果详情模态框打开且显示的是被删除的文章，则关闭
+                const modal = document.getElementById('detailModal');
+                if (modal.classList.contains('active')) {
+                    const currentId = modal.dataset.currentId;
+                    if (currentId === id) {
+                        closeDetail();
+                    }
+                }
+            }
+
+            // ===== 详情模态框 =====
+            let currentDetailId = null;
+
+            function showDetail(id) {
+                const article = findArticle(id);
+                if (!article) {
+                    alert('文章不存在');
+                    return;
+                }
+
+                currentDetailId = id;
+                const modal = document.getElementById('detailModal');
+                modal.dataset.currentId = id;
+
+                document.getElementById('detailTitle').textContent = article.title;
+                const html = renderMarkdown(article.content);
+                document.getElementById('detailContent').innerHTML = `<div class="benben-text">${html}</div>`;
+
+                // 设置编辑链接
+                const editBtn = document.getElementById('detailEditBtn');
+                editBtn.href = `_new.html?edit=${id}`;
+
+                // 删除按钮
+                const deleteBtn = document.getElementById('detailDeleteBtn');
+                deleteBtn.onclick = function () {
+                    if (confirm('确定要删除这篇文章吗？')) {
+                        deleteArticle(id);
+                        closeDetail();
+                    }
+                };
+
+                modal.classList.add('active');
+            }
+
+            function closeDetail() {
+                document.getElementById('detailModal').classList.remove('active');
+                currentDetailId = null;
+            }
+
+            // ===== 初始化事件 =====
+            document.addEventListener('DOMContentLoaded', function () {
+                renderList();
+
+                // 关闭模态框
+                document.getElementById('closeDetailBtn').addEventListener('click', closeDetail);
+                document.getElementById('closeDetailFooterBtn').addEventListener('click', closeDetail);
+                document.getElementById('detailModal').addEventListener('click', function (e) {
+                    if (e.target === this) closeDetail();
+                });
+
+                // ESC 关闭
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        if (document.getElementById('detailModal').classList.contains('active')) {
+                            closeDetail();
+                        }
+                    }
+                });
+
+                // 如果 URL 中有 ?detail=id，自动打开详情（可选）
+                const params = new URLSearchParams(window.location.search);
+                const detailId = params.get('detail');
+                if (detailId) {
+                    showDetail(detailId);
+                    // 清除 URL 参数以免刷新后重复打开
+                    window.history.replaceState({}, '', window.location.pathname);
+                }
+            });
+
+        })();
+    </script>
+
+</body>
+
+</html>
