@@ -2967,7 +2967,6 @@
                                 show_xcpc_badge
                             )
                         `)
-                        .eq('is_deleted', false)
                         .order('created_at', { ascending: false })
                         .limit(20);
                     if (lastId) query = query.lt('id', lastId);
@@ -3121,8 +3120,17 @@
 
             async function deleteBenben(id) {
                 try {
-                    const { error } = await supabase.from('benben').update({ is_deleted: true }).eq('id', id);
+                    // 1. 删除该犇犇产生的所有通知
+                    await supabase.from('notifications').delete().eq('benben_id', id);
+
+                    // 2. 删除所有回复该犇犇的记录（级联删除）
+                    await supabase.from('benben').delete().eq('reply_to', id);
+
+                    // 3. 物理删除该犇犇
+                    const { error } = await supabase.from('benben').delete().eq('id', id);
                     if (error) throw error;
+
+                    // 刷新列表
                     loadBenbenList(true);
                 } catch (error) {
                     console.error(error);
@@ -3152,7 +3160,6 @@
                 let finalContent = currentProfile.is_admin ? content : content.substring(0, MAX_LENGTH);
                 const insertData = {
                     user_number: currentProfile.user_number, content: finalContent,
-                    is_deleted: false
                 };
                 if (finalReplyToId) insertData.reply_to = finalReplyToId;
                 try {
