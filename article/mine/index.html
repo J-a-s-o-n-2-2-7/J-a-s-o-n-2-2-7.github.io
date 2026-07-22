@@ -13,6 +13,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             margin: 0;
@@ -305,6 +308,18 @@
             margin-top: 12px;
         }
 
+        /* 加载状态 */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8a9aa8;
+        }
+
+        .loading-spinner i {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
         /* 响应式 */
         @media (max-width: 600px) {
             .container {
@@ -342,7 +357,10 @@
 
         <!-- 文章列表容器 -->
         <div id="articleListContainer">
-            <!-- 由 JavaScript 动态渲染 -->
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>加载中…</p>
+            </div>
         </div>
     </div>
 
@@ -371,27 +389,108 @@
         (function () {
             'use strict';
 
-            // ===== 数据管理 =====
-            const STORAGE_KEY = 'my_articles';
+            // ================================================================
+            // 1. Supabase 配置（与之前文章页面保持一致）
+            // ================================================================
+            const SUPABASE_URL = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const SUPABASE_KEY = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            function getArticles() {
-                try {
-                    const data = localStorage.getItem(STORAGE_KEY);
-                    return data ? JSON.parse(data) : [];
-                } catch {
-                    return [];
+            // ================================================================
+            // 2. 数据操作（真实 Supabase）
+            // ================================================================
+
+            /**
+             * 获取所有文章（按创建时间倒序），并关联作者信息
+             */
+            async function fetchArticles() {
+                // 先查文章
+                const { data: articles, error } = await supabase
+                    .from('articles')
+                    .select('short_id, title, content, author_id, created_at, updated_at')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                if (!articles || articles.length === 0) return [];
+
+                // 收集所有 author_id，批量查询 profiles
+                const authorIds = [...new Set(articles.map(a => a.author_id).filter(Boolean))];
+                let profilesMap = {};
+                if (authorIds.length > 0) {
+                    const { data: profiles, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('id, username, user_number')
+                        .in('id', authorIds);
+                    if (!profileError && profiles) {
+                        profiles.forEach(p => { profilesMap[p.id] = p; });
+                    }
                 }
+
+                // 组装数据，统一使用 id 作为唯一标识（short_id 作为 URL 友好 ID）
+                return articles.map(article => ({
+                    id: article.short_id,          // 用于列表和详情标识
+                    short_id: article.short_id,
+                    title: article.title,
+                    content: article.content || '',
+                    author_id: article.author_id,
+                    author_name: profilesMap[article.author_id]?.username || '匿名',
+                    created_at: article.created_at,
+                    updated_at: article.updated_at,
+                }));
             }
 
-            function saveArticles(articles) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+            /**
+             * 根据 short_id 获取单篇文章
+             */
+            async function fetchArticleById(shortId) {
+                const { data, error } = await supabase
+                    .from('articles')
+                    .select('short_id, title, content, author_id, created_at, updated_at')
+                    .eq('short_id', shortId)
+                    .maybeSingle();
+
+                if (error) throw error;
+                if (!data) return null;
+
+                // 获取作者信息
+                let authorName = '匿名';
+                if (data.author_id) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('username')
+                        .eq('id', data.author_id)
+                        .maybeSingle();
+                    if (profile) authorName = profile.username;
+                }
+
+                return {
+                    id: data.short_id,
+                    short_id: data.short_id,
+                    title: data.title,
+                    content: data.content || '',
+                    author_id: data.author_id,
+                    author_name: authorName,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                };
             }
 
-            function findArticle(id) {
-                return getArticles().find(a => a.id === id) || null;
+            /**
+             * 删除文章
+             */
+            async function deleteArticle(shortId) {
+                const { error } = await supabase
+                    .from('articles')
+                    .delete()
+                    .eq('short_id', shortId);
+
+                if (error) throw error;
+                return true;
             }
 
-            // ===== Markdown 渲染 =====
+            // ================================================================
+            // 3. Markdown 渲染工具
+            // ================================================================
             let md = null;
 
             function getMarkdownRenderer() {
@@ -426,124 +525,164 @@
                 return div.innerHTML;
             }
 
-            // ===== 渲染列表 =====
-            function renderList() {
+            function formatTime(ts) {
+                if (!ts) return '未知时间';
+                const d = new Date(ts);
+                const pad = n => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            }
+
+            // ================================================================
+            // 4. 渲染列表
+            // ================================================================
+            async function renderList() {
                 const container = document.getElementById('articleListContainer');
-                const articles = getArticles();
 
-                if (articles.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="far fa-file-alt"></i>
-                            <p>还没有文章，点击 “新建文章” 开始创作吧！</p>
-                        </div>
-                    `;
-                    return;
-                }
+                try {
+                    const articles = await fetchArticles();
 
-                const sorted = [...articles].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                let html = '<div class="article-list">';
-                sorted.forEach(article => {
-                    const date = article.createdAt ?
-                        new Date(article.createdAt).toLocaleString('zh-CN', { hour12: false }) :
-                        '未知时间';
-                    const excerpt = getExcerpt(article.content);
-                    html += `
-                        <div class="article-item" data-id="${article.id}">
-                            <div class="article-info" data-id="${article.id}">
-                                <div class="article-title">${escapeHtml(article.title)}</div>
-                                <div class="article-meta">
-                                    <span><i class="far fa-calendar-alt"></i> ${date}</span>
-                                    <span><i class="far fa-file-word"></i> ${article.content ? article.content.length : 0} 字符</span>
-                                </div>
-                                <div class="article-excerpt">${escapeHtml(excerpt)}</div>
+                    if (articles.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="far fa-file-alt"></i>
+                                <p>还没有文章，点击 “新建文章” 开始创作吧！</p>
                             </div>
-                            <div class="article-actions">
-                                <button class="btn-outline view-detail-btn" data-id="${article.id}"><i class="fas fa-eye"></i> 查看</button>
-                                <button class="btn-danger delete-btn" data-id="${article.id}"><i class="fas fa-trash"></i> 删除</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                container.innerHTML = html;
-
-                // 绑定事件
-                container.querySelectorAll('.view-detail-btn').forEach(btn => {
-                    btn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        const id = this.dataset.id;
-                        showDetail(id);
-                    });
-                });
-
-                container.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        const id = this.dataset.id;
-                        if (confirm('确定要删除这篇文章吗？')) {
-                            deleteArticle(id);
-                        }
-                    });
-                });
-
-                container.querySelectorAll('.article-info').forEach(el => {
-                    el.addEventListener('click', function () {
-                        const id = this.dataset.id;
-                        showDetail(id);
-                    });
-                });
-            }
-
-            // ===== 删除文章 =====
-            function deleteArticle(id) {
-                let articles = getArticles();
-                articles = articles.filter(a => a.id !== id);
-                saveArticles(articles);
-                renderList();
-                // 如果详情模态框打开且显示的是被删除的文章，则关闭
-                const modal = document.getElementById('detailModal');
-                if (modal.classList.contains('active')) {
-                    const currentId = modal.dataset.currentId;
-                    if (currentId === id) {
-                        closeDetail();
+                        `;
+                        return;
                     }
+
+                    let html = '<div class="article-list">';
+                    articles.forEach(article => {
+                        const date = formatTime(article.created_at);
+                        const excerpt = getExcerpt(article.content);
+                        const author = article.author_name || '匿名';
+                        html += `
+                            <div class="article-item" data-id="${article.id}">
+                                <div class="article-info" data-id="${article.id}">
+                                    <div class="article-title">${escapeHtml(article.title)}</div>
+                                    <div class="article-meta">
+                                        <span><i class="fas fa-user"></i> ${escapeHtml(author)}</span>
+                                        <span><i class="far fa-calendar-alt"></i> ${date}</span>
+                                        <span><i class="far fa-file-word"></i> ${article.content ? article.content.length : 0} 字符</span>
+                                    </div>
+                                    <div class="article-excerpt">${escapeHtml(excerpt)}</div>
+                                </div>
+                                <div class="article-actions">
+                                    <button class="btn-outline view-detail-btn" data-id="${article.id}"><i class="fas fa-eye"></i> 查看</button>
+                                    <button class="btn-danger delete-btn" data-id="${article.id}"><i class="fas fa-trash"></i> 删除</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+
+                    // 绑定事件
+                    container.querySelectorAll('.view-detail-btn').forEach(btn => {
+                        btn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const id = this.dataset.id;
+                            showDetail(id);
+                        });
+                    });
+
+                    container.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const id = this.dataset.id;
+                            if (confirm('确定要删除这篇文章吗？')) {
+                                handleDelete(id);
+                            }
+                        });
+                    });
+
+                    container.querySelectorAll('.article-info').forEach(el => {
+                        el.addEventListener('click', function () {
+                            const id = this.dataset.id;
+                            showDetail(id);
+                        });
+                    });
+
+                } catch (err) {
+                    console.error('加载文章列表失败:', err);
+                    container.innerHTML = `
+                        <div class="empty-state" style="color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>加载失败：${escapeHtml(err.message)}</p>
+                            <button class="btn-secondary" onclick="location.reload()" style="margin-top:12px;">重试</button>
+                        </div>
+                    `;
                 }
             }
 
-            // ===== 详情模态框 =====
+            // ================================================================
+            // 5. 删除处理（带自动关闭详情）
+            // ================================================================
+            async function handleDelete(shortId) {
+                try {
+                    await deleteArticle(shortId);
+                    // 刷新列表
+                    await renderList();
+                    // 如果详情模态框打开且显示的是被删除的文章，则关闭
+                    const modal = document.getElementById('detailModal');
+                    if (modal.classList.contains('active')) {
+                        const currentId = modal.dataset.currentId;
+                        if (currentId === shortId) {
+                            closeDetail();
+                        }
+                    }
+                } catch (err) {
+                    console.error('删除失败:', err);
+                    alert('删除失败：' + err.message);
+                }
+            }
+
+            // ================================================================
+            // 6. 详情模态框
+            // ================================================================
             let currentDetailId = null;
 
-            function showDetail(id) {
-                const article = findArticle(id);
-                if (!article) {
-                    alert('文章不存在');
-                    return;
-                }
-
-                currentDetailId = id;
+            async function showDetail(shortId) {
                 const modal = document.getElementById('detailModal');
-                modal.dataset.currentId = id;
-
-                document.getElementById('detailTitle').textContent = article.title;
-                const html = renderMarkdown(article.content);
-                document.getElementById('detailContent').innerHTML = `<div class="benben-text">${html}</div>`;
-
-                // 设置编辑链接
+                const content = document.getElementById('detailContent');
+                const titleEl = document.getElementById('detailTitle');
                 const editBtn = document.getElementById('detailEditBtn');
-                editBtn.href = `_new.html?edit=${id}`;
-
-                // 删除按钮
                 const deleteBtn = document.getElementById('detailDeleteBtn');
-                deleteBtn.onclick = function () {
-                    if (confirm('确定要删除这篇文章吗？')) {
-                        deleteArticle(id);
-                        closeDetail();
-                    }
-                };
 
+                // 显示加载状态
+                content.innerHTML = '<p style="color:#8a9aa8;">加载中…</p>';
+                modal.dataset.currentId = shortId;
                 modal.classList.add('active');
+                currentDetailId = shortId;
+
+                try {
+                    const article = await fetchArticleById(shortId);
+                    if (!article) {
+                        content.innerHTML = '<p style="color:#e74c3c;">文章不存在</p>';
+                        titleEl.textContent = '文章不存在';
+                        editBtn.href = '#';
+                        deleteBtn.onclick = null;
+                        return;
+                    }
+
+                    titleEl.textContent = article.title;
+                    const html = renderMarkdown(article.content);
+                    content.innerHTML = `<div class="benben-text">${html}</div>`;
+
+                    // 编辑链接
+                    editBtn.href = `_new.html?edit=${article.short_id}`;
+
+                    // 删除按钮
+                    deleteBtn.onclick = function () {
+                        if (confirm('确定要删除这篇文章吗？')) {
+                            handleDelete(article.short_id);
+                        }
+                    };
+
+                } catch (err) {
+                    console.error('加载详情失败:', err);
+                    content.innerHTML = `<p style="color:#e74c3c;">加载失败：${escapeHtml(err.message)}</p>`;
+                }
             }
 
             function closeDetail() {
@@ -551,8 +690,11 @@
                 currentDetailId = null;
             }
 
-            // ===== 初始化事件 =====
+            // ================================================================
+            // 7. 初始化
+            // ================================================================
             document.addEventListener('DOMContentLoaded', function () {
+                // 加载文章列表
                 renderList();
 
                 // 关闭模态框
@@ -571,12 +713,11 @@
                     }
                 });
 
-                // 如果 URL 中有 ?detail=id，自动打开详情（可选）
+                // 如果 URL 中有 ?detail=id，自动打开详情
                 const params = new URLSearchParams(window.location.search);
                 const detailId = params.get('detail');
                 if (detailId) {
                     showDetail(detailId);
-                    // 清除 URL 参数以免刷新后重复打开
                     window.history.replaceState({}, '', window.location.pathname);
                 }
             });
