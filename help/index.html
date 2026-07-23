@@ -4,19 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>帮助中心 · Jason227</title>
-  <!-- KaTeX -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <!-- markdown-it -->
   <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
-  <!-- Mermaid -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <!-- DOMPurify -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -35,8 +31,6 @@
     .bell-icon:hover { color:#e74c3c; }
     .bell-icon svg { width:20px; height:20px; }
     .bell-icon sup { position:absolute; top:-8px; right:-12px; background-color:#e74c3c; color:white; font-size:10px; font-weight:bold; min-width:16px; height:16px; border-radius:20px; display:inline-flex; align-items:center; justify-content:center; padding:0 4px; box-shadow:0 0 2px rgba(0,0,0,0.2); line-height:1; }
-
-    /* ===== 主布局 ===== */
     .main-layout { max-width:1400px; margin:0 auto; padding:0 20px 20px 20px; position:relative; min-height:100vh; }
     .nav-sidebar { position:fixed; top:50px; left:0; height:calc(100vh - 50px); width:64px; background:white; border-radius:0; box-shadow:2px 0 8px rgba(0,0,0,0.06); padding:16px 0; transition:width 0.3s ease; overflow-y:auto; overflow-x:hidden; white-space:nowrap; z-index:150; }
     .nav-sidebar::-webkit-scrollbar { width:4px; }
@@ -59,47 +53,27 @@
     .nav-item.active { background:#f0f2f5; color:#e74c3c; }
     .content-wrapper { margin-left:64px; padding-top:20px; }
     .main-content { max-width:100%; }
-
-    /* ===== 卡片 ===== */
     .card { background:white; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:20px 24px; margin-bottom:24px; }
     .card-header { font-size:1.25rem; font-weight:600; border-left:4px solid #e74c3c; padding-left:12px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
-
-    /* ===== 帮助内容容器 ===== */
-    .help-container {
-      font-size:0.95rem;
-      color:#1e293b;
-      line-height:1.7;
-    }
+    .help-container { font-size:0.95rem; color:#1e293b; line-height:1.7; }
     .help-container h2 { margin:1.2em 0 0.4em; font-weight:600; font-size:1.3rem; border-bottom:1px solid #e9edf4; padding-bottom:0.3em; }
     .help-container h3 { margin:1em 0 0.3em; font-weight:600; font-size:1.1rem; }
     .help-container p { margin:0.6em 0; }
     .help-container ul, .help-container ol { padding-left:1.8em; margin:0.4em 0; }
     .help-container li { margin:0.2em 0; }
-    .help-container .help-block { background:#f8fafc; border-left:3px solid #e74c3c; padding:0.8em 1.2em; margin:1em 0; border-radius:0 8px 8px 0; }
-    .help-container .help-block strong { color:#c0392b; }
-    .help-container .meta-note { color:#64748b; font-size:0.9rem; background:#f1f5f9; padding:0.4em 1em; border-radius:20px; display:inline-block; }
     .help-container .faq-item { background:#f8fafc; border-radius:8px; padding:0.8em 1.2em; margin:0.6em 0; border:1px solid #e9edf4; }
     .help-container .faq-item strong { color:#1e293b; display:block; margin-bottom:0.2em; }
-
-    /* ===== 编辑按钮 ===== */
     .edit-help-btn { background:#e74c3c; color:white; border:none; border-radius:30px; padding:6px 20px; font-size:14px; cursor:pointer; transition:background 0.2s; text-decoration:none; }
     .edit-help-btn:hover { background:#c0392b; }
     .edit-help-btn.is-hidden { display:none; }
-
-    /* ===== 空状态 ===== */
     .empty-state { text-align:center; padding:60px 20px; color:#999; }
     .empty-state .icon { font-size:3rem; margin-bottom:12px; opacity:0.5; }
-
-    /* ===== 回到顶部 ===== */
     #back-to-top { display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s, transform 0.3s; }
     #back-to-top:hover { background:#c0392b; transform:scale(1.1); }
     @media (max-width:600px) { #back-to-top { bottom:20px; right:20px; width:40px; height:40px; font-size:20px; } }
-
     footer { text-align:center; padding:24px; color:#7f8c8d; font-size:13px; }
     footer a { color:#7f8c8d; text-decoration:none; }
     footer a:hover { color:#e74c3c; text-decoration:underline; }
-
-    /* ===== 响应式 ===== */
     @media (max-width:900px) {
       .main-layout { padding:0 16px 16px 16px; }
       .nav-sidebar { position:relative; top:auto; left:auto; height:auto; width:100%; border-radius:0; box-shadow:0 2px 8px rgba(0,0,0,0.04); margin-bottom:20px; padding:12px 0; transition:none; overflow:visible; white-space:normal; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
@@ -134,7 +108,6 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- ===== 顶栏 ===== -->
   <div class="topbar">
     <a href="/" class="logo">✨ Jason227</a>
     <div class="auth-buttons" id="authButtons">
@@ -142,9 +115,7 @@
     </div>
   </div>
 
-  <!-- ===== 主布局 ===== -->
   <div class="main-layout">
-    <!-- ===== 侧边栏 ===== -->
     <div class="nav-sidebar">
       <div class="nav-group">
         <ul>
@@ -190,7 +161,6 @@
       </div>
     </div>
 
-    <!-- ===== 内容区域 ===== -->
     <div class="content-wrapper">
       <div class="main-content">
         <div class="card">
@@ -199,7 +169,6 @@
             <button id="editHelpBtn" class="edit-help-btn is-hidden">✎ 编辑帮助</button>
           </div>
           <div id="helpDisplay" class="help-container">
-            <!-- 由 JavaScript 渲染帮助内容 -->
             <div class="empty-state"><div class="icon">📚</div><p>加载帮助中...</p></div>
           </div>
         </div>
@@ -207,14 +176,13 @@
     </div>
   </div>
 
-  <!-- ===== 回到顶部 ===== -->
   <button id="back-to-top" title="回到顶部">↑</button>
   <footer>© 2026 <span class="brand-highlight">✨ Jason227</span></footer>
 
   <script>
     (function() {
       // ============================================================
-      // 1. Supabase 初始化
+      // Supabase 初始化
       // ============================================================
       const supabase = window.supabase.createClient(
         'https://nosikdfacxkuaxfrmoqn.supabase.co',
@@ -222,21 +190,19 @@
       );
 
       // ============================================================
-      // 2. DOM 引用
+      // DOM 引用
       // ============================================================
       const helpDisplay = document.getElementById('helpDisplay');
       const editHelpBtn = document.getElementById('editHelpBtn');
       const authButtons = document.getElementById('authButtons');
 
       // ============================================================
-      // 3. 状态
+      // 状态 - 使用 action_type 来标识帮助文档，而不是 id
       // ============================================================
       let currentHelp = '';
       let isSuperAdmin = false;
+      const HELP_TYPE = 'help_doc';  // 用 action_type 标识
 
-      // ============================================================
-      // 4. 工具
-      // ============================================================
       function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>"]/g, function(m) {
@@ -249,14 +215,14 @@
       }
 
       // ============================================================
-      // 5. 加载帮助（从 judgement_logs 读取，用 type='help' 标识）
+      // 加载帮助（通过 action_type 查询）
       // ============================================================
       async function loadHelp() {
         try {
           const { data, error } = await supabase
             .from('judgement_logs')
             .select('id, action_detail, reason, created_at')
-            .eq('type', 'help')   // 使用 type 字段标识帮助文档
+            .eq('action_type', HELP_TYPE)
             .maybeSingle();
 
           if (error) {
@@ -278,7 +244,7 @@
       }
 
       // ============================================================
-      // 6. 渲染帮助（支持 Markdown）
+      // 渲染帮助
       // ============================================================
       function renderHelp(markdown) {
         if (!markdown) {
@@ -300,7 +266,7 @@
           const clean = window.DOMPurify.sanitize(html, { ADD_ATTR: ['target'] });
           helpDisplay.innerHTML = clean;
         } catch (e) {
-          console.warn('Markdown 渲染失败，以纯文本显示', e);
+          console.warn('Markdown 渲染失败', e);
           helpDisplay.innerHTML = `<pre style="white-space:pre-wrap;">${escapeHtml(markdown)}</pre>`;
         }
       }
@@ -309,7 +275,7 @@
         const defaultMd = `
 # 📖 帮助中心
 
-欢迎来到 **Jason227** 帮助中心！这里汇集了常见问题和使用指南。
+欢迎来到 **Jason227** 帮助中心！
 
 ---
 
@@ -317,12 +283,10 @@
 
 ### 1. 注册与登录
 - 点击右上角 **注册** 按钮，填写用户名、邮箱和密码即可创建账号。
-- 登录后，您可以参与讨论、提交题目、查看评测记录等。
 
 ### 2. 题库使用
 - 在 **题库** 页面可以浏览所有题目。
 - 点击题目进入详情页，阅读题目描述后点击 **提交** 上传代码。
-- 评测结果会实时显示在 **评测记录** 中。
 
 ### 3. 讨论区
 - 在 **讨论区** 可以发布问题、分享经验。
@@ -334,35 +298,29 @@
 
 <div class="faq-item">
   <strong>Q: 忘记密码怎么办？</strong>
-  <p>请在登录页面点击“忘记密码”，按提示通过邮箱重置密码。</p>
+  <p>请在登录页面点击"忘记密码"，按提示通过邮箱重置密码。</p>
 </div>
 
 <div class="faq-item">
-  <strong>Q: 提交代码后显示“编译错误”怎么办？</strong>
-  <p>请检查代码语法是否正确，确保选择了正确的编程语言。可以本地编译测试后再提交。</p>
-</div>
-
-<div class="faq-item">
-  <strong>Q: 如何获得更高的“咕值”？</strong>
-  <p>积极参与社区：发布优质题解、帮助解答问题、参与比赛等都可以提升咕值。</p>
+  <strong>Q: 提交代码后显示"编译错误"怎么办？</strong>
+  <p>请检查代码语法是否正确，确保选择了正确的编程语言。</p>
 </div>
 
 ---
 
 ## 📬 联系我们
 
-如遇平台问题或需人工帮助，请前往 **工单/反馈** 提交工单，我们会尽快处理。
+如遇平台问题，请前往 **工单/反馈** 提交工单。
 
 ---
-
-*帮助文档持续更新中，如有疑问欢迎随时反馈！*
+*帮助文档持续更新中*
 `;
         currentHelp = defaultMd;
         renderHelp(defaultMd);
       }
 
       // ============================================================
-      // 7. 保存帮助（仅 super_admin）
+      // 保存帮助（通过 action_type 更新）
       // ============================================================
       async function saveHelp(newContent) {
         if (!isSuperAdmin) {
@@ -372,23 +330,23 @@
         if (!newContent || newContent.trim().length === 0) {
           if (!confirm('帮助内容为空，确定要清空吗？')) return;
         }
+
         try {
-          // 使用 type='help' 标识，upsert 更新
+          // 先查询是否存在
+          const { data: existing } = await supabase
+            .from('judgement_logs')
+            .select('id')
+            .eq('action_type', HELP_TYPE)
+            .maybeSingle();
+
           const payload = {
-            type: 'help',           // 用 type 字段标识
-            action_type: 'help_update',
+            action_type: HELP_TYPE,
             admin_id: null,
             target_user_id: null,
             reason: '帮助中心更新',
             action_detail: { content: newContent.trim() },
             created_at: new Date().toISOString(),
           };
-          // 先尝试查询是否存在
-          const { data: existing } = await supabase
-            .from('judgement_logs')
-            .select('id')
-            .eq('type', 'help')
-            .maybeSingle();
 
           let error;
           if (existing) {
@@ -396,10 +354,10 @@
             const { error: updateError } = await supabase
               .from('judgement_logs')
               .update(payload)
-              .eq('type', 'help');
+              .eq('action_type', HELP_TYPE);
             error = updateError;
           } else {
-            // 插入新记录
+            // 插入新记录（Supabase 会自动生成 id）
             const { error: insertError } = await supabase
               .from('judgement_logs')
               .insert(payload);
@@ -410,6 +368,7 @@
             alert('保存失败：' + error.message);
             return;
           }
+
           currentHelp = newContent.trim();
           renderHelp(currentHelp);
           alert('帮助中心已更新 ✅');
@@ -419,13 +378,14 @@
       }
 
       // ============================================================
-      // 8. 编辑交互（弹出编辑器）
+      // 编辑交互
       // ============================================================
       function startEdit() {
         if (!isSuperAdmin) {
           alert('只有超级管理员可以编辑帮助中心。');
           return;
         }
+
         const current = currentHelp || '';
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
@@ -455,7 +415,7 @@
       }
 
       // ============================================================
-      // 9. 用户认证 & 权限检查 (is_super_admin)
+      // 用户认证
       // ============================================================
       async function updateAuthUI() {
         try {
@@ -515,7 +475,7 @@
       }
 
       // ============================================================
-      // 10. 回到顶部
+      // 回到顶部
       // ============================================================
       const backToTopBtn = document.getElementById('back-to-top');
       window.addEventListener('scroll', function() {
@@ -526,12 +486,11 @@
       });
 
       // ============================================================
-      // 11. 初始化
+      // 初始化
       // ============================================================
       document.addEventListener('DOMContentLoaded', async () => {
         await updateAuthUI();
         await loadHelp();
-
         editHelpBtn.addEventListener('click', startEdit);
       });
     })();
