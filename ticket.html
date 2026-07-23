@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>工单详情 - ✨ Jason227</title>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdown-it-footnote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <style>
+        /* ========== 基础样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            color: #c0392b;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #c0392b;
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+
+        .auth-btn.logout:hover {
+            background: #5a6268;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
+        }
+
+        /* ========== 主布局 ========== */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ========== 面包屑导航 ========== */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #e74c3c;
+        }
+
+        .breadcrumb span {
+            color: #999;
+        }
+
+        /* ========== 卡片 ========== */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* ========== 工单头部 ========== */
+        .ticket-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        .ticket-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .ticket-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            background: #f0f2f5;
+            color: #4a5568;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-replied {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-suspended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-closed {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .category-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .priority-badge {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .ticket-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .ticket-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticket-author img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .ticket-author a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .ticket-author a:hover {
+            color: #e74c3c;
+        }
+
+        /* ========== 工单内容 ========== */
+        .ticket-content {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .ticket-content h1,
+        .ticket-content h2,
+        .ticket-content h3 {
+            margin-top: 20px;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+
+        .ticket-content p {
+            margin-bottom: 16px;
+        }
+
+        .ticket-content ul,
+        .ticket-content ol {
+            margin-bottom: 16px;
+            padding-left: 2em;
+        }
+
+        .ticket-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ticket-content pre {
+            background: #f4f4f4;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .ticket-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* ========== 回复列表 ========== */
+        .reply-list {
+            margin-top: 20px;
+        }
+
+        .reply-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .reply-item {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 0;
+        }
+
+        .reply-item:last-child {
+            border-bottom: none;
+        }
+
+        .reply-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .reply-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reply-author img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .reply-author-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .reply-author-name a {
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .reply-author-name a:hover {
+            color: #e74c3c;
+        }
+
+        .admin-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .reply-time {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .reply-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        /* ========== 回复框 ========== */
+        .reply-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fc;
+            border-radius: 12px;
+        }
+
+        .reply-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        .reply-textarea:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .reply-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* ========== 管理操作面板 ========== */
+        .admin-panel {
+            background: #fff9e6;
+            border: 1px solid #ffd54f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .admin-panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 16px;
+        }
+
+        .admin-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .admin-control {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .admin-control label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .admin-control select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .admin-control select:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        /* ========== 历史记录 ========== */
+        .history-list {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-left: 3px solid #e2e8f0;
+            margin-bottom: 12px;
+            background: #f8f9fc;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .history-content {
+            font-size: 13px;
+            color: #2c3e50;
+        }
+
+        .history-field {
+            font-weight: 500;
+            color: #e74c3c;
+        }
+
+        /* ========== 空状态 ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 600px) {
+            .main-layout {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .ticket-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .ticket-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .admin-controls {
+                flex-direction: column;
+            }
+
+            .reply-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- ===== 顶栏 ===== -->
+    <div class="topbar">
+        <a href="/" class="logo">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons">
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
+        </div>
+    </div>
+
+    <!-- ===== 主布局 ===== -->
+    <div class="main-layout">
+        <!-- 面包屑导航 -->
+        <div class="breadcrumb">
+            <a href="/tickets">工单列表</a>
+            <span>›</span>
+            <span id="ticketBreadcrumb">加载中...</span>
+        </div>
+
+        <!-- 管理员操作面板 -->
+        <div class="card admin-panel" id="adminPanel" style="display:none;">
+            <div class="admin-panel-title">⚙️ 管理操作</div>
+            <div class="admin-controls">
+                <div class="admin-control">
+                    <label>更改状态</label>
+                    <select id="statusSelect">
+                        <option value="pending">待处理</option>
+                        <option value="replied">已回复/待补充</option>
+                        <option value="processing">处理中</option>
+                        <option value="suspended">挂起</option>
+                        <option value="completed">已完成</option>
+                        <option value="closed">已关闭</option>
+                    </select>
+                </div>
+                <div class="admin-control">
+                    <label>更改优先级</label>
+                    <select id="prioritySelect">
+                        <option value="low">低优先级</option>
+                        <option value="normal">中优先级</option>
+                        <option value="high">高优先级</option>
+                        <option value="urgent">紧急</option>
+                    </select>
+                </div>
+                <div class="admin-control">
+                    <label>分配给</label>
+                    <select id="assigneeSelect">
+                        <option value="">未分配</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-actions">
+                <button class="btn btn-primary" id="saveAdminBtn">保存更改</button>
+                <button class="btn btn-secondary" id="internalReplyBtn">内部备注</button>
+            </div>
+        </div>
+
+        <!-- 工单详情 -->
+        <div class="card">
+            <div class="ticket-header">
+                <div class="ticket-meta" id="ticketMeta">
+                    <!-- 动态加载 -->
+                </div>
+                <h1 class="ticket-title" id="ticketTitle">加载中...</h1>
+                <div class="ticket-info" id="ticketInfo">
+                    <!-- 动态加载 -->
+                </div>
+            </div>
+            <div class="ticket-content" id="ticketContent">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+
+        <!-- 回复列表 -->
+        <div class="card">
+            <div class="reply-header">回复列表</div>
+            <div class="reply-list" id="replyList">
+                <div class="empty-state">
+                    <div class="icon">💬</div>
+                    <p>暂无回复</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 回复框 -->
+        <div class="card">
+            <div class="reply-box">
+                <div class="reply-box-title">添加回复</div>
+                <textarea class="reply-textarea" id="replyContent" placeholder="请输入您的回复内容..."></textarea>
+                <div class="reply-actions">
+                    <button class="btn btn-secondary" id="previewBtn">预览</button>
+                    <button class="btn btn-primary" id="submitReplyBtn">提交回复</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="card">
+            <div class="reply-header">历史记录</div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <div class="icon">📜</div>
+                    <p>暂无历史记录</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 <span class="brand-highlight">✨ Jason227</span></footer>
+
+    <script>
+        (function () {
+            // ================================================================
+            // 1. Supabase 初始化
+            // ================================================================
+            const supabase = window.supabase.createClient(
+                'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+            );
+
+            // ================================================================
+            // 2. 状态与 DOM 引用
+            // ================================================================
+            let ticketId = null;
+            let ticketData = null;
+            let currentUser = null;
+            let userCache = {};
+
+            const authButtons = document.getElementById('authButtons');
+            const adminPanel = document.getElementById('adminPanel');
+            const statusSelect = document.getElementById('statusSelect');
+            const prioritySelect = document.getElementById('prioritySelect');
+            const assigneeSelect = document.getElementById('assigneeSelect');
+            const saveAdminBtn = document.getElementById('saveAdminBtn');
+            const internalReplyBtn = document.getElementById('internalReplyBtn');
+            const replyContent = document.getElementById('replyContent');
+            const submitReplyBtn = document.getElementById('submitReplyBtn');
+            const previewBtn = document.getElementById('previewBtn');
+
+            // ================================================================
+            // 3. 工具函数
+            // ================================================================
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function escapeHtmlAttr(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function letterAvatar(name) {
+                const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23e74c3c%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E' +
+                    ch + '%3C/text%3E%3C/svg%3E';
+            }
+
+            function formatTime(iso) {
+                if (!iso) return '未知时间';
+                try {
+                    const d = new Date(iso);
+                    const pad = n => String(n).padStart(2, '0');
+                    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' +
+                        pad(d.getHours()) + ':' + pad(d.getMinutes());
+                } catch {
+                    return '未知时间';
+                }
+            }
+
+            function formatRelativeTime(iso) {
+                if (!iso) return '未知时间';
+                try {
+                    const d = new Date(iso);
+                    const now = new Date();
+                    const diff = Math.floor((now - d) / 1000);
+
+                    if (diff < 60) return '刚刚';
+                    if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+                    if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+                    if (diff < 604800) return Math.floor(diff / 86400) + '天前';
+                    return formatTime(iso);
+                } catch {
+                    return '未知时间';
+                }
+            }
+
+            // ================================================================
+            // 4. 获取工单ID
+            // ================================================================
+            function getTicketId() {
+                const pathParts = window.location.pathname.split('/');
+                return pathParts[pathParts.length - 1];
+            }
+
+            // ================================================================
+            // 5. 状态和类别显示
+            // ================================================================
+            function getStatusInfo(status) {
+                const map = {
+                    'pending': { label: '待处理', class: 'status-pending' },
+                    'replied': { label: '已回复', class: 'status-replied' },
+                    'processing': { label: '处理中', class: 'status-processing' },
+                    'suspended': { label: '已挂起', class: 'status-suspended' },
+                    'completed': { label: '已完成', class: 'status-completed' },
+                    'closed': { label: '已关闭', class: 'status-closed' }
+                };
+                return map[status] || { label: status, class: 'status-badge' };
+            }
+
+            function getCategoryInfo(category) {
+                const map = {
+                    'general': '综合问题',
+                    'problem': '题目工单',
+                    'contest': '比赛工单',
+                    'appeal': '账号申诉'
+                };
+                return map[category] || category;
+            }
+
+            function getPriorityInfo(priority) {
+                const map = {
+                    'low': '低优先级',
+                    'normal': '中优先级',
+                    'high': '高优先级',
+                    'urgent': '紧急'
+                };
+                return map[priority] || '中优先级';
+            }
+
+            // ================================================================
+            // 6. 简单的 Markdown 渲染
+            // ================================================================
+            function renderMarkdown(text) {
+                if (!text) return '';
+                // 简单的HTML转义
+                let html = escapeHtml(text);
+                // 处理换行
+                html = html.replace(/\n/g, '<br>');
+                return html;
+            }
+
+            // ================================================================
+            // 7. 获取用户信息
+            // ================================================================
+            async function fetchUsers(userIds) {
+                if (!userIds || userIds.length === 0) return {};
+                const unique = [...new Set(userIds.filter(Boolean))];
+                const result = {};
+                const needFetch = [];
+
+                unique.forEach(id => {
+                    if (userCache[id]) {
+                        result[id] = userCache[id];
+                    } else {
+                        needFetch.push(id);
+                    }
+                });
+
+                if (needFetch.length === 0) return result;
+
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('id, username, avatar_url, user_tag, is_admin, is_banned, user_number, username_color, can_manage_tickets')
+                        .in('id', needFetch);
+
+                    if (error) throw error;
+
+                    if (data) {
+                        data.forEach(u => {
+                            userCache[u.id] = u;
+                            result[u.id] = u;
+                        });
+                    }
+                    return result;
+
+                } catch (err) {
+                    console.error('获取用户信息异常:', err);
+                    return result;
+                }
+            }
+
+            // ================================================================
+            // 8. 加载工单详情
+            // ================================================================
+            async function loadTicket() {
+                ticketId = getTicketId();
+                if (!ticketId) {
+                    alert('工单ID无效');
+                    location.href = '/tickets';
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase
+                        .from('tickets')
+                        .select('*')
+                        .eq('id', ticketId)
+                        .single();
+
+                    if (error) throw error;
+
+                    if (!data) {
+                        alert('工单不存在');
+                        location.href = '/tickets';
+                        return;
+                    }
+
+                    ticketData = data;
+
+                    // 获取作者信息
+                    const userMap = await fetchUsers([data.author_id, data.assignee_id]);
+                    const author = userMap[data.author_id] || {};
+                    const assignee = data.assignee_id ? userMap[data.assignee_id] : null;
+
+                    // 更新面包屑
+                    document.getElementById('ticketBreadcrumb').textContent = data.title.substring(0, 30);
+
+                    // 更新状态和类别
+                    const statusInfo = getStatusInfo(data.status);
+                    const category = getCategoryInfo(data.category);
+                    const priority = getPriorityInfo(data.priority);
+
+                    let metaHtml = `
+                        <span class="ticket-badge status-badge ${statusInfo.class}">${statusInfo.label}</span>
+                        <span class="ticket-badge category-badge">${category}</span>
+                        <span class="ticket-badge priority-badge">${priority}</span>
+                    `;
+                    document.getElementById('ticketMeta').innerHTML = metaHtml;
+
+                    // 更新标题
+                    document.getElementById('ticketTitle').textContent = data.title;
+
+                    // 更新作者信息
+                    const avatar = author.avatar_url || letterAvatar(author.username);
+                    const userLink = author.user_number ? `/user/${author.user_number}` : '#';
+                    let infoHtml = `
+                        <div class="ticket-author">
+                            <img src="${avatar}" alt="${escapeHtmlAttr(author.username)}"
+                                onerror="this.onerror=null;this.src='${letterAvatar(author.username)}'">
+                            <span>由 <a href="${userLink}">${escapeHtml(author.username || '未知用户')}</a> 创建</span>
+                        </div>
+                        <span>📅 ${formatTime(data.created_at)}</span>
+                    `;
+
+                    if (data.updated_at !== data.created_at) {
+                        infoHtml += `<span>🔄 最后更新：${formatTime(data.updated_at)}</span>`;
+                    }
+
+                    if (assignee) {
+                        infoHtml += `<span>👤 分配给：${escapeHtml(assignee.username)}</span>`;
+                    }
+
+                    if (data.reply_count > 0) {
+                        infoHtml += `<span>💬 ${data.reply_count} 条回复</span>`;
+                    }
+
+                    document.getElementById('ticketInfo').innerHTML = infoHtml;
+
+                    // 更新内容
+                    document.getElementById('ticketContent').innerHTML = renderMarkdown(data.content);
+
+                    // 更新管理面板
+                    if (currentUser && (currentUser.is_admin === true || currentUser.can_manage_tickets === true)) {
+                        adminPanel.style.display = 'block';
+                        statusSelect.value = data.status;
+                        prioritySelect.value = data.priority;
+
+                        // 加载管理员列表
+                        loadAdminList(data.assignee_id);
+                    }
+
+                } catch (err) {
+                    console.error('加载工单失败:', err);
+                    alert('加载工单失败：' + err.message);
+                    location.href = '/tickets';
+                }
+            }
+
+            // ================================================================
+            // 9. 加载管理员列表
+            // ================================================================
+            async function loadAdminList(currentAssignee) {
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('id, username, is_admin, can_manage_tickets')
+                        .or('is_admin.eq.true,can_manage_tickets.eq.true');
+
+                    if (error) throw error;
+
+                    let html = '<option value="">未分配</option>';
+                    if (data) {
+                        data.forEach(user => {
+                            const selected = user.id === currentAssignee ? ' selected' : '';
+                            html += `<option value="${user.id}"${selected}>${escapeHtml(user.username)}</option>`;
+                        });
+                    }
+
+                    assigneeSelect.innerHTML = html;
+
+                } catch (err) {
+                    console.error('加载管理员列表失败:', err);
+                }
+            }
+
+            // ================================================================
+            // 10. 加载回复列表
+            // ================================================================
+            async function loadReplies() {
+                try {
+                    const { data, error } = await supabase
+                        .from('ticket_replies')
+                        .select('*')
+                        .eq('ticket_id', ticketId)
+                        .order('created_at', { ascending: true });
+
+                    if (error) throw error;
+
+                    if (!data || data.length === 0) {
+                        document.getElementById('replyList').innerHTML = `
+                            <div class="empty-state">
+                                <div class="icon">💬</div>
+                                <p>暂无回复</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // 获取用户信息
+                    const userIds = data.map(r => r.author_id);
+                    const userMap = await fetchUsers(userIds);
+
+                    let html = '';
+                    data.forEach(reply => {
+                        const author = userMap[reply.author_id] || {};
+                        const avatar = author.avatar_url || letterAvatar(author.username);
+                        const userLink = author.user_number ? `/user/${author.user_number}` : '#';
+
+                        // 检查是否为管理员回复
+                        const isAdmin = author.is_admin === true || author.can_manage_tickets === true;
+                        const adminBadge = isAdmin ? '<span class="admin-badge">管理员</span>' : '';
+
+                        html += `
+                            <div class="reply-item">
+                                <div class="reply-meta">
+                                    <div class="reply-author">
+                                        <img src="${avatar}" alt="${escapeHtmlAttr(author.username)}"
+                                            onerror="this.onerror=null;this.src='${letterAvatar(author.username)}'">
+                                        <div class="reply-author-name">
+                                            <a href="${userLink}">${escapeHtml(author.username || '未知用户')}</a>
+                                            ${adminBadge}
+                                        </div>
+                                    </div>
+                                    <div class="reply-time">${formatTime(reply.created_at)}</div>
+                                </div>
+                                <div class="reply-content">${renderMarkdown(reply.content)}</div>
+                            </div>
+                        `;
+                    });
+
+                    document.getElementById('replyList').innerHTML = html;
+
+                } catch (err) {
+                    console.error('加载回复失败:', err);
+                }
+            }
+
+            // ================================================================
+            // 11. 加载历史记录
+            // ================================================================
+            async function loadHistory() {
+                try {
+                    const { data, error } = await supabase
+                        .from('ticket_history')
+                        .select('*')
+                        .eq('ticket_id', ticketId)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    if (!data || data.length === 0) {
+                        document.getElementById('historyList').innerHTML = `
+                            <div class="empty-state">
+                                <div class="icon">📜</div>
+                                <p>暂无历史记录</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // 获取用户信息
+                    const userIds = data.map(h => h.changed_by);
+                    const userMap = await fetchUsers(userIds);
+
+                    const fieldNames = {
+                        'status': '状态',
+                        'assignee': '分配给',
+                        'priority': '优先级'
+                    };
+
+                    let html = '';
+                    data.forEach(record => {
+                        const user = userMap[record.changed_by] || {};
+                        const fieldName = fieldNames[record.field_name] || record.field_name;
+                        const oldValue = record.old_value || '无';
+                        const newValue = record.new_value;
+
+                        html += `
+                            <div class="history-item">
+                                <div class="history-time">${formatTime(record.created_at)}</div>
+                                <div class="history-content">
+                                    ${escapeHtml(user.username || '系统')} 将 <span class="history-field">${fieldName}</span> 从 <strong>${escapeHtml(oldValue)}</strong> 更改为 <strong>${escapeHtml(newValue)}</strong>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    document.getElementById('historyList').innerHTML = html;
+
+                } catch (err) {
+                    console.error('加载历史记录失败:', err);
+                }
+            }
+
+            // ================================================================
+            // 12. 提交回复
+            // ================================================================
+            async function submitReply(isInternal = false) {
+                if (!currentUser) {
+                    alert('请先登录');
+                    location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+
+                const content = replyContent.value.trim();
+                if (!content) {
+                    alert('请输入回复内容');
+                    return;
+                }
+
+                submitReplyBtn.disabled = true;
+
+                try {
+                    const { error } = await supabase
+                        .from('ticket_replies')
+                        .insert({
+                            ticket_id: ticketId,
+                            author_id: currentUser.id,
+                            content: content,
+                            is_internal: isInternal
+                        });
+
+                    if (error) throw error;
+
+                    replyContent.value = '';
+                    alert('回复成功！');
+
+                    // 重新加载回复列表
+                    await loadReplies();
+
+                    // 如果是用户回复，更新工单状态为已回复
+                    if (!isInternal && currentUser.id !== ticketData.author_id) {
+                        await supabase
+                            .from('tickets')
+                            .update({ status: 'replied' })
+                            .eq('id', ticketId);
+                        await loadTicket();
+                    }
+
+                } catch (err) {
+                    console.error('提交回复失败:', err);
+                    alert('提交回复失败：' + err.message);
+                } finally {
+                    submitReplyBtn.disabled = false;
+                }
+            }
+
+            // ================================================================
+            // 13. 保存管理更改
+            // ================================================================
+            async function saveAdminChanges() {
+                if (!currentUser) return;
+
+                const newStatus = statusSelect.value;
+                const newPriority = prioritySelect.value;
+                const newAssignee = assigneeSelect.value || null;
+
+                saveAdminBtn.disabled = true;
+
+                try {
+                    const { error } = await supabase
+                        .from('tickets')
+                        .update({
+                            status: newStatus,
+                            priority: newPriority,
+                            assignee_id: newAssignee
+                        })
+                        .eq('id', ticketId);
+
+                    if (error) throw error;
+
+                    alert('保存成功！');
+                    await loadTicket();
+                    await loadHistory();
+
+                } catch (err) {
+                    console.error('保存失败:', err);
+                    alert('保存失败：' + err.message);
+                } finally {
+                    saveAdminBtn.disabled = false;
+                }
+            }
+
+            // ================================================================
+            // 14. 用户认证 UI
+            // ================================================================
+            async function updateAuthUI() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+
+                    if (session?.user) {
+                        const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('username, avatar_url, is_admin, user_number, can_manage_users, can_manage_tickets')
+                            .eq('id', session.user.id)
+                            .maybeSingle();
+
+                        const displayName = profile?.username || session.user.email || '用户';
+                        const userNumber = profile?.user_number || '';
+
+                        let html = `<a href="/user/${userNumber}" class="user-email">${escapeHtml(displayName)}</a>`;
+                        html += `<a href="/user/notification" class="bell-icon"><svg viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56,200l0,14.5c0,37.7-10,74.7-29,107.3L5.1,359.2C1.8,365 0,371.5 0,378.2c0,20.9 16.9,37.8 37.8,37.8l372.4,0c20.9,0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421,321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4,368l-336.9,0 12.9-22.1C91.7,306 104,260.6 104,214.5l0-14.5c0-66.3 53.7-120 120-120s120,53.7 120,120l0,14.5c0,46.2 12.3,91.5 35.5,131.4L392.4,368zM156.1,464c9.9,28 36.6,48 67.9,48s58-20 67.9-48l-135.8,0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
+
+                        if (profile?.is_admin === true) {
+                            html += `<a href="/admin/user" title="进入管理后台" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:8px;color:#666;text-decoration:none;font-size:18px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#666'">⚙️</a>`;
+                        }
+
+                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                        authButtons.innerHTML = html;
+
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
+
+                        // 保存当前用户信息
+                        currentUser = profile;
+                        currentUser.id = session.user.id;
+
+                    } else {
+                        authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    }
+                } catch (err) {
+                    console.error('认证失败:', err);
+                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                }
+            }
+
+            // ================================================================
+            // 15. 事件绑定
+            // ================================================================
+            submitReplyBtn.addEventListener('click', () => submitReply(false));
+            internalReplyBtn?.addEventListener('click', () => submitReply(true));
+            saveAdminBtn?.addEventListener('click', saveAdminChanges);
+            previewBtn?.addEventListener('click', () => {
+                alert('预览功能（Markdown渲染）待实现');
+            });
+
+            // ================================================================
+            // 16. 初始化
+            // ================================================================
+            document.addEventListener('DOMContentLoaded', async () => {
+                await updateAuthUI();
+                await loadTicket();
+                await loadReplies();
+                await loadHistory();
+            });
+        })();
+    </script>
+</body>
+
+</html>

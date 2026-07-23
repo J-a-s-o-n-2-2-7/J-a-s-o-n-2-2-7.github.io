@@ -219,6 +219,7 @@
             text-decoration: underline;
         }
 
+        /* ===== 底边栏标签样式（基准样式） ===== */
         .user-tag-display {
             display: inline-block;
             border-radius: 2px;
@@ -233,6 +234,61 @@
         }
 
         .user-tag-display:hover {
+            filter: brightness(0.9);
+        }
+
+        /* ===== 统一所有标签样式，与底边栏保持一致 ===== */
+        /* 文章列表标签 */
+        .article-item .article-user-tag {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 0 0 0 4px;
+            cursor: default;
+            transition: filter 0.15s;
+            vertical-align: middle;
+        }
+
+        .article-item .article-user-tag:hover {
+            filter: brightness(0.9);
+        }
+
+        /* 文章详情标签 */
+        .article-detail-user-tag {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 0 0 0 4px;
+            cursor: default;
+            transition: filter 0.15s;
+            vertical-align: middle;
+        }
+
+        .article-detail-user-tag:hover {
+            filter: brightness(0.9);
+        }
+
+        /* 评论区标签 */
+        .comment-item .comment-user-tag {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin: 0 0 0 4px;
+            cursor: default;
+            transition: filter 0.15s;
+            vertical-align: middle;
+        }
+
+        .comment-item .comment-user-tag:hover {
             filter: brightness(0.9);
         }
 
@@ -401,7 +457,6 @@
             margin-bottom: 6px;
         }
 
-        /* meta 行：flex 两端对齐，时间强制靠右 */
         .article-item .article-meta {
             display: flex;
             align-items: center;
@@ -464,7 +519,6 @@
         .article-item .article-author-name-row {
             display: flex;
             align-items: center;
-            gap: 4px;
             flex-wrap: wrap;
         }
 
@@ -479,23 +533,8 @@
             text-decoration: underline;
         }
 
-        .article-item .article-user-tag {
-            display: inline-block;
-            border-radius: 2px;
-            padding: 2px 9px;
-            color: #fff;
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: default;
-            transition: filter 0.15s;
-            line-height: 1.6;
-        }
+        /* 文章列表标签已在上方统一 */
 
-        .article-item .article-user-tag:hover {
-            filter: brightness(0.9);
-        }
-
-        /* ----- 右侧：发布时间（两行，完全靠右） ----- */
         .article-item .article-time-block {
             display: flex;
             flex-direction: column;
@@ -526,7 +565,6 @@
             color: #1a2632;
         }
 
-        /* ----- 详情页 meta：flex 布局，时间组靠右 ----- */
         .article-detail .article-detail-meta {
             display: flex;
             flex-wrap: wrap;
@@ -595,7 +633,6 @@
         .article-detail-author-name-row {
             display: flex;
             align-items: center;
-            gap: 4px;
             flex-wrap: wrap;
         }
 
@@ -610,23 +647,8 @@
             text-decoration: underline;
         }
 
-        .article-detail-user-tag {
-            display: inline-block;
-            border-radius: 2px;
-            padding: 2px 9px;
-            color: #fff;
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: default;
-            transition: filter 0.15s;
-            line-height: 1.6;
-        }
+        /* 文章详情标签已在上方统一 */
 
-        .article-detail-user-tag:hover {
-            filter: brightness(0.9);
-        }
-
-        /* ----- 时间组（靠右，纵向排列）----- */
         .article-detail-time-group {
             display: flex;
             flex-direction: column;
@@ -666,7 +688,7 @@
         }
 
         /* ================================================================
-           评论区域 — 每条评论完全模仿主页文章列表 (article-item)
+           评论区域 — 完全模仿「reply-item」样式
            ================================================================ */
         .comments-section {
             margin-top: 40px;
@@ -677,7 +699,7 @@
             display: flex;
             align-items: baseline;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
             gap: 8px;
         }
@@ -694,99 +716,79 @@
             font-weight: 400;
         }
 
-        /* ----- 评论卡片 — 完全复用 article-item 样式 ----- */
+        /* ===== 评论卡片 — 完全模仿讨论区帖子卡片样式 ===== */
         .comment-item {
-            background: #f8f9fc;
-            border-radius: 12px;
-            padding: 16px 20px;
-            border: 1px solid #e9ecef;
-            transition: box-shadow 0.2s, border-color 0.2s;
+            background: #ffffff;                 /* 白色背景，与讨论区一致 */
+            border: 1px solid #e9ecef;           /* 边框 */
+            border-radius: 12px;                 /* 圆角 */
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);  /* 轻微阴影 */
+            margin-bottom: 16px;                 /* 评论之间间距 */
+            padding: 16px 20px;                  /* 内边距 */
+            overflow: hidden;
             text-decoration: none;
             color: #1a2632;
             display: block;
-            margin-bottom: 12px;
         }
 
-        .comment-item:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            border-color: #d1d5db;
+        .comment-item:last-child {
+            margin-bottom: 0;
         }
 
+        /* ===== 评论卡片 — 头部灰色背景 ===== */
         .comment-item .comment-meta {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            flex-wrap: nowrap;
-            gap: 8px 16px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 12px;
             font-size: 13px;
             color: #8a9aa8;
-            margin-bottom: 6px;
+            /* 新增：灰色背景 + 内边距 + 圆角 */
+            padding: 10px 20px;
+            background: #FAFAFA;
+            border-radius: 12px 12px 0 0;
+            /* 负边距让背景延伸到卡片边缘 */
+            margin: -16px -20px 8px -20px;
         }
 
-        .comment-item .comment-author-wrap {
-            display: inline-flex;
+        .comment-item .comment-meta-left {
+            display: flex;
             align-items: center;
             gap: 12px;
-            text-decoration: none;
-            flex-shrink: 0;
+            flex-wrap: wrap;
         }
 
-        .comment-item .comment-author-link {
-            display: inline-flex;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-
-        .comment-item .comment-author-avatar {
-            width: 40px;
-            height: 40px;
+        .comment-item .comment-avatar {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             overflow: hidden;
             flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: inline-block;
             background: #f0f2f5;
         }
 
-        .comment-item .comment-author-avatar img {
+        .comment-item .comment-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
 
-        .comment-item .comment-author-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            line-height: 1.4;
-            gap: 0;
-        }
-
-        .comment-item .comment-author-label {
-            font-size: 11px;
-            color: #8a9aa8;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-
-        .comment-item .comment-author-name-row {
+        .comment-item .comment-user-info {
             display: flex;
             align-items: center;
-            gap: 4px;
             flex-wrap: wrap;
         }
 
-        .comment-item .comment-author-name {
+        .comment-item .comment-username {
             font-weight: 700;
             font-size: 14px;
             text-decoration: none;
             transition: color 0.2s;
         }
 
-        .comment-item .comment-author-name:hover {
+        .comment-item .comment-username:hover {
             text-decoration: underline;
         }
 
@@ -797,47 +799,48 @@
             color: #fff;
             font-size: 11.5px;
             font-weight: 600;
+            margin: 0 0 0 4px;
             cursor: default;
             transition: filter 0.15s;
-            line-height: 1.6;
+            vertical-align: middle;
         }
 
         .comment-item .comment-user-tag:hover {
             filter: brightness(0.9);
         }
 
-        .comment-item .comment-time-block {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            line-height: 1.4;
-            flex-shrink: 0;
-            margin-left: auto;
-            text-align: left;
-        }
-
-        .comment-item .comment-time-label {
-            font-size: 11px;
-            color: #7A7A7A;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-
-        .comment-item .comment-time-value {
-            font-size: 13px;
-            color: #404040;
-            font-weight: 400;
+        .comment-item .comment-time {
+            font-size: 12px;
+            color: #8a9aa8;
             white-space: nowrap;
+            margin-left: 8px;
         }
 
+        .comment-item .comment-delete-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        .comment-item .comment-delete-btn:hover {
+            transform: scale(0.9);
+            text-decoration: none;
+        }
+
+        /* 评论内容顶部间距微调 */
         .comment-item .comment-content {
             font-size: 14px;
             line-height: 1.7;
             color: #1a2632;
             word-wrap: break-word;
-            white-space: pre-wrap;
-            padding-left: 0;
-            margin-top: 4px;
+            white-space: pre-line;
         }
 
         .comment-item .comment-content a {
@@ -849,28 +852,10 @@
             text-decoration: underline;
         }
 
-        .comment-item .comment-delete-btn {
-            background: none;
-            border: none;
-            color: #8a9aa8;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            margin-left: auto;
-        }
-
-        .comment-item .comment-delete-btn:hover {
-            color: #e74c3c;
-            background: #fef0ee;
-        }
-
-        .comment-item .comment-footer {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 4px;
+        .comment-item .comment-badge-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .comment-empty {
@@ -900,7 +885,7 @@
             padding: 16px;
             background: #F5F5F5;
             border-radius: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
 
@@ -1132,13 +1117,11 @@
                 padding: 20px 16px;
             }
 
-            .article-item .article-meta,
-            .comment-item .comment-meta {
+            .article-item .article-meta {
                 gap: 6px 12px;
             }
 
-            .article-item .article-time-block,
-            .comment-item .comment-time-block {
+            .article-item .article-time-block {
                 margin-left: auto;
             }
 
@@ -1146,8 +1129,9 @@
                 padding-left: 0;
             }
 
-            .comment-item .comment-header {
-                gap: 6px;
+            .comment-item .comment-meta {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
@@ -1194,15 +1178,13 @@
             }
 
             .article-item .article-author-avatar,
-            .article-detail-author-avatar,
-            .comment-item .comment-author-avatar {
+            .article-detail-author-avatar {
                 width: 32px;
                 height: 32px;
             }
 
             .article-item .article-author-name,
-            .article-detail-author-name,
-            .comment-item .comment-author-name {
+            .article-detail-author-name {
                 font-size: 13px;
             }
 
@@ -1218,13 +1200,11 @@
                 font-size: 13px;
             }
 
-            .article-item .article-time-value,
-            .comment-item .comment-time-value {
+            .article-item .article-time-value {
                 font-size: 12px;
             }
 
-            .article-item .article-time-block,
-            .comment-item .comment-time-block {
+            .article-item .article-time-block {
                 margin-left: auto;
                 align-items: flex-end;
             }
@@ -1236,6 +1216,10 @@
             .comment-item .comment-avatar {
                 width: 28px;
                 height: 28px;
+            }
+
+            .comment-item .comment-username {
+                font-size: 13px;
             }
 
             .comment-item .comment-content {
@@ -1281,15 +1265,13 @@
             }
 
             .article-item .article-author-avatar,
-            .article-detail-author-avatar,
-            .comment-item .comment-author-avatar {
+            .article-detail-author-avatar {
                 width: 28px;
                 height: 28px;
             }
 
             .article-item .article-author-name,
-            .article-detail-author-name,
-            .comment-item .comment-author-name {
+            .article-detail-author-name {
                 font-size: 12px;
             }
 
@@ -1300,8 +1282,7 @@
                 padding: 1px 6px;
             }
 
-            .article-item .article-time-value,
-            .comment-item .comment-time-value {
+            .article-item .article-time-value {
                 font-size: 11px;
             }
 
@@ -1403,6 +1384,14 @@
 
         .rainbow-badge .fa-primary {
             fill: #ffffff !important;
+        }
+
+        /* ===== 评论中徽章行内对齐 ===== */
+        .comment-badge-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 2px;
         }
     </style>
 
@@ -1752,8 +1741,7 @@
             }
 
             // ================================================================
-            // 评论功能（使用新表 article_comments）
-            // 每条评论完全模仿主页文章列表样式 (article-item)
+            // 评论功能 — 完全模仿 reply-item 样式
             // ================================================================
 
             async function fetchComments(shortId) {
@@ -1822,7 +1810,7 @@
                 return html;
             }
 
-            // ★★★★★ 核心修改：评论使用与主页文章列表完全相同的样式 ★★★★★
+            // ★★★★★ 评论渲染 — 完全模仿 reply-item 结构 ★★★★★
             function renderComments(comments, container, currentUser, shortId) {
                 if (!container) return;
                 const listEl = container.querySelector('.comment-list-wrap');
@@ -1853,41 +1841,34 @@
                         (currentUser.profile && currentUser.profile.is_admin === true)
                     );
 
-                    // ——— 完全复用 article-item 的 HTML 结构 ———
-                    let authorHtml = `
-                        <div class="comment-author-wrap">
-                            <a href="/user/${userNumber}" class="comment-author-link">
-                                <span class="comment-author-avatar">
-                                    <img src="${escapeHtmlAttr(avatarUrl)}" alt="${escapeHtmlAttr(authorName)}" onerror="this.onerror=null;this.src='${letterAvatar(authorName)}'">
-                                </span>
-                            </a>
-                            <div class="comment-author-info">
-                                <span class="comment-author-label">评论者</span>
-                                <div class="comment-author-name-row">
-                                    <a href="/user/${userNumber}" class="comment-author-name" style="color:${color};">${escapeHtml(authorName)}</a>
-                    `;
+                    // —— 构建徽章和标签 ——
+                    let tagHtml = '';
                     if (tagText) {
-                        authorHtml += `<span class="comment-user-tag" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                        tagHtml = `<span class="comment-user-tag" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
                     }
                     const ccfBadge = getCcfBadgeHtml(prof?.ccf_level, prof);
                     const xcpcBalloon = getXcpcBalloonHtml(prof?.xcpc_level, prof);
-                    authorHtml += `${ccfBadge}${xcpcBalloon}`;
-                    authorHtml += `
-                                </div>
+                    const badgeHtml = (ccfBadge || xcpcBalloon) ? `<span class="comment-badge-wrap">${ccfBadge}${xcpcBalloon}</span>` : '';
+
+                    // —— meta 左侧：头像 + 用户信息 ——
+                    let leftHtml = `
+                        <div class="comment-meta-left">
+                            <span class="comment-avatar">
+                                <img src="${escapeHtmlAttr(avatarUrl)}" alt="${escapeHtmlAttr(authorName)}" onerror="this.onerror=null;this.src='${letterAvatar(authorName)}'">
+                            </span>
+                            <div class="comment-user-info">
+                                <a href="/user/${userNumber}" class="comment-username" style="color:${color};">${escapeHtml(authorName)}</a>
+                                ${tagHtml}
+                                ${badgeHtml}
+                                <span class="comment-time">回复于 ${escapeHtml(time)}</span>
                             </div>
                         </div>
                     `;
 
-                    let timeHtml = `
-                        <div class="comment-time-block">
-                            <span class="comment-time-label">发布时间</span>
-                            <span class="comment-time-value">${escapeHtml(time)}</span>
-                        </div>
-                    `;
-
+                    // —— meta 右侧：删除按钮 ——
                     let deleteHtml = '';
                     if (canDelete) {
-                        deleteHtml = `<button class="comment-delete-btn" data-comment-id="${comment.id}" title="删除评论"><i class="fas fa-trash-alt"></i> 删除</button>`;
+                        deleteHtml = `<a href="javascript:void(0)" class="comment-delete-btn" data-comment-id="${comment.id}">删除</a>`;
                     }
 
                     const renderedContent = renderCommentText(comment.content);
@@ -1895,9 +1876,8 @@
                     html += `
                         <div class="comment-item" data-comment-id="${comment.id}">
                             <div class="comment-meta">
-                                ${authorHtml}
-                                ${timeHtml}
-                                ${deleteHtml ? deleteHtml : ''}
+                                ${leftHtml}
+                                ${deleteHtml}
                             </div>
                             <div class="comment-content">${renderedContent}</div>
                         </div>
@@ -1950,7 +1930,7 @@
                 const listWrap = container.querySelector('.comment-list-wrap');
                 if (!listWrap) return;
 
-                listWrap.innerHTML = `<div class="comment-loading"><i class="fas fa-spinner fa-spin"></i> 加载评论...</div>`;
+                listWrap.innerHTML = `<div class="comment-loading">加载中...</div>`;
 
                 try {
                     const comments = await fetchComments(shortId);
@@ -1974,7 +1954,6 @@
 
                 const handleSubmit = async function (e) {
                     e.preventDefault();
-                    console.log('📝 提交评论');
 
                     const content = textarea.value.trim();
                     if (!content) {

@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>新建工单 - ✨ Jason227</title>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-emoji@2.0.2/dist/markdown-it-emoji.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@3.0.3/dist/markdownit-footnote.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js"></script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <style>
+        /* ========== 基础样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.5;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            color: #c0392b;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #c0392b;
+        }
+
+        .auth-btn.logout {
+            background: #7f8c8d;
+        }
+
+        .auth-btn.logout:hover {
+            background: #5a6268;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .user-email:hover {
+            text-decoration: underline;
+        }
+
+        /* ========== 主布局 ========== */
+        .main-layout {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ========== 面包屑导航 ========== */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #e74c3c;
+        }
+
+        .breadcrumb span {
+            color: #999;
+        }
+
+        /* ========== 卡片 ========== */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-left: 4px solid #e74c3c;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        /* ========== 表单样式 ========== */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #e74c3c;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 6px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: #e74c3c;
+            margin-top: 6px;
+        }
+
+        /* ========== 类别选择卡片 ========== */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .category-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .category-card:hover {
+            border-color: #e74c3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.1);
+        }
+
+        .category-card.selected {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .category-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .category-card.disabled:hover {
+            transform: none;
+            border-color: #e2e8f0;
+            box-shadow: none;
+        }
+
+        .category-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+
+        .category-desc {
+            font-size: 13px;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: #ffebee;
+            color: #c62828;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        /* ========== 相似工单提示 ========== */
+        .similar-tickets {
+            background: #fff9e6;
+            border: 1px solid #ffd54f;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .similar-tickets-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 12px;
+        }
+
+        .similar-ticket-item {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .similar-ticket-item:hover {
+            background: #f8f9fc;
+        }
+
+        .similar-ticket-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .similar-ticket-meta {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        /* ========== 按钮组 ========== */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* ========== 子类别选择 ========== */
+        .subcategory-list {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .subcategory-list.show {
+            display: block;
+        }
+
+        .subcategory-option {
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .subcategory-option:hover {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .subcategory-option.selected {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .subcategory-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .subcategory-desc {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        /* ========== 优先级选择 ========== */
+        .priority-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .priority-option {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .priority-option:hover {
+            border-color: #e74c3c;
+        }
+
+        .priority-option.selected {
+            background: #e74c3c;
+            border-color: #e74c3c;
+            color: white;
+        }
+
+        /* ========== 加载状态 ========== */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #e74c3c;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 600px) {
+            .main-layout {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- ===== 顶栏 ===== -->
+    <div class="topbar">
+        <a href="/" class="logo">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons">
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
+        </div>
+    </div>
+
+    <!-- ===== 主布局 ===== -->
+    <div class="main-layout">
+        <!-- 面包屑导航 -->
+        <div class="breadcrumb">
+            <a href="/tickets">工单列表</a>
+            <span>›</span>
+            <span>新建工单</span>
+        </div>
+
+        <!-- 相似工单提示 -->
+        <div class="card similar-tickets" id="similarTickets" style="display:none;">
+            <div class="similar-tickets-header">🔍 发现相似工单</div>
+            <div id="similarTicketsList"></div>
+        </div>
+
+        <!-- 工单创建表单 -->
+        <div class="card">
+            <div class="card-header">创建新工单</div>
+
+            <form id="ticketForm" onsubmit="return false;">
+                <!-- 类别选择 -->
+                <div class="form-group">
+                    <label class="form-label required">工单类别</label>
+                    <div class="category-grid">
+                        <div class="category-card" data-category="general">
+                            <div class="category-icon">💬</div>
+                            <div class="category-name">综合问题</div>
+                            <div class="category-desc">平台功能咨询、建议或Bug反馈</div>
+                        </div>
+                        <div class="category-card" data-category="problem">
+                            <div class="category-icon">📝</div>
+                            <div class="category-name">题目工单</div>
+                            <div class="category-desc">题目数据、题面、标签等问题反馈</div>
+                        </div>
+                        <div class="category-card" data-category="contest" id="contestCategory">
+                            <div class="category-icon">🏆</div>
+                            <div class="category-name">比赛工单</div>
+                            <div class="category-desc">申请举办公公开赛或月赛</div>
+                            <div class="category-badge">需要奖项认证</div>
+                        </div>
+                        <div class="category-card" data-category="appeal">
+                            <div class="category-icon">🔓</div>
+                            <div class="category-name">账号申诉</div>
+                            <div class="category-desc">提交账号申诉工单</div>
+                        </div>
+                    </div>
+                    <div class="form-error" id="categoryError"></div>
+                </div>
+
+                <!-- 子类别选择 -->
+                <div class="form-group" id="subcategoryGroup" style="display:none;">
+                    <label class="form-label required">详细类型</label>
+                    <div class="subcategory-list show" id="subcategoryList">
+                        <!-- 动态加载 -->
+                    </div>
+                    <div class="form-error" id="subcategoryError"></div>
+                </div>
+
+                <!-- 工单标题 -->
+                <div class="form-group">
+                    <label class="form-label required">工单标题</label>
+                    <input type="text" class="form-input" id="titleInput" placeholder="请简要描述您的问题（5-50字）"
+                        maxlength="100">
+                    <div class="form-hint">标题应简洁明了地描述您的问题</div>
+                    <div class="form-error" id="titleError"></div>
+                </div>
+
+                <!-- 工单内容 -->
+                <div class="form-group">
+                    <label class="form-label required">详细描述</label>
+                    <textarea class="form-textarea" id="contentInput"
+                        placeholder="请详细描述您的问题，包括：&#10;1. 问题的具体表现&#10;2. 重现问题的步骤&#10;3. 期望的结果&#10;4. 相关截图或链接（如有）"></textarea>
+                    <div class="form-hint">详细的描述有助于管理员更快地理解和解决问题</div>
+                    <div class="form-error" id="contentError"></div>
+                </div>
+
+                <!-- 优先级选择 -->
+                <div class="form-group">
+                    <label class="form-label">优先级</label>
+                    <div class="priority-options">
+                        <div class="priority-option selected" data-priority="normal">中优先级</div>
+                        <div class="priority-option" data-priority="low">低优先级</div>
+                        <div class="priority-option" data-priority="high">高优先级</div>
+                        <div class="priority-option" data-priority="urgent">紧急</div>
+                    </div>
+                    <div class="form-hint">请根据问题的紧急程度选择合适的优先级</div>
+                </div>
+
+                <!-- 公开设置 -->
+                <div class="form-group">
+                    <label class="form-label">可见性设置</label>
+                    <div class="priority-options">
+                        <div class="priority-option selected" data-visibility="public">公开可见</div>
+                        <div class="priority-option" data-visibility="private">仅管理员可见</div>
+                    </div>
+                    <div class="form-hint">公开的工单其他用户也可以查看和评论</div>
+                </div>
+
+                <!-- 提交按钮 -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">提交工单</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="card">
+            <div class="card-header">📋 工单使用说明</div>
+            <div style="font-size: 14px; color: #2c3e50; line-height: 1.7;">
+                <p style="margin-bottom: 12px;"><strong>1. 工单类别说明：</strong></p>
+                <ul style="margin-bottom: 12px; padding-left: 20px;">
+                    <li><strong>综合问题：</strong>关于平台功能、使用咨询、功能建议或Bug反馈</li>
+                    <li><strong>题目工单：</strong>反馈题目数据问题、题面修缮、改进标签或难度评级</li>
+                    <li><strong>比赛工单：</strong>申请举办公公开赛或月赛（需要奖项认证）</li>
+                    <li><strong>账号申诉：</strong>提交账号申诉，说明被封禁的原因和申诉理由</li>
+                </ul>
+
+                <p style="margin-bottom: 12px;"><strong>2. 工单处理流程：</strong></p>
+                <ul style="margin-bottom: 12px; padding-left: 20px;">
+                    <li>工单提交后状态为"待处理"，等待管理员处理</li>
+                    <li>管理员回复后状态变为"已回复"，您可以继续补充信息</li>
+                    <li>管理员处理中状态为"处理中"</li>
+                    <li>问题解决后状态为"已完成"</li>
+                </ul>
+
+                <p style="margin-bottom: 12px;"><strong>3. 注意事项：</strong></p>
+                <ul style="padding-left: 20px;">
+                    <li>提交前请先搜索相似工单，避免重复提交</li>
+                    <li>描述问题时请尽量详细，提供截图和链接</li>
+                    <li>管理员通常会在2周内给予回复，请勿催促</li>
+                    <li>请文明用语，遵守社区规则</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 <span class="brand-highlight">✨ Jason227</span></footer>
+
+    <script>
+        (function () {
+            // ================================================================
+            // 1. Supabase 初始化
+            // ================================================================
+            const supabase = window.supabase.createClient(
+                'https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-'
+            );
+
+            // ================================================================
+            // 2. 状态与 DOM 引用
+            // ================================================================
+            let selectedCategory = null;
+            let selectedSubcategory = null;
+            let selectedPriority = 'normal';
+            let selectedVisibility = 'public';
+            let currentUser = null;
+            let searchTimeout = null;
+
+            // DOM元素引用（在DOMContentLoaded后初始化）
+            let categoryCards, subcategoryGroup, subcategoryList, titleInput, contentInput;
+            let priorityOptions, visibilityOptions, ticketForm, submitBtn, cancelBtn;
+            let similarTickets, similarTicketsList, authButtons;
+
+            // ================================================================
+            // 3. 子类别配置
+            // ================================================================
+            const subcategories = {
+                'general': [
+                    { key: 'inquiry', name: '一般咨询', desc: '关于平台功能或相关事宜的询问' },
+                    { key: 'suggestion', name: '功能建议', desc: '为平台提供功能建议' },
+                    { key: 'bug_report', name: 'Bug反馈', desc: '报告平台Bug' }
+                ],
+                'problem': [
+                    { key: 'problem_feedback', name: '题目反馈', desc: '报告题目数据、SPJ等问题' },
+                    { key: 'statement_refine', name: '题面修缮', desc: '反馈题面存在的歧义、排版或翻译问题' },
+                    { key: 'tag_difficulty', name: '改进标签/难度', desc: '对题目的算法标签或难度评级提出修改建议' }
+                ],
+                'contest': [
+                    { key: 'contest_apply', name: '比赛申请', desc: '申请举办公公开赛或月赛' }
+                ],
+                'appeal': [
+                    { key: 'ban_appeal', name: '封禁申诉', desc: '提交账号申诉工单' }
+                ]
+            };
+
+            // ================================================================
+            // 4. 工具函数
+            // ================================================================
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function clearErrors() {
+                document.getElementById('categoryError').textContent = '';
+                document.getElementById('subcategoryError').textContent = '';
+                document.getElementById('titleError').textContent = '';
+                document.getElementById('contentError').textContent = '';
+            }
+
+            // ================================================================
+            // 12. 用户认证 UI
+            // ================================================================
+            async function updateAuthUI() {
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+
+                    if (session?.user) {
+                        const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('username, avatar_url, is_admin, user_number, can_manage_users, can_manage_tickets, verified_awards, is_banned')
+                            .eq('id', session.user.id)
+                            .maybeSingle();
+
+                        const displayName = profile?.username || session.user.email || '用户';
+                        const userNumber = profile?.user_number || '';
+
+                        let html = `<a href="/user/${userNumber}" class="user-email">${escapeHtml(displayName)}</a>`;
+                        html += `<a href="/user/notification" class="bell-icon"><svg viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56,200l0,14.5c0,37.7-10,74.7-29,107.3L5.1,359.2C1.8,365 0,371.5 0,378.2c0,20.9 16.9,37.8 37.8,37.8l372.4,0c20.9,0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421,321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4,368l-336.9,0 12.9-22.1C91.7,306 104,260.6 104,214.5l0-14.5c0-66.3 53.7-120 120-120s120,53.7 120,120l0,14.5c0,46.2 12.3,91.5 35.5,131.4L392.4,368zM156.1,464c9.9,28 36.6,48 67.9,48s58-20 67.9-48l-135.8,0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
+
+                        if (profile?.is_admin === true) {
+                            html += `<a href="/admin/user" title="进入管理后台" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:8px;color:#666;text-decoration:none;font-size:18px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#666'">⚙️</a>`;
+                        }
+
+                        html += `<button id="logoutBtn" class="auth-btn logout">登出</button>`;
+                        authButtons.innerHTML = html;
+
+                        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+                            await supabase.auth.signOut();
+                            location.reload();
+                        });
+
+                        // 保存当前用户信息
+                        currentUser = profile;
+                        currentUser.id = session.user.id;
+
+                        // 检查比赛工单权限
+                        if (profile && profile.verified_awards < 1) {
+                            const contestCard = document.getElementById('contestCategory');
+                            if (contestCard) {
+                                contestCard.classList.add('disabled');
+                            }
+                        }
+
+                    } else {
+                        authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                    }
+                } catch (err) {
+                    console.error('认证失败:', err);
+                    authButtons.innerHTML = `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
+                }
+            }
+
+            // ================================================================
+            // 13. 初始化DOM元素引用
+            // ================================================================
+            function initDOMElements() {
+                categoryCards = document.querySelectorAll('.category-card');
+                subcategoryGroup = document.getElementById('subcategoryGroup');
+                subcategoryList = document.getElementById('subcategoryList');
+                titleInput = document.getElementById('titleInput');
+                contentInput = document.getElementById('contentInput');
+                priorityOptions = document.querySelectorAll('.priority-option[data-priority]');
+                visibilityOptions = document.querySelectorAll('.priority-option[data-visibility]');
+                ticketForm = document.getElementById('ticketForm');
+                submitBtn = document.getElementById('submitBtn');
+                cancelBtn = document.getElementById('cancelBtn');
+                similarTickets = document.getElementById('similarTickets');
+                similarTicketsList = document.getElementById('similarTicketsList');
+                authButtons = document.getElementById('authButtons');
+
+                console.log('DOM元素初始化完成：');
+                console.log('- 类别卡片数量:', categoryCards.length);
+                console.log('- 标题输入框:', titleInput ? '已找到' : '未找到');
+                console.log('- 内容输入框:', contentInput ? '已找到' : '未找到');
+                console.log('- 提交按钮:', submitBtn ? '已找到' : '未找到');
+
+                // 验证类别卡片是否正确加载
+                if (categoryCards.length > 0) {
+                    categoryCards.forEach((card, index) => {
+                        console.log(`类别卡片 ${index}:`, card.dataset.category, card.textContent.substring(0, 15));
+                    });
+                } else {
+                    console.error('❌ 没有找到类别卡片！');
+                }
+            }
+
+            // ================================================================
+            // 14. 初始化事件监听器
+            // ================================================================
+            function initEventListeners() {
+                console.log('开始绑定事件监听器...');
+                console.log('找到类别卡片数量:', categoryCards.length);
+
+                // 类别选择
+                categoryCards.forEach((card, index) => {
+                    console.log(`绑定类别卡片 ${index}:`, card.dataset.category);
+                    card.addEventListener('click', function (e) {
+                        console.log('类别卡片被点击:', this.dataset.category);
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // 检查是否禁用
+                        if (this.classList.contains('disabled')) {
+                            alert('您没有权限创建此类工单');
+                            return;
+                        }
+
+                        // 清除之前的选择
+                        categoryCards.forEach(c => c.classList.remove('selected'));
+                        selectedSubcategory = null;
+
+                        // 设置新选择
+                        this.classList.add('selected');
+                        selectedCategory = this.dataset.category;
+
+                        console.log('已选择类别:', selectedCategory);
+
+                        // 显示子类别
+                        showSubcategories(selectedCategory);
+
+                        // 搜索相似工单
+                        searchSimilarTickets();
+                    });
+                });
+
+                // 优先级选择
+                priorityOptions.forEach(option => {
+                    option.addEventListener('click', function () {
+                        priorityOptions.forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedPriority = this.dataset.priority;
+                    });
+                });
+
+                // 可见性选择
+                visibilityOptions.forEach(option => {
+                    option.addEventListener('click', function () {
+                        visibilityOptions.forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedVisibility = this.dataset.visibility;
+                    });
+                });
+
+                // 标题输入搜索
+                titleInput.addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(searchSimilarTickets, 500);
+                });
+
+                console.log('✅ 所有事件监听器绑定完成');
+                console.log('表单元素检查:');
+                console.log('- ticketForm:', ticketForm);
+                console.log('- submitBtn:', submitBtn);
+                console.log('- titleInput:', titleInput);
+                console.log('- contentInput:', contentInput);
+
+                // 表单提交
+                ticketForm.addEventListener('submit', async function (e) {
+                    console.log('=== 表单提交事件触发 ===');
+                    console.log('preventDefault前，URL:', window.location.href);
+
+                    e.preventDefault();
+
+                    console.log('preventDefault后，URL:', window.location.href);
+                    clearErrors();
+
+                    if (!currentUser) {
+                        console.log('❌ 用户未登录，跳转到登录页');
+                        alert('请先登录');
+                        location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
+                        return;
+                    }
+
+                    console.log('✅ 用户已登录，继续验证表单...');
+
+                    // 验证表单
+                    let hasError = false;
+                    let errorMessages = [];
+
+                    if (!selectedCategory) {
+                        document.getElementById('categoryError').textContent = '❌ 请选择工单类别';
+                        errorMessages.push('• 未选择工单类别');
+                        hasError = true;
+                    } else {
+                        document.getElementById('categoryError').textContent = '';
+                    }
+
+                    const subcategories = subcategories[selectedCategory] || [];
+                    if (subcategories.length > 0 && !selectedSubcategory) {
+                        document.getElementById('subcategoryError').textContent = '❌ 请选择详细类型';
+                        errorMessages.push('• 未选择详细类型');
+                        hasError = true;
+                    } else {
+                        document.getElementById('subcategoryError').textContent = '';
+                    }
+
+                    const title = titleInput.value.trim();
+                    if (!title) {
+                        document.getElementById('titleError').textContent = '❌ 请输入工单标题';
+                        errorMessages.push('• 缺少工单标题');
+                        hasError = true;
+                    } else if (title.length < 5) {
+                        document.getElementById('titleError').textContent = '❌ 标题至少需要5个字符 (当前: ' + title.length + ' 字)';
+                        errorMessages.push('• 标题太短：' + title.length + ' 字，需要至少 5 字');
+                        hasError = true;
+                    } else if (title.length > 100) {
+                        document.getElementById('titleError').textContent = '❌ 标题不能超过100个字符 (当前: ' + title.length + ' 字)';
+                        errorMessages.push('• 标题太长：' + title.length + ' 字，不能超过 100 字');
+                        hasError = true;
+                    } else {
+                        document.getElementById('titleError').textContent = '';
+                    }
+
+                    const content = contentInput.value.trim();
+                    if (!content) {
+                        document.getElementById('contentError').textContent = '❌ 请输入详细描述';
+                        errorMessages.push('• 缺少详细描述');
+                        hasError = true;
+                    } else if (content.length < 10) {
+                        document.getElementById('contentError').textContent = '❌ 描述至少需要10个字符 (当前: ' + content.length + ' 字)';
+                        errorMessages.push('• 描述太短：' + content.length + ' 字，需要至少 10 字');
+                        hasError = true;
+                    } else if (content.length > 10000) {
+                        document.getElementById('contentError').textContent = '❌ 描述不能超过10000个字符';
+                        errorMessages.push('• 描述太长：' + content.length + ' 字，不能超过 10000 字');
+                        hasError = true;
+                    } else {
+                        document.getElementById('contentError').textContent = '';
+                    }
+
+                    if (hasError) {
+                        console.log('表单验证失败，错误信息：', errorMessages);
+                        alert('⚠️ 工单提交失败，请检查以下信息：\n\n' + errorMessages.join('\n'));
+                        return;
+                    }
+
+                    console.log('表单验证通过，准备提交...');
+
+                    // 提交表单
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="loading-spinner"></span>提交中...';
+
+                    try {
+                        console.log('开始插入工单数据...');
+                        const { data, error } = await supabase
+                            .from('tickets')
+                            .insert({
+                                title: title,
+                                content: content,
+                                category: selectedCategory,
+                                subcategory: selectedSubcategory,
+                                priority: selectedPriority,
+                                visibility: selectedVisibility,
+                                author_id: currentUser.id
+                            })
+                            .select()
+                            .single();
+
+                        if (error) throw error;
+
+                        console.log('✅ 工单创建成功，准备跳转到 /tickets ...');
+                        console.log('新创建的工单ID:', data.id);
+                        console.log('工单标题:', data.title);
+                        // 不使用 alert，直接跳转
+                        setTimeout(() => {
+                            console.log('执行跳转...');
+                            window.location.href = '/tickets';
+                        }, 100);
+
+                    } catch (err) {
+                        console.error('创建工单失败:', err);
+                        alert('❌ 创建工单失败：' + err.message + '\n\n请检查：\n• 是否已登录\n• 网络连接是否正常\n• 是否有数据库权限');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '提交工单';
+                    }
+                });
+
+                // 取消按钮
+                cancelBtn.addEventListener('click', function () {
+                    if (confirm('确定要取消创建工单吗？')) {
+                        location.href = '/tickets';
+                    }
+                });
+            }
+
+            // 显示子类别
+            function showSubcategories(category) {
+                const items = subcategories[category] || [];
+                if (items.length === 0) {
+                    subcategoryGroup.style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+                items.forEach(item => {
+                    html += `
+                        <div class="subcategory-option" data-subcategory="${item.key}">
+                            <div class="subcategory-name">${escapeHtml(item.name)}</div>
+                            <div class="subcategory-desc">${escapeHtml(item.desc)}</div>
+                        </div>
+                    `;
+                });
+
+                subcategoryList.innerHTML = html;
+                subcategoryGroup.style.display = 'block';
+
+                // 绑定子类别选择事件
+                subcategoryList.querySelectorAll('.subcategory-option').forEach(option => {
+                    option.addEventListener('click', function () {
+                        subcategoryList.querySelectorAll('.subcategory-option').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedSubcategory = this.dataset.subcategory;
+                    });
+                });
+            }
+
+            // 搜索相似工单
+            async function searchSimilarTickets() {
+                const title = titleInput.value.trim();
+                if (!title || title.length < 5) {
+                    similarTickets.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase
+                        .from('tickets')
+                        .select('id, title, status, created_at')
+                        .or(`title.ilike.%${title}%,content.ilike.%${title}%`)
+                        .eq('is_deleted', false)
+                        .limit(5);
+
+                    if (error) throw error;
+
+                    if (!data || data.length === 0) {
+                        similarTickets.style.display = 'none';
+                        return;
+                    }
+
+                    let html = '';
+                    data.forEach(ticket => {
+                        html += `
+                            <div class="similar-ticket-item" onclick="location.href='/tickets/detail/${ticket.id}'">
+                                <div class="similar-ticket-title">${escapeHtml(ticket.title)}</div>
+                                <div class="similar-ticket-meta">
+                                    状态: ${ticket.status} | 创建时间: ${new Date(ticket.created_at).toLocaleDateString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    similarTicketsList.innerHTML = html;
+                    similarTickets.style.display = 'block';
+
+                } catch (err) {
+                    console.error('搜索相似工单失败:', err);
+                }
+            }
+
+            // ================================================================
+            // 15. 页面初始化
+            // ================================================================
+            document.addEventListener('DOMContentLoaded', async () => {
+                console.log('DOM加载完成，开始初始化...');
+
+                // 初始化DOM元素引用
+                initDOMElements();
+
+                // 绑定所有事件监听器
+                initEventListeners();
+
+                // 更新认证状态
+                await updateAuthUI();
+
+                console.log('页面初始化完成');
+            });
+            categoryCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    // 检查是否禁用
+                    if (this.classList.contains('disabled')) {
+                        alert('您没有权限创建此类工单');
+                        return;
+                    }
+
+                    // 清除之前的选择
+                    categoryCards.forEach(c => c.classList.remove('selected'));
+                    selectedSubcategory = null;
+
+                    // 设置新选择
+                    this.classList.add('selected');
+                    selectedCategory = this.dataset.category;
+
+                    // 显示子类别
+                    showSubcategories(selectedCategory);
+
+                    // 搜索相似工单
+                    searchSimilarTickets();
+                });
+            });
+
+            // 优先级选择
+            priorityOptions.forEach(option => {
+                option.addEventListener('click', function () {
+                    priorityOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPriority = this.dataset.priority;
+                });
+            });
+
+            // 可见性选择
+            visibilityOptions.forEach(option => {
+                option.addEventListener('click', function () {
+                    visibilityOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedVisibility = this.dataset.visibility;
+                });
+            });
+
+            // 标题输入搜索
+            titleInput.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(searchSimilarTickets, 500);
+            });
+
+            console.log('✅ 所有事件监听器绑定完成');
+            console.log('表单元素检查:');
+            console.log('- ticketForm:', ticketForm);
+            console.log('- submitBtn:', submitBtn);
+            console.log('- titleInput:', titleInput);
+            console.log('- contentInput:', contentInput);
+
+            console.log('=== 事件监听器绑定完成 ===');
+            console.log('准备监听表单提交事件...');
+
+            // 取消按钮
+            cancelBtn.addEventListener('click', function () {
+                if (confirm('确定要取消创建工单吗？')) {
+                    location.href = '/tickets';
+                }
+            });
+        }
+        }) ();
+    </script>
+</body>
+
+</html>
