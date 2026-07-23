@@ -1139,6 +1139,7 @@
                 width: 16px;
             }
         }
+
         /* ========== 洛谷风格帖子卡片 ========== */
         .top-container {
             display: flex;
@@ -1288,16 +1289,16 @@
         /* 帖子卡片容器 —— 独立成块，像犇犇一样分隔 */
         .post-card {
             padding: 16px 20px;
-            margin-bottom: 16px;          /* 卡片之间的垂直间距 */
-            background: #ffffff;          /* 白色背景 */
-            border-radius: 16px;          /* 圆角 */
+            margin-bottom: 16px;
+            background: #ffffff;
+            border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             cursor: default;
             transition: box-shadow 0.2s, transform 0.1s;
         }
 
         .post-card:last-child {
-            margin-bottom: 0;             /* 最后一条不额外留底边距 */
+            margin-bottom: 0;
         }
 
         /* 置顶标签 */
@@ -1309,6 +1310,43 @@
             border-radius: 12px;
             line-height: 20px;
             flex-shrink: 0;
+        }
+
+        /* ========== 删除按钮样式 ========== */
+        .post-delete-btn {
+            background: none !important;
+            border: none !important;
+            color: #999 !important;
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            transition: all 0.2s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+        }
+
+        .post-delete-btn:hover {
+            color: #e74c3c !important;
+            background: rgba(231, 76, 60, 0.1) !important;
+        }
+
+        .detail-delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        .detail-delete-btn:hover {
+            background: #c0392b;
         }
     </style>
     <script src="https://unpkg.com/@supabase/supabase-js@2">
@@ -1555,7 +1593,7 @@
             // ============================================================
             //  2. 全局状态
             // ============================================================
-            let currentUser = null;          // { id, username, email, can_manage_posts }
+            let currentUser = null;
             let currentForum = 'all';
             let currentPage = 1;
             const PAGE_SIZE = 30;
@@ -1590,7 +1628,6 @@
                 return (name || 'U').charAt(0).toUpperCase();
             }
 
-            // 根据用户名生成头像背景颜色
             function getColorByUsername(name) {
                 if (!name) return '#e74c3c';
                 const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#e84393'];
@@ -1601,10 +1638,10 @@
                 return colors[Math.abs(hash) % colors.length];
             }
 
-            // 系统默认头像（首字母 SVG，任意尺寸清晰缩放）
             function letterAvatar(name) {
                 const ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
 
             // ============================================================
@@ -1651,7 +1688,6 @@
                 return session;
             }
 
-            // ★ 获取 profile 时增加 can_manage_posts 字段
             async function fetchProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
@@ -1677,7 +1713,7 @@
                     id: user.id,
                     username: profile?.username || user.email || '用户',
                     email: user.email,
-                    can_manage_posts: profile?.can_manage_posts === true, // 默认为 false
+                    can_manage_posts: profile?.can_manage_posts === true,
                 };
             }
 
@@ -1708,33 +1744,28 @@
                 try {
                     const { error } = await supabase.from('posts').select('id').limit(1);
                     if (error && error.message.includes('relation "posts" does not exist')) {
-                        const sql =
-                            `
-                    CREATE TABLE posts (
-                        id bigserial PRIMARY KEY,
-                        forum text NOT NULL,
-                        title text NOT NULL,
-                        content text NOT NULL,
-                        author_id uuid REFERENCES profiles(id) NOT NULL,
-                        created_at timestamptz DEFAULT now(),
-                        updated_at timestamptz DEFAULT now(),
-                        is_deleted boolean DEFAULT false
-                    );
+                        const sql = `
+                            CREATE TABLE posts (
+                                id bigserial PRIMARY KEY,
+                                forum text NOT NULL,
+                                title text NOT NULL,
+                                content text NOT NULL,
+                                author_id uuid REFERENCES profiles(id) NOT NULL,
+                                created_at timestamptz DEFAULT now(),
+                                updated_at timestamptz DEFAULT now()
+                            );
 
-                    CREATE TABLE comments (
-                        id bigserial PRIMARY KEY,
-                        post_id bigint REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
-                        author_id uuid REFERENCES profiles(id) NOT NULL,
-                        content text NOT NULL,
-                        created_at timestamptz DEFAULT now()
-                    );
+                            CREATE TABLE comments (
+                                id bigserial PRIMARY KEY,
+                                post_id bigint REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
+                                author_id uuid REFERENCES profiles(id) NOT NULL,
+                                content text NOT NULL,
+                                created_at timestamptz DEFAULT now()
+                            );
 
-                    CREATE INDEX idx_posts_forum ON posts(forum);
-                    CREATE INDEX idx_comments_post_id ON comments(post_id);
-
-                    -- 如果 profiles 表没有 can_manage_posts 字段，请执行：
-                    -- ALTER TABLE profiles ADD COLUMN can_manage_posts boolean DEFAULT false;
-                `;
+                            CREATE INDEX idx_posts_forum ON posts(forum);
+                            CREATE INDEX idx_comments_post_id ON comments(post_id);
+                        `;
                         alert('检测到数据库表不存在，请先在 Supabase SQL Editor 中执行以下建表语句：\n\n' + sql);
                         return false;
                     }
@@ -1752,10 +1783,9 @@
                 let query = supabase
                     .from('posts')
                     .select(`
-                        id, forum, title, content, author_id, created_at, updated_at, is_deleted,
+                        id, forum, title, content, author_id, created_at, updated_at,
                         profiles:author_id ( username, avatar_url )
                     `, { count: 'exact' })
-                    .eq('is_deleted', false)
                     .order('created_at', { ascending: false })
                     .range(from, to);
 
@@ -1770,6 +1800,7 @@
                     ...p,
                     authorName: p.profiles?.username || '用户',
                     authorAvatar: p.profiles?.avatar_url || '',
+                    is_author: currentUser ? p.author_id === currentUser.id : false,
                 }));
                 return { posts, count };
             }
@@ -1778,11 +1809,10 @@
                 const { data: postData, error: postError } = await supabase
                     .from('posts')
                     .select(`
-                        id, forum, title, content, author_id, created_at, updated_at, is_deleted,
+                        id, forum, title, content, author_id, created_at, updated_at,
                         profiles:author_id ( username, avatar_url )
                     `)
                     .eq('id', postId)
-                    .eq('is_deleted', false)
                     .maybeSingle();
                 if (postError) throw postError;
                 if (!postData) return null;
@@ -1805,6 +1835,7 @@
                 return {
                     ...postData,
                     authorName: postData.profiles?.username || '用户',
+                    is_author: currentUser ? postData.author_id === currentUser.id : false,
                     comments: comments,
                 };
             }
@@ -1832,7 +1863,46 @@
             }
 
             // ============================================================
-            //  7. 渲染函数
+            //  7. 删除帖子函数（硬删除）
+            // ============================================================
+            async function deletePost(postId) {
+                if (!currentUser) {
+                    alert('请先登录');
+                    return false;
+                }
+
+                if (!confirm('⚠️ 确定要永久删除此帖子吗？\n此操作不可恢复！')) {
+                    return false;
+                }
+
+                try {
+                    // 🔥 硬删除：直接从数据库删除记录
+                    const { error } = await supabase
+                        .from('posts')
+                        .delete()
+                        .eq('id', postId);
+
+                    if (error) throw error;
+
+                    // 如果当前在详情页，返回列表
+                    if (viewingPostId === postId) {
+                        backToList();
+                    }
+
+                    // 刷新列表
+                    await renderPostList();
+                    alert('✅ 帖子已永久删除');
+                    return true;
+
+                } catch (err) {
+                    console.error('删除失败:', err);
+                    alert('❌ 删除失败: ' + err.message);
+                    return false;
+                }
+            }
+
+            // ============================================================
+            //  8. 渲染函数
             // ============================================================
 
             function updateForumSelector(forum) {
@@ -1849,7 +1919,6 @@
                 const btn = document.getElementById('newPostBtn');
                 if (!btn) return;
 
-                // ★ 全部板块不显示发帖按钮 ★
                 if (currentForum === 'all') {
                     btn.style.display = 'none';
                     return;
@@ -1918,65 +1987,84 @@
                         };
                         const forumColor = forumColorMap[post.forum] || '#5a6a7a';
 
+                        const showDelete = currentUser && (post.is_author || currentUser.can_manage_posts);
+
                         html += `
-                <div class="post-card" data-id="${post.id}">
-                    <div class="top-container">
-                        <div class="avatar" style="background: ${getColorByUsername(post.authorName)};">
-                            <img src="${post.authorAvatar || letterAvatar(post.authorName)}" alt="头像" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;" onerror="this.onerror=null;this.src='${letterAvatar(post.authorName)}'">
-                        </div>
-                        <div class="avatar-right">
-                            <div class="row-space-between top">
-                                <a class="content-left title link" href="/discuss/${post.id}">
-                                    ${post.title}
-                                    ${isTop ? '<span class="tag top"><i class="fas fa-thumbtack"></i> 置顶</span>' : ''}
-                                </a>
-                                <div class="content-right">
-                                    <a class="wrap" data-forum="${post.forum}" style="--link-indicator-color: ${forumColor};">
-                                        <svg class="indicator" viewBox="0 0 448 512" width="14" height="14" fill="currentColor">
-                                            <path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32z"/>
-                                        </svg>
-                                        <span class="name" style="color: ${forumColor};">${forumMap[post.forum] || post.forum}</span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row-space-between bottom">
-                                <div class="content-left">
-                                    <div class="luogu-username user-name">
-                                        <span><a href="/user/${post.author_id}" style="font-weight: bold; font-size: 13px; color: #2c3e50; text-decoration: none;">${post.authorName}</a></span>
-                                    </div>
-                                    <div class="time">
-                                        <time datetime="${post.created_at}">${formatTime(post.created_at)}</time>
-                                    </div>
-                                </div>
-                                <a href="/discuss/${post.id}" class="reply">
-                                    <div class="info-item" style="margin-right: 0.66em;">
-                                        <svg class="svg-inline--fa fa-comment" viewBox="0 0 512 512" width="14" height="14" fill="currentColor">
-                                            <path d="M51.9 384.9C19.3 344.6 0 294.4 0 240 0 107.5 114.6 0 256 0S512 107.5 512 240 397.4 480 256 480c-36.5 0-71.2-7.2-102.6-20L37 509.9c-3.7 1.6-7.5 2.1-11.5 2.1-14.1 0-25.5-11.4-25.5-25.5 0-4.3 1.1-8.5 3.1-12.2l48.8-89.4zm37.3-30.2c12.2 15.1 14.1 36.1 4.8 53.2l-18 33.1 58.5-25.1c11.8-5.1 25.2-5.2 37.1-.3 25.7 10.5 54.2 16.4 84.3 16.4 117.8 0 208-88.8 208-192S373.8 48 256 48 48 136.8 48 240c0 42.8 15.1 82.4 41.2 114.7z"/>
-                                        </svg>
-                                        ${commentCount}
-                                    </div>
-                                    ${lastReply ? `
-                                        <div class="luogu-username user-name">
-                                            <span><a href="/user/${post.author_id}" style="font-weight: bold; font-size: 13px; color: #2c3e50; text-decoration: none;">${lastReply.authorName}</a></span>
+                                <div class="post-card" data-id="${post.id}">
+                                    <div class="top-container">
+                                        <div class="avatar" style="background: ${getColorByUsername(post.authorName)};">
+                                            <img src="${post.authorAvatar || letterAvatar(post.authorName)}" alt="头像" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;" onerror="this.onerror=null;this.src='${letterAvatar(post.authorName)}'">
                                         </div>
-                                        <div class="time">
-                                            <time datetime="${lastReply.createdAt}">${formatTime(lastReply.createdAt)}</time>
+                                        <div class="avatar-right">
+                                            <div class="row-space-between top">
+                                                <a class="content-left title link" href="/discuss/${post.id}">
+                                                    ${post.title}
+                                                    ${isTop ? '<span class="tag top"><i class="fas fa-thumbtack"></i> 置顶</span>' : ''}
+                                                </a>
+                                                <div class="content-right">
+                                                    ${showDelete ? `
+                                                        <button class="post-delete-btn" data-id="${post.id}" title="删除帖子">
+                                                            <svg viewBox="0 0 448 512" width="14" height="14" fill="currentColor">
+                                                                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                                                            </svg>
+                                                        </button>
+                                                    ` : ''}
+                                                    <a class="wrap" data-forum="${post.forum}" style="--link-indicator-color: ${forumColor};">
+                                                        <svg class="indicator" viewBox="0 0 448 512" width="14" height="14" fill="currentColor">
+                                                            <path d="M64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32z"/>
+                                                        </svg>
+                                                        <span class="name" style="color: ${forumColor};">${forumMap[post.forum] || post.forum}</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="row-space-between bottom">
+                                                <div class="content-left">
+                                                    <div class="luogu-username user-name">
+                                                        <span><a href="/user/${post.author_id}" style="font-weight: bold; font-size: 13px; color: #2c3e50; text-decoration: none;">${post.authorName}</a></span>
+                                                    </div>
+                                                    <div class="time">
+                                                        <time datetime="${post.created_at}">${formatTime(post.created_at)}</time>
+                                                    </div>
+                                                </div>
+                                                <a href="/discuss/${post.id}" class="reply">
+                                                    <div class="info-item" style="margin-right: 0.66em;">
+                                                        <svg class="svg-inline--fa fa-comment" viewBox="0 0 512 512" width="14" height="14" fill="currentColor">
+                                                            <path d="M51.9 384.9C19.3 344.6 0 294.4 0 240 0 107.5 114.6 0 256 0S512 107.5 512 240 397.4 480 256 480c-36.5 0-71.2-7.2-102.6-20L37 509.9c-3.7 1.6-7.5 2.1-11.5 2.1-14.1 0-25.5-11.4-25.5-25.5 0-4.3 1.1-8.5 3.1-12.2l48.8-89.4zm37.3-30.2c12.2 15.1 14.1 36.1 4.8 53.2l-18 33.1 58.5-25.1c11.8-5.1 25.2-5.2 37.1-.3 25.7 10.5 54.2 16.4 84.3 16.4 117.8 0 208-88.8 208-192S373.8 48 256 48 48 136.8 48 240c0 42.8 15.1 82.4 41.2 114.7z"/>
+                                                        </svg>
+                                                        ${commentCount}
+                                                    </div>
+                                                    ${lastReply ? `
+                                                        <div class="luogu-username user-name">
+                                                            <span><a href="/user/${post.author_id}" style="font-weight: bold; font-size: 13px; color: #2c3e50; text-decoration: none;">${lastReply.authorName}</a></span>
+                                                        </div>
+                                                        <div class="time">
+                                                            <time datetime="${lastReply.createdAt}">${formatTime(lastReply.createdAt)}</time>
+                                                        </div>
+                                                    ` : ''}
+                                                </a>
+                                            </div>
                                         </div>
-                                    ` : ''}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+                                    </div>
+                                </div>
+                            `;
                     });
 
                     container.innerHTML = html;
 
+                    // ===== 绑定删除按钮事件 =====
+                    container.querySelectorAll('.post-delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const id = parseInt(this.dataset.id);
+                            if (!isNaN(id)) deletePost(id);
+                        });
+                    });
+
                     // ===== 点击帖子卡片进入详情（排除板块标签和回复链接） =====
                     container.querySelectorAll('.post-card').forEach(el => {
                         el.addEventListener('click', function (e) {
-                            if (e.target.closest('.content-right .wrap') || e.target.closest('.reply')) {
+                            if (e.target.closest('.content-right .wrap') || e.target.closest('.reply') ||
+                                e.target.closest('.post-delete-btn')) {
                                 return;
                             }
                             const id = parseInt(this.dataset.id);
@@ -2019,7 +2107,6 @@
                             if (!isNaN(page) && page >= 1 && page <= totalPages) {
                                 currentPage = page;
                                 renderPostList();
-                                // 滚动到列表顶部
                                 document.getElementById('postListContainer').scrollIntoView({
                                     behavior: 'smooth',
                                     block: 'start'
@@ -2041,12 +2128,10 @@
                 try {
                     const post = await fetchPostDetail(postId);
                     if (!post) {
-                        // 帖子不存在，返回列表
                         backToList();
                         return;
                     }
 
-                    // 更新 URL
                     history.pushState({ postId: post.id }, '', `/discuss/${post.id}`);
 
                     viewingPostId = postId;
@@ -2056,16 +2141,23 @@
                     const container = document.getElementById('detailContent');
                     const commentCount = post.comments ? post.comments.length : 0;
 
+                    const showDelete = currentUser && (post.is_author || currentUser.can_manage_posts);
+
                     let html = `
-                        <div class="detail-title">${post.title}</div>
-                        <div class="detail-meta">
-                            <span class="author"><i class="fas fa-user"></i> ${post.authorName}</span>
-                            <span><i class="far fa-clock"></i> ${formatTime(post.created_at)}</span>
-                            <span><i class="far fa-comment"></i> ${commentCount} 条评论</span>
-                            <span><span class="tag">${forumMap[post.forum] || post.forum}</span></span>
-                        </div>
-                        <div class="detail-content">${post.content}</div>
-                    `;
+                            <div class="detail-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                                <span>${post.title}</span>
+                                ${showDelete ? `
+                                    <button class="detail-delete-btn" id="detailDeleteBtn">🗑️ 删除帖子</button>
+                                ` : ''}
+                            </div>
+                            <div class="detail-meta">
+                                <span class="author"><i class="fas fa-user"></i> ${post.authorName}</span>
+                                <span><i class="far fa-clock"></i> ${formatTime(post.created_at)}</span>
+                                <span><i class="far fa-comment"></i> ${commentCount} 条评论</span>
+                                <span><span class="tag">${forumMap[post.forum] || post.forum}</span></span>
+                            </div>
+                            <div class="detail-content">${post.content}</div>
+                        `;
 
                     html += `<div class="comment-section">`;
                     html += `<h4>评论 <span>(${commentCount})</span></h4>`;
@@ -2073,14 +2165,14 @@
                     if (post.comments && post.comments.length > 0) {
                         post.comments.forEach(c => {
                             html += `
-                                <div class="comment-item">
-                                    <div class="comment-head">
-                                        <span class="cname">${c.authorName}</span>
-                                        <span>${formatTime(c.created_at)}</span>
+                                    <div class="comment-item">
+                                        <div class="comment-head">
+                                            <span class="cname">${c.authorName}</span>
+                                            <span>${formatTime(c.created_at)}</span>
+                                        </div>
+                                        <div class="comment-body">${c.content}</div>
                                     </div>
-                                    <div class="comment-body">${c.content}</div>
-                                </div>
-                            `;
+                                `;
                         });
                     } else {
                         html += `<p class="text-muted" style="font-size:14px;">还没有评论，来说点什么吧！</p>`;
@@ -2088,34 +2180,43 @@
 
                     if (currentUser) {
                         html += `
-                            <div class="comment-input-area">
-                                <textarea id="commentInput" placeholder="写评论..." rows="2"></textarea>
-                                <button class="btn btn-primary btn-sm" id="submitComment"><i class="fas fa-paper-plane"></i> 发送</button>
-                            </div>
-                        `;
+                                <div class="comment-input-area">
+                                    <textarea id="commentInput" placeholder="写评论..." rows="2"></textarea>
+                                    <button class="btn btn-primary btn-sm" id="submitComment"><i class="fas fa-paper-plane"></i> 发送</button>
+                                </div>
+                            `;
                     } else {
                         html += `
-                            <div style="margin-top:12px; font-size:14px; color:#8a9aa8;">
-                                <a href="#" id="loginToComment" style="color:#e74c3c;">登录</a> 后发表评论
-                            </div>
-                        `;
+                                <div style="margin-top:12px; font-size:14px; color:#8a9aa8;">
+                                    <a href="#" id="loginToComment" style="color:#e74c3c;">登录</a> 后发表评论
+                                </div>
+                            `;
                     }
 
                     html += `</div>`;
                     container.innerHTML = html;
 
+                    // ===== 绑定详情页删除按钮 =====
+                    const detailDeleteBtn = document.getElementById('detailDeleteBtn');
+                    if (detailDeleteBtn) {
+                        detailDeleteBtn.addEventListener('click', function () {
+                            deletePost(postId);
+                        });
+                    }
+
+                    // ===== 绑定评论提交 =====
                     const submitBtn = document.getElementById('submitComment');
                     if (submitBtn) {
                         submitBtn.addEventListener('click', async function () {
                             const input = document.getElementById('commentInput');
                             const text = input.value.trim();
-                            if (!text) { return; }
-                            if (!currentUser) { return; }
+                            if (!text) return;
+                            if (!currentUser) return;
                             try {
                                 await createComment(postId, text, currentUser.id);
                                 showDetail(postId);
                             } catch (err) {
-
+                                alert('评论失败: ' + err.message);
                             }
                         });
                     }
@@ -2143,7 +2244,7 @@
             }
 
             // ============================================================
-            //  8. 认证 UI
+            //  9. 认证 UI
             // ============================================================
             let authMode = 'login';
 
@@ -2166,7 +2267,7 @@
             async function handleAuth() {
                 const email = document.getElementById('authEmail').value.trim();
                 const password = document.getElementById('authPassword').value.trim();
-                if (!email || !password) {  return; }
+                if (!email || !password) { return; }
 
                 try {
                     if (authMode === 'login') {
@@ -2178,7 +2279,7 @@
                     updateNav();
                     renderPostList();
                 } catch (err) {
-                    
+                    alert('认证失败: ' + err.message);
                 }
             }
 
@@ -2193,31 +2294,28 @@
                 const container = document.getElementById('authButtons');
                 if (currentUser) {
                     container.innerHTML = `
-            <a href="/user/notification" class="bell-icon" style="color:#666;">
-                <svg viewBox="0 0 448 512" width="20" height="20">
-                    <path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/>
-                </svg>
-                <sup id="bell-badge" style="display:none;">0</sup>
-            </a>
-            <span class="user-email">${currentUser.username}</span>
-            <button class="auth-btn logout" id="logoutBtn">登出</button>
-        `;
+                            <a href="/user/notification" class="bell-icon" style="color:#666;">
+                                <svg viewBox="0 0 448 512" width="20" height="20">
+                                    <path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"/>
+                                </svg>
+                                <sup id="bell-badge" style="display:none;">0</sup>
+                            </a>
+                            <span class="user-email">${currentUser.username}</span>
+                            <button class="auth-btn logout" id="logoutBtn">登出</button>
+                        `;
                     document.getElementById('logoutBtn').addEventListener('click', logout);
                 } else {
-                    // ★ 改为直接跳转链接 ★
                     container.innerHTML = `
-            <a href="/auth/login" class="auth-btn">登录</a>
-            <a href="/auth/register" class="auth-btn">注册</a>
-        `;
+                            <a href="/auth/login" class="auth-btn">登录</a>
+                            <a href="/auth/register" class="auth-btn">注册</a>
+                        `;
                 }
             }
 
             // ============================================================
-            //  9. 初始化
+            //  10. 初始化
             // ============================================================
             async function init() {
-                // 检查表是否存在
-                // 隐藏加载状态（如果存在）
                 const loadingState = document.getElementById('loadingState');
                 if (loadingState) loadingState.style.display = 'none';
                 const tablesOk = await checkTablesExist();
@@ -2232,33 +2330,28 @@
                 await loadCurrentUser();
                 updateNav();
 
-                // 检查路径是否匹配 /discuss/数字
                 const path = window.location.pathname;
                 const match = path.match(/^\/discuss\/(\d+)$/);
                 if (match) {
                     const postId = parseInt(match[1], 10);
                     await loadCurrentUser();
-                    updateNav(); // ← 添加这个
+                    updateNav();
                     await showDetail(postId);
                     return;
                 }
 
-                // 从 URL 读取板块参数
                 const forumFromURL = getForumFromURL();
                 if (forumFromURL !== 'all') {
                     currentForum = forumFromURL;
                 }
 
-                // 从 URL 读取页码参数
                 const pageFromURL = getPageFromURL();
                 if (pageFromURL > 1) {
                     currentPage = pageFromURL;
                 }
 
-                // 渲染列表
                 renderPostList();
 
-                // ===== 板块切换事件 =====
                 document.querySelectorAll('#forumSelector .section-item').forEach(el => {
                     el.addEventListener('click', function (e) {
                         e.preventDefault();
@@ -2266,7 +2359,6 @@
                         if (forum && forum !== currentForum) {
                             currentForum = forum;
                             currentPage = 1;
-                            // 切换板块后更新发帖按钮
                             renderPostList();
                             if (document.getElementById('detailView').classList.contains('open')) {
                                 backToList();
@@ -2275,7 +2367,6 @@
                     });
                 });
 
-                // 在板块切换事件部分，添加以下代码：
                 document.querySelectorAll('.content-right .wrap[data-forum]').forEach(el => {
                     el.addEventListener('click', function (e) {
                         e.preventDefault();
@@ -2292,7 +2383,6 @@
                     });
                 });
 
-                // ===== 进入板块（输入框） =====
                 document.getElementById('enterForumBtn').addEventListener('click', function (e) {
                     e.preventDefault();
                     const input = document.getElementById('forumInput');
@@ -2307,8 +2397,6 @@
                         if (document.getElementById('detailView').classList.contains('open')) {
                             backToList();
                         }
-                    } else {
-
                     }
                     input.value = '';
                 });
@@ -2319,7 +2407,6 @@
                     }
                 });
 
-                // ===== 认证弹窗 =====
                 document.getElementById('closeAuthModal').addEventListener('click', closeAuthModal);
                 document.getElementById('cancelAuth').addEventListener('click', closeAuthModal);
                 document.getElementById('authModal').addEventListener('click', function (e) {
@@ -2362,79 +2449,90 @@
         })();
     </script>
 
-<script>
-/* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
-(function () {
-    if (!window.supabase || document.getElementById('topAvatarWrap')) return;
-    var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
-    var authBtns = document.querySelector('.topbar .auth-buttons');
-    if (!authBtns) return;
-    if (!document.getElementById('topAvatarStyle')) {
-        var st = document.createElement('style');
-        st.id = 'topAvatarStyle';
-        st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
-        document.head.appendChild(st);
-    }
-    function letterAvatar(name) {
-        var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
-    }
-    var me = null;
-    var mo = new MutationObserver(ensure);
-    mo.observe(authBtns, { childList: true });
-    function ensure() {
-        if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
-        mo.disconnect();
-        try {
-            var ue = authBtns.querySelector('.user-email');
-            if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
-            var wrap = document.getElementById('topAvatarWrap');
-            if (!wrap) {
-                wrap = document.createElement('div');
-                wrap.id = 'topAvatarWrap';
-                wrap.className = 'top-avatar-wrap';
-                var av = document.createElement('a');
-                av.id = 'topAvatar';
-                av.href = '/user/' + (me.user_number || '');
-                av.title = me.username || '';
-                av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
-                var img = document.createElement('img');
-                img.alt = '头像';
-                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
-                img.src = me.avatar_url || letterAvatar(me.username);
-                av.appendChild(img);
-                wrap.appendChild(av);
-                var menu = document.createElement('div');
-                menu.id = 'topAvatarMenu';
-                menu.className = 'top-avatar-menu';
-                wrap.appendChild(menu);
-                authBtns.appendChild(wrap);
+    <script>
+        /* 顶栏右上角：用户名→头像；hover 头像在下方弹出登出；顺序 [管理⚙️][铃铛][头像]（齿轮仅管理员） */
+        (function () {
+            if (!window.supabase || document.getElementById('topAvatarWrap')) return;
+            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+            var authBtns = document.querySelector('.topbar .auth-buttons');
+            if (!authBtns) return;
+            if (!document.getElementById('topAvatarStyle')) {
+                var st = document.createElement('style');
+                st.id = 'topAvatarStyle';
+                st.textContent =
+                    '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+                document.head.appendChild(st);
             }
-            // 把页面渲染的"登出"按钮移进头像下拉菜单（保留原点击事件）
-            var menu = document.getElementById('topAvatarMenu');
-            var logoutEl = authBtns.querySelector('.auth-btn.logout');
-            if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
-            if (me.can_manage_users && !document.getElementById('adminEntry')) {
-                var gear = document.createElement('a');
-                gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
-                gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
-                gear.textContent = '⚙️';
-                authBtns.appendChild(gear);
+
+            function letterAvatar(name) {
+                var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
-            ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
-                var el = authBtns.querySelector(sel);
-                if (el) authBtns.appendChild(el);
-            });
-        } finally { mo.observe(authBtns, { childList: true }); }
-    }
-    sb.auth.getSession().then(function (r) {
-        var s = r.data && r.data.session;
-        if (!s) return;
-        return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
-    }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () {});
-})();
-</script>
+            var me = null;
+            var mo = new MutationObserver(ensure);
+            mo.observe(authBtns, { childList: true });
+
+            function ensure() {
+                if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
+                mo.disconnect();
+                try {
+                    var ue = authBtns.querySelector('.user-email');
+                    if (ue && ue.parentNode) ue.parentNode.removeChild(ue);
+                    var wrap = document.getElementById('topAvatarWrap');
+                    if (!wrap) {
+                        wrap = document.createElement('div');
+                        wrap.id = 'topAvatarWrap';
+                        wrap.className = 'top-avatar-wrap';
+                        var av = document.createElement('a');
+                        av.id = 'topAvatar';
+                        av.href = '/user/' + (me.user_number || '');
+                        av.title = me.username || '';
+                        av.style.cssText =
+                            'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                        var img = document.createElement('img');
+                        img.alt = '头像';
+                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                        img.onerror = function () { this.onerror = null; this.src = letterAvatar(me.username); };
+                        img.src = me.avatar_url || letterAvatar(me.username);
+                        av.appendChild(img);
+                        wrap.appendChild(av);
+                        var menu = document.createElement('div');
+                        menu.id = 'topAvatarMenu';
+                        menu.className = 'top-avatar-menu';
+                        wrap.appendChild(menu);
+                        authBtns.appendChild(wrap);
+                    }
+                    var menu = document.getElementById('topAvatarMenu');
+                    var logoutEl = authBtns.querySelector('.auth-btn.logout');
+                    if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
+                    if (me.can_manage_users && !document.getElementById('adminEntry')) {
+                        var gear = document.createElement('a');
+                        gear.id = 'adminEntry';
+                        gear.href = '/admin/user';
+                        gear.title = '管理后台';
+                        gear.style.cssText =
+                            'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                        gear.textContent = '⚙️';
+                        authBtns.appendChild(gear);
+                    }
+                    ['#adminEntry', '.bell-icon', '#topAvatarWrap'].forEach(function (sel) {
+                        var el = authBtns.querySelector(sel);
+                        if (el) authBtns.appendChild(el);
+                    });
+                } finally { mo.observe(authBtns, { childList: true }); }
+            }
+            sb.auth.getSession().then(function (r) {
+                var s = r.data && r.data.session;
+                if (!s) return;
+                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user
+                    .id).maybeSingle();
+            }).then(function (rr) { if (rr && rr.data) { me = rr.data;
+                    ensure(); } }).catch(function () {});
+        })();
+    </script>
+
 </body>
 
 </html>
