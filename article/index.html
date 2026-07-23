@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>文章广场 - ✨ Jason227</title>
 
-    <!-- ===== 依赖（与新建文章一致） ===== -->
+    <!-- ===== 依赖 ===== -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js">
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js">
@@ -23,23 +22,18 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-abbr@1.0.4/dist/markdown-it-abbr.min.js">
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js">
     </script>
 
-    <!-- 自定义渲染器 -->
     <link rel="stylesheet" href="./markdown-renderer.css">
     <script src="./markdown-renderer.js">
     </script>
 
-    <!-- Font Awesome & SweetAlert2 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     </script>
-
-    <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
 
@@ -57,7 +51,6 @@
             line-height: 1.5;
         }
 
-        /* ===== 顶部栏（与首页完全一致） ===== */
         .topbar {
             display: flex;
             justify-content: space-between;
@@ -81,7 +74,6 @@
             text-decoration: none;
         }
 
-        /* ===== 认证按钮容器（与首页完全一致） ===== */
         .auth-buttons {
             display: flex;
             gap: 16px;
@@ -161,7 +153,6 @@
             line-height: 1;
         }
 
-        /* ===== 底部栏 ===== */
         .bottombar {
             background: white;
             padding: 16px 24px;
@@ -245,7 +236,6 @@
             filter: brightness(0.9);
         }
 
-        /* ===== 主布局 ===== */
         .main-layout {
             max-width: 1400px;
             margin: 0 auto;
@@ -254,7 +244,6 @@
             min-height: 100vh;
         }
 
-        /* ===== 侧边栏 ===== */
         .nav-sidebar {
             position: fixed;
             top: 50px;
@@ -362,7 +351,6 @@
             margin: 8px 0;
         }
 
-        /* ===== 内容区域 ===== */
         .content-wrapper {
             margin-left: 64px;
             display: flex;
@@ -380,51 +368,9 @@
             padding: 28px 32px;
         }
 
-        .page-title-wrap {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a2632;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .page-title i {
-            color: #e74c3c;
-        }
-
-        .btn-write {
-            background: #3498db;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            padding: 8px 22px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s;
-        }
-
-        .btn-write:hover {
-            background: #2980b9;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        /* ===== 文章列表样式 ===== */
+        /* ================================================================
+           文章列表 — 作者左 · 时间右（靠右对齐 · 上下排列）
+           ================================================================ */
         .article-list {
             display: grid;
             grid-template-columns: 1fr;
@@ -449,49 +395,606 @@
             color: #1a2632;
         }
 
-        .article-item .title {
+        .article-item .article-title {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .article-item .meta {
+        /* meta 行：flex 两端对齐，时间强制靠右 */
+        .article-item .article-meta {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            gap: 8px 16px;
             font-size: 13px;
             color: #8a9aa8;
+        }
+
+        .article-item .article-author-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .article-item .article-author-link {
+            display: inline-flex;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .article-item .article-author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
+        }
+
+        .article-item .article-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .article-item .article-author-info {
             display: flex;
-            gap: 16px;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            line-height: 1.4;
+            gap: 0;
+        }
+
+        .article-item .article-author-label {
+            font-size: 11px;
+            color: #8a9aa8;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .article-item .article-author-name-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             flex-wrap: wrap;
         }
 
-        .article-item .meta .author {
-            font-weight: 500;
-            color: #2c3e50;
+        .article-item .article-author-name {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.2s;
         }
 
-        /* ===== 文章详情样式 ===== */
-        .article-detail .title {
-            /* 移除 font-size 和 font-weight，让其继承全局 h1 样式，与内容一级标题一致 */
+        .article-item .article-author-name:hover {
+            text-decoration: underline;
+        }
+
+        .article-item .article-user-tag {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: default;
+            transition: filter 0.15s;
+            line-height: 1.6;
+        }
+
+        .article-item .article-user-tag:hover {
+            filter: brightness(0.9);
+        }
+
+        /* ----- 右侧：发布时间（两行，完全靠右） ----- */
+        .article-item .article-time-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.4;
+            flex-shrink: 0;
+            margin-left: auto;
+            text-align: left;
+        }
+
+        .article-item .article-time-label {
+            font-size: 11px;
+            color: #7A7A7A;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .article-item .article-time-value {
+            font-size: 13px;
+            color: #404040;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        /* ===== 文章详情 ===== */
+        .article-detail .article-detail-title {
             margin-bottom: 12px;
             color: #1a2632;
         }
 
-        .article-detail .meta {
+        /* ----- 详情页 meta：flex 布局，时间组靠右 ----- */
+        .article-detail .article-detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px 16px;
             font-size: 14px;
             color: #8a9aa8;
             margin-bottom: 24px;
+        }
+
+        .article-detail .article-detail-author {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .article-detail-author-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .article-detail-author-link {
+            display: inline-flex;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .article-detail-author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
+        }
+
+        .article-detail-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .article-detail-author-info {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            line-height: 1.4;
+            gap: 0;
+        }
+
+        .article-detail-author-label {
+            font-size: 11px;
+            color: #7A7A7A;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .article-detail-author-name-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             flex-wrap: wrap;
         }
 
-        .article-detail .body {
+        .article-detail-author-name {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .article-detail-author-name:hover {
+            text-decoration: underline;
+        }
+
+        .article-detail-user-tag {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: default;
+            transition: filter 0.15s;
+            line-height: 1.6;
+        }
+
+        .article-detail-user-tag:hover {
+            filter: brightness(0.9);
+        }
+
+        /* ----- 时间组（靠右，纵向排列）----- */
+        .article-detail-time-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .article-detail-time-group .time-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.4;
+        }
+
+        .article-detail-time-group .time-label {
+            font-size: 11px;
+            color: #7A7A7A;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .article-detail-time-group .time-value {
+            font-size: 13px;
+            color: #404040;
+            font-weight: 400;
+        }
+
+        .article-detail .article-detail-body {
             font-size: 15px;
             line-height: 1.8;
             color: #1a2632;
         }
 
-        .article-detail .body .benben-text {
+        .article-detail .article-detail-body .benben-text {
             padding: 0;
+        }
+
+        /* ================================================================
+           评论区域 — 每条评论完全模仿主页文章列表 (article-item)
+           ================================================================ */
+        .comments-section {
+            margin-top: 40px;
+            padding-top: 24px;
+        }
+
+        .comments-section .comments-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .comments-section .comments-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .comments-section .comments-header .comment-count {
+            font-size: 14px;
+            color: #8a9aa8;
+            font-weight: 400;
+        }
+
+        /* ----- 评论卡片 — 完全复用 article-item 样式 ----- */
+        .comment-item {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.2s, border-color 0.2s;
+            text-decoration: none;
+            color: #1a2632;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .comment-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-color: #d1d5db;
+        }
+
+        .comment-item .comment-meta {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            gap: 8px 16px;
+            font-size: 13px;
+            color: #8a9aa8;
+            margin-bottom: 6px;
+        }
+
+        .comment-item .comment-author-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .comment-item .comment-author-link {
+            display: inline-flex;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .comment-item .comment-author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
+        }
+
+        .comment-item .comment-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .comment-item .comment-author-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            line-height: 1.4;
+            gap: 0;
+        }
+
+        .comment-item .comment-author-label {
+            font-size: 11px;
+            color: #8a9aa8;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .comment-item .comment-author-name-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .comment-item .comment-author-name {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .comment-item .comment-author-name:hover {
+            text-decoration: underline;
+        }
+
+        .comment-item .comment-user-tag {
+            display: inline-block;
+            border-radius: 2px;
+            padding: 2px 9px;
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: default;
+            transition: filter 0.15s;
+            line-height: 1.6;
+        }
+
+        .comment-item .comment-user-tag:hover {
+            filter: brightness(0.9);
+        }
+
+        .comment-item .comment-time-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.4;
+            flex-shrink: 0;
+            margin-left: auto;
+            text-align: left;
+        }
+
+        .comment-item .comment-time-label {
+            font-size: 11px;
+            color: #7A7A7A;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .comment-item .comment-time-value {
+            font-size: 13px;
+            color: #404040;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .comment-item .comment-content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #1a2632;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            padding-left: 0;
+            margin-top: 4px;
+        }
+
+        .comment-item .comment-content a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .comment-item .comment-content a:hover {
+            text-decoration: underline;
+        }
+
+        .comment-item .comment-delete-btn {
+            background: none;
+            border: none;
+            color: #8a9aa8;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .comment-item .comment-delete-btn:hover {
+            color: #e74c3c;
+            background: #fef0ee;
+        }
+
+        .comment-item .comment-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 4px;
+        }
+
+        .comment-empty {
+            text-align: center;
+            color: #8a9aa8;
+            padding: 24px 0 12px 0;
+            font-size: 14px;
+        }
+
+        .comment-loading {
+            text-align: center;
+            color: #8a9aa8;
+            padding: 20px 0;
+            font-size: 14px;
+        }
+
+        .comment-error {
+            text-align: center;
+            color: #e74c3c;
+            padding: 20px 0;
+            font-size: 14px;
+        }
+
+        /* ----- 评论表单（卡片风格）----- */
+        .comment-form {
+            margin-top: 4px;
+            padding: 16px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            min-height: 5em;
+            padding: 12px 16px;
+            border: 1px solid #BFBFBF;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s, background 0.2s;
+            background: #ffffff;
+            color: #1a2632;
+            box-sizing: border-box;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #e74c3c;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+        }
+
+        .comment-form textarea::placeholder {
+            color: #b0bcc8;
+        }
+
+        .comment-form .comment-form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .comment-form .comment-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: filter 0.2s, transform 0.1s;
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1.4;
+            background: #E74C3C;
+            color: #fff;
+            width: auto;
+        }
+
+        .comment-form .comment-submit:hover {
+            filter: brightness(1.1);
+        }
+
+        .comment-form .comment-submit:active {
+            transform: scale(0.96);
+        }
+
+        .comment-form .comment-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .comment-form .comment-form-info {
+            font-size: 13px;
+            color: #8a9aa8;
+        }
+
+        .comment-login-prompt {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fc;
+            border-radius: 8px;
+            text-align: center;
+            color: #8a9aa8;
+            font-size: 14px;
+        }
+
+        .comment-login-prompt a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .comment-login-prompt a:hover {
+            text-decoration: underline;
         }
 
         /* ===== 空状态 & 加载 & 错误 ===== */
@@ -529,7 +1032,6 @@
             color: #e74c3c;
         }
 
-        /* ===== 回到顶部 ===== */
         #back-to-top {
             display: none;
             position: fixed;
@@ -553,7 +1055,7 @@
             transform: scale(1.1);
         }
 
-        /* ===== 响应式（与首页对齐） ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 900px) {
             .main-layout {
                 position: static;
@@ -629,6 +1131,24 @@
             .main-content {
                 padding: 20px 16px;
             }
+
+            .article-item .article-meta,
+            .comment-item .comment-meta {
+                gap: 6px 12px;
+            }
+
+            .article-item .article-time-block,
+            .comment-item .comment-time-block {
+                margin-left: auto;
+            }
+
+            .comment-item .comment-content {
+                padding-left: 0;
+            }
+
+            .comment-item .comment-header {
+                gap: 6px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -661,7 +1181,7 @@
                 padding: 16px 12px;
             }
 
-            .article-item .title {
+            .article-item .article-title {
                 font-size: 16px;
             }
 
@@ -673,13 +1193,69 @@
                 font-size: 20px;
             }
 
-            .page-title {
-                font-size: 18px;
+            .article-item .article-author-avatar,
+            .article-detail-author-avatar,
+            .comment-item .comment-author-avatar {
+                width: 32px;
+                height: 32px;
             }
 
-            .btn-write {
+            .article-item .article-author-name,
+            .article-detail-author-name,
+            .comment-item .comment-author-name {
+                font-size: 13px;
+            }
+
+            .article-item .article-user-tag,
+            .article-detail-user-tag,
+            .comment-item .comment-user-tag {
+                font-size: 10px;
+                padding: 1px 7px;
+            }
+
+            .article-detail-meta {
+                gap: 12px;
+                font-size: 13px;
+            }
+
+            .article-item .article-time-value,
+            .comment-item .comment-time-value {
                 font-size: 12px;
-                padding: 6px 14px;
+            }
+
+            .article-item .article-time-block,
+            .comment-item .comment-time-block {
+                margin-left: auto;
+                align-items: flex-end;
+            }
+
+            .article-detail-time-group .time-value {
+                font-size: 12px;
+            }
+
+            .comment-item .comment-avatar {
+                width: 28px;
+                height: 28px;
+            }
+
+            .comment-item .comment-content {
+                font-size: 13px;
+                padding-left: 0;
+            }
+
+            .comment-form textarea {
+                min-height: 60px;
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+
+            .comment-form .comment-submit {
+                padding: 6px 20px;
+                font-size: 13px;
+            }
+
+            .comments-section .comments-header h3 {
+                font-size: 16px;
             }
         }
 
@@ -702,6 +1278,39 @@
             .nav-icon {
                 font-size: 12px;
                 width: 16px;
+            }
+
+            .article-item .article-author-avatar,
+            .article-detail-author-avatar,
+            .comment-item .comment-author-avatar {
+                width: 28px;
+                height: 28px;
+            }
+
+            .article-item .article-author-name,
+            .article-detail-author-name,
+            .comment-item .comment-author-name {
+                font-size: 12px;
+            }
+
+            .article-item .article-user-tag,
+            .article-detail-user-tag,
+            .comment-item .comment-user-tag {
+                font-size: 9px;
+                padding: 1px 6px;
+            }
+
+            .article-item .article-time-value,
+            .comment-item .comment-time-value {
+                font-size: 11px;
+            }
+
+            .article-detail-time-group .time-value {
+                font-size: 11px;
+            }
+
+            .comment-item .comment-content {
+                font-size: 12px;
             }
         }
 
@@ -742,12 +1351,66 @@
             padding: 8px 0;
             box-sizing: border-box;
         }
+
+        /* ===== 彩虹徽章动画 ===== */
+        :root {
+            --lfe-color--green-3: #2ecc71;
+            --lfe-color--blue-3: #3498db;
+            --lfe-color--gold-3: #f1c40f;
+        }
+
+        @keyframes rainbow-fill {
+            0% {
+                fill: #e74c3c;
+            }
+
+            14.28% {
+                fill: #e67e22;
+            }
+
+            28.57% {
+                fill: #f1c40f;
+            }
+
+            42.85% {
+                fill: #2ecc71;
+            }
+
+            57.14% {
+                fill: #3498db;
+            }
+
+            71.42% {
+                fill: #9b59b6;
+            }
+
+            85.71% {
+                fill: #8e44ad;
+            }
+
+            100% {
+                fill: #e74c3c;
+            }
+        }
+
+        .rainbow-badge path {
+            animation: rainbow-fill 5s linear infinite;
+        }
+
+        .rainbow-badge .fa-secondary {
+            animation: rainbow-fill 3s linear infinite;
+        }
+
+        .rainbow-badge .fa-primary {
+            fill: #ffffff !important;
+        }
     </style>
+
 </head>
 
 <body>
 
-    <!-- ===== 顶部栏（与首页完全一致：Logo + auth-buttons） ===== -->
+    <!-- ===== 顶部栏 ===== -->
     <div class="topbar">
         <a href="/" class="logo" style="text-decoration: none; color: #e74c3c;">✨ Jason227</a>
         <div class="auth-buttons" id="authButtons">
@@ -760,7 +1423,6 @@
 
         <!-- ===== 侧边栏 ===== -->
         <div class="nav-sidebar">
-            <!-- 主菜单 第一部分 -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -798,7 +1460,6 @@
 
             <div class="divider"></div>
 
-            <!-- 主菜单 第二部分 -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -816,7 +1477,6 @@
 
             <div class="divider"></div>
 
-            <!-- 更多功能 -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
                 <ul>
@@ -839,7 +1499,6 @@
 
             <div class="divider"></div>
 
-            <!-- 相关链接 -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
                 <ul>
@@ -874,10 +1533,8 @@
     <footer class="bottombar">
         <div class="bottombar-inner">
             <div class="bottombar-left">
-                <div>
-                    © <span id="currentYear"></span>
-                    <a href="/" class="brand-highlight" style="text-decoration:none;">✨ Jason227</a>
-                </div>
+                <div>© <span id="currentYear"></span> <a href="/" class="brand-highlight"
+                        style="text-decoration:none;">✨ Jason227</a></div>
                 <div class="bottombar-meta">
                     <a href="https://github.com/J-a-s-o-n-2-2-7/J-a-s-o-n-2-2-7.github.io"
                         style="color:#bbb; text-decoration:none;">GitHub</a>
@@ -888,12 +1545,8 @@
                     <a href="https://icp.gov.moe/?keyword=20268322" target="_blank"
                         style="color:#bbb; text-decoration:none;">萌ICP备20268322号</a>
                 </div>
-                <div class="bottombar-meta" id="serverTime">
-                    服务器时间: <span id="timeDisplay">加载中...</span>
-                </div>
-                <div class="bottombar-meta" id="uptime">
-                    本网站已运行 <span id="uptimeDisplay">0</span> 秒
-                </div>
+                <div class="bottombar-meta" id="serverTime">服务器时间: <span id="timeDisplay">加载中...</span></div>
+                <div class="bottombar-meta" id="uptime">本网站已运行 <span id="uptimeDisplay">0</span> 秒</div>
             </div>
             <div class="bottombar-right">
                 <div id="contributorsLine"></div>
@@ -905,12 +1558,10 @@
     <!-- 业务脚本 -->
     <!-- ================================================================ -->
 
-    <!-- 年份 -->
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 
-    <!-- ===== 主脚本 ===== -->
     <script>
         (function () {
             'use strict';
@@ -979,16 +1630,60 @@
                 }
             }
 
+            // ===== CCF 徽章 =====
+            function getCcfBadgeHtml(level, user) {
+                if (user && user.show_ccf_badge === false) return '';
+                if (!level) return '';
+                if (level >= 11) {
+                    return `<svg class="svg-inline--fa fa-badge-check rainbow-badge" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;margin-left:2px;">
+                        <g class="fa-duotone-group">
+                            <path class="fa-secondary" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
+                            <path class="fa-primary" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
+                        </g>
+                    </svg>`;
+                }
+                let color = '';
+                if (level >= 1 && level <= 5) color = '#52C41A';
+                else if (level >= 6 && level <= 7) color = '#3498DB';
+                else if (level >= 8 && level <= 10) color = '#FFC116';
+                return `<svg class="svg-inline--fa fa-badge-check" data-prefix="fad" data-icon="badge-check" role="img" viewBox="0 0 512 512" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;margin-left:2px;">
+                    <g class="fa-duotone-group">
+                        <path class="fa-secondary" fill="${color}" d="M0 256C0 292.8 20.7 324.8 51.1 340.9 41 373.8 49 411 75 437s63.3 34 96.1 23.9C187.2 491.3 219.2 512 256 512s68.8-20.7 84.9-51.1C373.8 471 411 463 437 437s34-63.3 23.9-96.1C491.3 324.8 512 292.8 512 256s-20.7-68.8-51.1-84.9C471 138.2 463 101 437 75s-63.3-34-96.1-23.9C324.8 20.7 292.8 0 256 0s-68.8 20.7-84.9 51.1C138.2 41 101 49 75 75s-34 63.3-23.9 96.1C20.7 187.2 0 219.2 0 256zm152.3 41.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6z"/>
+                        <path class="fa-primary" fill="#ffffff" d="M328.7 155.5c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L244.7 352.7c-4.2 5.7-10.7 9.4-17.8 9.8-7.1 .5-14-2.2-18.9-7.3l-55.7-57.6c-9.2-9.5-9-24.7 .6-33.9 9.5-9.2 24.7-8.9 33.9 .6l35.8 37 106.1-145.8z"/>
+                    </g>
+                </svg>`;
+            }
+
+            // ===== XCPC 气球徽章 =====
+            function getXcpcBalloonHtml(level, user) {
+                if (user && user.show_xcpc_badge === false) return '';
+                if (!level) return '';
+                let color = '';
+                if (level >= 1 && level <= 5) color = '#52C41A';
+                else if (level >= 6 && level <= 7) color = '#3498DB';
+                else if (level >= 8 && level <= 10) color = '#FFC116';
+                if (level >= 11) {
+                    return `<svg class="svg-inline--fa fa-balloon rainbow-badge" data-prefix="fad" data-icon="balloon" role="img" viewBox="0 0 384 512" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;margin-left:2px;">
+                        <g class="fa-duotone-group">
+                            <path class="fa-primary" fill="currentColor" d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z"/>
+                            <path class="fa-secondary" fill="currentColor" d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z"/>
+                        </g>
+                    </svg>`;
+                }
+                return `<svg class="svg-inline--fa fa-balloon" data-prefix="fad" data-icon="balloon" role="img" viewBox="0 0 384 512" aria-hidden="true" style="width:16px;height:16px;vertical-align:middle;margin-left:2px;">
+                    <g class="fa-duotone-group">
+                        <path class="fa-secondary" fill="#ffffff" d="M56 176c0 13.3 10.7 24 24 24s24-10.7 24-24c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24C109.7 56 56 109.7 56 176z"/>
+                        <path class="fa-primary" fill="${color}" d="M0 192C0 86 86 0 192 0S384 86 384 192c0 128-160 240-160 240l27.9 41.8c2.7 4 4.1 8.8 4.1 13.6 0 13.6-11 24.6-24.6 24.6l-78.9 0c-13.6 0-24.6-11-24.6-24.6 0-4.8 1.4-9.6 4.1-13.6L160 432S0 320 0 192zm104-16c0-39.8 32.2-72 72-72 13.3 0 24-10.7 24-24s-10.7-24-24-24c-66.3 0-120 53.7-120 120 0 13.3 10.7 24 24 24s24-10.7 24-24z"/>
+                    </g>
+                </svg>`;
+            }
+
             // ========== 文章相关函数 ==========
             function getShortId() {
                 const pathMatch = window.location.pathname.match(/^\/article\/(.+)$/);
-                if (pathMatch) {
-                    return pathMatch[1];
-                }
+                if (pathMatch) return pathMatch[1];
                 const params = new URLSearchParams(window.location.search);
-                if (params.has('id')) {
-                    return params.get('id');
-                }
+                if (params.has('id')) return params.get('id');
                 return null;
             }
 
@@ -1009,7 +1704,7 @@
                 if (!userId) return null;
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('username, user_number')
+                    .select('username, user_number, avatar_url, is_admin, is_cheater, user_tag, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge')
                     .eq('id', userId)
                     .maybeSingle();
                 if (error) {
@@ -1025,23 +1720,17 @@
                     .select('short_id, title, content, author_id, created_at, updated_at')
                     .eq('short_id', shortId)
                     .maybeSingle();
-
                 if (error) throw error;
                 if (!data) return null;
-
                 const profile = await fetchProfile(data.author_id);
-                return {
-                    ...data,
-                    profiles: profile
-                };
+                return { ...data, profiles: profile };
             }
 
             async function fetchArticles() {
                 const { data, error } = await supabase
                     .from('articles')
                     .select('short_id, title, author_id, created_at')
-                    .order('created_at', { ascending: false });
-
+                    .order('created_at', { ascending: true })
                 if (error) throw error;
                 if (!data || data.length === 0) return [];
 
@@ -1050,81 +1739,450 @@
                 if (authorIds.length > 0) {
                     const { data: profiles, error: profileError } = await supabase
                         .from('profiles')
-                        .select('id, username, user_number')
+                        .select('id, username, user_number, avatar_url, is_admin, is_cheater, user_tag, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge')
                         .in('id', authorIds);
                     if (!profileError && profiles) {
                         profiles.forEach(p => { profilesMap[p.id] = p; });
                     }
                 }
-
                 return data.map(article => ({
                     ...article,
                     profiles: profilesMap[article.author_id] || null
                 }));
             }
 
+            // ================================================================
+            // 评论功能（使用新表 article_comments）
+            // 每条评论完全模仿主页文章列表样式 (article-item)
+            // ================================================================
+
+            async function fetchComments(shortId) {
+                if (!shortId) return [];
+                const { data, error } = await supabase
+                    .from('article_comments')
+                    .select('id, content, author_id, created_at')
+                    .eq('article_id', shortId)
+                    .order('created_at', { ascending: false });
+                if (error) {
+                    console.error('获取评论失败:', error);
+                    throw error;
+                }
+                if (!data || data.length === 0) return [];
+
+                const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
+                let profilesMap = {};
+                if (authorIds.length > 0) {
+                    const { data: profiles, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('id, username, user_number, avatar_url, is_admin, is_cheater, user_tag, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge')
+                        .in('id', authorIds);
+                    if (!profileError && profiles) {
+                        profiles.forEach(p => { profilesMap[p.id] = p; });
+                    }
+                }
+                return data.map(comment => ({
+                    ...comment,
+                    profiles: profilesMap[comment.author_id] || null
+                }));
+            }
+
+            async function postComment(shortId, content, userId) {
+                if (!shortId || !content || !userId) {
+                    throw new Error('参数不完整');
+                }
+                const { data, error } = await supabase
+                    .from('article_comments')
+                    .insert({
+                        article_id: shortId,
+                        author_id: userId,
+                        content: content.trim()
+                    })
+                    .select('id, content, author_id, created_at')
+                    .single();
+                if (error) throw error;
+                return data;
+            }
+
+            async function deleteComment(commentId) {
+                if (!commentId) throw new Error('评论ID不能为空');
+                const { error } = await supabase
+                    .from('article_comments')
+                    .delete()
+                    .eq('id', commentId);
+                if (error) throw error;
+            }
+
+            function renderCommentText(text) {
+                if (!text) return '';
+                let html = escapeHtml(text);
+                html = html.replace(/\n/g, '<br>');
+                html = html.replace(/(https?:\/\/[^\s<]+)/g, function (url) {
+                    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+                });
+                return html;
+            }
+
+            // ★★★★★ 核心修改：评论使用与主页文章列表完全相同的样式 ★★★★★
+            function renderComments(comments, container, currentUser, shortId) {
+                if (!container) return;
+                const listEl = container.querySelector('.comment-list-wrap');
+                const countEl = container.querySelector('.comment-count');
+                if (!listEl) return;
+
+                if (countEl) {
+                    countEl.textContent = comments.length + ' 条';
+                }
+
+                if (!comments || comments.length === 0) {
+                    listEl.innerHTML = `<div class="comment-empty">还没有评论，来说点什么吧 🎈</div>`;
+                    return;
+                }
+
+                let html = '';
+                for (const comment of comments) {
+                    const prof = comment.profiles || {};
+                    const authorName = prof.username || '匿名';
+                    const userNumber = prof.user_number || '';
+                    const avatarUrl = prof.avatar_url || letterAvatar(authorName);
+                    const color = getUserDisplayColor(prof);
+                    const tagText = getUserTagDisplay(prof);
+                    const time = formatTime(comment.created_at);
+
+                    const canDelete = currentUser && (
+                        (comment.author_id === currentUser.id) ||
+                        (currentUser.profile && currentUser.profile.is_admin === true)
+                    );
+
+                    // ——— 完全复用 article-item 的 HTML 结构 ———
+                    let authorHtml = `
+                        <div class="comment-author-wrap">
+                            <a href="/user/${userNumber}" class="comment-author-link">
+                                <span class="comment-author-avatar">
+                                    <img src="${escapeHtmlAttr(avatarUrl)}" alt="${escapeHtmlAttr(authorName)}" onerror="this.onerror=null;this.src='${letterAvatar(authorName)}'">
+                                </span>
+                            </a>
+                            <div class="comment-author-info">
+                                <span class="comment-author-label">评论者</span>
+                                <div class="comment-author-name-row">
+                                    <a href="/user/${userNumber}" class="comment-author-name" style="color:${color};">${escapeHtml(authorName)}</a>
+                    `;
+                    if (tagText) {
+                        authorHtml += `<span class="comment-user-tag" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                    }
+                    const ccfBadge = getCcfBadgeHtml(prof?.ccf_level, prof);
+                    const xcpcBalloon = getXcpcBalloonHtml(prof?.xcpc_level, prof);
+                    authorHtml += `${ccfBadge}${xcpcBalloon}`;
+                    authorHtml += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    let timeHtml = `
+                        <div class="comment-time-block">
+                            <span class="comment-time-label">发布时间</span>
+                            <span class="comment-time-value">${escapeHtml(time)}</span>
+                        </div>
+                    `;
+
+                    let deleteHtml = '';
+                    if (canDelete) {
+                        deleteHtml = `<button class="comment-delete-btn" data-comment-id="${comment.id}" title="删除评论"><i class="fas fa-trash-alt"></i> 删除</button>`;
+                    }
+
+                    const renderedContent = renderCommentText(comment.content);
+
+                    html += `
+                        <div class="comment-item" data-comment-id="${comment.id}">
+                            <div class="comment-meta">
+                                ${authorHtml}
+                                ${timeHtml}
+                                ${deleteHtml ? deleteHtml : ''}
+                            </div>
+                            <div class="comment-content">${renderedContent}</div>
+                        </div>
+                    `;
+                }
+                listEl.innerHTML = html;
+
+                // 绑定删除事件
+                listEl.querySelectorAll('.comment-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async function (e) {
+                        e.stopPropagation();
+                        const commentId = this.dataset.commentId;
+                        if (!commentId) return;
+                        const result = await Swal.fire({
+                            title: '确认删除？',
+                            text: '删除后无法恢复，确定要删除这条评论吗？',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#e74c3c',
+                            cancelButtonColor: '#7f8c8d',
+                            confirmButtonText: '确定删除',
+                            cancelButtonText: '取消'
+                        });
+                        if (!result.isConfirmed) return;
+
+                        try {
+                            await deleteComment(commentId);
+                            await loadComments(shortId, container, currentUser);
+                            Swal.fire({
+                                icon: 'success',
+                                title: '已删除',
+                                text: '评论已成功删除',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        } catch (err) {
+                            console.error('删除评论失败:', err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: '删除失败',
+                                text: err.message || '请稍后重试'
+                            });
+                        }
+                    });
+                });
+            }
+
+            async function loadComments(shortId, container, currentUser) {
+                if (!container) return;
+                const listWrap = container.querySelector('.comment-list-wrap');
+                if (!listWrap) return;
+
+                listWrap.innerHTML = `<div class="comment-loading"><i class="fas fa-spinner fa-spin"></i> 加载评论...</div>`;
+
+                try {
+                    const comments = await fetchComments(shortId);
+                    renderComments(comments, container, currentUser, shortId);
+                } catch (err) {
+                    console.error('加载评论失败:', err);
+                    listWrap.innerHTML = `<div class="comment-error"><i class="fas fa-exclamation-circle"></i> 加载评论失败，请刷新重试</div>`;
+                }
+            }
+
+            function initCommentForm(container, shortId, currentUser) {
+                if (!container) return;
+                const form = container.querySelector('.comment-form');
+                if (!form) return;
+                const textarea = form.querySelector('textarea');
+                const submitBtn = form.querySelector('.comment-submit');
+
+                if (!textarea || !submitBtn) return;
+
+                submitBtn.type = 'submit';
+
+                const handleSubmit = async function (e) {
+                    e.preventDefault();
+                    console.log('📝 提交评论');
+
+                    const content = textarea.value.trim();
+                    if (!content) {
+                        Swal.fire({ icon: 'warning', title: '内容不能为空', timer: 1500, showConfirmButton: false });
+                        textarea.focus();
+                        return;
+                    }
+                    if (content.length > 5000) {
+                        Swal.fire({ icon: 'warning', title: '内容过长', timer: 1500, showConfirmButton: false });
+                        return;
+                    }
+
+                    if (!currentUser) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: '请先登录',
+                            confirmButtonText: '去登录',
+                            confirmButtonColor: '#e74c3c'
+                        }).then(() => { window.location.href = '/auth/login'; });
+                        return;
+                    }
+
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '发表中...';
+
+                    try {
+                        await postComment(shortId, content, currentUser.id);
+                        const comments = await fetchComments(shortId);
+                        renderComments(comments, container, currentUser, shortId);
+                        textarea.value = '';
+                        Swal.fire({ icon: 'success', title: '评论成功', timer: 1200, showConfirmButton: false });
+                    } catch (err) {
+                        console.error('发表评论失败:', err);
+                        Swal.fire({ icon: 'error', title: '发表失败', text: err.message || '请稍后重试' });
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '发表评论';
+                    }
+                };
+
+                form.addEventListener('submit', handleSubmit);
+
+                submitBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                });
+
+                textarea.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                });
+            }
+
             // ========== 渲染文章列表 ==========
             function renderList(articles) {
                 const container = document.getElementById('mainContent');
-
                 if (!articles || articles.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-file-alt"></i>
-                            <p>还没有文章，<a href="/_new.html">写一篇吧</a></p>
+                            暂无文章，<a href="/write">撰写第一篇</a>
                         </div>
                     `;
                     return;
                 }
 
                 let html = `<div class="article-list">`;
-                articles.forEach(article => {
-                    const authorName = article.profiles?.username || '匿名';
+                for (const article of articles) {
+                    const prof = article.profiles || {};
+                    const authorName = prof.username || '匿名';
+                    const userNumber = prof.user_number || '';
+                    const avatarUrl = prof.avatar_url || letterAvatar(authorName);
+                    const color = getUserDisplayColor(prof);
+                    const tagText = getUserTagDisplay(prof);
                     const time = formatTime(article.created_at);
+
+                    let authorHtml = `
+                        <div class="article-author-wrap">
+                            <a href="/user/${userNumber}" class="article-author-link">
+                                <span class="article-author-avatar">
+                                    <img src="${escapeHtmlAttr(avatarUrl)}" alt="${escapeHtmlAttr(authorName)}" onerror="this.onerror=null;this.src='${letterAvatar(authorName)}'">
+                                </span>
+                            </a>
+                            <div class="article-author-info">
+                                <span class="article-author-label">作者</span>
+                                <div class="article-author-name-row">
+                                    <a href="/user/${userNumber}" class="article-author-name" style="color:${color};">${escapeHtml(authorName)}</a>
+                    `;
+                    if (tagText) {
+                        authorHtml += `<span class="article-user-tag" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                    }
+                    const ccfBadge = getCcfBadgeHtml(prof?.ccf_level, prof);
+                    const xcpcBalloon = getXcpcBalloonHtml(prof?.xcpc_level, prof);
+                    authorHtml += `${ccfBadge}${xcpcBalloon}`;
+                    authorHtml += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
                     html += `
                         <a href="/article/${article.short_id}" class="article-item">
-                            <div class="title">${escapeHtml(article.title)}</div>
-                            <div class="meta">
-                                <span class="author">${escapeHtml(authorName)}</span>
-                                <span>${time}</span>
+                            <div class="article-title">${escapeHtml(article.title)}</div>
+                            <div class="article-meta">
+                                ${authorHtml}
+                                <div class="article-time-block">
+                                    <span class="article-time-label">发布时间</span>
+                                    <span class="article-time-value">${escapeHtml(time)}</span>
+                                </div>
                             </div>
                         </a>
                     `;
-                });
+                }
                 html += `</div>`;
                 container.innerHTML = html;
             }
 
-            // ========== 渲染文章详情 ==========
+            // ========== 渲染文章详情（含评论） ==========
             function renderDetail(article) {
                 const container = document.getElementById('mainContent');
-
                 if (!article) {
                     container.innerHTML = `<div class="error">文章不存在</div>`;
                     return;
                 }
 
-                const authorName = article.profiles?.username || '匿名';
+                const prof = article.profiles || {};
+                const authorName = prof.username || '匿名';
+                const userNumber = prof.user_number || '';
+                const avatarUrl = prof.avatar_url || letterAvatar(authorName);
+                const color = getUserDisplayColor(prof);
+                const tagText = getUserTagDisplay(prof);
                 const time = formatTime(article.created_at);
-                const updated = formatTime(article.updated_at);
                 const renderedContent = renderMarkdown(article.content || '');
+
+                let authorHtml = `
+                    <div class="article-detail-author-wrap">
+                        <a href="/user/${userNumber}" class="article-detail-author-link">
+                            <span class="article-detail-author-avatar">
+                                <img src="${escapeHtmlAttr(avatarUrl)}" alt="${escapeHtmlAttr(authorName)}" onerror="this.onerror=null;this.src='${letterAvatar(authorName)}'">
+                            </span>
+                        </a>
+                        <div class="article-detail-author-info">
+                            <span class="article-detail-author-label">作者</span>
+                            <div class="article-detail-author-name-row">
+                                <a href="/user/${userNumber}" class="article-detail-author-name" style="color:${color};">${escapeHtml(authorName)}</a>
+                `;
+                if (tagText) {
+                    authorHtml += `<span class="article-detail-user-tag" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
+                }
+                const ccfBadge = getCcfBadgeHtml(prof?.ccf_level, prof);
+                const xcpcBalloon = getXcpcBalloonHtml(prof?.xcpc_level, prof);
+                authorHtml += `${ccfBadge}${xcpcBalloon}`;
+                authorHtml += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                let timeHtml = `
+                    <div class="article-detail-time-group">
+                        <span class="time-item">
+                            <span class="time-label">发布时间</span>
+                            <span class="time-value">${escapeHtml(time)}</span>
+                        </span>
+                    </div>
+                `;
+
+                const shortId = article.short_id;
 
                 let html = `
                     <div class="article-detail">
-                        <h1 class="title">${escapeHtml(article.title)}</h1>
-                        <div class="meta">
-                            <span>作者：${escapeHtml(authorName)}</span>
-                            <span>发布于：${time}</span>
-                            ${article.updated_at !== article.created_at ? `<span>更新于：${updated}</span>` : ''}
+                        <h1 class="article-detail-title">${escapeHtml(article.title)}</h1>
+                        <div class="article-detail-meta">
+                            <span class="article-detail-author">${authorHtml}</span>
+                            ${timeHtml}
                         </div>
-                        <div class="body">
+                        <div class="article-detail-body">
                             <div class="benben-text">${renderedContent}</div>
+                        </div>
+
+                        <!-- ===== 评论区域 ===== -->
+                        <div class="comments-section" id="commentsSection" data-article-id="${escapeHtmlAttr(shortId)}">
+                            <div class="comments-header">
+                                <h3>评论区</h3>
+                                <span class="comment-count">0 条</span>
+                            </div>
+                            <div style="font-size: 16px; font-weight: 600; color: #262626; margin-bottom: 6px;">发表评论</div>
+                            <div class="comment-form" id="commentForm">
+                                <textarea placeholder="发表一条友善的评论吧！" rows="3"></textarea>
+                                <div class="comment-form-actions">
+                                    <span class="comment-form-info"></span>
+                                    <button class="comment-submit" type="submit">发表</button>
+                                </div>
+                            </div>
+                            <div class="comment-login-prompt" style="display:none;">
+                                <a href="/auth/login">登录</a> 后发表评论
+                            </div>
+                            <!-- 评论列表 -->
+                            <div class="comment-list-wrap">
+                                <div class="comment-loading"><i class="fas fa-spinner fa-spin"></i> 加载评论...</div>
+                            </div>
                         </div>
                     </div>
                 `;
                 container.innerHTML = html;
 
-                // 渲染 Mermaid
                 if (typeof mermaid !== 'undefined') {
                     mermaid.initialize({
                         theme: 'default',
@@ -1144,14 +2202,55 @@
                             .catch(err => console.warn('Mermaid 渲染失败:', err));
                     });
                 }
+
+                const commentsSection = document.getElementById('commentsSection');
+                if (!commentsSection) return;
+
+                const currentUser = getCurrentUser();
+
+                const loginPrompt = commentsSection.querySelector('.comment-login-prompt');
+                const commentForm = commentsSection.querySelector('.comment-form');
+                if (currentUser) {
+                    if (loginPrompt) loginPrompt.style.display = 'none';
+                    if (commentForm) commentForm.style.display = 'block';
+                } else {
+                    if (loginPrompt) loginPrompt.style.display = 'block';
+                    if (commentForm) commentForm.style.display = 'none';
+                }
+
+                loadComments(shortId, commentsSection, currentUser);
+
+                if (commentForm) {
+                    initCommentForm(commentsSection, shortId, currentUser);
+                }
+            }
+
+            function getCurrentUser() {
+                if (window._currentUserForComments) {
+                    return window._currentUserForComments;
+                }
+                if (typeof currentProfile !== 'undefined' && currentProfile && typeof currentUser !== 'undefined' && currentUser) {
+                    return {
+                        id: currentUser.id,
+                        profile: currentProfile
+                    };
+                }
+                return null;
             }
 
             // ========== 文章初始化 ==========
             async function initArticles() {
                 const container = document.getElementById('mainContent');
                 const shortId = getShortId();
+                const pathname = window.location.pathname;
 
                 try {
+                    if (pathname === '/articles' || pathname === '/articles/') {
+                        const articles = await fetchArticles();
+                        renderList(articles);
+                        return;
+                    }
+
                     if (shortId) {
                         const article = await fetchArticle(shortId);
                         if (!article) {
@@ -1160,8 +2259,7 @@
                         }
                         renderDetail(article);
                     } else {
-                        const articles = await fetchArticles();
-                        renderList(articles);
+                        container.innerHTML = `<div class="error">请指定文章 ID，例如 /article/xxxx</div>`;
                     }
                 } catch (err) {
                     console.error(err);
@@ -1169,7 +2267,10 @@
                 }
             }
 
-            // ========== 顶部栏认证（与首页完全一致） ==========
+            // ================================================================
+            // 认证、顶部栏、底部等辅助功能
+            // ================================================================
+
             let unreadTimer = null;
             let currentProfile = null;
             let currentUser = null;
@@ -1178,7 +2279,7 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, can_speak, can_manage_users, can_manage_posts, is_cheater, user_tag, avatar_url, username_color')
+                    .select('user_number, username, is_admin, can_speak, can_manage_users, can_manage_posts, is_cheater, user_tag, avatar_url, username_color, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge')
                     .eq('id', userId)
                     .single();
                 if (error) return null;
@@ -1222,6 +2323,11 @@
                     if (session) {
                         currentProfile = await getProfile(session.user.id);
                         currentUser = session.user;
+                        window._currentUserForComments = currentUser ? {
+                            id: currentUser.id,
+                            profile: currentProfile
+                        } : null;
+
                         if (currentProfile) {
                             const { data: banData, error: banErr } = await supabase
                                 .from('profiles')
@@ -1239,7 +2345,6 @@
                         if (currentProfile?.user_number) html += `<a href="/user/${currentProfile.user_number}" class="user-email">${escapeHtmlAttr(displayName)}</a>`;
                         else html += `<span class="user-email">${escapeHtmlAttr(displayName)}</span>`;
 
-                        // 与首页完全一致：通知铃铛 + 管理后台（管理员可见）+ 登出
                         html += `<a href="/user/notification" class="bell-icon" style="color:#666;"><svg class="svg-inline--fa fa-bell" viewBox="0 0 448 512" width="20" height="20"><path fill="currentColor" d="M224 0c-13.3 0-24 10.7-24 24l0 9.7C118.6 45.3 56 115.4 56 200l0 14.5c0 37.7-10 74.7-29 107.3L5.1 359.2C1.8 365 0 371.5 0 378.2 0 399.1 16.9 416 37.8 416l372.4 0c20.9 0 37.8-16.9 37.8-37.8 0-6.7-1.8-13.3-5.1-19L421 321.7c-19-32.6-29-69.6-29-107.3l0-14.5c0-84.6-62.6-154.7-144-166.3l0-9.7c0-13.3-10.7-24-24-24zM392.4 368l-336.9 0 12.9-22.1C91.7 306 104 260.6 104 214.5l0-14.5c0-66.3 53.7-120 120-120s120 53.7 120 120l0 14.5c0 46.2 12.3 91.5 35.5 131.4L392.4 368zM156.1 464c9.9 28 36.6 48 67.9 48s58-20 67.9-48l-135.8 0z"></path></svg><sup id="bell-badge" style="background-color:#e74c3c; display:none;">0</sup></a>`;
 
                         if (currentProfile?.is_admin === true) {
@@ -1282,6 +2387,7 @@
                     } else {
                         currentUser = null;
                         currentProfile = null;
+                        window._currentUserForComments = null;
                         authButtons.innerHTML =
                             `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
                         stopUnreadPolling();
@@ -1311,7 +2417,7 @@
                 try {
                     const { data: users, error } = await supabase
                         .from('profiles')
-                        .select('user_number, username, user_tag, username_color, is_admin, is_cheater')
+                        .select('user_number, username, user_tag, username_color, is_admin, is_cheater, ccf_level, xcpc_level, show_ccf_badge, show_xcpc_badge')
                         .in('user_number', userIds);
                     if (error) throw error;
                     if (!users || users.length === 0) {
@@ -1330,6 +2436,9 @@
                         if (tagText) {
                             link += `<span class="user-tag-display" style="background-color:${color};">${escapeHtml(tagText)}</span>`;
                         }
+                        const ccfBadge = getCcfBadgeHtml(user?.ccf_level, user);
+                        const xcpcBalloon = getXcpcBalloonHtml(user?.xcpc_level, user);
+                        link += `${ccfBadge}${xcpcBalloon}`;
                         parts.push(link);
                     });
                     const joined = parts.join(' <span style="color:#bbb;">&amp;</span> ');
@@ -1344,12 +2453,8 @@
             function updateServerTime() {
                 const now = new Date();
                 const pad = n => String(n).padStart(2, '0');
-                const str = now.getFullYear() + '-' +
-                    pad(now.getMonth() + 1) + '-' +
-                    pad(now.getDate()) + ' ' +
-                    pad(now.getHours()) + ':' +
-                    pad(now.getMinutes()) + ':' +
-                    pad(now.getSeconds());
+                const str = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' +
+                    pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
                 document.getElementById('timeDisplay').textContent = str;
             }
             updateServerTime();
@@ -1397,7 +2502,7 @@
                 }
             }, { passive: false });
 
-            // ========== 头像菜单（与首页一致） ==========
+            // ========== 头像菜单 ==========
             (function initAvatarMenu() {
                 if (!window.supabase || document.getElementById('topAvatarWrap')) return;
                 var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
