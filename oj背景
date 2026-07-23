@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态背景折叠栏</title>
+    <style>
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Microsoft YaHei", sans-serif;
+            padding: 20px;
+        }
+
+        /* ===== 折叠栏容器（带动态背景） ===== */
+        .oj-collapse {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+
+            /* ★★★ 动态渐变背景（动效） ★★★ */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientMove 12s ease infinite;
+
+            /* ------ 如果你想用静态图片作为背景，请注释掉上面的 background 和 animation，取消下面两行的注释，并替换图片路径 ------ */
+            /* background: url('你的图片.jpg') center/cover no-repeat; */
+            /* animation: none; */
+        }
+
+        /* 动态渐变的移动动画 */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ===== 折叠栏的标题（summary） ===== */
+        .oj-collapse summary {
+            padding: 20px 28px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            list-style: none; /* 移除默认三角 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s;
+            background: rgba(0, 0, 0, 0.15); /* 半透明遮罩让文字更清晰 */
+            backdrop-filter: blur(2px); /* 毛玻璃效果（可选） */
+        }
+
+        /* 自定义一个箭头图标 */
+        .oj-collapse summary::after {
+            content: "▼";
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        /* 当折叠栏展开时，箭头旋转 */
+        .oj-collapse[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        /* 鼠标悬停效果 */
+        .oj-collapse summary:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        /* ===== 折叠栏的内容区域 ===== */
+        .oj-content {
+            padding: 30px 28px;
+            background: rgba(255, 255, 255, 0.85); /* 内容区半透明白底，保证文字可读 */
+            backdrop-filter: blur(4px);
+            color: #222;
+            line-height: 1.7;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .oj-content p {
+            margin-bottom: 12px;
+        }
+
+        .oj-content p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 折叠栏 HTML 结构 ===== -->
+    <details class="oj-collapse" open>
+        <summary>✨ 点击展开 / 收起</summary>
+        <div class="oj-content">
+            <p>这里是折叠栏的内容区域，背景是动态渐变的，流动的色彩让页面充满活力。</p>
+            <p>你可以在这里放置任何文字、图片或组件。</p>
+            <p>如果你想把背景换成自己的图片，请按照CSS中的注释操作。</p>
+        </div>
+    </details>
+
+</body>
+</html>
