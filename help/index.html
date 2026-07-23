@@ -19,7 +19,6 @@
   <!-- DOMPurify -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
   <style>
-    /* ========== 基础 ========== */
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#f5f7fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; line-height:1.5; }
     .topbar { display:flex; justify-content:space-between; align-items:center; background:white; padding:12px 24px; box-shadow:0 1px 4px rgba(0,0,0,0.08); position:sticky; top:0; z-index:200; }
@@ -65,36 +64,31 @@
     .card { background:white; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:20px 24px; margin-bottom:24px; }
     .card-header { font-size:1.25rem; font-weight:600; border-left:4px solid #e74c3c; padding-left:12px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
 
-    /* ===== 规则容器 ===== */
-    .rules-container {
+    /* ===== 帮助内容容器 ===== */
+    .help-container {
       font-size:0.95rem;
       color:#1e293b;
       line-height:1.7;
     }
-    .rules-container h2 { margin:1.2em 0 0.4em; font-weight:600; font-size:1.3rem; border-bottom:1px solid #e9edf4; padding-bottom:0.3em; }
-    .rules-container h3 { margin:1em 0 0.3em; font-weight:600; font-size:1.1rem; }
-    .rules-container p { margin:0.6em 0; }
-    .rules-container ul, .rules-container ol { padding-left:1.8em; margin:0.4em 0; }
-    .rules-container li { margin:0.2em 0; }
-    .rules-container .rule-block { background:#f8fafc; border-left:3px solid #e74c3c; padding:0.8em 1.2em; margin:1em 0; border-radius:0 8px 8px 0; }
-    .rules-container .rule-block strong { color:#c0392b; }
-    .rules-container .meta-note { color:#64748b; font-size:0.9rem; background:#f1f5f9; padding:0.4em 1em; border-radius:20px; display:inline-block; }
+    .help-container h2 { margin:1.2em 0 0.4em; font-weight:600; font-size:1.3rem; border-bottom:1px solid #e9edf4; padding-bottom:0.3em; }
+    .help-container h3 { margin:1em 0 0.3em; font-weight:600; font-size:1.1rem; }
+    .help-container p { margin:0.6em 0; }
+    .help-container ul, .help-container ol { padding-left:1.8em; margin:0.4em 0; }
+    .help-container li { margin:0.2em 0; }
+    .help-container .help-block { background:#f8fafc; border-left:3px solid #e74c3c; padding:0.8em 1.2em; margin:1em 0; border-radius:0 8px 8px 0; }
+    .help-container .help-block strong { color:#c0392b; }
+    .help-container .meta-note { color:#64748b; font-size:0.9rem; background:#f1f5f9; padding:0.4em 1em; border-radius:20px; display:inline-block; }
+    .help-container .faq-item { background:#f8fafc; border-radius:8px; padding:0.8em 1.2em; margin:0.6em 0; border:1px solid #e9edf4; }
+    .help-container .faq-item strong { color:#1e293b; display:block; margin-bottom:0.2em; }
 
     /* ===== 编辑按钮 ===== */
-    .edit-rule-btn { background:#e74c3c; color:white; border:none; border-radius:30px; padding:6px 20px; font-size:14px; cursor:pointer; transition:background 0.2s; text-decoration:none; }
-    .edit-rule-btn:hover { background:#c0392b; }
-    .edit-rule-btn.is-hidden { display:none; }
+    .edit-help-btn { background:#e74c3c; color:white; border:none; border-radius:30px; padding:6px 20px; font-size:14px; cursor:pointer; transition:background 0.2s; text-decoration:none; }
+    .edit-help-btn:hover { background:#c0392b; }
+    .edit-help-btn.is-hidden { display:none; }
 
-    /* ===== 空状态 & 加载 ===== */
+    /* ===== 空状态 ===== */
     .empty-state { text-align:center; padding:60px 20px; color:#999; }
     .empty-state .icon { font-size:3rem; margin-bottom:12px; opacity:0.5; }
-    #load-more { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 40px; border-radius:24px; border:1px solid #e2e8f0; background:transparent; font-size:0.9rem; font-weight:500; color:#4a5568; cursor:pointer; transition:all 0.2s; }
-    #load-more:hover:not(:disabled) { background:#e74c3c; border-color:#e74c3c; color:#fff; box-shadow:0 4px 12px rgba(231,76,60,0.3); }
-    #load-more:disabled { opacity:0.5; cursor:not-allowed; }
-    #load-more .spinner { display:none; width:18px; height:18px; border:2px solid #e2e8f0; border-top-color:#e74c3c; border-radius:50%; animation:spin 0.8s linear infinite; }
-    #load-more.loading .spinner { display:inline-block; }
-    #load-more.loading .text { opacity:0.6; }
-    @keyframes spin { to { transform:rotate(360deg); } }
 
     /* ===== 回到顶部 ===== */
     #back-to-top { display:none; position:fixed; bottom:30px; right:30px; background:#e74c3c; color:#fff; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.2); z-index:999; transition:opacity 0.3s, transform 0.3s; }
@@ -186,9 +180,9 @@
       <div class="nav-group on-expand">
         <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
         <ul>
-          <li><a class="nav-item" href="/help"><span class="nav-icon"></span><span class="nav-text">帮助中心</span></a></li>
+          <li><a class="nav-item" href="/help" class="active"><span class="nav-icon"></span><span class="nav-text">帮助中心</span></a></li>
           <li><a class="nav-item" href="/contact"><span class="nav-icon"></span><span class="nav-text">联系我们</span></a></li>
-          <li><a class="nav-item" href="/rules" class="active"><span class="nav-icon"></span><span class="nav-text">社区规则</span></a></li>
+          <li><a class="nav-item" href="/rules"><span class="nav-icon"></span><span class="nav-text">社区规则</span></a></li>
           <li><a class="nav-item" href="/judgement"><span class="nav-icon"></span><span class="nav-text">陶片放逐</span></a></li>
           <li><a class="nav-item" href="/judgement/admins"><span class="nav-icon"></span><span class="nav-text">管理名单</span></a></li>
           <li><a class="nav-item" href="/admin/user" id="userManageItem" style="display:none;"><span class="nav-icon"></span><span class="nav-text">用户管理</span></a></li>
@@ -201,18 +195,12 @@
       <div class="main-content">
         <div class="card">
           <div class="card-header">
-            <span>📜 社区规则</span>
-            <button id="editRuleBtn" class="edit-rule-btn is-hidden">✎ 编辑规则</button>
+            <span>📖 帮助中心</span>
+            <button id="editHelpBtn" class="edit-help-btn is-hidden">✎ 编辑帮助</button>
           </div>
-          <div id="rulesDisplay" class="rules-container">
-            <!-- 由 JavaScript 渲染规则内容 -->
-            <div class="empty-state"><div class="icon">📋</div><p>加载规则中...</p></div>
-          </div>
-          <div class="load-more-wrap" style="margin-top:16px;">
-            <button id="load-more" style="display:none;">
-              <span class="spinner"></span>
-              <span class="text">加载更多</span>
-            </button>
+          <div id="helpDisplay" class="help-container">
+            <!-- 由 JavaScript 渲染帮助内容 -->
+            <div class="empty-state"><div class="icon">📚</div><p>加载帮助中...</p></div>
           </div>
         </div>
       </div>
@@ -236,15 +224,15 @@
       // ============================================================
       // 2. DOM 引用
       // ============================================================
-      const rulesDisplay = document.getElementById('rulesDisplay');
-      const editRuleBtn = document.getElementById('editRuleBtn');
+      const helpDisplay = document.getElementById('helpDisplay');
+      const editHelpBtn = document.getElementById('editHelpBtn');
       const authButtons = document.getElementById('authButtons');
 
       // ============================================================
       // 3. 状态
       // ============================================================
-      let currentRules = '';
-      let isSuperAdmin = false;      // 仅 is_super_admin 可编辑
+      let currentHelp = '';
+      let isSuperAdmin = false;
 
       // ============================================================
       // 4. 工具
@@ -261,44 +249,40 @@
       }
 
       // ============================================================
-      // 5. 加载规则（从 judgement_logs 读取唯一规则记录）
+      // 5. 加载帮助（从 judgement_logs 读取，用 type='help' 标识）
       // ============================================================
-      async function loadRules() {
+      async function loadHelp() {
         try {
-          // 我们使用 judgement_logs 表存储规则：约定 id = 'rules' 或 通过 type='rules' 查询
-          // 这里简单按 id='rules' 取一条
           const { data, error } = await supabase
             .from('judgement_logs')
             .select('id, action_detail, reason, created_at')
-            .eq('id', 'rules')   // 固定ID
+            .eq('type', 'help')   // 使用 type 字段标识帮助文档
             .maybeSingle();
 
           if (error) {
-            console.warn('加载规则失败:', error);
-            // 若表为空或记录不存在，显示默认规则
-            renderDefaultRules();
+            console.warn('加载帮助失败:', error);
+            renderDefaultHelp();
             return;
           }
 
           if (data && data.action_detail && data.action_detail.content) {
-            currentRules = data.action_detail.content;
-            renderRules(currentRules);
+            currentHelp = data.action_detail.content;
+            renderHelp(currentHelp);
           } else {
-            // 若存在记录但内容为空，则显示默认
-            renderDefaultRules();
+            renderDefaultHelp();
           }
         } catch (err) {
-          console.error('加载规则异常:', err);
-          renderDefaultRules();
+          console.error('加载帮助异常:', err);
+          renderDefaultHelp();
         }
       }
 
       // ============================================================
-      // 6. 渲染规则（支持 Markdown）
+      // 6. 渲染帮助（支持 Markdown）
       // ============================================================
-      function renderRules(markdown) {
+      function renderHelp(markdown) {
         if (!markdown) {
-          renderDefaultRules();
+          renderDefaultHelp();
           return;
         }
         try {
@@ -313,87 +297,122 @@
             .use(window.markdownitAbbr);
 
           let html = md.render(markdown);
-          // 用 DOMPurify 净化
           const clean = window.DOMPurify.sanitize(html, { ADD_ATTR: ['target'] });
-          rulesDisplay.innerHTML = clean;
+          helpDisplay.innerHTML = clean;
         } catch (e) {
           console.warn('Markdown 渲染失败，以纯文本显示', e);
-          rulesDisplay.innerHTML = `<pre style="white-space:pre-wrap;">${escapeHtml(markdown)}</pre>`;
+          helpDisplay.innerHTML = `<pre style="white-space:pre-wrap;">${escapeHtml(markdown)}</pre>`;
         }
       }
 
-      function renderDefaultRules() {
+      function renderDefaultHelp() {
         const defaultMd = `
-# 📌 社区规则（v1.0）
+# 📖 帮助中心
 
-欢迎来到 **Jason227** 社区。为了维护良好的交流环境，请所有用户遵守以下规则。
-
----
-
-## 一、总则
-1. 尊重每一位社区成员，禁止人身攻击、谩骂、歧视或任何形式的骚扰。
-2. 禁止发布任何违反中华人民共和国法律法规的内容。
-3. 禁止传播色情、暴力、赌博、毒品等违法或不良信息。
-4. 禁止利用漏洞、外挂等破坏平台公平性的行为。
-
-## 二、内容规范
-- **提问**：请清晰描述问题，提供必要的背景信息，避免无意义的水帖。
-- **解答**：鼓励友好、详实的回答，禁止抄袭或误导他人。
-- **转载**：转载他人内容请注明出处，尊重知识产权。
-
-## 三、处罚措施
-| 违规类型 | 处罚方式 |
-|---------|---------|
-| 轻微违规（如轻度不友善言论） | 警告、删除内容 |
-| 中度违规（如重复灌水、刷屏） | 禁言 1~7 天 |
-| 严重违规（如人身攻击、违法信息） | 永久封禁 + 公示 |
-
-> 管理员保留根据实际情况调整处罚力度的权利。
-
-## 四、申诉与反馈
-若对处罚有异议，可通过 **工单/反馈** 提交申诉，我们会在 3 个工作日内处理。
+欢迎来到 **Jason227** 帮助中心！这里汇集了常见问题和使用指南。
 
 ---
 
-*本规则自发布之日起生效，最终解释权归 Jason227 团队所有。*
+## 🚀 快速开始
+
+### 1. 注册与登录
+- 点击右上角 **注册** 按钮，填写用户名、邮箱和密码即可创建账号。
+- 登录后，您可以参与讨论、提交题目、查看评测记录等。
+
+### 2. 题库使用
+- 在 **题库** 页面可以浏览所有题目。
+- 点击题目进入详情页，阅读题目描述后点击 **提交** 上传代码。
+- 评测结果会实时显示在 **评测记录** 中。
+
+### 3. 讨论区
+- 在 **讨论区** 可以发布问题、分享经验。
+- 请遵守社区规则，友善交流。
+
+---
+
+## ❓ 常见问题 (FAQ)
+
+<div class="faq-item">
+  <strong>Q: 忘记密码怎么办？</strong>
+  <p>请在登录页面点击“忘记密码”，按提示通过邮箱重置密码。</p>
+</div>
+
+<div class="faq-item">
+  <strong>Q: 提交代码后显示“编译错误”怎么办？</strong>
+  <p>请检查代码语法是否正确，确保选择了正确的编程语言。可以本地编译测试后再提交。</p>
+</div>
+
+<div class="faq-item">
+  <strong>Q: 如何获得更高的“咕值”？</strong>
+  <p>积极参与社区：发布优质题解、帮助解答问题、参与比赛等都可以提升咕值。</p>
+</div>
+
+---
+
+## 📬 联系我们
+
+如遇平台问题或需人工帮助，请前往 **工单/反馈** 提交工单，我们会尽快处理。
+
+---
+
+*帮助文档持续更新中，如有疑问欢迎随时反馈！*
 `;
-        currentRules = defaultMd;
-        renderRules(defaultMd);
+        currentHelp = defaultMd;
+        renderHelp(defaultMd);
       }
 
       // ============================================================
-      // 7. 保存规则（仅 super_admin）
+      // 7. 保存帮助（仅 super_admin）
       // ============================================================
-      async function saveRules(newContent) {
+      async function saveHelp(newContent) {
         if (!isSuperAdmin) {
-          alert('只有超级管理员可以编辑规则。');
+          alert('只有超级管理员可以编辑帮助中心。');
           return;
         }
         if (!newContent || newContent.trim().length === 0) {
-          if (!confirm('规则内容为空，确定要清空吗？')) return;
+          if (!confirm('帮助内容为空，确定要清空吗？')) return;
         }
         try {
-          // 使用 upsert 更新 id='rules' 的记录
+          // 使用 type='help' 标识，upsert 更新
           const payload = {
-            id: 'rules',
-            action_type: 'rules_update',
-            admin_id: null,   // 可记录操作者
+            type: 'help',           // 用 type 字段标识
+            action_type: 'help_update',
+            admin_id: null,
             target_user_id: null,
-            reason: '社区规则更新',
+            reason: '帮助中心更新',
             action_detail: { content: newContent.trim() },
             created_at: new Date().toISOString(),
           };
-          const { error } = await supabase
+          // 先尝试查询是否存在
+          const { data: existing } = await supabase
             .from('judgement_logs')
-            .upsert(payload, { onConflict: 'id' });
+            .select('id')
+            .eq('type', 'help')
+            .maybeSingle();
+
+          let error;
+          if (existing) {
+            // 更新已有记录
+            const { error: updateError } = await supabase
+              .from('judgement_logs')
+              .update(payload)
+              .eq('type', 'help');
+            error = updateError;
+          } else {
+            // 插入新记录
+            const { error: insertError } = await supabase
+              .from('judgement_logs')
+              .insert(payload);
+            error = insertError;
+          }
 
           if (error) {
             alert('保存失败：' + error.message);
             return;
           }
-          currentRules = newContent.trim();
-          renderRules(currentRules);
-          alert('规则已更新 ✅');
+          currentHelp = newContent.trim();
+          renderHelp(currentHelp);
+          alert('帮助中心已更新 ✅');
         } catch (err) {
           alert('保存异常：' + err.message);
         }
@@ -404,34 +423,32 @@
       // ============================================================
       function startEdit() {
         if (!isSuperAdmin) {
-          alert('只有超级管理员可以编辑规则。');
+          alert('只有超级管理员可以编辑帮助中心。');
           return;
         }
-        // 弹出一个带文本域的模态框（简洁实现）
-        const current = currentRules || '';
+        const current = currentHelp || '';
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
         const box = document.createElement('div');
         box.style.cssText = 'background:white;border-radius:16px;padding:24px;max-width:720px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);';
         box.innerHTML = `
-          <h3 style="margin:0 0 12px 0;font-weight:600;">✎ 编辑社区规则（Markdown）</h3>
-          <textarea id="ruleEditor" style="width:100%;min-height:280px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:14px;resize:vertical;">${escapeHtml(current)}</textarea>
+          <h3 style="margin:0 0 12px 0;font-weight:600;">✎ 编辑帮助中心（Markdown）</h3>
+          <textarea id="helpEditor" style="width:100%;min-height:320px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:monospace;font-size:14px;resize:vertical;">${escapeHtml(current)}</textarea>
           <div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end;">
             <button id="editorCancel" style="padding:8px 24px;border:1px solid #ccc;border-radius:30px;background:transparent;cursor:pointer;">取消</button>
-            <button id="editorSave" style="padding:8px 24px;border:none;border-radius:30px;background:#e74c3c;color:white;cursor:pointer;font-weight:600;">保存规则</button>
+            <button id="editorSave" style="padding:8px 24px;border:none;border-radius:30px;background:#e74c3c;color:white;cursor:pointer;font-weight:600;">保存帮助</button>
           </div>
         `;
         modal.appendChild(box);
         document.body.appendChild(modal);
 
-        const editor = document.getElementById('ruleEditor');
+        const editor = document.getElementById('helpEditor');
         document.getElementById('editorCancel').addEventListener('click', () => modal.remove());
         document.getElementById('editorSave').addEventListener('click', async () => {
           const val = editor.value;
-          await saveRules(val);
+          await saveHelp(val);
           modal.remove();
         });
-        // 点击背景关闭
         modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
         editor.focus();
         editor.selectionStart = editor.selectionEnd = editor.value.length;
@@ -454,14 +471,12 @@
             const displayName = profile?.username || session.user.email || '用户';
             const userNumber = profile?.user_number || '';
 
-            // 检测 is_super_admin
             isSuperAdmin = !!(profile?.is_super_admin === true);
 
-            // 控制编辑按钮可见
             if (isSuperAdmin) {
-              editRuleBtn.classList.remove('is-hidden');
+              editHelpBtn.classList.remove('is-hidden');
             } else {
-              editRuleBtn.classList.add('is-hidden');
+              editHelpBtn.classList.add('is-hidden');
             }
 
             let html =
@@ -489,7 +504,7 @@
           } else {
             authButtons.innerHTML =
               `<a href="/auth/login" class="auth-btn">登录</a><a href="/auth/register" class="auth-btn">注册</a>`;
-            editRuleBtn.classList.add('is-hidden');
+            editHelpBtn.classList.add('is-hidden');
             isSuperAdmin = false;
           }
         } catch (err) {
@@ -515,14 +530,14 @@
       // ============================================================
       document.addEventListener('DOMContentLoaded', async () => {
         await updateAuthUI();
-        await loadRules();
+        await loadHelp();
 
-        editRuleBtn.addEventListener('click', startEdit);
+        editHelpBtn.addEventListener('click', startEdit);
       });
     })();
   </script>
 
-  <!-- 头像下拉菜单（保持原有功能） -->
+  <!-- 头像下拉菜单 -->
   <script>
     (function() {
       if (!window.supabase || document.getElementById('topAvatarWrap')) return;
