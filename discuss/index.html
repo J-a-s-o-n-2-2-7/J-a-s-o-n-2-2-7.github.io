@@ -1874,7 +1874,7 @@
                     return false;
                 }
 
-                // 检查权限：管理员 或 作者本人
+                // 先获取帖子信息检查权限
                 const post = await fetchPostDetail(postId);
                 if (!post) {
                     alert('帖子不存在');
@@ -1898,13 +1898,8 @@
                         .eq('id', postId);
 
                     if (error) throw error;
-
-                    if (viewingPostId === postId) {
-                        backToList();
-                    }
-
-                    await renderPostList();
-                    alert('✅ 帖子已永久删除');
+                    alert('✅ 帖子已永久删除！');
+                    window.location.href = '/discuss';
                     return true;
 
                 } catch (err) {
@@ -2114,9 +2109,10 @@
                     const container = document.getElementById('detailContent');
                     const commentCount = post.comments ? post.comments.length : 0;
 
-                    // 🔥 权限：管理员 或 作者本人
-                    const showDelete = currentUser && (currentUser.can_manage_posts || post.is_author);
-                    const isAdminView = currentUser && currentUser.can_manage_posts && !post.is_author;
+                    // 权限判断：管理员 或 作者本人
+                    const isAuthor = currentUser ? post.author_id === currentUser.id : false;
+                    const showDelete = currentUser && (currentUser.can_manage_posts || isAuthor);
+                    const isAdminView = currentUser && currentUser.can_manage_posts && !isAuthor;
 
                     let html = `
                         <div class="detail-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
@@ -2129,14 +2125,13 @@
                             <span class="author"><i class="fas fa-user"></i> ${post.authorName}</span>
                             <span><i class="far fa-clock"></i> ${formatTime(post.created_at)}</span>
                             <span><i class="far fa-comment"></i> ${commentCount} 条评论</span>
-                            <span><span class="tag">${forumMap[post.forum] || post.forum}</span></span>
-                            ${isAdminView ? `
-                                <span class="admin-badge">🔑 管理员视角</span>
-                            ` : ''}
+                            <span class="tag">${forumMap[post.forum] || post.forum}</span>
+                            ${isAdminView ? `<span class="admin-badge">🔑 管理员视角</span>` : ''}
                         </div>
                         <div class="detail-content">${post.content}</div>
                     `;
 
+                    // 评论区域
                     html += `<div class="comment-section">`;
                     html += `<h4>评论 <span>(${commentCount})</span></h4>`;
 
@@ -2153,7 +2148,7 @@
                             `;
                         });
                     } else {
-                        html += `<p class="text-muted" style="font-size:14px;">还没有评论，来说点什么吧！</p>`;
+                        html += `<p class="text-muted">还没有评论，来说点什么吧！</p>`;
                     }
 
                     if (currentUser) {
@@ -2166,7 +2161,7 @@
                     } else {
                         html += `
                             <div style="margin-top:12px; font-size:14px; color:#8a9aa8;">
-                                <a href="#" id="loginToComment" style="color:#e74c3c;">登录</a> 后发表评论
+                                <a href="/auth/login" style="color:#e74c3c;">登录</a> 后发表评论
                             </div>
                         `;
                     }
@@ -2174,10 +2169,10 @@
                     html += `</div>`;
                     container.innerHTML = html;
 
-                    // ===== 绑定详情页删除按钮 =====
-                    const detailDeleteBtn = document.getElementById('detailDeleteBtn');
-                    if (detailDeleteBtn) {
-                        detailDeleteBtn.addEventListener('click', function () {
+                    // ===== 绑定删除按钮 =====
+                    const deleteBtn = document.getElementById('detailDeleteBtn');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function() {
                             deletePost(postId);
                         });
                     }
@@ -2185,7 +2180,7 @@
                     // ===== 绑定评论提交 =====
                     const submitBtn = document.getElementById('submitComment');
                     if (submitBtn) {
-                        submitBtn.addEventListener('click', async function () {
+                        submitBtn.addEventListener('click', async function() {
                             const input = document.getElementById('commentInput');
                             const text = input.value.trim();
                             if (!text) return;
@@ -2201,7 +2196,7 @@
 
                     const loginLink = document.getElementById('loginToComment');
                     if (loginLink) {
-                        loginLink.addEventListener('click', function (e) {
+                        loginLink.addEventListener('click', function(e) {
                             e.preventDefault();
                             openAuthModal('login');
                         });
