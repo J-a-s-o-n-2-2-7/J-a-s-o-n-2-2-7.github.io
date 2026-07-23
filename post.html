@@ -36,7 +36,7 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2">
     </script>
 
-    <!-- ===== 页面样式（仅保留布局和业务样式，删除所有与 Markdown 渲染相关的样式） ===== -->
+    <!-- ===== 页面样式 ===== -->
     <style>
         /* ========== 基础样式 ========== */
         * {
@@ -326,6 +326,7 @@
             display: flex;
             gap: 8px;
             margin-top: 14px;
+            flex-wrap: wrap;
         }
 
         .side-card .btn-actions .btn {
@@ -358,6 +359,15 @@
 
         .side-card .btn-actions .btn-outline:hover {
             background: #f0f2f5;
+        }
+
+        .side-card .btn-actions .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .side-card .btn-actions .btn-danger:hover {
+            background: #a93226;
         }
 
         .user-tag-display {
@@ -745,20 +755,16 @@
             color: #e74c3c;
         }
 
-        /* ===== EasyMDE 编辑器（CodeMirror）中标题行样式 ===== */
         .CodeMirror .cm-header {
             font-weight: 700 !important;
             text-decoration: underline !important;
             color: #404040 !important;
-            /* 保持编辑器文字颜色 */
         }
 
-        /* 单个 $ 数学公式高亮为 #994400 */
         .CodeMirror .custom-math-inline {
             color: #994400 !important;
         }
 
-        /* 所有链接相关部分（包括标记符号、文字、URL）都加下划线 */
         .CodeMirror .cm-link,
         .CodeMirror .cm-url,
         .CodeMirror .cm-formatting-link,
@@ -766,12 +772,10 @@
             text-decoration: underline !important;
         }
 
-        /* URL 部分（括号内的地址）显示为主题色（红色） */
         .CodeMirror .cm-url {
             color: #e74c3c !important;
         }
 
-        /* 链接文字、方括号、圆括号保持普通文本颜色（继承编辑器默认颜色） */
         .CodeMirror .cm-link,
         .CodeMirror .cm-formatting-link,
         .CodeMirror .cm-formatting-link-string {
@@ -783,7 +787,6 @@
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
-            /* 窄屏自动换行，宽屏强制一行 */
             padding: 12px 16px;
             background: #fff;
             border-top: 1px solid #e9ecef;
@@ -791,7 +794,6 @@
 
         .reply-bottom .captcha-input {
             flex: 1 1 140px;
-            /* 可伸缩，最小宽度 140px */
             min-width: 120px;
             padding: 12px 16px;
             border: 1px solid #d1d5db;
@@ -811,7 +813,6 @@
 
         .reply-bottom canvas {
             flex: 0 0 120px;
-            /* 固定宽度 */
             height: 44px;
             cursor: pointer;
             border-radius: 12px;
@@ -821,7 +822,6 @@
 
         .reply-bottom .btn-submit {
             flex: 0 0 auto;
-            /* 不伸缩，宽度由内容撑开 */
             padding: 10px 24px;
             border-radius: 8px;
             border: none;
@@ -835,7 +835,6 @@
             align-items: center;
             gap: 6px;
             white-space: nowrap;
-            /* 防止按钮文字换行 */
         }
 
         .reply-bottom .btn-submit:hover {
@@ -851,7 +850,6 @@
             font-size: 13px;
         }
 
-        /* ===== 与登录页一致的验证码输入框样式 ===== */
         .captcha-row {
             display: flex;
             gap: 12px;
@@ -1099,29 +1097,21 @@
 
             .cs-content {
                 flex-direction: row;
-                /* 恢复水平排列 */
                 height: 280px;
-                /* 固定高度，避免撑乱 */
                 overflow: hidden;
-                /* 防止内容溢出 */
             }
 
             .cs-zone-half {
                 flex: 1 1 50%;
-                /* 各占一半宽度 */
                 min-width: 0;
-                /* 允许收缩 */
                 padding: 8px 12px;
                 min-height: 200px;
                 overflow-y: auto;
-                /* 内部滚动 */
             }
 
             .cs-zone-half:first-child {
                 border-right: 1px solid #e9ecef;
-                /* 保留左右分隔线 */
                 border-bottom: none;
-                /* 去掉底部分隔线 */
             }
 
             .reply-bottom {
@@ -1296,9 +1286,6 @@
 
         <!-- ===== 侧边栏（与主页一致） ===== -->
         <div class="nav-sidebar">
-            <!-- 与主页完全相同的侧边栏内容，此处省略以节省篇幅，实际使用时需完整保留 -->
-            <!-- 为保持完整，我们仍保留侧边栏代码（复制自主页） -->
-            <!-- ===== 主菜单 第一部分（主页 ~ 评测记录） ===== -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -1334,10 +1321,8 @@
                 </ul>
             </div>
 
-            <!-- 分割线 -->
             <div class="divider"></div>
 
-            <!-- ===== 主菜单 第二部分（讨论区、文章广场） ===== -->
             <div class="nav-group">
                 <ul>
                     <li><a class="nav-item" href="/discuss"><span class="nav-icon"><svg viewBox="0 0 576 512" width="20"
@@ -1353,10 +1338,8 @@
                 </ul>
             </div>
 
-            <!-- 分割线 -->
             <div class="divider"></div>
 
-            <!-- ===== 更多功能 ===== -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">更多功能</span></span>
                 <ul>
@@ -1377,10 +1360,8 @@
                 </ul>
             </div>
 
-            <!-- 分割线 -->
             <div class="divider"></div>
 
-            <!-- ===== 相关链接 ===== -->
             <div class="nav-group on-expand">
                 <span class="group-title"><span class="nav-icon"></span><span class="nav-text">相关链接</span></span>
                 <ul>
@@ -1417,9 +1398,9 @@
                             <div class="info-row"><span class="label">回复数</span><span class="value"
                                     id="sideReplyCount">0</span></div>
                         </div>
-                        <div class="btn-actions">
-                            <a href="#" class="btn btn-primary" id="sideReplyBtn"><i class="fas fa-reply"></i> 回复</a>
-                            <a href="/discuss" class="btn btn-outline"><i class="fas fa-list"></i> 返回</a>
+                        <div class="btn-actions" id="sideActions">
+                            <a href="#replyEditorContainer" class="btn btn-primary" id="sideReplyBtn">回复</a>
+                            <a href="/discuss" class="btn btn-outline">返回</a>
                         </div>
                     </div>
                 </div>
@@ -1441,7 +1422,6 @@
                                 <div class="editor-title"><i class="fas fa-pencil-alt"></i> 编辑回复</div>
                                 <!-- 工具栏 -->
                                 <div class="cs-toolbar" id="editorToolbar">
-                                    <!-- 标题组 -->
                                     <span class="cs-toolbar-group">
                                         <span class="cs-toolbar-tool" data-action="heading-up" title="提升一级">
                                             <svg viewBox="0 0 640 512">
@@ -1465,7 +1445,6 @@
                                             <span class="cs-tooltip">水平线</span>
                                         </span>
                                     </span>
-                                    <!-- 文本样式 -->
                                     <span class="cs-toolbar-group">
                                         <span class="cs-toolbar-tool" data-action="bold" title="粗体">
                                             <svg viewBox="0 0 384 512">
@@ -1496,7 +1475,6 @@
                                             <span class="cs-tooltip">数学公式</span>
                                         </span>
                                     </span>
-                                    <!-- 链接、图片、代码、表格 -->
                                     <span class="cs-toolbar-group">
                                         <span class="cs-toolbar-tool" data-action="link" title="链接">
                                             <svg viewBox="0 0 640 512">
@@ -1527,7 +1505,6 @@
                                             <span class="cs-tooltip">表格</span>
                                         </span>
                                     </span>
-                                    <!-- 引用 & 列表 -->
                                     <span class="cs-toolbar-group">
                                         <span class="cs-toolbar-tool" data-action="quote" title="引用">
                                             <svg viewBox="0 0 448 512">
@@ -1558,7 +1535,6 @@
                                             <span class="cs-tooltip">任务列表</span>
                                         </span>
                                     </span>
-                                    <!-- @ 用户 -->
                                     <span class="cs-toolbar-group">
                                         <span class="cs-toolbar-tool" data-action="mention" title="@ 用户">
                                             <svg viewBox="0 0 512 512">
@@ -1568,7 +1544,6 @@
                                             <span class="cs-tooltip">@ 用户</span>
                                         </span>
                                     </span>
-                                    <!-- 编辑/预览切换 & 全屏 -->
                                     <span class="cs-toolbar-group" style="margin-left:auto; border-right:none;">
                                         <span class="cs-toolbar-tool" data-action="edit-only" title="仅编辑">
                                             <svg viewBox="0 0 640 512">
@@ -1592,7 +1567,6 @@
                                             <span class="cs-tooltip">全屏</span>
                                         </span>
                                     </span>
-                                    <!-- 帮助 & 自动保存 -->
                                     <span class="cs-toolbar-group" style="border-right:none;">
                                         <span class="cs-toolbar-tool" data-action="help" title="帮助">
                                             <svg viewBox="0 0 512 512">
@@ -1650,7 +1624,7 @@
     <footer>© 2026 <span class="brand-highlight">✨ Jason227</span></footer>
 
     <!-- ================================================================ -->
-    <!-- 业务脚本（仅保留页面功能，删除所有内联Markdown渲染函数，改为调用外部库） -->
+    <!-- 业务脚本 -->
     <!-- ================================================================ -->
     <script>
         (function () {
@@ -1672,7 +1646,7 @@
             let totalPages = 1;
             let unreadTimer = null;
 
-            // ===== 图形验证码（与登录页一致） =====
+            // ===== 图形验证码 =====
             let currentCaptcha = '';
             const captchaCanvas = document.getElementById('captchaCanvas');
             const captchaCtx = captchaCanvas.getContext('2d');
@@ -1687,7 +1661,6 @@
                 captchaCtx.fillStyle = '#f9fafb';
                 captchaCtx.fillRect(0, 0, captchaCanvas.width, captchaCanvas.height);
 
-                // 干扰线
                 for (let i = 0; i < 10; i++) {
                     captchaCtx.beginPath();
                     captchaCtx.moveTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
@@ -1695,12 +1668,10 @@
                     captchaCtx.strokeStyle = `rgba(100,100,100,${0.2 + Math.random() * 0.5})`;
                     captchaCtx.stroke();
                 }
-                // 噪点
                 for (let i = 0; i < 100; i++) {
                     captchaCtx.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`;
                     captchaCtx.fillRect(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height, 1, 1);
                 }
-                // 扭曲字符
                 for (let i = 0; i < currentCaptcha.length; i++) {
                     captchaCtx.font = `${24 + Math.floor(Math.random() * 6)}px "Courier New", monospace`;
                     captchaCtx.fillStyle = `rgb(${50 + Math.random() * 100}, ${30 + Math.random() * 80}, ${20 + Math.random() * 70})`;
@@ -1714,7 +1685,6 @@
                 }
             }
 
-            // 点击 Canvas 刷新验证码
             captchaCanvas.addEventListener('click', () => {
                 generateCaptcha();
                 document.getElementById('captchaInput').value = '';
@@ -1755,6 +1725,18 @@
                         .padStart(2, '0');
             }
 
+            function formatAbsoluteTime(ts) {
+                const d = new Date(ts);
+                const pad = n => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+            }
+
+            function formatAbsoluteTimeNoSeconds(ts) {
+                const d = new Date(ts);
+                const pad = n => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            }
+
             function getAvatarLetter(name) {
                 return (name || 'U').charAt(0).toUpperCase();
             }
@@ -1769,16 +1751,16 @@
             async function getProfile(userId) {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('user_number, username, is_admin, can_speak, can_manage_users, username_color, user_tag, is_cheater, avatar_url')
+                    .select(
+                        'user_number, username, is_admin, can_speak, can_manage_users, username_color, user_tag, is_cheater, avatar_url'
+                        )
                     .eq('id', userId)
                     .single();
                 if (error) return null;
                 return data;
             }
 
-            // ============================================================
-            // 渲染 Mermaid（外部库渲染后可能需要手动运行）
-            // ============================================================
+            // ===== 渲染 Mermaid =====
             function renderMermaid() {
                 if (typeof mermaid === 'undefined') return;
                 mermaid.initialize({
@@ -1800,9 +1782,7 @@
                 });
             }
 
-            // ============================================================
-            // 认证相关
-            // ============================================================
+            // ===== 认证相关 =====
             async function getSupabaseSession() {
                 const { data: { session } } = await supabase.auth.getSession();
                 return session;
@@ -1863,15 +1843,16 @@
                     });
                     const userManageItem = document.getElementById('userManageItem');
                     if (userManageItem) {
-                        if (profile && profile.can_manage_users === true) { userManageItem.style.display = 'flex'; } else { userManageItem.style.display = 'none'; }
+                        if (profile && profile.can_manage_users === true) { userManageItem.style.display = 'flex'; } else { userManageItem.style.display =
+                            'none'; }
                     }
                     await fetchUnreadCount();
                     startUnreadPolling();
                     const editorContainer = document.getElementById('replyEditorContainer');
                     const loginTip = document.getElementById('loginToComment');
                     if (editorContainer) {
-                        editorContainer.style.display = 'block'; if (loginTip) loginTip.style.display =
-                            'none';
+                        editorContainer.style.display = 'block';
+                        if (loginTip) loginTip.style.display = 'none';
                         loadDraft();
                     }
                 } else {
@@ -1883,15 +1864,13 @@
                     const editorContainer = document.getElementById('replyEditorContainer');
                     const loginTip = document.getElementById('loginToComment');
                     if (editorContainer) {
-                        editorContainer.style.display = 'none'; if (loginTip) loginTip.style.display =
-                            'block';
+                        editorContainer.style.display = 'none';
+                        if (loginTip) loginTip.style.display = 'block';
                     }
                 }
             }
 
-            // ============================================================
-            // 获取帖子数据
-            // ============================================================
+            // ===== 获取帖子数据 =====
             async function fetchPostDetail(postId) {
                 const { data: postData, error: postError } = await supabase
                     .from('posts')
@@ -1912,9 +1891,7 @@
                 };
             }
 
-            // ============================================================
-            // 获取评论（分页）
-            // ============================================================
+            // ===== 获取评论（分页） =====
             async function fetchComments(postId, page = 1) {
                 const from = (page - 1) * PAGE_SIZE;
                 const to = from + PAGE_SIZE - 1;
@@ -1929,7 +1906,8 @@
                     ...c,
                     authorName: c.profiles?.username || '匿名用户',
                     authorId: c.profiles?.user_number || '',
-                    usernameColor: c.profiles?.is_cheater ? '#AD8B00' : (c.profiles?.username_color || (c.profiles?.is_admin ? '#9b59b6' : '#2c3e50')),
+                    usernameColor: c.profiles?.is_cheater ? '#AD8B00' : (c.profiles?.username_color || (c.profiles
+                        ?.is_admin ? '#9b59b6' : '#2c3e50')),
                     userTag: c.profiles?.user_tag || '',
                     isAdmin: c.profiles?.is_admin || false,
                     avatarUrl: c.profiles?.avatar_url || null,
@@ -1937,9 +1915,7 @@
                 return { comments, count: count || 0 };
             }
 
-            // ============================================================
-            // 发表评论
-            // ============================================================
+            // ===== 发表评论 =====
             async function createComment(postId, content, userId) {
                 if (!userId) throw new Error('未登录');
                 const { data, error } = await supabase
@@ -1951,19 +1927,53 @@
                 return data;
             }
 
-            // ============================================================
-            // 辅助函数
-            // ============================================================
-            function formatAbsoluteTime(ts) {
-                const d = new Date(ts);
-                const pad = n => String(n).padStart(2, '0');
-                return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-            }
+            // ===== 删除帖子 =====
+            async function deletePost(postId) {
+                if (!currentUser) {
+                    await Swal.fire({ icon: 'error', title: '请先登录', confirmButtonColor: '#e74c3c' });
+                    return false;
+                }
 
-            function formatAbsoluteTimeNoSeconds(ts) {
-                const d = new Date(ts);
-                const pad = n => String(n).padStart(2, '0');
-                return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                const result = await Swal.fire({
+                    title: '⚠️ 确定要删除此帖子吗？',
+                    text: '此操作不可恢复！',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '是的，删除！',
+                    cancelButtonText: '取消'
+                });
+
+                if (!result.isConfirmed) return false;
+
+                try {
+                    const { error } = await supabase
+                        .from('posts')
+                        .delete()
+                        .eq('id', postId);
+
+                    if (error) throw error;
+
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '✅ 删除成功！',
+                        text: '帖子已永久删除',
+                        confirmButtonColor: '#e74c3c'
+                    });
+
+                    window.location.href = '/discuss';
+                    return true;
+
+                } catch (err) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: '❌ 删除失败',
+                        text: err.message,
+                        confirmButtonColor: '#e74c3c'
+                    });
+                    return false;
+                }
             }
 
             // ============================================================
@@ -1973,16 +1983,13 @@
                 element: document.getElementById('replyInput'),
                 spellChecker: false,
                 autosave: { enabled: false },
-                status: false,                 // 隐藏底部状态栏（字数统计我们已有）
-                toolbar: false,                // 完全隐藏 EasyMDE 工具栏，使用我们自己的工具栏
+                status: false,
+                toolbar: false,
                 renderingConfig: {
                     singleLineBreaks: false,
                     codeSyntaxHighlighting: true,
                 },
-                // 预览样式自定义（可选）
                 previewRender: function (plainText) {
-                    // 如果你希望保留自定义预览渲染器，可以在这里调用 MarkdownRenderer
-                    // 但为了简便，我们直接使用 EasyMDE 的默认渲染，然后额外添加样式
                     return MarkdownRenderer.render(plainText, {
                         isAdmin: currentProfile?.is_admin || false,
                         username: currentProfile?.username || '',
@@ -2008,14 +2015,11 @@
             const wordCount = document.getElementById('wordCount');
             const submitReplyBtn = document.getElementById('submitReplyBtn');
 
-            // 获取 CodeMirror 实例
             const cm = easyMDE.codemirror;
 
             function highlightMath() {
                 const cm = easyMDE.codemirror;
                 const doc = cm.getDoc();
-                // 清除旧标记（如果有）
-                // 遍历所有行
                 for (let i = 0; i < doc.lineCount(); i++) {
                     const line = doc.getLine(i);
                     let match;
@@ -2030,42 +2034,12 @@
                 }
             }
 
-            // 每次编辑器内容变化时重新标记
             easyMDE.codemirror.on('change', function () {
-                // 先清除所有之前添加的标记
                 const marks = easyMDE.codemirror.getAllMarks();
                 marks.forEach(mark => mark.clear());
                 highlightMath();
             });
-
-            // 初始调用
             highlightMath();
-
-            // ============================================================
-            // 标题级别调整（提升一级 / 降低一级）
-            // ============================================================
-
-            function getCurrentLineInfo() {
-                const text = replyInput.value;
-                const start = replyInput.selectionStart;
-                // 找到该行开头
-                let lineStart = text.lastIndexOf('\n', start - 1) + 1;
-                if (lineStart === -1) lineStart = 0;
-                // 找到该行结尾
-                let lineEnd = text.indexOf('\n', start);
-                if (lineEnd === -1) lineEnd = text.length;
-                return { lineStart, lineEnd, lineText: text.substring(lineStart, lineEnd) };
-            }
-
-            function replaceLine(lineStart, lineEnd, newText) {
-                const text = replyInput.value;
-                const newValue = text.substring(0, lineStart) + newText + text.substring(lineEnd);
-                replyInput.value = newValue;
-                // 将光标放在新行末尾（或开头？放在行尾便于继续编辑）
-                const newCursorPos = lineStart + newText.length;
-                replyInput.selectionStart = replyInput.selectionEnd = newCursorPos;
-                updatePreview(); // 同步预览
-            }
 
             function headingUp() {
                 const cm = easyMDE.codemirror;
@@ -2088,7 +2062,7 @@
                     let newLine = '### ' + content;
                     cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
                 }
-                cm.focus();   // 新增
+                cm.focus();
                 updatePreview();
             }
 
@@ -2116,7 +2090,7 @@
                     let newLine = '### ' + content;
                     cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
                 }
-                cm.focus();   // 新增
+                cm.focus();
                 updatePreview();
             }
 
@@ -2130,7 +2104,6 @@
                 });
                 document.getElementById('previewContent').innerHTML = rendered;
                 renderMermaid();
-                // 字数统计
                 const chars = text.replace(/\s/g, '').length;
                 document.getElementById('wordCount').textContent = `字数统计：${chars} 字符`;
             }
@@ -2168,7 +2141,7 @@
                     cm.setCursor({ line: newLine, ch: newCh });
                 }
 
-                cm.focus();   // 确保焦点回到编辑器
+                cm.focus();
                 updatePreview();
             }
 
@@ -2195,15 +2168,15 @@
                             Swal.fire({
                                 title: '插入代码块',
                                 html: `
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">选择语言</label>
-                <input id="swal-code-lang" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
-            </div>
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入代码</label>
-                <textarea id="swal-code-content" class="swal2-textarea" style="display: inline-block; width: calc(100% - 95px); min-height: 150px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: 'Menlo', 'Consolas', monospace; resize: vertical; vertical-align: top;"></textarea>
-            </div>
-        `,
+                                    <div style="text-align: left; margin-bottom: 12px;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">选择语言</label>
+                                        <input id="swal-code-lang" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+                                    </div>
+                                    <div style="text-align: left; margin-bottom: 12px;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入代码</label>
+                                        <textarea id="swal-code-content" class="swal2-textarea" style="display: inline-block; width: calc(100% - 95px); min-height: 150px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: 'Menlo', 'Consolas', monospace; resize: vertical; vertical-align: top;"></textarea>
+                                    </div>
+                                `,
                                 confirmButtonText: '确认',
                                 cancelButtonText: '取消',
                                 showCancelButton: true,
@@ -2223,7 +2196,8 @@
                             }).then((result) => {
                                 if (result.isConfirmed && result.value) {
                                     const { lang, code } = result.value;
-                                    const codeBlock = lang ? '```' + lang + '\n' + code + '\n```' : '```\n' + code + '\n```';
+                                    const codeBlock = lang ? '```' + lang + '\n' + code + '\n```' :
+                                        '```\n' + code + '\n```';
                                     if (cm.getSelection()) {
                                         cm.replaceSelection(codeBlock);
                                     } else {
@@ -2264,15 +2238,15 @@
                             Swal.fire({
                                 title: '插入链接',
                                 html: `
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">链接地址</label>
-                <input id="swal-url" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-            </div>
-            <div style="text-align: left;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">链接介绍</label>
-                <input id="swal-text" class="swal2-input" type="text" value="${selectedText.replace(/"/g, '&quot;')}" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-            </div>
-        `,
+                                    <div style="text-align: left; margin-bottom: 12px;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">链接地址</label>
+                                        <input id="swal-url" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                                    </div>
+                                    <div style="text-align: left;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">链接介绍</label>
+                                        <input id="swal-text" class="swal2-input" type="text" value="${selectedText.replace(/"/g, '&quot;')}" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                                    </div>
+                                `,
                                 confirmButtonText: '确认',
                                 cancelButtonText: '取消',
                                 showCancelButton: true,
@@ -2310,15 +2284,15 @@
                             Swal.fire({
                                 title: '插入图片',
                                 html: `
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">图片地址</label>
-                <input id="swal-img-url" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-            </div>
-            <div style="text-align: left;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">图片介绍</label>
-                <input id="swal-img-alt" class="swal2-input" type="text" value="${selectedText.replace(/"/g, '&quot;')}" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-            </div>
-        `,
+                                    <div style="text-align: left; margin-bottom: 12px;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">图片地址</label>
+                                        <input id="swal-img-url" class="swal2-input" type="text" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                                    </div>
+                                    <div style="text-align: left;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px;">图片介绍</label>
+                                        <input id="swal-img-alt" class="swal2-input" type="text" value="${selectedText.replace(/"/g, '&quot;')}" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                                    </div>
+                                `,
                                 confirmButtonText: '确认',
                                 cancelButtonText: '取消',
                                 showCancelButton: true,
@@ -2356,15 +2330,15 @@
                             Swal.fire({
                                 title: '插入表格',
                                 html: `
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入行数</label>
-                <input id="swal-table-rows" class="swal2-input" type="number" value="1" min="1" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
-            </div>
-            <div style="text-align: left;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入列数</label>
-                <input id="swal-table-cols" class="swal2-input" type="number" value="1" min="1" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
-            </div>
-        `,
+                                    <div style="text-align: left; margin-bottom: 12px;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入行数</label>
+                                        <input id="swal-table-rows" class="swal2-input" type="number" value="1" min="1" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+                                    </div>
+                                    <div style="text-align: left;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">输入列数</label>
+                                        <input id="swal-table-cols" class="swal2-input" type="number" value="1" min="1" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+                                    </div>
+                                `,
                                 confirmButtonText: '确认',
                                 cancelButtonText: '取消',
                                 showCancelButton: true,
@@ -2388,13 +2362,10 @@
                             }).then((result) => {
                                 if (result.isConfirmed && result.value) {
                                     const { rows, cols } = result.value;
-                                    const dataRows = rows - 1; // 数据行数
+                                    const dataRows = rows - 1;
                                     let table = '';
-                                    // 表头行（空）
                                     table += '|' + '   |'.repeat(cols) + '\n';
-                                    // 分隔行
                                     table += '|' + ':---:|'.repeat(cols) + '\n';
-                                    // 数据行
                                     for (let i = 0; i < dataRows; i++) {
                                         table += '|' + '   |'.repeat(cols);
                                         if (i < dataRows - 1) {
@@ -2419,11 +2390,11 @@
                             Swal.fire({
                                 title: '@ 用户',
                                 html: `
-            <div style="text-align: left; margin-bottom: 12px;">
-                <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">用户名或UID</label>
-                <input id="swal-mention-input" class="swal2-input" type="text" placeholder="输入用户名或UID" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
-            </div>
-        `,
+                                    <div style="text-align: left; margin-bottom: 12px;">
+                                        <label style="display: inline-block; width: 80px; font-weight: 600; font-size: 14px; color: #2c3e50; text-align: right; margin-right: 10px; vertical-align: middle;">用户名或UID</label>
+                                        <input id="swal-mention-input" class="swal2-input" type="text" placeholder="输入用户名或UID" style="display: inline-block; width: calc(100% - 95px); padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; box-sizing: border-box; vertical-align: middle;">
+                                    </div>
+                                `,
                                 confirmButtonText: '确认',
                                 cancelButtonText: '取消',
                                 showCancelButton: true,
@@ -2437,11 +2408,9 @@
                                         Swal.showValidationMessage('请输入用户名或UID');
                                         return false;
                                     }
-                                    // 去除前导 @（如果有）
                                     const identifier = input.replace(/^@/, '');
                                     let username = null;
 
-                                    // 如果是纯数字，先按 UID 查询
                                     if (/^\d+$/.test(identifier)) {
                                         const { data, error } = await supabase
                                             .from('profiles')
@@ -2453,7 +2422,6 @@
                                         }
                                     }
 
-                                    // 如果还没找到，按用户名查询
                                     if (!username) {
                                         const { data, error } = await supabase
                                             .from('profiles')
@@ -2499,8 +2467,8 @@
                             break;
                         case 'fullscreen':
                             const editor = document.querySelector('.reply-editor');
-                            if (!document.fullscreenElement) editor.requestFullscreen().catch(() => { });
-                            else document.exitFullscreen().catch(() => { });
+                            if (!document.fullscreenElement) editor.requestFullscreen().catch(() => {});
+                            else document.exitFullscreen().catch(() => {});
                             break;
                         case 'help':
                             window.open('https://help.luogu.com.cn/rules/academic/handbook/markdown', '_blank');
@@ -2539,7 +2507,6 @@
             }
 
             async function handleSubmitReply() {
-                // ===== 验证码校验（使用 SweetAlert2） =====
                 const userCaptcha = document.getElementById('captchaInput').value.trim();
                 if (!userCaptcha) {
                     await Swal.fire({
@@ -2566,7 +2533,7 @@
                 if (!text) {
                     await Swal.fire({
                         icon: 'error',
-                        title: '该变量不应为空。',
+                        title: '请输入内容',
                         confirmButtonText: '确定',
                         confirmButtonColor: '#e74c3c'
                     });
@@ -2583,7 +2550,6 @@
                     localStorage.removeItem('reply_draft_' + currentPost.id);
                     await loadComments(1);
                     document.getElementById('commentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // 提交成功后刷新验证码
                     generateCaptcha();
                     document.getElementById('captchaInput').value = '';
                 } catch (err) { alert('评论失败：' + err.message); } finally {
@@ -2610,14 +2576,16 @@
                     const userNumber = prof.user_number || '';
                     const isAdmin = prof.is_admin || false;
                     const userTag = prof.user_tag || '';
-                    const color = prof.is_cheater ? '#AD8B00' : (prof.username_color || (isAdmin ? '#9b59b6' : '#2c3e50'));
+                    const color = prof.is_cheater ? '#AD8B00' : (prof.username_color || (isAdmin ? '#9b59b6' :
+                        '#2c3e50'));
                     const avatarUrl = prof.avatar_url || post.authorAvatarUrl || null;
                     const avatarLetter = getAvatarLetter(username);
                     let userTagHtml = '';
                     if (userTag) {
                         userTagHtml =
                             `<span class="user-tag-display" style="background-color: ${color};">${escapeHtml(userTag)}</span>`;
-                    } else if (isAdmin) { userTagHtml = `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`; }
+                    } else if (isAdmin) { userTagHtml =
+                            `<span class="user-tag-display" style="background-color: ${color};">管理员</span>`; }
                     const userHtml =
                         `<a href="/user/${userNumber}" class="post-detail-author" style="color: ${color};">${escapeHtml(username)}</a>`;
                     currentPost = post;
@@ -2626,7 +2594,6 @@
                     const timeStrForHeader = formatAbsoluteTimeNoSeconds(post.created_at);
                     const timeStrForSide = formatAbsoluteTime(post.created_at);
                     document.getElementById('replyInfo').style.display = 'block';
-                    // 使用外部库渲染帖子内容
                     let renderedContent = '';
                     try {
                         renderedContent = MarkdownRenderer.render(post.content || '', {
@@ -2656,13 +2623,18 @@
                     `;
                     document.getElementById('postContent').innerHTML = postHtml;
                     document.getElementById('postContent').style.display = 'block';
-                    // 渲染 Mermaid
                     renderMermaid();
 
                     const authorCard = document.getElementById('authorCard');
                     if (authorCard) {
                         const avatarImg = avatarUrl || letterAvatar(username);
                         const avatarSize = '40px';
+
+                        // 判断是否显示删除按钮：作者本人 或 管理员
+                        const isAuthor = currentUser && currentUser.id === post.author_id;
+                        const isAdminUser = currentProfile && currentProfile.can_manage_posts === true;
+                        const showDelete = currentUser && (isAuthor || isAdminUser);
+
                         authorCard.innerHTML = `
                             <div class="author-row" style="display:flex;align-items:center;gap:12px;justify-content:center;padding:4px 0;">
                                 <span class="author-label" style="font-size:13px;color:#8a9aa8;flex-shrink:0;">创建者</span>
@@ -2688,13 +2660,17 @@
                                 <a href="#replyEditorContainer" class="btn btn-primary" id="sideReplyBtn" style="flex:1;padding:8px 0;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;text-decoration:none;background:#e74c3c;color:#fff;">
                                     回复
                                 </a>
-                                ${currentUser ? `<button class="btn btn-outline" id="reportBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #e74c3c;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#e74c3c;">举报</button>` : ''}
+                                ${currentUser ? `<button class="btn btn-outline" id="reportBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #dce3ea;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#2c3e50;">举报</button>` : ''}
+                                ${showDelete ? `
+                                    <button class="btn btn-danger" id="deletePostBtn" style="flex:1;padding:8px 0;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:#c0392b;color:#fff;">🗑️ 删除</button>
+                                ` : ''}
                                 ${currentUser && currentProfile && currentProfile.can_manage_posts ? `
                                     <button class="btn btn-outline" id="pinBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #f39c12;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#f39c12;">置顶</button>
                                     <button class="btn btn-outline" id="lockBtn" style="flex:1;padding:8px 0;border-radius:8px;border:1px solid #3498db;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;text-align:center;background:transparent;color:#3498db;">锁定</button>
                                 ` : ''}
                             </div>
                         `;
+
                         document.getElementById('sideReplyBtn').addEventListener('click', function (e) {
                             e.preventDefault();
                             document.getElementById('replyEditorContainer').scrollIntoView({
@@ -2703,6 +2679,16 @@
                             });
                             replyInput.focus();
                         });
+
+                        // ===== 删除按钮事件 =====
+                        const deleteBtn = document.getElementById('deletePostBtn');
+                        if (deleteBtn) {
+                            deleteBtn.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                deletePost(post.id);
+                            });
+                        }
+
                         authorCard.style.display = 'block';
                     }
                     document.getElementById('commentSection').style.display = 'block';
@@ -2794,7 +2780,8 @@
                         e.preventDefault();
                         if (!currentUser) {
                             window.location.href = '/auth/login?redirect=' + encodeURIComponent(
-                                window.location.pathname); return;
+                                window.location.pathname);
+                            return;
                         }
                         alert('举报功能开发中，即将支持。');
                     });
@@ -2833,13 +2820,11 @@
                 var path = window.location.pathname;
                 var postId = null;
 
-                // 1️⃣ 先尝试从路径中解析（/discuss/123）
                 var match = path.match(/^\/discuss\/(\d+)$/);
                 if (match) {
                     postId = match[1];
                 }
 
-                // 2️⃣ 如果路径解析失败，尝试从查询参数中解析（?id=123）
                 if (!postId) {
                     const params = new URLSearchParams(window.location.search);
                     postId = params.get('id');
@@ -2848,12 +2833,12 @@
                 if (!postId) {
                     document.getElementById('loadingState').style.display = 'none';
                     document.getElementById('postContent').innerHTML = `
-            <div class="error-state">
-                <h1>缺少帖子 ID</h1>
-                <p>请使用 <code>/discuss/帖子编号</code> 或 <code>/discuss?id=帖子编号</code> 访问。</p>
-                <p style="margin-top:12px;"><a href="/discuss" style="color:#e74c3c;">返回讨论区</a></p>
-            </div>
-        `;
+                        <div class="error-state">
+                            <h1>缺少帖子 ID</h1>
+                            <p>请使用 <code>/discuss/帖子编号</code> 或 <code>/discuss?id=帖子编号</code> 访问。</p>
+                            <p style="margin-top:12px;"><a href="/discuss" style="color:#e74c3c;">返回讨论区</a></p>
+                        </div>
+                    `;
                     document.getElementById('postContent').style.display = 'block';
                     return;
                 }
@@ -2921,25 +2906,30 @@
     </script>
 
     <script>
-        /* 顶栏右上角头像菜单（与主页一致） */
+        /* 顶栏右上角头像菜单 */
         (function () {
             if (!window.supabase || document.getElementById('topAvatarWrap')) return;
-            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co', 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
+            var sb = window.supabase.createClient('https://nosikdfacxkuaxfrmoqn.supabase.co',
+                'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-');
             var authBtns = document.querySelector('.topbar .auth-buttons');
             if (!authBtns) return;
             if (!document.getElementById('topAvatarStyle')) {
                 var st = document.createElement('style');
                 st.id = 'topAvatarStyle';
-                st.textContent = '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
+                st.textContent =
+                    '.top-avatar-wrap{position:relative;display:inline-flex;align-items:center} .top-avatar-menu{position:absolute;top:100%;right:0;min-width:104px;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px;display:none;z-index:300} .top-avatar-wrap:hover .top-avatar-menu{display:block} .top-avatar-menu .auth-btn.logout{display:block;width:100%;text-align:center;border-radius:6px;padding:8px 0;box-sizing:border-box}';
                 document.head.appendChild(st);
             }
+
             function letterAvatar(name) {
                 var ch = (name || 'U').trim().charAt(0).toUpperCase() || 'U';
-                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" + encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
+                return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e74c3c'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-size='16' font-family='Arial'%3E" +
+                    encodeURIComponent(ch) + "%3C/text%3E%3C/svg%3E";
             }
             var me = null;
             var mo = new MutationObserver(ensure);
             mo.observe(authBtns, { childList: true });
+
             function ensure() {
                 if (!me || !authBtns.querySelector('.auth-btn.logout')) return;
                 mo.disconnect();
@@ -2955,7 +2945,8 @@
                         av.id = 'topAvatar';
                         av.href = '/user/' + (me.user_number || '');
                         av.title = me.username || '';
-                        av.style.cssText = 'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
+                        av.style.cssText =
+                            'display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;';
                         var img = document.createElement('img');
                         img.alt = '头像';
                         img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
@@ -2974,8 +2965,11 @@
                     if (menu && logoutEl && logoutEl.parentNode !== menu) menu.appendChild(logoutEl);
                     if (me.can_manage_users && !document.getElementById('adminEntry')) {
                         var gear = document.createElement('a');
-                        gear.id = 'adminEntry'; gear.href = '/admin/user'; gear.title = '管理后台';
-                        gear.style.cssText = 'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
+                        gear.id = 'adminEntry';
+                        gear.href = '/admin/user';
+                        gear.title = '管理后台';
+                        gear.style.cssText =
+                            'display:inline-flex;align-items:center;font-size:18px;line-height:1;text-decoration:none;cursor:pointer;';
                         gear.textContent = '⚙️';
                         authBtns.appendChild(gear);
                     }
@@ -2988,8 +2982,10 @@
             sb.auth.getSession().then(function (r) {
                 var s = r.data && r.data.session;
                 if (!s) return;
-                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user.id).maybeSingle();
-            }).then(function (rr) { if (rr && rr.data) { me = rr.data; ensure(); } }).catch(function () { });
+                return sb.from('profiles').select('username, avatar_url, user_number, can_manage_users').eq('id', s.user
+                    .id).maybeSingle();
+            }).then(function (rr) { if (rr && rr.data) { me = rr.data;
+                    ensure(); } }).catch(function () {});
         })();
     </script>
 </body>

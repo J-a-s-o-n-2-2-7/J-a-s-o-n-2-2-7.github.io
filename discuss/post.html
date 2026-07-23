@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子详情 - ✨ Jason227</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+        .logo:hover { color: #c0392b; }
+        .auth-buttons { display: flex; gap: 16px; align-items: center; }
+        .auth-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .auth-btn:hover { background: #c0392b; }
+        .auth-btn.logout { background: #7f8c8d; }
+        .auth-btn.logout:hover { background: #5a6268; }
+        .user-email { font-size: 14px; color: #2c3e50; text-decoration: none; }
+        .user-email:hover { text-decoration: underline; }
+
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 24px 32px;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #5a6a7a;
+            font-size: 14px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 8px 0;
+            margin-bottom: 8px;
+        }
+        .back-btn:hover { color: #e74c3c; }
+
+        .detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 8px 0 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .detail-title .title-text { flex: 1; }
+        .detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 20px;
+            font-size: 14px;
+            color: #8a9aa8;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #edf2f7;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .detail-meta .author { color: #2c3e50; font-weight: 500; }
+        .detail-meta .tag {
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            background: #eef2f7;
+            color: #5a6a7a;
+        }
+        .detail-content {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #1e2a36;
+            white-space: pre-wrap;
+            word-break: break-word;
+            min-height: 100px;
+        }
+
+        .comment-section {
+            margin-top: 24px;
+            border-top: 1px solid #edf2f7;
+            padding-top: 20px;
+        }
+        .comment-section h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .comment-section h4 span { font-weight: 400; color: #8a9aa8; font-size: 14px; }
+        .comment-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .comment-item:last-child { border-bottom: none; }
+        .comment-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #8a9aa8;
+            margin-bottom: 4px;
+        }
+        .comment-head .cname { font-weight: 500; color: #2c3e50; }
+        .comment-body { font-size: 14px; color: #1e2a36; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+        .comment-input-area {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            align-items: flex-start;
+        }
+        .comment-input-area textarea {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #dce3ea;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            background: #fafbfc;
+            transition: border 0.15s;
+        }
+        .comment-input-area textarea:focus {
+            outline: none;
+            border-color: #e74c3c;
+            background: #fff;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: #e74c3c; color: #fff; }
+        .btn-primary:hover { background: #c0392b; }
+        .btn-sm { padding: 4px 14px; font-size: 13px; }
+
+        .empty-state { text-align: center; padding: 48px 20px; color: #8a9aa8; }
+        .empty-state i { font-size: 48px; color: #dce3ea; margin-bottom: 12px; display: block; }
+        .text-muted { color: #8a9aa8; font-size: 14px; }
+
+        .detail-delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+        .detail-delete-btn:hover { background: #c0392b; }
+        .admin-badge {
+            color: #e74c3c;
+            font-size: 12px;
+            background: #fef0f0;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        footer { text-align: center; padding: 24px; color: #7f8c8d; font-size: 13px; }
+
+        @media (max-width: 600px) {
+            .card { padding: 16px; }
+            .detail-title { font-size: 20px; }
+            .topbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 顶部栏 ===== -->
+    <div class="topbar">
+        <a href="/" class="logo">✨ Jason227</a>
+        <div class="auth-buttons" id="authButtons">
+            <span style="font-size:14px; color:#aaa;">加载中...</span>
+        </div>
+    </div>
+
+    <!-- ===== 主内容 ===== -->
+    <div class="main-layout">
+        <div class="card" id="postContainer">
+            <button class="back-btn" id="backToList">
+                <i class="fas fa-arrow-left"></i> 返回讨论区
+            </button>
+            <div id="detailContent">
+                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>加载中...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 <span class="brand-highlight">✨ Jason227</span></footer>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            //  1. Supabase 客户端
+            // ============================================================
+            const supabaseUrl = 'https://nosikdfacxkuaxfrmoqn.supabase.co';
+            const supabaseKey = 'sb_publishable_oKXNXCWRhkho-OQPXE9LwA_74bqI5h-';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+            // ============================================================
+            //  2. 全局状态
+            // ============================================================
+            let currentUser = null;
+
+            const forumMap = {
+                all: '全部',
+                siteaffairs: '站务版',
+                problem: '题目总版',
+                academics: '学术版',
+                relevantaffairs: '灌水区',
+            };
+
+            // ============================================================
+            //  3. 辅助函数
+            // ============================================================
+            function formatTime(ts) {
+                const diff = Date.now() - new Date(ts).getTime();
+                if (diff < 60000) return '刚刚';
+                if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前';
+                if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前';
+                if (diff < 172800000) return '昨天';
+                if (diff < 259200000) return '前天';
+                const d = new Date(ts);
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            }
+
+            // ============================================================
+            //  4. 认证相关
+            // ============================================================
+            async function getSupabaseSession() {
+                const { data: { session } } = await supabase.auth.getSession();
+                return session;
+            }
+
+            async function fetchProfile(userId) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('username, can_manage_posts')
+                    .eq('id', userId)
+                    .maybeSingle();
+                if (error) return null;
+                return data;
+            }
+
+            async function loadCurrentUser() {
+                const session = await getSupabaseSession();
+                if (!session) { currentUser = null; return; }
+                const user = session.user;
+                const profile = await fetchProfile(user.id);
+                currentUser = {
+                    id: user.id,
+                    username: profile?.username || user.email || '用户',
+                    email: user.email,
+                    can_manage_posts: profile?.can_manage_posts === true,
+                };
+                updateNav();
+            }
+
+            async function signOut() {
+                await supabase.auth.signOut();
+                currentUser = null;
+                updateNav();
+                window.location.href = '/discuss';
+            }
+
+            function updateNav() {
+                const container = document.getElementById('authButtons');
+                if (currentUser) {
+                    container.innerHTML = `
+                        <span class="user-email">${currentUser.username}</span>
+                        <button class="auth-btn logout" id="logoutBtn">登出</button>
+                    `;
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) logoutBtn.addEventListener('click', signOut);
+                } else {
+                    container.innerHTML = `
+                        <a href="/auth/login" class="auth-btn">登录</a>
+                        <a href="/auth/register" class="auth-btn">注册</a>
+                    `;
+                }
+            }
+
+            // ============================================================
+            //  5. 数据库操作
+            // ============================================================
+            async function fetchPostDetail(postId) {
+                const { data: postData, error: postError } = await supabase
+                    .from('posts')
+                    .select(`
+                        id, forum, title, content, author_id, created_at, updated_at,
+                        profiles:author_id ( username, avatar_url )
+                    `)
+                    .eq('id', postId)
+                    .maybeSingle();
+                if (postError) throw postError;
+                if (!postData) return null;
+
+                const { data: commentsData, error: commentsError } = await supabase
+                    .from('comments')
+                    .select(`
+                        id, content, author_id, created_at,
+                        profiles:author_id ( username, avatar_url )
+                    `)
+                    .eq('post_id', postId)
+                    .order('created_at', { ascending: true });
+                if (commentsError) throw commentsError;
+
+                const comments = commentsData.map(c => ({
+                    ...c,
+                    authorName: c.profiles?.username || '用户',
+                }));
+
+                return {
+                    ...postData,
+                    authorName: postData.profiles?.username || '用户',
+                    authorAvatar: postData.profiles?.avatar_url || '',
+                    is_author: currentUser ? postData.author_id === currentUser.id : false,
+                    comments: comments,
+                };
+            }
+
+            async function createComment(postId, content, userId) {
+                if (!userId) throw new Error('未登录');
+                const { data, error } = await supabase
+                    .from('comments')
+                    .insert({ post_id: postId, content, author_id: userId })
+                    .select()
+                    .single();
+                if (error) throw error;
+                return data;
+            }
+
+            // ============================================================
+            //  6. 删除帖子函数（硬删除）
+            // ============================================================
+            async function deletePost(postId) {
+                if (!currentUser) {
+                    alert('请先登录');
+                    return false;
+                }
+
+                const post = await fetchPostDetail(postId);
+                if (!post) {
+                    alert('帖子不存在');
+                    return false;
+                }
+
+                const canDelete = currentUser.can_manage_posts || post.is_author;
+                if (!canDelete) {
+                    alert('你没有权限删除此帖子');
+                    return false;
+                }
+
+                if (!confirm('⚠️ 确定要永久删除此帖子吗？\n此操作不可恢复！')) {
+                    return false;
+                }
+
+                try {
+                    const { error } = await supabase
+                        .from('posts')
+                        .delete()
+                        .eq('id', postId);
+
+                    if (error) throw error;
+                    alert('✅ 帖子已永久删除！');
+                    window.location.href = '/discuss';
+                    return true;
+
+                } catch (err) {
+                    console.error('删除失败:', err);
+                    alert('❌ 删除失败: ' + err.message);
+                    return false;
+                }
+            }
+
+            // ============================================================
+            //  7. 渲染帖子详情
+            // ============================================================
+            async function renderPost(postId) {
+                const container = document.getElementById('detailContent');
+
+                try {
+                    const post = await fetchPostDetail(postId);
+                    if (!post) {
+                        container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>帖子不存在或已被删除</p></div>`;
+                        return;
+                    }
+
+                    const commentCount = post.comments ? post.comments.length : 0;
+                    const isAuthor = currentUser ? post.author_id === currentUser.id : false;
+                    const showDelete = currentUser && (currentUser.can_manage_posts || isAuthor);
+                    const isAdminView = currentUser && currentUser.can_manage_posts && !isAuthor;
+
+                    let html = `
+                        <div class="detail-title">
+                            <span class="title-text">${post.title}</span>
+                            ${showDelete ? `
+                                <button class="detail-delete-btn" id="detailDeleteBtn">🗑️ 删除帖子</button>
+                            ` : ''}
+                        </div>
+                        <div class="detail-meta">
+                            <span class="author"><i class="fas fa-user"></i> ${post.authorName}</span>
+                            <span><i class="far fa-clock"></i> ${formatTime(post.created_at)}</span>
+                            <span><i class="far fa-comment"></i> ${commentCount} 条评论</span>
+                            <span class="tag">${forumMap[post.forum] || post.forum}</span>
+                            ${isAdminView ? `<span class="admin-badge">🔑 管理员视角</span>` : ''}
+                        </div>
+                        <div class="detail-content">${post.content}</div>
+                    `;
+
+                    // 评论区域
+                    html += `<div class="comment-section">`;
+                    html += `<h4>评论 <span>(${commentCount})</span></h4>`;
+
+                    if (post.comments && post.comments.length > 0) {
+                        post.comments.forEach(c => {
+                            html += `
+                                <div class="comment-item">
+                                    <div class="comment-head">
+                                        <span class="cname">${c.authorName}</span>
+                                        <span>${formatTime(c.created_at)}</span>
+                                    </div>
+                                    <div class="comment-body">${c.content}</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html += `<p class="text-muted">还没有评论，来说点什么吧！</p>`;
+                    }
+
+                    if (currentUser) {
+                        html += `
+                            <div class="comment-input-area">
+                                <textarea id="commentInput" placeholder="写评论..." rows="2"></textarea>
+                                <button class="btn btn-primary btn-sm" id="submitComment"><i class="fas fa-paper-plane"></i> 发送</button>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div style="margin-top:12px; font-size:14px; color:#8a9aa8;">
+                                <a href="/auth/login" style="color:#e74c3c;">登录</a> 后发表评论
+                            </div>
+                        `;
+                    }
+
+                    html += `</div>`;
+                    container.innerHTML = html;
+
+                    // ===== 绑定删除按钮 =====
+                    const deleteBtn = document.getElementById('detailDeleteBtn');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function() {
+                            deletePost(postId);
+                        });
+                    }
+
+                    // ===== 绑定评论提交 =====
+                    const submitBtn = document.getElementById('submitComment');
+                    if (submitBtn) {
+                        submitBtn.addEventListener('click', async function() {
+                            const input = document.getElementById('commentInput');
+                            const text = input.value.trim();
+                            if (!text) return;
+                            if (!currentUser) return;
+                            try {
+                                await createComment(postId, text, currentUser.id);
+                                renderPost(postId);
+                            } catch (err) {
+                                alert('评论失败: ' + err.message);
+                            }
+                        });
+                    }
+
+                } catch (err) {
+                    console.error('加载失败:', err);
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>加载失败，请刷新重试</p></div>`;
+                }
+            }
+
+            // ============================================================
+            //  8. 初始化
+            // ============================================================
+            async function init() {
+                await loadCurrentUser();
+
+                const path = window.location.pathname;
+                const match = path.match(/^\/discuss\/(\d+)$/);
+                if (match) {
+                    const postId = parseInt(match[1], 10);
+                    renderPost(postId);
+                } else {
+                    document.getElementById('detailContent').innerHTML =
+                        `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>无效的帖子 ID</p></div>`;
+                }
+
+                document.getElementById('backToList').addEventListener('click', function() {
+                    window.location.href = '/discuss';
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
+
+        })();
+    </script>
+
+</body>
+</html>
